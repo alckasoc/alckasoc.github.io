@@ -1,0 +1,96 @@
+<!doctype html>
+<!--
+  TEMPLATE — copy this file to /reviews/<slug>-review-<YYYY-MM-DD>.html and fill in.
+  Placeholders use {{double_braces}}. Remove all comments before publishing.
+
+  CSS path note: review pages live in /reviews/, so stylesheet is "../styles/main.css".
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{{focus}} Review — {{date_long}} | Auto Lit Review</title>
+<meta name="description" content="{{one_line_description}}" />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">{{date_short}}</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <!-- TOC_ENTRIES: one <li class="toc-h1"> per company, nested <li class="toc-h2"> per paper -->
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review · {{date_long}}</div>
+    <h1 class="page-title">{{focus}}</h1>
+    <div class="page-meta">{{n_papers}} papers · {{n_companies}} labs · auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>{{focus_paragraph}}</p>
+      <h3>Competitiveness</h3>
+      <p>{{competitiveness_paragraph}}</p>
+      <h3>New frontier releases</h3>
+      <p>{{releases_paragraph}}</p>
+    </section>
+
+    <!-- BODY: one <h1> per company; one <h2><a> per paper; subsections h3 -->
+    <!-- Example structure:
+
+    <h1 id="company-slug">CompanyName</h1>
+
+    <h2 id="paper-slug"><a href="https://arxiv.org/abs/...">Paper Title</a></h2>
+    <div class="paper-meta">
+      <span>arXiv</span>
+      <span>2026-05-08</span>
+      <span>Pre-training · RL</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Brief 1–3 bullet framing of what the paper is.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li>Thorough lossless bullets here.</li>
+    </ul>
+    <figure>
+      <img src="assets/paper-slug/fig1-method.png" alt="Method diagram" />
+      <figcaption>Figure 1. Main method diagram.</figcaption>
+    </figure>
+
+    <h3>Evaluation & results</h3>
+    <ul>
+      <li>Thorough lossless bullets here.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>...</ul>
+
+    -->
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
