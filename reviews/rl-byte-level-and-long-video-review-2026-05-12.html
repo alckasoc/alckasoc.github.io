@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RL, Byte-Level &amp; Long Video Review — May 12, 2026 | Auto Lit Review</title>
+<meta name="description" content="Three Tier 2 frontier-lab papers from Tencent Hunyuan, Meta FAIR, and Google: a target-projection view of group-based RLVR, three speedups for byte-level inference, and an agentic autoregressive diffusion architecture for long video." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">May 12, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#google" class="toc-h1">Google</a>
+          <ul>
+            <li><a href="#aard" class="toc-h2">A²RD: Agentic Autoregressive Diffusion</a></li>
+          </ul>
+        </li>
+        <li><a href="#meta" class="toc-h1">Meta</a>
+          <ul>
+            <li><a href="#fast-blt" class="toc-h2">Fast Byte Latent Transformer</a></li>
+          </ul>
+        </li>
+        <li><a href="#tencent" class="toc-h1">Tencent (Hunyuan)</a>
+          <ul>
+            <li><a href="#lpo" class="toc-h2">Listwise Policy Optimization</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review · May 12, 2026</div>
+    <h1 class="page-title">RL, Byte-Level &amp; Long Video</h1>
+    <div class="page-meta">3 papers · 3 labs · auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>No flagship model launches surfaced in the 36-hour window — the page covers three Tier 2 frontier-lab research papers that landed on Hugging Face Daily Papers on May 11: Tencent Hunyuan&rsquo;s <strong>Listwise Policy Optimization (LPO)</strong>, a geometric rewrite of GRPO/RLOO-style RLVR as target projection on the response simplex; Meta FAIR + Stanford + UW&rsquo;s <strong>Fast Byte Latent Transformer</strong>, which proposes three inference paths — BLT-D, BLT-S, BLT-DV — that cut byte-level inference memory bandwidth by 50–92% without subword tokenization; and Google&rsquo;s <strong>A²RD</strong>, an agentic autoregressive diffusion architecture for consistent multi-minute video synthesis. Threads cut across the post-training, inference, and generative-modeling stacks.</p>
+
+      <h3>Competitiveness</h3>
+      <p>None of these papers ship a new flagship; they refine the layers underneath. LPO sits in the same RLVR family that DeepSeek-V4, GPT-5.5, and Kimi K2.6 all rely on for reasoning post-training, and explicitly competes with GRPO, RLOO, GSPO, and DAPO on matched targets. Fast BLT competes with the dominant subword-tokenizer regime that every current frontier model uses (Llama, DeepSeek, Qwen, Claude, GPT, Gemini), claiming over 50% memory-bandwidth reductions while keeping likelihood-benchmark performance flat versus the original BLT. A²RD targets long-form video generation — a category where Google&rsquo;s own Veo 3, OpenAI&rsquo;s Sora 2, and Kling 2.5 currently lead on short clips but visibly drift past two minutes — and claims +30% consistency and +20% narrative coherence over baselines on 1–10 minute synthesis. No new SWE-Bench / LiveCodeBench / MMLU-Pro / HLE / GPQA numbers in this batch.</p>
+
+      <h3>New frontier releases</h3>
+      <p>No new frontier-model launches in the past 36 hours. The most recent flagship releases remain Grok 4.3 (May 6) and the GPT-5.5 Instant variant (May 5), both covered upstream of this review.</p>
+    </section>
+
+    <h1 id="google">Google</h1>
+
+    <h2 id="aard"><a href="https://arxiv.org/abs/2605.06924">A²RD: Agentic Autoregressive Diffusion for Long Video Consistency</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv:2605.06924</span>
+      <span>2026-05-07</span>
+      <span>Video generation · Diffusion · Agentic · Test-time refinement</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Three Google authors (Yale Song, Tomas Pfister, Long T. Le) with two NUS collaborators (Do Xuan Long, Min-Yen Kan); training-free architecture for 1–10 minute video synthesis.</li>
+      <li>Frames the long-video problem as <em>semantic drift</em> (entities and environments mutate over time) and <em>narrative collapse</em> (the story stalls or repeats), and decouples creative synthesis from consistency enforcement rather than trying to bake both into a single denoiser.</li>
+      <li>Ships LVBench-C, a stress-test benchmark with non-linear entity and environment transitions designed to break long-horizon consistency.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Closed-loop Retrieve–Synthesize–Refine–Update cycle</strong> at the segment granularity. Each segment is produced and audited before the next is rolled out; errors do not propagate freely across the full timeline.</li>
+      <li>Three named components, each given an acronym in the paper:
+        <ul>
+          <li><strong>Multimodal Video Memory (MVM)</strong> — a cross-modal store that tracks scene state, characters, environments, and prior narrative beats. Retrieved into the synthesis prompt at every segment so the model has explicit, structured continuity context rather than relying solely on a fixed-length latent window.</li>
+          <li><strong>Adaptive Segment Generation (ASG)</strong> — switches among generation modes per segment to balance natural narrative progression with visual consistency. The active mode is selected from the MVM state rather than from a single fixed prompt template, which is how the system avoids the trade-off where a strict consistency prior freezes the narrative.</li>
+          <li><strong>Hierarchical Test-Time Self-Improvement (HTTSI)</strong> — refines each segment at both the frame level and the segment level after initial synthesis, using model-as-judge style audits. This is the layer that does the actual error correction inside the loop.</li>
+        </ul>
+      </li>
+      <li><strong>Mechanism — what A²RD&rsquo;s closed-loop design actually does:</strong>
+        <ul>
+          <li><em>Problem.</em> Pure autoregressive video diffusion drifts because every segment is conditioned only on a short latent context; consistency losses force a small action space and the story stalls. End-to-end long-video diffusion blows up memory.</li>
+          <li><em>Mechanism.</em> A²RD synthesizes a segment, audits it against the MVM (entities, environments, motifs), refines frames and the segment with HTTSI, then writes new state back to the MVM before generating the next segment. ASG picks the generation mode (continuation vs. transition vs. callback) from the MVM state, so consistency is enforced retroactively in HTTSI rather than proactively as a prior on the denoiser.</li>
+          <li><em>Why.</em> Decoupling synthesis from consistency means the denoiser stays expressive; consistency is purchased at audit time, not at sample time. Beats prior approaches such as Rolling Forcing and CausVid that compress the entire context into a single forward pass — they trade either consistency or runtime, while A²RD spends a fixed budget per segment regardless of timeline length.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Spans 1- to 10-minute generation across public long-video benchmarks and the new LVBench-C.</li>
+      <li>Reports up to <strong>+30% on consistency</strong> and <strong>+20% on narrative coherence</strong> against state-of-the-art baselines.</li>
+      <li>Human evaluations corroborate the consistency/coherence gains and additionally flag improvements in motion smoothness and transition smoothness — categories the automatic metrics under-weight.</li>
+      <li>LVBench-C is specifically designed around cyclical entity/environment appearances with optional state evolutions — a sharper test for long-horizon consistency than benchmarks built on linear narratives.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Paper&rsquo;s ablations break out the contribution of each pillar (MVM, ASG, HTTSI) separately; removing HTTSI hits frame-level visual consistency hardest, while removing MVM degrades narrative coherence faster than visual quality — which matches the design intent of separating those two failure modes.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Project page: <a href="https://dxlong2000.github.io/AARD/">dxlong2000.github.io/AARD</a>. Code repo: <a href="https://github.com/dxlong2000/AARD">github.com/dxlong2000/AARD</a>.</li>
+    </ul>
+
+    <h1 id="meta">Meta</h1>
+
+    <h2 id="fast-blt"><a href="https://arxiv.org/abs/2605.08044">Fast Byte Latent Transformer</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv:2605.08044</span>
+      <span>2026-05-08</span>
+      <span>Tokenizer-free · Diffusion · Speculative decoding · Inference</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Meta FAIR (Pagnoni, Ghosh, Zettlemoyer, Han, Iyer) with Stanford (Kallini, Potts) and University of Washington (Limisiewicz, Zettlemoyer); follow-up to BLT (Pagnoni et al., 2024) that fixes its inference cost while keeping the no-tokenizer property.</li>
+      <li>Three independent fixes are introduced — BLT-D (diffusion-trained decoder), BLT-S (self-speculative decoding), BLT-DV (diffusion + verification) — none of which require giving up byte-level granularity.</li>
+      <li>BLT&rsquo;s core trade-off restated: byte models eliminate subword tokenization fragility (multilingual, code, numerics, noise robustness) but the local decoder still emits one byte per step, so inference is memory-bandwidth-bound by repeated weight loads.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>BLT-D (BLT Diffusion) — the core contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> BLT&rsquo;s local decoder generates one byte per decoder forward pass; even with hierarchical patching, this means many decoder calls per output token equivalent, and on modern GPUs each call pays full memory-bandwidth cost for weight + KV-cache loads.</li>
+          <li><em>Mechanism.</em> Train the local decoder with two losses at once. The first is the standard next-byte autoregressive cross-entropy on a clean sequence. The second is a block-wise discrete-diffusion loss on a parallel corrupted copy: split bytes into fixed-length blocks (B ∈ {4, 8, 16}), sample a continuous t ~ U(0,1) per training example, and independently mask each byte in the block with probability t. The decoder learns to recover masked bytes given partial context. At inference, BLT-D initializes a block of [MASK] positions and iteratively unmasks multiple positions per decoder step using either confidence-based unmasking (threshold α on per-position probability) or entropy-bounded sampling (largest subset whose cumulative entropy stays below γ). The expensive encoder and global Transformer fire once per block instead of once per patch.</li>
+          <li><em>Why.</em> Mechanistically similar to BERT-style masked LM applied at byte level inside BLT&rsquo;s hierarchy, but the auxiliary diffusion loss is co-trained with next-byte prediction so the same weights also support fully autoregressive likelihoods — used by BLT-DV verification and by all likelihood-style evals. Beats pure parallel-decoding approaches that need a separate draft model and separate training.</li>
+        </ul>
+      </li>
+      <li><strong>BLT-S (BLT Self-Speculation).</strong>
+        <ul>
+          <li><em>Problem.</em> Standard speculative decoding requires training a separate draft model with matching tokenizer/vocabulary — not free, and adds deployment complexity.</li>
+          <li><em>Mechanism.</em> Repurpose BLT&rsquo;s own local decoder as the drafter. Normally the decoder halts at the next entropy-determined patch boundary; BLT-S instead lets it autoregressively generate up to k ∈ {8, 16} bytes past that boundary, conditioned on the last available latent. The full encoder + global + decoder stack then verifies the k-byte draft in a single forward pass and accepts bytes up to the first mismatch.</li>
+          <li><em>Why.</em> Under greedy decoding, output is provably <em>identical</em> to standard autoregressive BLT — no quality loss. The cost shifts from many small global model passes to a single big global model pass per accepted draft, which is what the memory-bandwidth math rewards. No additional training, no extra weights, no architectural change.</li>
+        </ul>
+      </li>
+      <li><strong>BLT-DV (Diffusion + Verification).</strong>
+        <ul>
+          <li><em>Problem.</em> One-step block diffusion is the fastest BLT-D variant but generation quality degrades sharply with fewer diffusion steps.</li>
+          <li><em>Mechanism.</em> Because BLT-D&rsquo;s weights also support autoregressive decoding (it was co-trained on next-byte prediction), the same model can draft a block via diffusion, then verify the draft with a single causal-mask forward pass, accepting bytes up to the first mismatch. No new model, no new training.</li>
+          <li><em>Why.</em> Recovers the quality lost in aggressive one-step diffusion by reusing the model itself as the verifier — the verification step bounds drift the way speculative decoding bounds draft errors.</li>
+        </ul>
+      </li>
+      <li>All variants use the BLT-1T pretraining mixture (1T tokens, public sources including a Datacomp-LM subset). 1B-param models trained for 240k steps, 3B-param models for 480k steps. Efficiency reported as decoder NFEs, encoder/global NFEs, and an estimated 16-bit memory-bandwidth figure — explicitly proxy metrics, not wall-clock.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Generation tasks: French→English and German→English translation on FLORES-101 (4-shot, SentencePiece BLEU); HumanEval (0-shot, pass@1); MBPP (3-shot, pass@1).</li>
+      <li>Likelihood benchmarks: ARC-Easy, ARC-Challenge, PIQA, HellaSwag, MMLU. BLT-D scores approach BLT&rsquo;s baseline on all five, confirming the diffusion objective does not damage autoregressive reasoning.</li>
+      <li>Reported memory-bandwidth reductions at 3B parameters:
+        <table>
+          <thead>
+            <tr><th>Variant</th><th>Estimated memory-bandwidth reduction vs. BLT</th><th>Quality posture</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>BLT-D-4 (block 4)</td><td>~50% (over half)</td><td>Nearly matches BLT on tasks</td></tr>
+            <tr><td>BLT-D-16 (block 16)</td><td><strong>87–92%</strong> (fastest configuration)</td><td>Score drops on HumanEval / MBPP</td></tr>
+            <tr><td>BLT-S (k=16)</td><td>Up to <strong>77%</strong></td><td>Identical to BLT under greedy decoding</td></tr>
+            <tr><td>BLT-DV (1-step diffusion + verify)</td><td>Up to <strong>81%</strong></td><td>Recovers quality lost by 1-step diffusion</td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>Translation tasks benefit most across all block sizes; coding tasks (HumanEval, MBPP) are the most block-size-sensitive, with BLT-D-16 trading meaningful pass@1 for max throughput.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Generation-diversity ablation: using entropy-bounded sampling with top-p, more decoder NFEs correlate positively with type-token ratio. The efficiency–diversity trade-off is therefore tunable at inference time via α and γ without retraining.</li>
+      <li>The paper is explicit that NFE-based memory-bandwidth numbers are proxy metrics; wall-clock improvement requires an optimized kernel implementation, flagged as the most important follow-up.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Authors: Julie Kallini, Artidoro Pagnoni, Tomasz Limisiewicz, Gargi Ghosh, Luke Zettlemoyer, Christopher Potts, Xiaochuang Han, Srinivasan Iyer.</li>
+      <li>Companion repo for prior BLT: <a href="https://github.com/facebookresearch/blt">github.com/facebookresearch/blt</a>.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent (Hunyuan)</h1>
+
+    <h2 id="lpo"><a href="https://arxiv.org/abs/2605.06139">Listwise Policy Optimization: Group-based RLVR as Target-Projection on the LLM Response Simplex</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv:2605.06139</span>
+      <span>2026-05-07</span>
+      <span>RLVR · Post-training · Policy gradient · Geometry</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Tencent Hunyuan team (Yun Qu, Qi Wang, Yixiu Mao, Heming Zou, Yuhang Jiang, Yingyue Li, Wutong Xu, Lizhou Cai, Weijie Liu, Clive Bai, Kai Yang, Yangkun Chen, Saiyong Yang, Xiangyang Ji).</li>
+      <li>#1 paper of the day on Hugging Face Daily Papers, May 11.</li>
+      <li>Argument: existing group-based RLVR methods (GRPO, RLOO, DAPO, GSPO, and variants) implicitly define a target distribution on a response simplex and step toward it by first-order approximation — but never write that target down. LPO writes the target down and minimizes a divergence to it explicitly.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Mechanism — Listwise Policy Optimization (LPO):</strong>
+        <ul>
+          <li><em>Problem.</em> Group-based RLVR samples a group of responses per prompt and updates the policy via group-relative advantage signals. Every recipe in this family (GRPO, RLOO, DAPO, GSPO) ends up with a slightly different update rule, and it has not been clear what they all share or what individual choices buy you. Empirically the rules differ on training stability and on response diversity — the modes that get suppressed depend on which advantage normalization you picked.</li>
+          <li><em>Mechanism.</em> Restrict the proximal RL objective from the full action space to the response simplex spanned by the sampled group. On that simplex, each existing group-based method is reinterpreted as projecting the policy toward an <em>implicit</em> target distribution via a first-order Taylor expansion of the proximal objective. LPO instead makes the target distribution explicit and projects the policy onto it via exact divergence minimization — the divergence is a hyperparameter and can be KL, reverse KL, χ², or any well-behaved choice, each with different structural properties. The implicit-target view is the unifying lens; explicit divergence minimization is the new algorithm.</li>
+          <li><em>Why.</em> Because the target is now explicit, LPO inherits two properties the implicit methods do not provably have: <strong>monotonic improvement on the listwise objective</strong> and <strong>bounded, zero-sum, self-correcting projection gradients</strong>. Bounded gradients explain why training is more stable; zero-sum normalization explains why response diversity is preserved (rewards do not collapse onto a single mode); self-correcting projection means a bad early step gets undone in the next projection rather than compounding. Beats GRPO and family on matched targets without changing the reward model or the sampling budget — the gain is purely from making the implicit target concrete and minimizing the right divergence.</li>
+        </ul>
+      </li>
+      <li>Framework is divergence-agnostic: each choice of divergence yields a distinct member of the LPO family with different bias/variance characteristics. This is the axis the paper trades off against the implicit-target methods on.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Evaluated across diverse reasoning tasks and multiple LLM backbones (specific model families enumerated in the paper).</li>
+      <li>LPO consistently improves training performance over typical policy-gradient baselines <em>under matched targets</em> — i.e., when the implicit target of each baseline is reproduced as LPO&rsquo;s explicit target. The improvement is attributable to the projection step, not to a different reward signal or different sampling.</li>
+      <li>Optimization stability preserved: bounded zero-sum projection gradients suppress the training spikes that GRPO and DAPO trade off against on long-horizon tasks.</li>
+      <li>Response diversity preserved: the listwise projection does not collapse the policy onto a single high-reward mode the way some advantage-normalization schemes do empirically.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Ablations cover divergence choice — distinct divergences yield distinct structural properties on the projection step (paper reports relative differences on stability vs. diversity vs. fit).</li>
+      <li>Matched-target ablation isolates LPO&rsquo;s benefit from the choice of advantage signal: under the same target distribution, exact divergence minimization beats first-order approximation across backbones.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
