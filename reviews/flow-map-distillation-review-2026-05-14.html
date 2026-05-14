@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Flow Map Distillation Review &mdash; May 14, 2026 | Auto Lit Review</title>
+<meta name="description" content="NVIDIA + NUS Show Lab introduce AnyFlow (arXiv:2605.13724), the first any-step video diffusion distillation framework based on flow maps, with Flow Map Backward Simulation for on-policy distillation that preserves test-time scaling from 1.3B to 14B." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#x25D0;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">May 14, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#nvidia" class="toc-h1">NVIDIA</a>
+          <ul>
+            <li><a href="#anyflow" class="toc-h2">AnyFlow</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; May 14, 2026</div>
+    <h1 class="page-title">Flow Map Distillation</h1>
+    <div class="page-meta">1 paper &middot; 1 lab &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>One Tier 2 frontier-lab paper qualified after dedup in the 36-hour window: <strong>AnyFlow</strong> from NVIDIA Research and NUS Show Lab (arXiv:2605.13724, submitted Wed, 13 May 2026 16:06 UTC). The paper introduces the first any-step video diffusion distillation framework based on flow maps, replacing the consistency-distillation objective with flow-map transition learning over arbitrary time intervals and adding an on-policy distillation procedure called Flow Map Backward Simulation. No Tier 1 flagship launches and no other qualifying Tier 2/3 frontier-lab papers surfaced from the May 12&ndash;14 window after dedup against prior reviews; the May 11 Qwen-Image-2.0 launch and the May 12 A&sup2;RD / Fast-BLT / LPO papers are covered upstream.</p>
+
+      <h3>Competitiveness</h3>
+      <p>The relevant axis is open-weights video diffusion distillation under any-step inference. AnyFlow targets the regime where consistency-distilled models (CM, sCM, rCM, Self-Forcing) sit on top of strong flow-matching teachers such as <code>Wan2.1-T2V-1.3B</code> and <code>Wan2.1-T2V-14B</code>, and a parallel line of community-distilled checkpoints (Krea-Realtime-Wan2.1-14B, LightX2V-Wan2.1-14B-CausVid, FastVideo-CausalWan2.2-A14B-Preview). On the bidirectional <code>Wan2.1-T2V-14B</code> backbone, AnyFlow matches or surpasses rCM in the few-step regime and continues to improve quality as more sampling steps are allocated &mdash; the test-time scaling axis where consistency-distilled models degrade. On the causal <code>FAR-Wan2.1-14B</code> backbone, AnyFlow-FAR at 4 NFEs reaches I2V quality comparable to the undistilled <code>Wan2.1-I2V-14B</code> teacher at 50&times;2 NFEs, and beats the three community 14B consistency-distilled baselines on T2V. The closed-source frontier on video generation is <code>Veo 3</code> (Google DeepMind), <code>Sora 2</code> (OpenAI), and <code>Kling 2.5</code> (Kuaishou); AnyFlow does not benchmark against these &mdash; the comparison is within the open Wan-family ecosystem and against prior distillation paradigms.</p>
+
+      <h3>New frontier releases</h3>
+      <p>No new flagship model launches in the past 36 hours. The latest LLM-side flagships remain GPT-5.5 (April 23), Claude Opus 4.7 (April 16), DeepSeek-V4 (April 24), and Grok 4.3 (May 6); the latest image-generation flagship is Qwen-Image-2.0 (May 11) &mdash; all covered upstream.</p>
+    </section>
+
+    <h1 id="nvidia">NVIDIA</h1>
+
+    <h2 id="anyflow"><a href="https://arxiv.org/abs/2605.13724">AnyFlow: Any-Step Video Diffusion Model with On-Policy Flow Map Distillation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv:2605.13724</span>
+      <span>2026-05-13</span>
+      <span>Video diffusion &middot; Distillation &middot; Flow matching &middot; On-policy</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Yuchao Gu, Guian Fang, Yuxin Jiang, Weijia Mao, Song Han, Han Cai, Mike Zheng Shou. Affiliations: <strong>NVIDIA</strong> (Yuchao Gu, Song Han, Han Cai), <strong>NUS Show Lab</strong> (Guian Fang, Yuxin Jiang, Weijia Mao, Mike Zheng Shou), <strong>MIT</strong> (Song Han). Corresponding authors: Han Cai (NVIDIA), Mike Zheng Shou (NUS). cs.CV (cross-listed cs.AI); v1 submitted Wed, 13 May 2026 16:06:34 UTC; 31.8 MB v1 with embedded comparison videos.</li>
+      <li>Code at <a href="https://github.com/NVlabs/AnyFlow">github.com/NVlabs/AnyFlow</a> under Apache 2.0; model collection at <a href="https://huggingface.co/collections/nvidia/anyflow">huggingface.co/collections/nvidia/anyflow</a>; project page <a href="https://nvlabs.github.io/AnyFlow/">nvlabs.github.io/AnyFlow</a>; Gradio demo provided. Four checkpoints released: <code>AnyFlow-Wan2.1-T2V-1.3B-Diffusers</code>, <code>AnyFlow-Wan2.1-T2V-14B-Diffusers</code>, <code>AnyFlow-FAR-Wan2.1-1.3B-Diffusers</code>, <code>AnyFlow-FAR-Wan2.1-14B-Diffusers</code>.</li>
+      <li>Two architectures supported in one distillation recipe: <em>bidirectional</em> video diffusion (Wan2.1-T2V backbone) and <em>causal</em> video diffusion (FAR-Wan2.1 backbone, where FAR is the authors' prior next-frame-prediction work, arXiv:2503.19325). On the causal backbone the same checkpoint handles T2V, I2V, and V2V.</li>
+      <li>Two named contributions in the paper: <strong>AnyFlow</strong> itself &mdash; the flow-map distillation framework &mdash; and <strong>Flow Map Backward Simulation</strong>, the on-policy distillation procedure that makes flow-map distillation tractable at video scale. Both are explained in Methodology below.</li>
+    </ul>
+
+    <figure>
+      <img src="https://nvlabs.github.io/AnyFlow/assets/figures/paradigm_comparison.png" alt="Consistency distillation vs. flow map distillation paradigm comparison" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the project page, <a href="https://nvlabs.github.io/AnyFlow/">nvlabs.github.io/AnyFlow</a>). Consistency distillation (top) replaces the original Euler sampling trajectory with a consistency-sampling trajectory and applies a truncated gradient. Flow map distillation (bottom) preserves the Euler trajectory and decomposes it into shortcut segments for on-policy distillation.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Mechanism &mdash; AnyFlow: flow-map distillation in place of consistency distillation.</strong>
+        <ul>
+          <li><em>Problem.</em> Consistency-distilled few-step video models (CM, sCM, rCM, Self-Forcing on top of flow-matching teachers like Wan2.1-T2V) degrade as more sampling steps are added at inference; throwing more compute at them stops helping past 4&ndash;8 NFEs. The cause is that consistency distillation forces the student to learn the endpoint map <em>z<sub>t</sub> &rarr; z<sub>0</sub></em>, so at inference the model can only re-traverse a consistency-sampling trajectory rather than the original probability-flow ODE trajectory, which is what gives flow matching its smooth test-time scaling.</li>
+          <li><em>Mechanism.</em> AnyFlow shifts the distillation target from the endpoint consistency mapping (<em>z<sub>t</sub> &rarr; z<sub>0</sub></em>) to an <strong>arbitrary two-time flow-map transition</strong> (<em>z<sub>t</sub> &rarr; z<sub>r</sub></em>) for any pair of timesteps <em>t &gt; r &ge; 0</em>. A forward-training stage initializes the student to predict <em>z<sub>r</sub></em> from <em>z<sub>t</sub></em> at arbitrary <em>(t, r)</em> pairs sampled across the trajectory. At inference, the student can be run for any number of Euler steps along the original ODE schedule by composing flow-map transitions: 1-step (z<sub>1</sub>&rarr;z<sub>0</sub>), 4-step, 16-step, 32-step &mdash; the same checkpoint serves all budgets.</li>
+          <li><em>Why.</em> Because the student now models the <em>full</em> instantaneous flow field over the ODE trajectory, not just the endpoint shortcut, the test-time scaling property of flow matching is preserved: more sampling steps continue to reduce discretization error rather than fighting a learned consistency-sampling trajectory. It beats consistency distillation on the axis consistency distillation cannot improve on &mdash; the &ge;16-NFE regime &mdash; while matching it in the 4-NFE regime. It also makes downstream fine-tuning tractable: because the flow field is preserved, the distilled checkpoint can be continued-trained on a specialized dataset without losing few-step sampling (see the I2V identity-preservation and trajectory-accuracy improvements on the downstream pipeline in Figure 3).</li>
+        </ul>
+      </li>
+      <li><strong>Mechanism &mdash; Flow Map Backward Simulation for on-policy distillation.</strong>
+        <ul>
+          <li><em>Problem.</em> Forward-training a flow-map student on offline <em>(t, r, z<sub>t</sub>, z<sub>r</sub>)</em> tuples sampled from the teacher gives an off-policy signal: at inference the student rolls out its own trajectory and accumulates errors the teacher never showed it &mdash; discretization error in few-step sampling and exposure bias in causal generation. Naive on-policy distillation would require unrolling the full Euler trajectory through the student and backpropagating through every step, which is prohibitively expensive at 1.3B&ndash;14B video scale.</li>
+          <li><em>Mechanism.</em> Flow Map Backward Simulation decomposes a full Euler rollout into <strong>shortcut flow-map transitions</strong>. Instead of running every intermediate Euler step, the student takes large flow-map jumps along the trajectory; each jump is a single forward call but covers many ODE steps. The procedure is on-policy &mdash; the rollout is the student's own trajectory &mdash; but the per-rollout cost is bounded by the number of shortcut segments, not the number of Euler steps. The result is a backward simulation that exposes the student to its own discretization/exposure errors and lets the flow-map objective correct them with tractable compute.</li>
+          <li><em>Why.</em> Versus consistency distillation's on-policy phase (which replaces the Euler trajectory with a consistency-sampling trajectory and uses a truncated gradient), Flow Map Backward Simulation <em>preserves</em> the Euler trajectory &mdash; that is exactly what keeps the test-time scaling property. The shortcut decomposition is what makes it cheap enough to apply at 14B parameters. The procedure is the bridge between &ldquo;train a flow-map student&rdquo; (which is just a different loss) and &ldquo;train a flow-map student that actually exceeds consistency baselines at video scale&rdquo; (which requires on-policy supervision under a tractable compute budget).</li>
+        </ul>
+      </li>
+      <li>Training pipeline: (1) forward-training initialization to learn <em>z<sub>t</sub> &rarr; z<sub>r</sub></em> across the trajectory, then (2) Flow Map Backward Simulation as the on-policy distillation phase. Implementation is on top of the <a href="https://github.com/huggingface/diffusers">diffusers</a> codebase with components from FAR (causal next-frame prediction) and Self-Forcing (causal consistency-distillation baseline).</li>
+      <li>Training scale validated from 1.3B to 14B parameters across both bidirectional and causal architectures.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li><strong>Test-time scaling vs. flow-matching teacher.</strong> AnyFlow uniformly lifts performance across the entire sampling trajectory, improving over the flow-matching teacher at every step budget. The largest gains are in the few-step regime, but unlike consistency baselines AnyFlow continues to scale upward as NFEs grow.</li>
+      <li><strong>Test-time scaling vs. consistency distillation (rCM).</strong> AnyFlow matches or surpasses rCM at 4 NFEs and preserves the flow-matching test-time scaling behavior, where rCM stagnates or degrades. This is the headline behavioral claim of the paper.</li>
+      <li><strong>Causal 14B T2V.</strong> AnyFlow-FAR-Wan2.1-14B at 4 NFEs is reported by the project page to achieve better dynamics and overall quality than the three community causal-distillation baselines on the same backbone family: Krea-Realtime-Wan2.1-14B (4 NFEs), LightX2V-Wan2.1-14B-CausVid (9 NFEs), FastVideo-CausalWan2.2-A14B-Preview (8 NFEs). The qualitative T2V comparison gallery includes scenes with global camera motion (Eiffel Tower aerial), human-body articulation (male sprinter), and high-frequency dynamics (gameplay sequences).</li>
+      <li><strong>Causal 14B I2V.</strong> Within the same checkpoint, AnyFlow-FAR-Wan2.1-14B supports I2V at 4 NFEs with quality comparable to the undistilled Wan2.1-I2V-14B teacher at 50&times;2 NFEs &mdash; roughly a 25&times; reduction in sampling cost at parity.</li>
+      <li><strong>Causal 14B V2V.</strong> Same checkpoint also supports V2V at 4 NFEs &mdash; one model, three tasks (T2V/I2V/V2V), which is what the &ldquo;multiple tasks&rdquo; claim in the GitHub overview refers to.</li>
+      <li><strong>Bidirectional 14B T2V.</strong> AnyFlow-Wan2.1-T2V-14B at 4 NFEs vs. rCM-Wan2.1-T2V-14B at 4 NFEs &mdash; qualitative comparisons show better motion coherence and identity stability on the gameplay, suit-and-tie portrait, astronaut, tropical-fish, and horse-riding prompts.</li>
+      <li>Evaluation harness is VBench (T2V + I2V); training data uses the VidProm corpus (a public dummy subset, <code>dc-ai/vidprom_dummy</code>, is released alongside the code for reproducibility).</li>
+      <li>The arXiv report does not publish a head-to-head table of VBench scores in the abstract; the quantitative comparison is rendered in the paper's Figure 2 (test-time scaling curves). Specific VBench numbers should be read from the PDF itself; this review preserves the project-page claims verbatim and does not invent score values.</li>
+    </ul>
+
+    <figure>
+      <img src="https://nvlabs.github.io/AnyFlow/assets/figures/teaser_test_scale.png" alt="AnyFlow test-time scaling curves vs. consistency baselines" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the project page, <a href="https://nvlabs.github.io/AnyFlow/">nvlabs.github.io/AnyFlow</a>). Quantitative test-time scaling. AnyFlow lifts the flow-matching teacher curve across all step budgets and preserves the upward scaling shape that consistency-distilled baselines lose.</figcaption>
+    </figure>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Distillation target.</strong> Replacing the endpoint consistency mapping <em>(z<sub>t</sub> &rarr; z<sub>0</sub>)</em> with the arbitrary two-time flow-map transition <em>(z<sub>t</sub> &rarr; z<sub>r</sub>)</em> is the paper's single biggest design lever &mdash; the flow-map student is what restores the upward test-time scaling shape that consistency students lose. The paper frames this as the central paradigm shift; the project page summarizes it in the Figure 1 paradigm-comparison diagram.</li>
+      <li><strong>On-policy vs. off-policy.</strong> Pure forward-training (off-policy) is the initialization; Flow Map Backward Simulation is the on-policy refinement. The paper attributes the closing of the few-step quality gap with rCM to the on-policy phase, with the rationale that without on-policy exposure the student does not see its own discretization / exposure errors.</li>
+      <li><strong>Shortcut decomposition.</strong> Decomposing the full Euler rollout into shortcut flow-map transitions is what keeps the on-policy phase tractable at 14B. Without it, on-policy flow-map distillation would require backpropagating through every Euler step.</li>
+      <li><strong>Downstream continued training.</strong> The flow map formulation preserves a fine-grained instantaneous flow field, so the distilled checkpoint can be continued-trained on a specialized I2V dataset while keeping 4-NFE sampling. Reported gains: identity preservation (e.g. robot-arm type stays fixed across frames) and trajectory accuracy (e.g. moving pedestrians follow physical paths). This is the property that consistency-distilled checkpoints lose &mdash; once collapsed to endpoint mapping, they cannot easily be fine-tuned without re-distilling.</li>
+    </ul>
+
+    <figure>
+      <img src="https://nvlabs.github.io/AnyFlow/assets/figures/downstream_pipeline.png" alt="Pipeline for continued training on a downstream dataset after AnyFlow distillation" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 3 (from the project page, <a href="https://nvlabs.github.io/AnyFlow/">nvlabs.github.io/AnyFlow</a>). Continued-training pipeline. The AnyFlow-distilled checkpoint is fine-tuned on a specialized I2V dataset; few-step sampling is retained while identity preservation and trajectory accuracy improve.</figcaption>
+    </figure>
+
+    <h3>Other</h3>
+    <ul>
+      <li>License: Apache 2.0 for code; HuggingFace model collection under the <code>nvidia</code> org.</li>
+      <li>Builds directly on three prior works: <a href="https://github.com/huggingface/diffusers">diffusers</a> (codebase), <a href="https://github.com/showlab/FAR">FAR</a> (causal next-frame prediction backbone, also from Show Lab; arXiv:2503.19325), and <a href="https://github.com/guandeh17/Self-Forcing">Self-Forcing</a> (causal consistency-distillation baseline). Also references TiM.</li>
+      <li>Backbones distilled in this paper: <code>Wan2.1-T2V-1.3B</code>, <code>Wan2.1-T2V-14B</code>, plus FAR-Wan2.1 variants. Wan is Alibaba's open-source video diffusion family; AnyFlow is not a new backbone but a new distillation recipe applied to existing strong teachers.</li>
+      <li>Limitation noted by the abstract framing: the paper validates the flow-map paradigm on video diffusion but does not claim generality to other diffusion-distillation regimes (image diffusion, audio diffusion, molecular diffusion); whether Flow Map Backward Simulation transfers cleanly to those modalities is an open question.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
