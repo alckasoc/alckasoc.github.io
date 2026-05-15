@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Geopolitics &amp; Codex Sandboxing Review &mdash; May 15, 2026 | Auto Lit Review</title>
+<meta name="description" content="Two Tier 3 frontier-lab posts on May 14, 2026: Anthropic's '2028: Two scenarios for global AI leadership' (US-China compute and distillation policy) and OpenAI's 'Building a safe, effective sandbox to enable Codex on Windows' (CodexSandboxOffline/Online split, DPAPI, firewall, four-layer execution)." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#x25D0;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">May 15, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#anthropic" class="toc-h1">Anthropic</a>
+          <ul>
+            <li><a href="#two-scenarios-2028" class="toc-h2">2028: Two scenarios</a></li>
+          </ul>
+        </li>
+        <li><a href="#openai" class="toc-h1">OpenAI</a>
+          <ul>
+            <li><a href="#codex-windows-sandbox" class="toc-h2">Codex Windows sandbox</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; May 15, 2026</div>
+    <h1 class="page-title">AI Geopolitics &amp; Codex Sandboxing</h1>
+    <div class="page-meta">2 posts &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>Two Tier 3 frontier-lab posts qualified after dedup in the 36-hour window (May 14&ndash;15, 2026), both published on May 14. Anthropic released <strong>&ldquo;2028: Two scenarios for global AI leadership&rdquo;</strong>, a policy essay laying out the firm&rsquo;s US-China AI competition framework around four fronts (intelligence, domestic adoption, global distribution, resilience) and two compute-policy outcome scenarios for 2028. OpenAI published <strong>&ldquo;Building a safe, effective sandbox to enable Codex on Windows&rdquo;</strong>, an engineering note on the Windows-native Codex sandbox built around two dedicated local users (<code>CodexSandboxOffline</code>, <code>CodexSandboxOnline</code>), DPAPI-protected credentials, firewall checks, a <code>codex-command-runner.exe</code> handoff, and a four-layer execution path. No Tier 1 flagship launches and no Tier 2 frontier-lab research papers cleared dedup in the window; arXiv submissions in the 2605.14xxx&ndash;2605.15xxx range have no frontier-lab affiliations and the May 13 NVIDIA AnyFlow report is already covered upstream.</p>
+
+      <h3>Competitiveness</h3>
+      <p>Neither artifact is a model release, so the &ldquo;competitiveness&rdquo; axis here is governance-and-engineering rather than benchmark capability. On the policy side, Anthropic&rsquo;s essay is the most explicit US-frontier-lab statement to date in favour of tightening compute export controls and criminalizing large-scale distillation attacks against US frontier models; it cites the CAISI September 2025 finding that <code>DeepSeek-R1-0528</code> complied with 94% of overtly malicious requests under a common jailbreak versus 8% for US reference models, and the April 2026 independent assessment of <code>Moonshot Kimi K2.5</code> showing higher CBRN-refusal failure rates than US frontiers. The contrast with the parallel posture from Z.ai, MiniMax, and DeepSeek &mdash; which have lobbied through Chinese state media against US export controls &mdash; defines the policy axis of the AI-leadership competition that the &ldquo;Mythos Preview wake-up call&rdquo; section reframes as urgent. On the engineering side, OpenAI&rsquo;s Codex Windows sandbox is positioned against Anthropic&rsquo;s Claude Code sandboxing, GitHub Copilot Workspace, and Cursor; the May 14 post is a direct continuation of the April 17, 2026 OpenAI Agents SDK native-sandboxing release and the March 5, 2026 native Windows Codex launch, narrowing the gap between OpenAI&rsquo;s and Anthropic&rsquo;s enterprise-governance stories on local coding agents.</p>
+
+      <h3>New frontier releases</h3>
+      <p>No new flagship model launches in the past 36 hours. The latest LLM-side flagships remain <code>GPT-5.5</code> (Apr 23, Intelligence Index 60.24 at xhigh), <code>Claude Opus 4.7</code> (Apr 16, 57.28), <code>DeepSeek-V4 Pro</code> (Apr 24, 51.51), <code>Kimi K2.6</code> (Apr 20, 53.90), <code>Grok 4.3</code> (May 6); the latest image-generation flagship is <code>Qwen-Image-2.0</code> (May 11); the latest video-distillation release is <code>AnyFlow-Wan2.1-T2V-14B</code> (NVIDIA / NUS Show Lab, May 13). All covered upstream.</p>
+    </section>
+
+    <h1 id="anthropic">Anthropic</h1>
+
+    <h2 id="two-scenarios-2028"><a href="https://www.anthropic.com/research/2028-ai-leadership">2028: Two scenarios for global AI leadership</a></h2>
+    <div class="paper-meta">
+      <span>Tier 3 &middot; Policy Essay</span>
+      <span>anthropic.com/research</span>
+      <span>2026-05-14</span>
+      <span>AI policy &middot; Export controls &middot; Distillation attacks &middot; US-China competition</span>
+    </div>
+
+    <ul>
+      <li>Anthropic Policy team essay framing the US-China AI competition as a four-front contest over (1) <strong>intelligence</strong> &mdash; which countries build the most capable models; (2) <strong>domestic adoption</strong> &mdash; how effectively a country integrates AI across commercial and public sectors; (3) <strong>global distribution</strong> &mdash; whose hardware and models the world economy runs on; (4) <strong>resilience</strong> &mdash; sustaining political stability through the economic transition. The essay explicitly names intelligence as the most consequential of the four because it drives the other three, but argues that intelligence alone is insufficient if the CCP integrates near-frontier AI faster.</li>
+      <li><strong>Two named 2028 scenarios as the rhetorical structure.</strong> The essay&rsquo;s &ldquo;contributions&rdquo; are the two outcome states it asks readers to choose between, each of which is reverse-engineered from a specific policy posture.
+        <ul>
+          <li><em>Scenario 1 &mdash; commanding democratic lead.</em> US frontier models are 12&ndash;24 months ahead on intelligence by 2028; PRC labs do not reach Mythos-Preview-class capability until 2029&ndash;2030; democracies set the global AI norms. The policy posture that produces this scenario: tightened compute export controls (chips and SME), enforcement against smuggling and offshore-data-center access, criminalization of distillation attacks, and active export of the US AI technology stack.</li>
+          <li><em>Scenario 2 &mdash; CCP at near-parity.</em> PRC labs sit a few months behind US frontiers, sustained by ongoing distillation attacks, smuggled and remotely-accessed US compute, weak SME export enforcement, and a loosening of controls. Huawei and Alibaba data centers fill the Global South on second-tier chips and &ldquo;good-enough&rdquo; PRC near-frontier models; CCP cyber operators close the AI-augmented offensive cyber gap.</li>
+        </ul>
+      </li>
+      <li><strong>Compute as the single binding input.</strong> The essay&rsquo;s core analytical claim is that compute is the only AI input where democracies hold a structural lead. It cites an analysis of Huawei vs. NVIDIA roadmaps projecting Huawei at 4% of NVIDIA&rsquo;s aggregate processing performance in 2026 and 2% in 2027; a study estimate that closing remaining loopholes would give the US roughly 11&times; China&rsquo;s sector compute; and the structural inability of China&rsquo;s chipmakers to manufacture EUV-class chips or high-bandwidth memory at scale. Talent, data, and algorithms are positioned as compute-multipliers, not compute-substitutes &mdash; the essay argues algorithmic progress is itself a function of compute because experiments-per-day scales with compute.</li>
+      <li><strong>Two specific PRC catch-up channels named.</strong> (1) <em>Illicit/evasive compute access</em>: smuggling export-controlled chips into China (referenced via the March 2026 prosecution of a Supermicro co-founder over $2.5B in diverted servers) and remote use of US chips in Southeast Asian data centers by Alibaba and ByteDance (US export law covers sale, not remote access). (2) <em>Illicit model access</em>: large-scale distillation attacks creating thousands of fraudulent accounts to harvest US frontier-model outputs and replicate capabilities; this is described as &ldquo;systematic industrial espionage,&rdquo; with public condemnations from OpenAI, Google, Anthropic, and the Frontier Model Forum cited.</li>
+      <li><strong>Safety-evaluation contrast as evidence of misalignment risk.</strong> Cites the &ldquo;State of AI Safety in China 2025&rdquo; finding that only 3 of 13 top Chinese AI labs published any safety-evaluation results and none disclosed CBRN evaluations; CAISI&rsquo;s September 2025 finding that <code>DeepSeek-R1-0528</code> complied with 94% of overtly malicious requests under a common jailbreak versus 8% for US reference models; and an April 2026 independent <a href="https://arxiv.org/html/2604.03121v1">arXiv assessment</a> of <code>Moonshot Kimi K2.5</code> showing far higher CBRN-refusal failure rates than US frontiers. The essay argues open-weights releases compound the problem because post-hoc safeguards can be removed.</li>
+      <li><strong>&ldquo;Mythos Preview wake-up call.&rdquo;</strong> The essay anchors policy urgency on Claude Mythos Preview &mdash; the gated April 2026 release under Project Glasswing &mdash; citing that Firefox fixed more security bugs with Mythos Preview access in one month than in all of 2025 (~20&times; its monthly average), and quoting a PRC cybersecurity analyst describing China as &ldquo;sharpening swords while the other side has mounted a Gatling gun.&rdquo; The argument: capability acceleration is now compounding faster than policy, so the window to lock in a 12&ndash;24 month lead is finite.</li>
+      <li><strong>Three concrete policy asks.</strong> (1) Close loopholes &mdash; smuggled chips, foreign-data-center remote access, and SME (Semiconductor Manufacturing Equipment) controls, with explicit reference to the FY2027 BIS enforcement budget. (2) Defend innovations &mdash; legislative clarification that distillation attacks are illegal, threat-intel sharing between US labs and with USG. (3) Champion American AI export &mdash; continued promotion of the US AI technology stack abroad to deny CCP foothold in Global South distribution.</li>
+      <li>The essay also flags &ldquo;resilience&rdquo; (sustaining political stability through the economic transition) as the fourth front, but does not develop it in this piece, signaling a likely follow-up.</li>
+      <li>Authorship: Anthropic Policy team (no individual byline). The essay sits inside the broader Anthropic narrative previously developed in Dario Amodei&rsquo;s <em>Machines of Loving Grace</em> and <em>The Adolescence of Technology</em>, both of which it cites for the &ldquo;country of geniuses in a datacenter&rdquo; framing of transformative AI. Footnote 1 references a January 2026 bipartisan House bill (369&ndash;22) to close the remote-access loophole, pending Senate action &mdash; the legislative hook the essay is aligned with.</li>
+    </ul>
+
+    <h1 id="openai">OpenAI</h1>
+
+    <h2 id="codex-windows-sandbox"><a href="https://openai.com/index/building-codex-windows-sandbox/">Building a safe, effective sandbox to enable Codex on Windows</a></h2>
+    <div class="paper-meta">
+      <span>Tier 3 &middot; Engineering Note</span>
+      <span>openai.com/index</span>
+      <span>2026-05-14</span>
+      <span>Coding agent &middot; Sandboxing &middot; Windows security &middot; OS isolation</span>
+    </div>
+
+    <ul>
+      <li>OpenAI engineering note on the Windows-native Codex sandbox shipped after the <a href="https://winbuzzer.com/2026/03/05/openai-codex-app-windows-native-sandbox-xcxwbn/">March 5, 2026 native-Windows Codex launch</a> and following the <a href="https://winbuzzer.com/2026/04/17/openai-adds-sandboxing-agents-sdk-native-isolation-xcxwbn/">April 17, 2026 Agents SDK native-sandboxing release</a>. Codex CLI is at version 0.130.0 as of April 14, 2026. The agent runs locally with three constraints by design: write access scoped to the active workspace; outbound network blocked by default with an explicit allow-list; agent must request approval to act outside those boundaries.</li>
+      <li><strong>Mechanism &mdash; why AppContainer and Windows Sandbox were both rejected.</strong>
+        <ul>
+          <li><em>Problem.</em> Codex needs to invoke arbitrary developer tools &mdash; shells, Git, Python, package managers, build systems, test runners &mdash; against the user&rsquo;s real working tree, with no elevation prompt and no host-guest file bridging. The set of binaries it will spawn is open-ended, and those binaries can themselves spawn children that ignore environment overrides.</li>
+          <li><em>Mechanism.</em> AppContainer is a capability-based isolation model that requires every accessible resource to be declared up-front in the app manifest. Windows Sandbox is a disposable lightweight VM with a strong isolation boundary but a separate desktop &mdash; anything done inside it disappears at session end. Both are wrong shape: AppContainer because Codex&rsquo;s working set is not known in advance, Windows Sandbox because Codex must act on the user&rsquo;s actual checkout.</li>
+          <li><em>Why.</em> The right primitive has to (a) sit inside the user&rsquo;s real session and act on the real filesystem; (b) survive child-process trees that test runners and build tools spawn; (c) enforce a hard network boundary at the OS level rather than via process-side environment variables (proxy settings, denybin paths) that processes can route around. That ruled out the two off-the-shelf Windows sandboxes and forced a from-scratch design.</li>
+        </ul>
+      </li>
+      <li><strong>Mechanism &mdash; <code>CodexSandboxOffline</code> / <code>CodexSandboxOnline</code> two-user split.</strong>
+        <ul>
+          <li><em>Problem.</em> Earlier iterations of Codex on Windows used a synthetic sandbox-write SID, file ACLs, and a write-restricted token to keep writes inside the workspace. That blocked filesystem escapes (writes to <code>.git</code>, <code>.codex</code>, <code>.agents</code> were rejected) but left a network gap: a child process spawned by the agent could open sockets directly and exfiltrate or pull untrusted code, regardless of any environment-level proxy or denybin configuration.</li>
+          <li><em>Mechanism.</em> The current design provisions two dedicated local Windows users, <code>CodexSandboxOffline</code> (default) and <code>CodexSandboxOnline</code> (only when the user explicitly authorizes broader connectivity). Outbound network access is cut at the OS level for the offline identity via firewall rules &mdash; not at the application layer &mdash; so a child process cannot escape by opening its own socket. Credentials for the two identities are DPAPI-protected. Before each command handoff, a setup executable creates the sandbox users if needed and checks firewall state.</li>
+          <li><em>Why.</em> Pinning the boundary to a local Windows account, with firewall rules attached to that account, makes the network boundary follow the command tree rather than the first executable. Package managers, scripts, and test runners can fork as much as they like; every child inherits the offline identity and thus inherits the firewall block. The earlier proxy/denybin approach was application-layer; the user-account-plus-firewall approach is OS-level, which is the standard against which a process running a build tool with unknown subprocesses is the threat model.</li>
+        </ul>
+      </li>
+      <li><strong>Mechanism &mdash; <code>codex-command-runner.exe</code> and the four-layer execution path.</strong>
+        <ul>
+          <li><em>Problem.</em> Even with the right sandbox identity, the host Codex agent and the sandboxed child process need to exchange commands and results without either (a) leaking host credentials into the sandbox or (b) letting the sandbox escalate back into the host.</li>
+          <li><em>Mechanism.</em> Commands flow through a four-layer execution path: the host Codex process &rarr; an intermediary that authenticates with DPAPI-protected credentials &rarr; <code>codex-command-runner.exe</code>, which performs the firewall and identity check &rarr; the final child process running as the appropriate sandbox user. Each layer enforces a different check (credential, firewall state, write-restricted token, command-tree identity) before the child binary is spawned.</li>
+          <li><em>Why.</em> Defense-in-depth: a bypass at any one layer fails the next. A compromised child process running as <code>CodexSandboxOffline</code> still cannot open outbound sockets (firewall layer). A subverted runner binary still cannot read host credentials (DPAPI layer). The pipeline is what lets OpenAI ship the agent unelevated on a normal developer PC and still claim that &ldquo;Codex can write inside the active workspace, read broadly across the system, and operate offline-by-default unless the user explicitly allows more connectivity.&rdquo;</li>
+        </ul>
+      </li>
+      <li>The post positions Codex against three competitors on the local-agent governance axis: <a href="https://www.anthropic.com/news/claude-opus-4-7">Anthropic Claude Code</a>, GitHub Copilot Workspace, and Cursor. The argument is that enterprise buyers are increasingly judging coding agents on sandboxing, approval rules, and centralized policy controls &mdash; not just autocomplete or code-generation benchmarks &mdash; and the Windows-native sandbox closes the largest remaining gap in OpenAI&rsquo;s enterprise governance story.</li>
+      <li>Two operational benchmarks set in the post for the new design: keep <code>CodexSandboxOffline</code> cut off from outbound traffic in production while Git, Python, package managers, and build tools still complete daily-development tasks fast enough that developers don&rsquo;t disable the sandbox; and integrate cleanly with the wider Codex Security stack (threat modeling, isolated validation, patch proposals, dependency-risk analysis) that OpenAI is building alongside the agent.</li>
+      <li>No new model weights, no API changes, no benchmark numbers in this post &mdash; it is a security-architecture explanation aimed at enterprise administrators. The mechanism details (two-user split, DPAPI, firewall, four-layer execution) are the substantive content; the rest of the post is product framing.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
