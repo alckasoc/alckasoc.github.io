@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Multimodal Foundations &amp; Context Optimization Review — May 16, 2026 | Auto Lit Review</title>
+<meta name="description" content="Three Tier 2 frontier-lab papers (Qwen, ByteDance Seed, Google DeepMind) plus one Tier 3 OpenAI engineering note: a high-compression text-legible VAE, a long-context VLM training recipe, beam-search context optimization with external information seeking, and the Codex mobile relay." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">May 16, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#alibaba" class="toc-h1">Alibaba (Qwen)</a>
+          <ul>
+            <li><a href="#qwen-image-vae-2-0" class="toc-h2">Qwen-Image-VAE-2.0 Technical Report</a></li>
+          </ul>
+        </li>
+        <li><a href="#bytedance" class="toc-h1">ByteDance (Seed)</a>
+          <ul>
+            <li><a href="#mmprolong" class="toc-h2">MMProLong: Long-Context VLM Continued Pre-training</a></li>
+          </ul>
+        </li>
+        <li><a href="#deepmind" class="toc-h1">Google DeepMind</a>
+          <ul>
+            <li><a href="#context-training-ais" class="toc-h2">Context Training with Active Information Seeking</a></li>
+          </ul>
+        </li>
+        <li><a href="#openai" class="toc-h1">OpenAI</a>
+          <ul>
+            <li><a href="#codex-mobile-app" class="toc-h2">Introducing the Codex app</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review · May 16, 2026</div>
+    <h1 class="page-title">Multimodal Foundations &amp; Context Optimization</h1>
+    <div class="page-meta">4 papers · 4 labs · auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>No flagship model launch surfaced inside the 36-hour window (Google&rsquo;s I/O 2026 keynote and the rumoured <code>Gemini 3.2 Flash</code> drop are pencilled for May 19, just outside this batch). The page covers three Tier 2 frontier-lab research papers that landed on Hugging Face Daily Papers between May 13&ndash;14, plus one Tier 3 OpenAI engineering note from May 14. <strong>Qwen-Image-VAE-2.0</strong> from Alibaba pushes high-compression image VAEs to f32 with text-legible reconstructions and an attention-free, asymmetric encoder-decoder. <strong>MMProLong</strong> from ByteDance Seed is a 5B-token long-context continued-pre-training recipe that takes Qwen2.5-VL-7B from 32K to 128K context (and generalizes to 512K) using long-document VQA as the dominant data type. <strong>Context Training with Active Information Seeking</strong> from Google DeepMind equips a context optimizer with Wikipedia and browser tools and pairs them with beam-search training so external grounding actually helps instead of poisoning the context. OpenAI&rsquo;s <strong>Codex app</strong> note ships a phone-as-remote-control architecture for Codex sessions running on a Mac, laptop, or remote SSH host.</p>
+
+      <h3>Competitiveness</h3>
+      <p>Qwen-Image-VAE-2.0&rsquo;s f16c128 variant attains SSIM 0.9706 / PSNR 30.45 dB on OmniDoc-TokenBench, beating the best f8 baseline (FLUX.1-dev at 0.9364 / 26.24 dB) at <em>2&times; higher</em> spatial compression — the first f16 autoencoder to surpass f8 VAEs on a text-fidelity metric (NED 0.9617 vs. FLUX.1-dev&rsquo;s 0.9546). Same VAE family already powers Qwen-Image-2.0, which sits #1 on AI Arena T2I (covered in the May 13 review). MMProLong&rsquo;s 5B-token budget compares favourably with the multi-trillion-token continued-pre-training mixes used to long-context-extend GPT-5.5, Claude Opus 4.7, Gemini 2.5 Pro, and Qwen3-VL — same +7.1% long-document VQA delta for a tiny fraction of the compute. DeepMind&rsquo;s BeamSearch-IS lifts Gemini-2.5-Flash above Gemini-2.5-Pro on FLORES+ low-resource translation (34.51 vs. 30.37) and to within 0.0004 of Gemini-2.5-Pro on HealthBench, all without any weight updates and on a 128-sample optimization budget; HLE accuracy goes from 6.53 baseline &rarr; 8.63 with active information seeking. OpenAI&rsquo;s Codex mobile relay is feature-parity with Anthropic&rsquo;s February 2026 Remote Control for Claude Code; the Windows host is still missing, macOS only at launch.</p>
+
+      <h3>New frontier releases</h3>
+      <p>No new flagship models in the window. Most recent launches remain Anthropic&rsquo;s Claude Opus 4.7 and OpenAI&rsquo;s GPT-5.5 (covered in the April 10 wave review). Google&rsquo;s I/O keynote on May 19&ndash;20 is the next expected launch event.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba (Qwen)</h1>
+
+    <h2 id="qwen-image-vae-2-0"><a href="https://arxiv.org/abs/2605.13565">Qwen-Image-VAE-2.0 Technical Report</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Technical Report</span>
+      <span>arXiv:2605.13565</span>
+      <span>2026-05-13</span>
+      <span>VAE · Image generation · High compression · Text rendering · Diffusion</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Qwen Team, 30 contributors (equal contributors: Zekai Zhang, Deqing Li, Kuan Cao, Yujia Wu; corresponding: Chenfei Wu). The VAE variant already integrated into <code>Qwen-Image-2.0</code> (covered in the May 13 review) is an intermediate derivative of the framework formalized here.</li>
+      <li>Ships a four-model suite at high compression: <code>f16c64</code>, <code>f16c128</code>, <code>f32c128</code>, <code>f32c192</code>. The <code>c</code> dimension is the latent channel count; the larger channel budget is the lever that buys back the spatial information lost to f16/f32 downsampling.</li>
+      <li>Frames the contribution as resolving the &ldquo;tripartite trade-off&rdquo; between compression ratio, reconstruction fidelity, and <em>diffusability</em> (how easily the latent space can be modelled by a downstream diffusion transformer). Prior high-compression VAEs improve one or two of the three at the cost of the third.</li>
+      <li>Introduces OmniDoc-TokenBench, a ~3K-image text-rich reconstruction benchmark scored with OCR-based Normalized Edit Distance (NED) rather than pixel metrics. Released as a HuggingFace dataset at <a href="https://huggingface.co/datasets/alibabagroup/OmniDoc-TokenBench">alibabagroup/OmniDoc-TokenBench</a>.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Mechanism — Global Skip Connection (GSC) for high-compression detail recovery:</strong>
+        <ul>
+          <li><em>Problem.</em> Encoders for f16/f32 VAEs throw away high-frequency detail in the early downsampling stages, and standard Local Skip Connections (LSC) inside each ResBlock only patch local detail — the original pixel signal never reaches the deep latent. Reconstructions blur, character strokes merge.</li>
+          <li><em>Mechanism.</em> GSC adds a direct residual path that bypasses the entire downsampling stack. Pixel input is folded into the channel dimension via a space-to-channel operation, reshaped, channel-averaged, then summed into the deep feature map alongside the deepest ResBlock&rsquo;s output. The fold is non-parametric — no learned downsampler in the shortcut — so high-frequency signal is preserved verbatim. Ablation runs three configurations on f16c64 from scratch: No Skip Connection (NSC), Local Skip Connection (LSC), Global Skip Connection (GSC); GSC strictly dominates the other two on both reconstruction loss and PSNR throughout training.</li>
+          <li><em>Why.</em> The deep latent gains a residual channel of unmodified pixel-level signal; convergence on character strokes and fine textures accelerates noticeably. Beats LSC because the latter never delivers untouched pixel context past the first downsample.</li>
+        </ul>
+      </li>
+      <li><strong>Attention-free backbone.</strong> Self-attention scales O(N²) in pixel count and O(N²) in activation memory; the authors observed no performance degradation when attention modules were removed. The entire encoder/decoder is pure convolutional ResBlocks plus the GSC shortcut, which is the source of the high throughput at 2K resolutions.</li>
+      <li><strong>Encoder/decoder asymmetry.</strong> Lightweight encoder (76&ndash;78M params, hidden dim 96) feeds a heavyweight decoder (248&ndash;250M params, hidden dim 144) for all four variants. The encoder is the part the downstream DiT calls during training; cheap encoding cuts DiT training latency.</li>
+      <li>Configuration grid (f, channels, layer count, residual type, encoder/decoder params):
+        <table>
+          <thead>
+            <tr><th>Model</th><th>f</th><th>C</th><th>n<sub>layer</sub></th><th>Residual</th><th>Enc / Dec params</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>Qwen-Image-VAE-2.0-f16c64</code></td><td>16</td><td>64</td><td>5</td><td>GSC</td><td>76M / 248M</td></tr>
+            <tr><td><code>Qwen-Image-VAE-2.0-f16c128</code></td><td>16</td><td>128</td><td>5</td><td>GSC</td><td>76M / 248M</td></tr>
+            <tr><td><code>Qwen-Image-VAE-2.0-f32c128</code></td><td>32</td><td>128</td><td>6</td><td>GSC</td><td>77M / 250M</td></tr>
+            <tr><td><code>Qwen-Image-VAE-2.0-f32c192</code></td><td>32</td><td>192</td><td>6</td><td>GSC</td><td>78M / 250M</td></tr>
+          </tbody>
+        </table>
+      </li>
+    </ul>
+
+    <h3>Training</h3>
+    <ul>
+      <li><strong>Loss = L<sub>recon</sub> + &lambda;<sub>lpips</sub>L<sub>lpips</sub> + &lambda;<sub>align</sub>L<sub>align</sub>.</strong> Pixel L1 + LPIPS perceptual + a semantic alignment loss. KL regularization and GAN loss are both <em>removed</em>.</li>
+      <li><strong>Mechanism — Semantic Alignment Loss for diffusability:</strong>
+        <ul>
+          <li><em>Problem.</em> Expanded latent dimension fixes the information bottleneck of high compression but leaves the latent distribution unstructured; the downstream DiT then converges slowly because nothing forces the latent geometry to be diffusion-friendly.</li>
+          <li><em>Mechanism.</em> Extract intermediate-layer features from a frozen DINOv2-L on the input image (DINOv2 chosen over DINOv3 / MAE / PE-Spatial after ablation; <em>middle</em> layer chosen over the final layer because the spatial map is smoother and easier to align with). Project the VAE latent through a learnable linear layer into the DINOv2 feature dimension. Two losses on the projected latent: (1) <strong>Marginal Cosine Similarity</strong> per spatial position, with margin m<sub>cos</sub>, aligning the <em>direction</em> of the latent to the DINOv2 feature; (2) <strong>Marginal Distance Matrix Similarity</strong>, with margin m<sub>dist</sub>, preserving the <em>relative spatial layout</em> between positions. Both losses use ReLU with the margin, so they only fire when alignment is worse than the threshold.</li>
+          <li><em>Why.</em> Aligning to a self-supervised vision feature gives the latent a generation-friendly semantic structure without forcing a Gaussian prior (which is what KL would do); KL is removed precisely because forcing Gaussianity competes with semantic alignment. Beats VAVAE-style alignment that uses the final encoder layer — final-layer features are more task-specific and noisier as a spatial supervision signal.</li>
+        </ul>
+      </li>
+      <li><strong>Staged alignment schedule.</strong> Strict margins (small m<sub>cos</sub>, m<sub>dist</sub>) at the start of training force the latent into the DINOv2 manifold quickly; the margins are gradually loosened so the network can then optimize for pixel-level reconstruction without sacrificing the geometry. Net effect: the latent is generation-friendly from day one and high-fidelity by the end of training.</li>
+      <li><strong>Data engineering.</strong> Billions of images filtered for clarity and blur. OCR filter prioritizes character-dense samples. Curated document corpus across academic papers, slides, posters, complex web pages. A synthetic rendering pipeline overlays English (alphabetic) and Chinese (logographic) text on real-image backgrounds at character sizes from 5 to 20 pixels — the multi-granularity supervision is what keeps text legible at f32.</li>
+      <li><strong>Curriculum.</strong> Resolution ramps from low to 2K. Text data is added progressively (general → real-world text-rich → synthetic). Alignment margins relax across stages.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>General reconstruction on ImageNet 256 / FFHQ 1K.</strong> Headline numbers: <code>Qwen-Image-VAE-2.0-f16c128</code> hits PSNR 35.90 / SSIM 0.9519 on ImageNet — better than every f8 VAE evaluated (best prior: FLUX.1-dev at 32.84 / 0.9155). <code>f32c192</code> performs comparably to f8 VAEs despite 4&times; the spatial compression.</li>
+      <li><strong>OmniDoc-TokenBench, the new text-rich benchmark</strong> (256&times;256, ~3K images, OCR NED + standard metrics):
+        <table>
+          <thead>
+            <tr><th>Model</th><th>Setting</th><th>SSIM&uarr;</th><th>PSNR&uarr;</th><th>LPIPS&darr;</th><th>FID&darr;</th><th>NED&uarr;</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>FLUX.1-dev</td><td>f8c16</td><td>0.9364</td><td>26.24</td><td>0.0246</td><td>0.55</td><td>0.9546</td></tr>
+            <tr><td>HunyuanVideo</td><td>f8c16</td><td>0.9227</td><td>25.26</td><td>0.0434</td><td>2.03</td><td>0.9266</td></tr>
+            <tr><td>HunyuanImage-3.0</td><td>f16c32</td><td>0.8672</td><td>22.66</td><td>0.0650</td><td>3.49</td><td>0.7753</td></tr>
+            <tr><td>Cosmos-0.1-CI16x16</td><td>f16c16</td><td>0.5460</td><td>15.55</td><td>0.1349</td><td>7.78</td><td>0.1547</td></tr>
+            <tr><td>FLUX.2-dev</td><td>f16c128</td><td>0.9544</td><td>27.72</td><td>0.0216</td><td>0.73</td><td>0.9535</td></tr>
+            <tr><td><code>Qwen-Image-VAE-2.0-f16c64</code></td><td>f16c64</td><td>0.9279</td><td>26.00</td><td>0.0382</td><td>1.94</td><td>0.9244</td></tr>
+            <tr><td><code>Qwen-Image-VAE-2.0-f16c128</code></td><td>f16c128</td><td><strong>0.9706</strong></td><td><strong>30.45</strong></td><td><strong>0.0167</strong></td><td>0.79</td><td><strong>0.9617</strong></td></tr>
+            <tr><td>LTX-Video</td><td>f32c128</td><td>0.8055</td><td>20.92</td><td>0.1190</td><td>17.10</td><td>0.5651</td></tr>
+            <tr><td>HunyuanImage-2.1</td><td>f32c64</td><td>0.7805</td><td>19.85</td><td>0.0957</td><td>5.19</td><td>0.4895</td></tr>
+            <tr><td><code>Qwen-Image-VAE-2.0-f32c128</code></td><td>f32c128</td><td>0.8442</td><td>22.13</td><td>0.0642</td><td>3.36</td><td>0.7065</td></tr>
+            <tr><td><code>Qwen-Image-VAE-2.0-f32c192</code></td><td>f32c192</td><td><strong>0.8908</strong></td><td>23.84</td><td>0.0497</td><td>1.98</td><td><strong>0.8555</strong></td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>NED is the metric to watch on text-rich data: pixel metrics under-weight character legibility. A single-character error like &ldquo;orange&rdquo; &rarr; &ldquo;orango&rdquo; barely moves PSNR (<0.5 dB) but drops NED by 16.7%, which is roughly the difference between &ldquo;readable&rdquo; and &ldquo;not&rdquo;. <code>f16c128</code> is the first f16 autoencoder to beat all f8 baselines on this metric.</li>
+      <li><strong>Diffusability — downstream SiT training on ImageNet 256 at 80 epochs, no CFG.</strong> Inception Score and gFID (lower is better). <code>f16c128</code> reaches IS 92.42 / gFID 10.29; <code>f16c64</code> hits IS 102.76 / gFID 9.52 — both decisively above HunyuanVideo-1.5 (f16c32, gFID 19.08), Wan2.2 (f16c48, gFID 15.65), and Stepvideo-T2V (f16c64, gFID 33.53). f32 variants reach gFID 15.05 (<code>f32c128</code>), beating every other f32 VAE on the leaderboard.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Skip-connection comparison</strong> (NSC vs. LSC vs. GSC on f16c64 from scratch): GSC strictly dominates on convergence speed and PSNR, justifying the architectural default across all four variants.</li>
+      <li><strong>Semantic encoder choice</strong>: DINOv2 (selected) vs. DINOv3 vs. MAE vs. PE-Spatial. DINOv2 wins on downstream DiT convergence.</li>
+      <li><strong>Alignment layer choice</strong>: middle layer of DINOv2 beats final layer; combining multiple layers degrades performance because cross-layer feature noise corrupts the alignment signal.</li>
+      <li><strong>Removing KL and GAN losses</strong>: the simplified L1 + LPIPS + alignment objective converges faster and more stably than KL-regularized GAN-trained variants at the same compute. Margin: more flexible latent space, better diffusability, fewer training instabilities.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>OmniDoc-TokenBench released under Apache-2.0 on HF Datasets and on GitHub at <a href="https://github.com/alibaba/OmniDoc-TokenBench">alibaba/OmniDoc-TokenBench</a>.</li>
+      <li>VAE weights not yet on HuggingFace as of the submission; the in-product variant ships inside <code>Qwen-Image-2.0</code> already.</li>
+    </ul>
+
+    <h1 id="bytedance">ByteDance (Seed)</h1>
+
+    <h2 id="mmprolong"><a href="https://arxiv.org/abs/2605.13831">Training Long-Context Vision-Language Models Effectively with Generalization Beyond 128K Context</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv:2605.13831</span>
+      <span>2026-05-13</span>
+      <span>Long-context · VLM · Continued pre-training · Data mixture · Document VQA</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>ByteDance Seed authors with HKUST collaborators (Zhaowei Wang, Lishu Luo, Haodong Duan, Weiwei Liu, Sijin Wu, Ji Luo, Shen Yan, Shuai Peng, Sihang Yuan, Chaoyi Huang, Yi Lin, Yangqiu Song). Submitted to HF Daily Papers May 14; 73 upvotes (currently the most upvoted paper of the day from a frontier lab).</li>
+      <li>Empirical recipe paper: <em>how</em> to do continued pre-training on a 7B VLM to extend its context window — not a new architecture. Built on Qwen2.5-VL-7B as the base; the extended model is named <code>MMProLong</code>.</li>
+      <li>Headline: 32K &rarr; 128K context with only a 5B-token training budget, +7.1% on long-document VQA, and out-of-distribution generalization to 256K and 512K contexts <em>without</em> any further training.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Mechanism — long-context continued pre-training driven by long-document VQA:</strong>
+        <ul>
+          <li><em>Problem.</em> Long-context continued pre-training for VLMs is conventionally done with OCR-transcription data (image &rarr; raw text) at the target context length. This is data-inefficient: most of the budget goes into teaching the model to transcribe rather than to retrieve and reason over evidence at long positions, and short-context capability decays from over-specialization to long sequences.</li>
+          <li><em>Mechanism.</em> Replace OCR transcription with <strong>long-document VQA</strong> — instruction-formatted (question, long-multimodal-document, answer) triples — as the dominant data type. The data mixture is constructed with three concrete choices: (1) the <em>sequence-length distribution</em> is <em>balanced</em> across short, medium, and long, not heaped at the 128K target length; (2) the <em>task mixture</em> is <em>retrieval-heavy</em> with only modest reasoning data added for diversity; (3) short-context data is <em>not</em> mixed in, because instruction-formatted long VQA already preserves short-context behaviour. 5B tokens total. The base model is Qwen2.5-VL-7B; the output is named <code>MMProLong</code>.</li>
+          <li><em>Why.</em> Long-document VQA forces the model to learn <em>where in a long input</em> the answer lives — a retrieval skill that generalizes beyond the training context length. Balanced length distribution prevents over-fitting to 128K and is the source of out-of-window generalization to 256K/512K. Retrieval-heavy mixture targets what the ablations identify as the bottleneck. Skipping short-data mixing avoids the standard regression on short-context benchmarks because instruction-formatted long data already covers short reasoning patterns. Beats prior OCR-transcription pre-training recipes (the LongVILA family) at 5B tokens — a ~10&times; compute reduction for matched long-VQA gains.</li>
+        </ul>
+      </li>
+      <li><strong>Three actionable findings from the ablation grid</strong> (each becomes a data-mixture knob):
+        <ul>
+          <li><em>Balanced &gt; target-length-focused.</em> Concentrating training data at 128K does worse than a balanced spread across lengths, because long-context ability is fundamentally a retrieval skill that must transfer across positions.</li>
+          <li><em>Retrieval &gt; reasoning</em> as the bottleneck. Retrieval-heavy mixtures with modest reasoning data outperform reasoning-heavy mixtures with retrieval as garnish.</li>
+          <li><em>Pure long-VQA preserves short context.</em> Instruction-formatted long data does not need to be diluted with short-context data; in fact diluting it hurts long-context gains and helps short-context only marginally.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Long-document VQA</strong>: <code>MMProLong</code> improves by <strong>+7.1%</strong> over Qwen2.5-VL-7B at 128K context using the 5B-token continued pre-training.</li>
+      <li><strong>Out-of-distribution context generalization</strong>: maintains strong performance at 256K and 512K positions without additional training — i.e., the model trained on a balanced mixture up to 128K extrapolates 4&times; past its training horizon.</li>
+      <li><strong>Cross-task generalization</strong> from a single training recipe to: webpage-based multimodal needle retrieval, long-context vision-text compression, and long-video understanding — all evaluated without task-specific supervised fine-tuning. The retrieval skill is the unifying axis.</li>
+      <li>Short-context capability largely preserved despite skipping short-data mixing, confirming finding (iii) above.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Long-document VQA vs. OCR transcription</strong>: the head-to-head ablation that motivates the entire recipe. VQA wins decisively on long-document VQA evaluation; OCR-only training underperforms despite its larger raw token throughput.</li>
+      <li><strong>Sequence-length distribution sweep</strong>: target-length-focused (heap at 128K), balanced, and short-skewed. Balanced wins both at 128K and at out-of-window 256K/512K.</li>
+      <li><strong>Retrieval-heavy vs. reasoning-heavy mixtures</strong>: matched-budget comparison shows retrieval-heavy strictly above reasoning-heavy on long-context evaluations, with marginal effect on short-context.</li>
+      <li><strong>Short-data mixing on/off</strong>: mixing short instruction data into the long-context budget hurts long-context gains; absence does not hurt short-context evaluation because instruction-formatted long VQA already exercises short-range reasoning.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Practical implication for downstream practitioners: a 5B-token instruction-formatted long-VQA mixture is sufficient to 4&times; the deployed context window of a 7B VLM with measurable downstream lift — well within the budget of a single-node continued-pre-training run.</li>
+    </ul>
+
+    <h1 id="deepmind">Google DeepMind</h1>
+
+    <h2 id="context-training-ais"><a href="https://arxiv.org/abs/2605.13050">Context Training with Active Information Seeking</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv:2605.13050</span>
+      <span>2026-05-13</span>
+      <span>Context optimization · Tool use · Beam search · Agentic · Low-resource</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Zeyu Huang (Edinburgh, intern), Adhiguna Kuncoro (Google DeepMind, corresponding), Qixuan Feng, Jiajun Shen, Lucio Dery, Arthur Szlam, Marc&rsquo;Aurelio Ranzato — DeepMind primary affiliation on the paper.</li>
+      <li>Studies <em>frozen-weight</em> adaptation: instead of fine-tuning, an LLM-based optimizer agent constructs and edits a structured context (working memory) that is later read by an executor model. Existing context-training methods (ProTeGi, TextGrad, DSPy, OPRO) are closed-loop — they refactor only the model&rsquo;s parametric knowledge.</li>
+      <li>The contribution is two-part: (1) equip the optimizer with real external tools, (2) replace the sequential update rule with a beam-search-style update that maintains a candidate pool, because naively adding tools to sequential training <em>degrades</em> performance.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Context Management Tool.</strong> Context is a structured database of discrete resource items (not a monolithic prompt). Each resource carries a unique ID, a summary, raw content, and metadata (source, length, keywords, gemini-embedding-001 embedding). The optimizer agent manipulates the database through write ops (init, add, delete, update) and read ops (preview, retrieve-by-ID, search-by-keyword/embedding/sub-agent). Surgical updates rather than full re-prompting.</li>
+      <li><strong>Information Seeking Tools.</strong> Two: <code>WikipediaSearchTool</code> built on the Python <code>wikipedia</code> package for declarative knowledge gaps, and <code>BrowserUseTool</code> built on the <code>browser-use</code> library for parsing dynamic web pages, code snippets, recent reports, and documentation not indexed in Wikipedia.</li>
+      <li><strong>Mechanism — BeamSearch-IS as the unit that makes external information useful:</strong>
+        <ul>
+          <li><em>Problem.</em> Sequential training (one context held at each step, updated greedily on each new batch) has two failure modes once you let the optimizer call the web: (1) <strong>Context Pollution</strong> — low-quality web content gets written into the context and the optimizer cannot recover, because there is no backtracking mechanism; (2) <strong>Local Optima</strong> — greedy commitment to early sub-optimal trajectories. Empirically this is severe: naive Seq-IS on FLORES+ drops from Seq&rsquo;s 31.13 average to 29.68.</li>
+          <li><em>Mechanism.</em> Maintain a pool of <em>k</em> candidate contexts at each step. At every step, sample several context updates in parallel from each candidate (each update may invoke <code>WikipediaSearchTool</code> or <code>BrowserUseTool</code> to ground its proposal in retrieved evidence). Score every resulting context on a held-out validation set. Prune back down to the top <em>k</em>. Critically, the current best context is <em>always</em> included in the candidate pool as a <em>&ldquo;Do Nothing&rdquo;</em> option — so if every new exploration is noisy or unhelpful, the optimizer simply keeps the previous state. Total budget (number of optimizer calls) is held constant against Seq baselines for fair comparison.</li>
+          <li><em>Why.</em> The candidate pool breaks the greediness assumption of sequential training: bad updates get discarded by the next-step validation pruning rather than persisting into the context. The &ldquo;Do Nothing&rdquo; option formalizes a backtracking primitive at the optimizer level — without it, any single bad web fetch can poison the entire run. Beats prior context-optimization methods (BoN, Seq, BeamSearch without tools) because the tools genuinely add new information that closed-loop methods cannot synthesize from parametric memory.</li>
+        </ul>
+      </li>
+      <li>Backbone: Gemini-2.5-Flash for all main experiments. Constrained low-resource regime: 128 training samples and 64 validation samples on most benchmarks (real-world deployment proxy).</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>FLORES+ low-resource machine translation</strong> (5 languages Google Translate does not directly support: Buginese, Magahi, Kikuyu, Chokwe, Southwestern Dinka). ChrF++ scores:
+        <table>
+          <thead>
+            <tr><th>Method</th><th>bug</th><th>mag</th><th>kik</th><th>cjk</th><th>dik</th><th>Avg.</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Gemini-2.5-Flash (base)</td><td>28.83</td><td>44.86</td><td>34.43</td><td>17.83</td><td>5.62</td><td>26.31</td></tr>
+            <tr><td>Gemini-2.5-Pro (base)</td><td>31.42</td><td>42.42</td><td>35.89</td><td>22.89</td><td>19.21</td><td>30.37</td></tr>
+            <tr><td>BoN (n=8)</td><td>32.84</td><td>47.83</td><td>37.17</td><td>23.72</td><td>18.12</td><td>31.94</td></tr>
+            <tr><td>Seq (OPRO-style)</td><td>32.53</td><td>46.01</td><td>36.34</td><td>24.49</td><td>18.25</td><td>31.13</td></tr>
+            <tr><td>BeamSearch</td><td>32.68</td><td>46.55</td><td>36.46</td><td>22.47</td><td>18.41</td><td>31.31</td></tr>
+            <tr><td>Seq-IS (naive tools)</td><td>31.15</td><td>45.58</td><td>37.53</td><td>18.16</td><td>15.96</td><td>29.68</td></tr>
+            <tr><td><strong>BeamSearch-IS (ours)</strong></td><td><strong>33.74</strong></td><td><strong>50.52</strong></td><td><strong>39.73</strong></td><td><strong>26.25</strong></td><td><strong>22.46</strong></td><td><strong>34.51</strong></td></tr>
+          </tbody>
+        </table>
+        BeamSearch-IS is +4.14 over the best non-IS baseline (BoN) and +4.14 over Gemini-2.5-Pro on average — the optimized context lets Flash beat Pro on this task.
+      </li>
+      <li><strong>HealthBench</strong> (rubric-based physician-written multi-turn evaluation). BeamSearch-IS reaches overall score 0.5026, within 0.0004 of Gemini-2.5-Pro&rsquo;s 0.5030; Seq-IS drops to 0.4484, below the tool-free Seq at 0.4629 — the Context Pollution effect again. On Emergency Referrals (a sub-theme), BeamSearch-IS beats Pro; Pro retains the lead on Response Depth.</li>
+      <li><strong>Complex reasoning — LiveCodeBench (pass@1 / pass@8) and HLE (avg@8 accuracy)</strong>:
+        <table>
+          <thead>
+            <tr><th>Method</th><th>LCB Medium</th><th>LCB Hard</th><th>LCB Overall</th><th>HLE Bio</th><th>HLE CS</th><th>HLE Phys</th><th>HLE Math</th><th>HLE Hum</th><th>HLE Avg</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Gemini-2.5-Flash (base)</td><td>71.5 / 83.8</td><td>30.0 / 49.6</td><td>49.4 / 65.6</td><td>7.10</td><td>6.46</td><td>5.00</td><td>8.08</td><td>6.01</td><td>6.53</td></tr>
+            <tr><td>BoN</td><td>72.5 / 83.6</td><td>28.7 / 50.3</td><td>49.2 / 65.9</td><td>6.25</td><td>4.21</td><td>4.06</td><td>10.13</td><td>6.01</td><td>6.13</td></tr>
+            <tr><td>Seq</td><td>68.9 / 85.6</td><td>31.5 / 51.6</td><td>49.0 / 67.5</td><td>7.24</td><td>2.81</td><td>6.88</td><td>8.08</td><td>6.01</td><td>6.20</td></tr>
+            <tr><td>BeamSearch</td><td>69.9 / 84.2</td><td>31.2 / 52.0</td><td>49.3 / 67.1</td><td>7.39</td><td>3.90</td><td>5.94</td><td>8.97</td><td>6.33</td><td>6.51</td></tr>
+            <tr><td>Seq-IS</td><td>71.6 / 86.2</td><td>29.6 / 52.1</td><td>49.3 / 68.1</td><td>8.81</td><td>6.74</td><td>3.22</td><td>6.54</td><td>6.96</td><td>5.38</td></tr>
+            <tr><td><strong>BeamSearch-IS</strong></td><td><strong>73.5 / 89.0</strong></td><td><strong>33.9 / 57.2</strong></td><td><strong>52.5 / 70.2</strong></td><td><strong>8.81</strong></td><td><strong>8.30</strong></td><td><strong>7.67</strong></td><td><strong>11.15</strong></td><td><strong>7.23</strong></td><td><strong>8.63</strong></td></tr>
+          </tbody>
+        </table>
+        Non-tool methods barely move HLE (~6.5%); BeamSearch-IS lifts HLE average to 8.63 (+2.10 over base) and LCB Hard pass@1 to 33.9 (+3.9 over base).
+      </li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Beam-search vs. sequential, with and without tools</strong>: tools <em>without</em> beam-search hurt on most domains (Context Pollution); tools <em>with</em> beam-search win on all four (translation, healthcare, code, multidisciplinary reasoning).</li>
+      <li><strong>Data efficiency</strong>: the 128-train / 64-validation budget is sufficient; gains saturate quickly, suggesting most of the lift comes from a small number of well-grounded context items rather than from large supervised exposure.</li>
+      <li><strong>Hyperparameter robustness</strong>: gains hold across beam width, exploration temperature, and pool size in the reported sweep.</li>
+      <li><strong>Cross-model context transfer</strong>: contexts optimized on Gemini-2.5-Flash generalize to other backbones with little degradation — implies the optimized context encodes task-relevant facts and instructions, not Gemini-Flash-specific prompting tricks.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>The framework is described as orthogonal to the surrounding agent harness — the change is localized to the context-optimization stage, so it can be slotted into existing context-engineering pipelines (DSPy, TextGrad, ProTeGi) without redesigning the executor side.</li>
+    </ul>
+
+    <h1 id="openai">OpenAI</h1>
+
+    <h2 id="codex-mobile-app"><a href="https://openai.com/index/introducing-the-codex-app/">Introducing the Codex app</a></h2>
+    <div class="paper-meta">
+      <span>Tier 3 · Engineering Note</span>
+      <span>openai.com</span>
+      <span>2026-05-14</span>
+      <span>Codex · Agentic coding · Mobile · Remote execution</span>
+    </div>
+
+    <ul>
+      <li>Codex is now embedded in the ChatGPT mobile app on iOS and Android, in preview, on every plan including Free and Go in supported regions.</li>
+      <li><strong>Architecture is a phone-as-remote-control, not phone-as-execution-host.</strong> Codex runs on the connected Mac (only macOS for now; Windows host support is flagged as following). The ChatGPT mobile app connects to that environment through a secure relay layer and streams live activity back to the phone screen.</li>
+      <li>Data residency: files, credentials, permissions, plugins, skills, and the entire local setup stay on the executing machine. The phone never receives or stores sensitive material; only updates flow back — screenshots, terminal output, diffs, test results, approval prompts.</li>
+      <li>From the phone you can: cross all your threads, review outputs, approve commands, change models, start new sessions.</li>
+      <li><strong>Remote SSH</strong> graduates from preview to GA at the same time: Codex can connect directly to managed enterprise environments and remote developer infrastructure (devboxes, jump hosts).</li>
+      <li><strong>HIPAA-compliant Codex</strong> simultaneously launched inside ChatGPT Enterprise — hospitals and healthcare engineering teams can run Codex over PHI in eligible workspaces.</li>
+      <li>Pricing posture: Pro ($200/month) gets unlimited Codex access; preview is otherwise gated to the rate limits of the user&rsquo;s plan.</li>
+      <li>Mechanism note on the relay: Codex&rsquo;s persistent thread/session state lives with the host; the phone client subscribes to event streams (diff, terminal, approval) and posts back commands (approve/reject, model switch). The pattern is structurally identical to Anthropic&rsquo;s February 2026 Remote Control for Claude Code — both teams converged on the host-owns-state / phone-owns-presence split rather than syncing state across devices.</li>
+      <li>Adoption baseline: Codex is reported at &gt;4M weekly active users at launch — the mobile relay is positioned as a usage-expansion move (work-in-progress visibility during commutes / meetings) rather than a new capability surface.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
