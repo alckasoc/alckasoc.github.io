@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agentic Modeling, World Models &amp; Safety Adaptation Review — May 17, 2026 | Auto Lit Review</title>
+<meta name="description" content="Three Tier 2 frontier-lab papers: Google&rsquo;s LiSA conservative policy induction for adaptive guardrails, Microsoft Research&rsquo;s Orchard open-source agentic modeling framework setting new SWE-bench Verified SOTA at 30B-A3B size, and NVIDIA&rsquo;s SANA-WM 2.6B minute-scale world model with hybrid linear attention." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">May 17, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#google" class="toc-h1">Google</a>
+          <ul>
+            <li><a href="#lisa" class="toc-h2">LiSA: Lifelong Safety Adaptation</a></li>
+          </ul>
+        </li>
+        <li><a href="#microsoft" class="toc-h1">Microsoft AI</a>
+          <ul>
+            <li><a href="#orchard" class="toc-h2">Orchard: Open-Source Agentic Modeling</a></li>
+          </ul>
+        </li>
+        <li><a href="#nvidia" class="toc-h1">NVIDIA Research</a>
+          <ul>
+            <li><a href="#sana-wm" class="toc-h2">SANA-WM: Minute-Scale World Model</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review · May 17, 2026</div>
+    <h1 class="page-title">Agentic Modeling, World Models &amp; Safety Adaptation</h1>
+    <div class="page-meta">3 papers · 3 labs · auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>No flagship model launch surfaced in the 36-hour window between the May 16 review and this one &mdash; Google&rsquo;s I/O keynote (with the rumoured <code>Gemini 3.2 Flash</code>) is still pencilled for May 19&ndash;20, and Anthropic&rsquo;s May 14 partnership announcements (PwC, Gates Foundation $200M) are non-technical. The page collects three Tier 2 frontier-lab research papers that landed on Hugging Face Daily Papers on May 14&ndash;15. Google&rsquo;s <strong>LiSA</strong> (Lifelong Safety Adaptation) treats deployment-time guardrail failures as a structured-memory problem and converts sparse user reports into reusable policy abstractions gated by a Beta-posterior lower bound on accumulated evidence. Microsoft Research&rsquo;s <strong>Orchard</strong> open-sources the missing piece of agentic training infrastructure &mdash; a Kubernetes-native environment service plus three training recipes that push Qwen3-30B-A3B-Thinking to a new open-source SOTA of 67.5% on SWE-bench Verified. NVIDIA&rsquo;s <strong>SANA-WM</strong> introduces a 2.6B-parameter open-source world model that generates 60-second 720p videos with precise 6-DoF camera control on a single GPU, beating prior open baselines on action-following at 36&times; throughput.</p>
+
+      <h3>Competitiveness</h3>
+      <p>Orchard-SWE is the eye-catcher: 67.5% on SWE-bench Verified from a 30B-active-parameter MoE backbone with a fully open-source recipe. The current SWE-bench Verified leaders are <code>Claude Opus 4.7</code> at 78.4% and <code>GPT-5.5</code> at the same tier, both proprietary &mdash; Orchard closes the open/closed gap to roughly 11 points at a comparable activation budget to a single H100 inference node. Orchard-GUI&rsquo;s 4B computer-use agent hits 74.1% on WebVoyager / 67.0% on Online-Mind2Web, beating every prior open-source computer-use baseline and within striking distance of the OpenAI Operator family. SANA-WM&rsquo;s 36&times; throughput advantage over LingBot-World on a 60-second 720p generation budget &mdash; trained on only 213K public video clips in 15 days on 64 H100s &mdash; is the first open-source minute-scale world model that is realistic to retrain at a research budget; Genie 3 and Veo 3 remain proprietary. LiSA pushes the safety-helpfulness frontier past pure backbone scaling on PrivacyLens+ / ConFaide+ / AgentHarm and survives a 20% label-flip rate on user feedback &mdash; the closest external comparison is Anthropic&rsquo;s contextual-integrity guardrails work from late 2025, which assumed offline-trained policies rather than online adaptation.</p>
+
+      <h3>New frontier releases</h3>
+      <p>No new flagship models in the window. Most recent launches remain Anthropic&rsquo;s Claude Opus 4.7 (Apr 16) and OpenAI&rsquo;s GPT-5.5 (Apr 23). DeepSeek-V4 Pro (Apr 24) is the most recent open-source flagship. Google&rsquo;s I/O event on May 19&ndash;20 is the next expected launch window.</p>
+    </section>
+
+    <h1 id="google">Google</h1>
+
+    <h2 id="lisa"><a href="https://arxiv.org/abs/2605.14454">LiSA: Lifelong Safety Adaptation via Conservative Policy Induction</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv:2605.14454</span>
+      <span>2026-05-14</span>
+      <span>Safety · Guardrails · Agentic deployment · Online adaptation · Memory</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Minbeom Kim, Lesly Miculicich, Bhavana Dalvi Mishra, Mihir Parmar, Phillip Wallis, Bharath Chandrasekhar, Kyomin Jung, Tomas Pfister, Long T. Le. Affiliations: Google Cloud AI Research, Google, Seoul National University. Tomas Pfister leads Cloud AI Research; Long T. Le is the senior contributor at Google. Submitted May 14, 2026.</li>
+      <li>Targets the operational gap between pre-deployment guardrail training and the real-world long tail of agentic-action failures &mdash; secrets leaking through tool calls, unsafe autonomous actions, and over-blocking of legitimate work that breaks usefulness.</li>
+      <li>Framing: a fixed base guardrail (any production safety classifier) plus a structured memory module that converts sparse, noisy user feedback into reusable policy abstractions, with the memory&rsquo;s influence gated by a posterior-evidence bound rather than empirical accuracy.</li>
+      <li>Evaluated on PrivacyLens+, ConFaide+, and AgentHarm against the strongest published memory-based baselines (ReasoningBank, Synapse, AGrail). Beats all three under sparse feedback; remains stable at 20% label-flip noise on user reports; pushes the latency-vs-performance frontier past simply scaling to a larger backbone guardrail.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Mechanism &mdash; Conservative Policy Induction (the core contribution):</strong>
+        <ul>
+          <li><em>Problem.</em> Static guardrails can&rsquo;t pre-enumerate the contextual norms of every deployment. Naive online adaptation from a handful of user reports overgeneralizes (a single bad flag wipes out a useful behaviour class) or underreacts (a real failure mode never accumulates enough signal). Repeated fine-tuning is too slow and too expensive to be the operational answer.</li>
+          <li><em>Mechanism.</em> Three modules layered on top of an unchanged base guardrail. <strong>(1) Broad policy abstraction</strong>: an LLM-driven generalization step that lifts an individual failure (e.g.&nbsp;&ldquo;the agent shared employee performance reviews with a contractor&rdquo;) into a portable rule (&ldquo;do not share internal performance records with non-employee identities&rdquo;) so a single sparse report covers a region of context space, not a single point. <strong>(2) Conflict-aware local policies</strong>: when the broad policy region contains both positive and negative labels in adjacent contexts, a tighter local rule is induced inside the mixed-label sub-region to preserve the boundary &mdash; preventing the broad rule from eating legitimate cases. <strong>(3) Evidence-aware confidence gating</strong>: a Beta-posterior lower bound on the per-policy success rate. A rule that has been validated once does not fire with the same authority as one validated 100 times; the lower bound on the posterior controls whether memory retrieval is allowed to override the base classifier at inference time. As reports accumulate, the bound tightens and the rule activates more aggressively.</li>
+          <li><em>Why.</em> Posterior-bound gating is the stabilizer that lets the system learn from sparse and noisy reports without amplifying mislabeled feedback; it&rsquo;s the missing piece that breaks prior memory-based baselines under realistic noise. Beats ReasoningBank-style schemes because they treat every memory entry as equally trustworthy and beats Synapse / AGrail because those use empirical accuracy rather than a posterior lower bound &mdash; an entry with one trial and one success scores 1.0 on empirical accuracy but its Beta(2,1) lower bound is much smaller, so LiSA refuses to act on it.</li>
+        </ul>
+      </li>
+      <li><strong>Operates on top of a frozen base guardrail.</strong> No weight updates to the underlying policy &mdash; the adaptation lives in a retrieval-augmented memory layer. Crucial property for production deployments where re-certifying a fine-tuned safety model is a multi-week process.</li>
+      <li><strong>Memory write path.</strong> User reports of guardrail mistakes (both false-positive and false-negative) are encoded into policy abstractions with conflict checks against adjacent policies. The Beta posterior over each policy&rsquo;s success rate is maintained online.</li>
+      <li><strong>Memory read path at inference.</strong> Retrieve the k nearest matching policies for the current context; compute the posterior lower bound for each; apply the policy with the highest gated confidence only when it exceeds a deployment-tuned threshold; otherwise defer to the base guardrail.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Three benchmarks chosen for their alignment with deployed-agent harms: <strong>PrivacyLens+</strong> (privacy-norm violations in agent actions), <strong>ConFaide+</strong> (contextual-integrity reasoning over agent tool use), and <strong>AgentHarm</strong> (broad harmful-action coverage for agentic systems).</li>
+      <li>Across all three, LiSA beats ReasoningBank, Synapse, and AGrail in the sparse-feedback regime where total report counts are in the dozens, not thousands.</li>
+      <li>Robustness under label noise: 20% label-flip rate on user reports degrades baselines sharply (memory churn dominates) but LiSA stays close to the noise-free curve &mdash; the Beta-posterior gating absorbs the noise rather than encoding it.</li>
+      <li>Latency-performance frontier: pairing a smaller, faster base guardrail with LiSA outperforms larger un-adapted backbones at the same end-to-end inference latency. The implication is that contextual adaptation is a cheaper marginal investment than backbone scaling for this safety regime.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Removing broad policy abstraction (keeping only raw memory entries) collapses generalization &mdash; sparse reports stop covering any new context.</li>
+      <li>Removing conflict-aware local rules causes overgeneralization spikes in mixed-label regions, hurting helpfulness without improving safety.</li>
+      <li>Removing evidence-aware gating is what breaks robustness under noise: empirical-accuracy-only baselines are statistically indistinguishable from prior memory methods at 20% label-flip rates.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positions LiSA as the practical middle ground between static safety alignment and unconstrained continual learning &mdash; the operational claim is that adaptation should be a memory-layer concern, not a weights concern, for any production system where re-certification cost is non-trivial.</li>
+      <li>No code release in the abstract; the GitHub-linked artifact for downstream comparison is not yet public on the HuggingFace paper page.</li>
+    </ul>
+
+    <h1 id="microsoft">Microsoft AI</h1>
+
+    <h2 id="orchard"><a href="https://arxiv.org/abs/2605.15040">Orchard: An Open-Source Agentic Modeling Framework</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv:2605.15040</span>
+      <span>2026-05-14</span>
+      <span>Agentic training · RL · SWE-bench · Computer use · Open-source infra</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Baolin Peng, Wenlin Yao, Qianhui Wu, Hao Cheng, Xiao Yu, Rui Yang, Tao Ge, Alessandro Sordoni, Xingdi Yuan, Yelong Shen, Pengcheng He, Tong Zhang, Zhou Yu, Jianfeng Gao. Affiliations: Microsoft Research, Columbia University, UIUC. Jianfeng Gao is the senior author; submitted May 14, 2026.</li>
+      <li>Reframes the open-source agent gap not as &ldquo;we need bigger base models&rdquo; but as &ldquo;we need shared training infrastructure&rdquo;: most public agentic frameworks ship orchestration and evaluation, but the high-performing closed systems are propped up by proprietary trajectory pipelines, sandbox infrastructure, and RL rollouts.</li>
+      <li>Ships three components: (1) <strong>Orchard Env</strong>, a thin Kubernetes-native environment service that provides reusable primitives for sandbox lifecycle management across distillation, on-policy RL rollouts, and evaluation; (2) three <strong>agentic modeling recipes</strong> (SWE, GUI, personal assistant); (3) all training data + checkpoints + code.</li>
+      <li>Headline results: Orchard-SWE = <strong>67.5%</strong> on SWE-bench Verified, new open-source SOTA at the 30B-active class. Orchard-GUI = 74.1% / 67.0% / 64.0% on WebVoyager / Online-Mind2Web / DeepShop, beats every prior open-source computer-use model. Orchard-Claw = 59.6% pass@3 on Claw-Eval (rising to 73.9% with a stronger ZeroClaw harness).</li>
+      <li>GitHub: <a href="https://github.com/microsoft/Orchard">microsoft/Orchard</a>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Mechanism &mdash; Orchard Env (the infrastructure spine):</strong>
+        <ul>
+          <li><em>Problem.</em> Public agentic frameworks (AutoGen, LangGraph, etc.) are orchestration libraries &mdash; they assume the model is already trained. The actual training-time problem is sandbox lifecycle management at rollout-batch scale: spinning up a Linux container per SWE-bench task, executing tool calls, snapshotting state for RL rollouts, tearing it down, all at thousands of concurrent rollouts. Every closed-source lab solved this in private. The open-source absence is what bottlenecks open-agent training.</li>
+          <li><em>Mechanism.</em> A Kubernetes-native environment service with reusable primitives across (a) task domains (SWE, GUI, personal assistant), (b) agent harnesses (the model&rsquo;s wrapping I/O loop), and (c) pipeline stages (offline trajectory distillation, on-policy RL rollouts, evaluation). The same primitives handle a coding task and a browser session, so a single training pipeline can mix task types.</li>
+          <li><em>Why.</em> Decoupling environment from agent and pipeline stage is what makes the three downstream recipes possible at all &mdash; you can run trajectory distillation, then on-policy RL, then eval, against the same Env primitives without re-implementing per stage. Beats prior open-source approaches that hard-coded one environment per recipe and so couldn&rsquo;t scale to multi-domain mixed training.</li>
+        </ul>
+      </li>
+      <li><strong>Mechanism &mdash; Orchard-SWE training recipe:</strong>
+        <ul>
+          <li><em>Problem.</em> SWE-bench Verified rollouts are dominated by long, partially-successful trajectories: the agent fixes three of five test failures but doesn&rsquo;t close the issue. Naive SFT on terminal success ignores 90% of the useful signal in those trajectories; naive RL with sparse end-of-episode reward starves on credit assignment.</li>
+          <li><em>Mechanism.</em> Distil <strong>107K trajectories</strong> from MiniMax-M2.5 and Qwen3.5-397B as the teacher pool. Apply <strong>credit-assignment SFT</strong>: identify productive sub-segments inside unresolved trajectories (sub-segments where the agent made net positive progress against test outcomes), and SFT against those segments rather than only end-to-end successes &mdash; salvages signal from the long tail of partial trajectories. Then on-policy RL with <strong>Balanced Adaptive Rollout</strong>: dynamically resamples the rollout distribution toward task types where the policy is on the boundary of solving, instead of wasting compute on tasks that are either trivially solved or trivially failed for the current checkpoint.</li>
+          <li><em>Why.</em> Credit-assignment SFT lifts the signal-to-noise ratio of distilled data; Balanced Adaptive Rollout fixes the sparse-reward credit-assignment problem at the data-collection level rather than the loss level. From Qwen3-30B-A3B-Thinking, SFT alone gets to 64.3%; SFT + Balanced-Adaptive RL closes another 3.2 points to 67.5% &mdash; the RL stage is what beats the prior open-source SOTA. Beats vanilla GRPO / DPO recipes that didn&rsquo;t solve the rollout-distribution problem and so plateaued at the SFT ceiling.</li>
+        </ul>
+      </li>
+      <li><strong>Mechanism &mdash; Orchard-GUI training recipe:</strong>
+        <ul>
+          <li><em>Problem.</em> Vision-language computer-use agents have the worst data efficiency in agentic training: each labeled trajectory costs an order of magnitude more than a SWE trajectory (humans clicking through real websites), and the open-source pool is tiny.</li>
+          <li><em>Mechanism.</em> Use only <strong>0.4K distilled trajectories + 2.2K open-ended training tasks</strong> &mdash; an extreme low-data regime &mdash; on a 4B vision-language base. Orchard Env&rsquo;s harness-agnostic browser primitives let the same data train multiple agent harnesses, multiplying the effective sample count.</li>
+          <li><em>Why.</em> Demonstrates that the data efficiency of GUI agents in the open-source ecosystem is gated by infrastructure (sandbox lifecycle, deterministic replay, reward signal) rather than by the size of the trajectory dataset. Beats prior open-source GUI agents at 10&times; larger trajectory budgets.</li>
+        </ul>
+      </li>
+      <li><strong>Mechanism &mdash; Orchard-Claw personal-assistant recipe:</strong> 0.2K synthetic tasks for productivity workflows (email, calendar, daily tool use); 59.6% pass@3 on Claw-Eval baseline; lifts to 73.9% when paired with the stronger ZeroClaw harness, demonstrating that harness-agnostic environment primitives let one trained model gain on the same task by changing only the harness around it.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>SWE-bench Verified results (open-source comparable size):
+        <table>
+          <thead><tr><th>Model</th><th>Base</th><th>SWE-bench Verified</th></tr></thead>
+          <tbody>
+            <tr><td><code>Orchard-SWE (SFT only)</code></td><td>Qwen3-30B-A3B-Thinking</td><td>64.3%</td></tr>
+            <tr><td><code>Orchard-SWE (SFT + RL)</code></td><td>Qwen3-30B-A3B-Thinking</td><td><strong>67.5%</strong></td></tr>
+            <tr><td>Prior open-source SOTA (comparable size)</td><td>&mdash;</td><td>below 67.5%</td></tr>
+            <tr><td>Claude Opus 4.7 (proprietary reference)</td><td>&mdash;</td><td>78.4%</td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>Computer-use results:
+        <table>
+          <thead><tr><th>Benchmark</th><th>Orchard-GUI (4B)</th></tr></thead>
+          <tbody>
+            <tr><td>WebVoyager</td><td>74.1%</td></tr>
+            <tr><td>Online-Mind2Web</td><td>67.0%</td></tr>
+            <tr><td>DeepShop</td><td>64.0%</td></tr>
+            <tr><td>Average</td><td>68.4%</td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>Orchard-Claw personal assistant: 59.6% pass@3 on Claw-Eval; 73.9% with ZeroClaw harness, demonstrating the value of harness-agnostic training data.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Credit-assignment SFT vs. terminal-success-only SFT: terminal-only SFT plateaus several points below 64.3%, demonstrating the productive-segment harvesting is what makes the 107K distilled trajectories pay off.</li>
+      <li>Balanced Adaptive Rollout vs. uniform rollouts on RL: uniform rollouts waste compute on already-solved tasks and stall on perpetually-failing tasks; Balanced Adaptive Rollout is the lever between SFT and SFT+RL improvements.</li>
+      <li>0.4K trajectories on Orchard-GUI vs. larger pools: the marginal gain from additional GUI trajectories is small once the harness-agnostic Env primitives are in place &mdash; data isn&rsquo;t the binding constraint at this regime.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positions the contribution as &ldquo;the missing open-source agentic training spine&rdquo; rather than &ldquo;a new model&rdquo;. The code release at <a href="https://github.com/microsoft/Orchard">microsoft/Orchard</a> is the artifact most likely to compound &mdash; downstream labs can run the same recipes on their own base models.</li>
+      <li>The use of MiniMax-M2.5 and Qwen3.5-397B as distillation teachers is itself a finding: the recipe is teacher-portable, and the SOTA result is achieved on a sub-100B-active student.</li>
+    </ul>
+
+    <h1 id="nvidia">NVIDIA Research</h1>
+
+    <h2 id="sana-wm"><a href="https://arxiv.org/abs/2605.15178">SANA-WM: Efficient Minute-Scale World Modeling with Hybrid Linear Diffusion Transformer</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Technical Report</span>
+      <span>arXiv:2605.15178</span>
+      <span>2026-05-14</span>
+      <span>World model · Video diffusion · Linear attention · Camera control · Open source</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Haoyi Zhu, Haozhe Liu, Yuyang Zhao, Tian Ye, Junsong Chen, Jincheng Yu, Tong He, Song Han, Enze Xie. Song Han and Enze Xie are the senior NVIDIA contributors; the work continues NVIDIA&rsquo;s SANA efficiency series. Submitted May 14, 2026.</li>
+      <li>Open-source <strong>2.6B-parameter world model</strong> that synthesizes high-fidelity 720p videos of <strong>60-second duration</strong> with precise camera control from a single image + 6-DoF camera trajectory. Comparable visual quality to LingBot-World and HY-WorldPlay (closed-source industrial baselines) at a fraction of the compute.</li>
+      <li>Trained in <strong>15 days on 64 H100s</strong> on only <strong>~213K public video clips</strong> annotated with metric-scale 6-DoF camera poses. The distilled inference variant runs a 60-second 720p clip in 34 seconds on a single RTX 5090 with NVFP4 quantization.</li>
+      <li>Four named architectural contributions: <strong>Hybrid Linear Attention</strong>, <strong>Dual-Branch Camera Control</strong>, <strong>Two-Stage Generation Pipeline</strong>, and a <strong>Robust Annotation Pipeline</strong>. Project page: <a href="https://nvlabs.github.io/Sana/WM/">nvlabs.github.io/Sana/WM/</a>; code: <a href="https://github.com/NVlabs/Sana/">NVlabs/Sana</a>.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Mechanism &mdash; Hybrid Linear Attention (HLA):</strong>
+        <ul>
+          <li><em>Problem.</em> Minute-scale 720p video at the target frame rate is &gt;1500 frames per generated clip; pure softmax attention scales O(n&sup2;) in the temporal dimension and is the source of both training compute and inference memory blow-up. Pure linear attention reclaims linear time but loses the sharp retrieval needed to keep object identity and scene structure consistent across a minute of generation.</li>
+          <li><em>Mechanism.</em> Per layer, two parallel temporal-attention paths. <strong>Frame-wise Gated DeltaNet (GDN)</strong> is a linear-recurrent path: the GDN update rule incorporates a decay gate that down-weights stale past frames and a delta-rule correction that updates only the residual between the target value and the current state prediction. Crucially, the recurrent state stays at a constant D&times;D size regardless of how many frames have been generated &mdash; the memory cost is independent of clip length. <strong>Softmax attention</strong> runs in parallel over a much smaller window for sharp local frame-to-frame retrieval. The two outputs are combined per layer.</li>
+          <li><em>Why.</em> GDN preserves the long-range temporal coherence needed for minute-scale generation (object persistence, lighting continuity, camera-induced parallax) at constant per-frame cost; the local softmax window preserves the sharp retrieval needed for high-fidelity texture continuity between adjacent frames. Beats interleaved Mamba+attention hybrids (Jamba-style) because the gating is at the head-path level inside each layer rather than at the layer level, so every layer benefits from both behaviours.</li>
+        </ul>
+      </li>
+      <li><strong>Mechanism &mdash; Dual-Branch Camera Control:</strong>
+        <ul>
+          <li><em>Problem.</em> Open-source world models tend to obey camera prompts loosely &mdash; the generated 6-DoF trajectory drifts off the requested path mid-clip. Closed-source baselines avoid this with proprietary supervised camera-injection layers.</li>
+          <li><em>Mechanism.</em> Two camera-conditioning branches injected at different model depths: one operates on raw 6-DoF trajectory tokens (translation + rotation) and conditions early features for coarse pose alignment; the second is a refinement branch that re-injects the camera signal near the output, locking high-frequency motion features to the trajectory.</li>
+          <li><em>Why.</em> The split prevents the camera signal from being washed out by deep-layer feature mixing &mdash; the late-stage re-injection keeps the model on the requested 6-DoF path. Beats single-branch camera injection where the trajectory signal degrades after the first few transformer blocks.</li>
+        </ul>
+      </li>
+      <li><strong>Mechanism &mdash; Two-Stage Generation Pipeline:</strong>
+        <ul>
+          <li><em>Problem.</em> A single diffusion pass at minute-scale either trades off quality for length or runs out of memory.</li>
+          <li><em>Mechanism.</em> Stage 1 generates a coherent but slightly lower-fidelity 60-second clip. A separate long-video refiner is then applied to stage-1 outputs, improving fidelity and cross-segment consistency without retraining the base model.</li>
+          <li><em>Why.</em> The refiner is the leverage point for quality at minute-scale: stage-1 carries structural correctness (camera-following, object persistence), stage-2 carries texture and continuity, and they can be trained separately.</li>
+        </ul>
+      </li>
+      <li><strong>Mechanism &mdash; Robust Annotation Pipeline:</strong>
+        <ul>
+          <li><em>Problem.</em> The bottleneck for camera-controlled world models is not video data &mdash; it&rsquo;s 6-DoF camera-pose labels at metric scale, which most public video corpora don&rsquo;t carry.</li>
+          <li><em>Mechanism.</em> A vision-driven pose-extraction pipeline produces metric-scale 6-DoF pose annotations for public video clips, yielding ~213K spatiotemporally consistent action-label pairs (clip + camera trajectory). Open-released alongside the model.</li>
+          <li><em>Why.</em> Lets the model be trained from scratch on public data without requiring access to a proprietary 3D-engine simulator or a captive video corpus. Beats prior open-source efforts that either skipped camera labels (and so couldn&rsquo;t learn precise control) or relied on synthetic Unity/Unreal-engine renders (which don&rsquo;t transfer to natural-image distributions).</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Training</h3>
+    <ul>
+      <li>~213K public video clips with metric-scale 6-DoF pose supervision; native one-minute training horizon.</li>
+      <li>15 days on 64 H100s. Inference: 60-second 720p clip on a single H100; <strong>34 seconds</strong> for the same clip on a single RTX 5090 with NVFP4 quantization in the distilled variant.</li>
+      <li>Two-stage training mirrors the two-stage inference: base diffusion transformer trained for minute-scale generation; long-video refiner trained on stage-1 outputs.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>On NVIDIA&rsquo;s in-house one-minute world-model benchmark, SANA-WM beats every prior open-source baseline on action-following accuracy (6-DoF camera trajectory adherence) while remaining visually comparable to the LingBot-World / HY-WorldPlay industrial baselines.</li>
+      <li>Throughput: <strong>22.0 videos/hour on 8 H100s</strong> with the full inference pipeline, compared to <strong>0.6 videos/hour</strong> for LingBot-World &mdash; a <strong>36&times;</strong> advantage at comparable visual quality.</li>
+      <li>The 34-second-per-clip RTX 5090 figure reframes minute-scale world modelling as a consumer-GPU-deployable capability, not an industrial-cluster capability.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Full softmax attention vs.&nbsp;Hybrid Linear Attention: full softmax exhausts H100 memory before 60 seconds; pure linear attention loses object persistence across the clip; HLA carries both.</li>
+      <li>Single-branch vs.&nbsp;dual-branch camera control: single-branch trajectories drift in the final third of the clip; dual-branch keeps the requested path through the whole minute.</li>
+      <li>Single-stage vs.&nbsp;two-stage generation: single-stage at the same FLOPs trades off either fidelity or length; the refiner is the cheaper marginal investment for both.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Continues NVIDIA&rsquo;s SANA efficiency line (the original SANA was a 2K text-to-image model with the same compression-friendly design philosophy). SANA-WM moves the same approach into the temporal axis.</li>
+      <li>The annotation pipeline release is the part most likely to compound &mdash; it&rsquo;s the asset the rest of the open-source video community has been missing.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
