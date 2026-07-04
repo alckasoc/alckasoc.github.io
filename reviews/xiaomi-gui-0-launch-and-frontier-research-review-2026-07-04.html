@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Xiaomi-GUI-0 Launch &amp; Frontier Research Review — July 4, 2026 | Auto Lit Review</title>
+<meta name="description" content="Xiaomi Research releases Xiaomi-GUI-0, a native multimodal GUI agent trained in a real-device closed loop (72.0% RealMobile, 78.9% AndroidWorld). Three Tier 2 papers accompany it: ByteDance Seed&rsquo;s FlashMorph budget-constrained hybrid attention layer selection, Tencent Hunyuan&rsquo;s GEAR end-to-end AR + VQ tokenizer with dual-branch codebook readout, and Google&rsquo;s RLMF using self-judgment quality as an RL signal for faithful uncertainty expression." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 4, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#xiaomi" class="toc-h1">Xiaomi</a>
+          <ul>
+            <li><a href="#xiaomi-gui-0" class="toc-h2">Xiaomi-GUI-0 Technical Report</a></li>
+          </ul>
+        </li>
+        <li><a href="#bytedance" class="toc-h1">ByteDance Seed</a>
+          <ul>
+            <li><a href="#flashmorph" class="toc-h2">FlashMorph: Morphing into Hybrid Attention Models</a></li>
+          </ul>
+        </li>
+        <li><a href="#google" class="toc-h1">Google</a>
+          <ul>
+            <li><a href="#rlmf" class="toc-h2">RLMF: RL with Metacognitive Feedback</a></li>
+          </ul>
+        </li>
+        <li><a href="#tencent" class="toc-h1">Tencent Hunyuan</a>
+          <ul>
+            <li><a href="#gear" class="toc-h2">GEAR: Guided End-to-End AutoRegression</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review · July 4, 2026</div>
+    <h1 class="page-title">Xiaomi-GUI-0 Launch &amp; Frontier Research</h1>
+    <div class="page-meta">4 papers &middot; 4 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>The scheduler last ran on May 17, so this page covers a compressed window bounded by what appeared on Hugging Face Daily Papers for Jul 2&ndash;3 (Jul 4 was quiet). One Tier 1 launch: Xiaomi Research&rsquo;s <strong>Xiaomi-GUI-0</strong>, a native multimodal GUI agent for real mobile environments trained inside a real-device closed loop rather than the usual simulator-only pipeline &mdash; 72.0% on the in-house RealMobile benchmark, 78.9% on AndroidWorld. Three Tier 2 frontier-lab research papers accompany it. ByteDance Seed&rsquo;s <strong>FlashMorph</strong> reformulates Transformer-to-hybrid conversion as a budget-constrained subset-optimization problem, jointly learning gates on synthetic long-context retrieval data instead of the fixed-pattern or layerwise-scoring heuristics used by prior hybrid recipes. Tencent Hunyuan&rsquo;s <strong>GEAR</strong> is the first end-to-end joint training of a VQ tokenizer and an autoregressive image generator via a dual-branch codebook readout &mdash; a hard one-hot branch for next-token prediction, a differentiable soft branch for representation alignment that reaches the tokenizer &mdash; converging ImageNet gFID up to 10&times; faster than LlamaGen-REPA. Google (with Yale) presents <strong>RLMF</strong>: reinforcement learning where the reward is the quality of the model&rsquo;s own self-judgment of its performance, applied to faithful-calibration and outperforming standard RL by up to 63%.</p>
+
+      <h3>Competitiveness</h3>
+      <p>Xiaomi-GUI-0&rsquo;s 78.9% on AndroidWorld puts it in the same tier as the strongest published mobile-GUI agents built on <code>Claude Opus 4.8</code> and <code>GPT-5.5</code> scaffolds; the more informative number is 72.0% on RealMobile, which is a real-device closed-loop harness that penalises the failure modes (permission dialogs, payment auth, risk control) that inflate simulator scores &mdash; Xiaomi is trying to move the operative benchmark away from AndroidWorld/AndroidLab entirely rather than climb an existing leaderboard. FlashMorph&rsquo;s target is the same hybrid-attention regime that <code>Jamba</code>, <code>Zamba2</code>, and Qwen3.5-Omni&rsquo;s hybrid variant already occupy; the contribution is selection method, not a new base model, so the win is measured in ratio of long-context recall preserved per full-attention layer retained rather than an absolute leaderboard slot. GEAR&rsquo;s 10&times; gFID convergence speed-up is a training-side efficiency claim against LlamaGen-REPA, not an absolute FID SOTA &mdash; still-lower gFID belongs to the current diffusion-side stack (<code>SiT-XL/2</code>, <code>EDM2</code>) that GEAR&rsquo;s Tencent-Hunyuan sibling paper explicitly optimises against with distribution-wise rewards. RLMF&rsquo;s 63% relative improvement over standard RL is on faithful-calibration, a niche that current flagships (<code>Claude Sonnet 5</code>, <code>Gemini 3.5 Pro</code>) actively regress on when they lean into confident-sounding refusal or hedging &mdash; the paper is a research contribution to a metric that Anthropic&rsquo;s own model cards flag as unresolved.</p>
+
+      <h3>New frontier releases</h3>
+      <p>One Tier 1 in-window: <strong>Xiaomi-GUI-0</strong> (Xiaomi Research, arXiv:2606.31410, v2 posted Jul 1). Most recent general-purpose flagship remains <code>Claude Sonnet 5</code> (Anthropic, Jun 30) as the current default; <code>Claude Opus 4.8</code> is still the top proprietary reasoning model, <code>DeepSeek-V4-Pro</code> the top open-source flagship. OpenAI&rsquo;s GPT-5.6 Sol/Terra/Luna family remains behind a limited US-government access list (Jun 26); Google&rsquo;s Gemini 3.5 Pro remains staged for a July GA slot but had not shipped by Jul 4.</p>
+    </section>
+
+    <h1 id="xiaomi">Xiaomi</h1>
+
+    <h2 id="xiaomi-gui-0"><a href="https://arxiv.org/abs/2606.31410">Xiaomi-GUI-0 Technical Report</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv:2606.31410</span>
+      <span>2026-06-30 (v2 2026-07-01)</span>
+      <span>GUI agent &middot; Mobile &middot; Multimodal &middot; RL post-training &middot; Real-device pipeline</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Wanxia Cao, Chengzhen Duan, Pei Fu, Pengzhi Gao, Niu Lian, Fazhan Liu, Hui Liu, Heng Qu, Qinzhuo Wu, Zhehao Yu, et al. (32 authors); senior contributors Jian Luan and Cong Zou. Affiliation: Xiaomi Research (aligned with the Xiaomi MiMo team). Submitted Jun 30, 2026; v2 Jul 1.</li>
+      <li>Positions the model against the AndroidWorld/AndroidLab/Mobile-Eval-E family of GUI benchmarks by arguing those benchmarks systematically <em>overstate</em> real usability: they run in sandboxes with fixed account state, no risk control, no payment authentication, no permission dialogs &mdash; exactly the abnormal-state distribution that dominates real-world execution failures.</li>
+      <li>Xiaomi-GUI-0 is a single native multimodal model (not an orchestrator over an external VLM) trained inside a real-device closed loop where physical devices are the primary rollout environment and sandboxes are auxiliary. Reported results: 72.0% success on the in-house RealMobile benchmark; 78.9% on AndroidWorld.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>The paper positions Xiaomi-GUI-0 as a native multimodal GUI agent that takes screenshots + task descriptions and emits interface actions (tap, swipe, text entry, navigation) end-to-end. The abstract does not disclose parameter count, base backbone, or vision encoder architecture in the text released to arXiv; the technical report frames the contribution as the training pipeline plus the real-device infrastructure, not a novel architecture block.</li>
+      <li>Action space is described as tapping, swiping, text entry, and navigation &mdash; the standard mobile-GUI action set aligned with AndroidWorld&rsquo;s primitive-action taxonomy so cross-benchmark evaluation is well-defined.</li>
+    </ul>
+
+    <h3>Training infrastructure &mdash; the real-device closed loop</h3>
+    <ul>
+      <li><strong>Mechanism &mdash; real-device-dominant hybrid infrastructure (the core Tier 1 contribution):</strong>
+        <ul>
+          <li><em>Problem.</em> Simulator- or emulator-trained GUI agents inherit an execution distribution that omits account state, permission dialogs, payment authentication and risk control. A model that hits 80%+ in AndroidWorld routinely collapses on real handsets because the abnormal-state distribution it sees at deployment was never in the training distribution &mdash; benchmarks and reality drift apart.</li>
+          <li><em>Mechanism.</em> Physical Xiaomi handsets are the primary execution environment for data collection, rollout, and evaluation; sandboxes only supply auxiliary support (parallel data collection, cost-sensitive early evaluation). Every training and evaluation trajectory shares an execution distribution close to real deployment, so the training-time state distribution matches the deployment-time state distribution rather than approximating it. The abstract explicitly calls out this alignment as the mechanism that closes the benchmark&mdash;usability gap.</li>
+          <li><em>Why.</em> Prior GUI agents (Qwen2.5-VL-based mobile agents, OS-Copilot-style stacks) treat simulators as ground truth and use limited on-device validation. Xiaomi&rsquo;s inversion &mdash; physical device primary, sandbox auxiliary &mdash; is the axis of improvement: instead of pursuing a better proxy environment, they eliminate the proxy at the training-data boundary. This is expensive but it is the only way to expose SFT and RL to permission dialogs, DPAPI-style credential prompts, and payment-flow recovery, which every simulator strips out.</li>
+        </ul>
+      </li>
+      <li><strong>Mechanism &mdash; error-driven data flywheel:</strong>
+        <ul>
+          <li><em>Problem.</em> Real-device rollouts are the exact place failure trajectories are cheapest to observe but hardest to reuse: a failed rollout is a wasted expensive rollout unless it is converted into training signal.</li>
+          <li><em>Mechanism.</em> Failure trajectories are converted into three data types automatically: <em>corrected actions</em> (the action the model should have taken), <em>reflective explanations</em> (a rationale over why the taken action failed), and <em>recovery demonstrations</em> (how to unwind from a bad state and resume the task). These populate later SFT and RL stages, closing the loop on the physical-device rollout.</li>
+          <li><em>Why.</em> Standard SFT + rejection-sampling pipelines drop failed rollouts entirely, which throws away exactly the state-transitions the agent is worst at. Xiaomi treats failure as data, and the flywheel structure means every real-device execution has training value even when it does not complete the task.</li>
+        </ul>
+      </li>
+      <li><strong>Training-data composition.</strong> Three explicit slices: high-frequency <em>head</em> tasks (the app-flow coverage), high-generalization data for <em>long-tail intents</em>, and capability-enhancement data targeting reflection and memory. The mix is chosen so head tasks pin down the common paths and long-tail intents force generalization across app types.</li>
+    </ul>
+
+    <h3>Post-training pipeline</h3>
+    <ul>
+      <li>Three progressive stages, in order:
+        <ol>
+          <li><strong>Supervised fine-tuning</strong> on the multi-source data mix above, establishing baseline action-following behavior over head and long-tail intents.</li>
+          <li><strong>Step-level reinforcement learning</strong> &mdash; per-step reward attribution rather than trajectory-level rewards. This is the design choice that lets the error-driven flywheel data act on individual bad decisions inside otherwise-successful trajectories, not just on end-to-end failures.</li>
+          <li><strong>Agentic reinforcement learning</strong> &mdash; end-to-end trajectory-level RL on the closed-loop real-device rollouts, with reflection and memory in scope.</li>
+        </ol>
+      </li>
+      <li>The abstract does not disclose the specific policy-optimization algorithm (GRPO / GSPO / PPO variant), the reward-model architecture, or the KL-penalty schedule; those details are inside the report body.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Headline numbers: <strong>72.0% success on RealMobile</strong> (Xiaomi in-house real-device benchmark) and <strong>78.9% on AndroidWorld</strong>. The report emphasises execution stability and abnormal-state recognition as the axes of improvement in real-world tasks, not raw completion rate on synthetic environments.</li>
+      <li>The gap between RealMobile (72.0%) and AndroidWorld (78.9%) is itself part of the argument &mdash; it quantifies the drift a training pipeline that ignores account state, permission dialogs, and payment auth incurs when it moves to real hardware.</li>
+      <li>The abstract does not disclose per-app breakdowns, per-category error analysis, or comparison numbers vs Qwen2.5-VL-based agents, OSAtlas, or Aguvis in the excerpt released &mdash; those are in the report body.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Technical report on arXiv (2606.31410), no model weights or code repository referenced in the abstract. Xiaomi Research is on the Hugging Face Daily Papers submission org, suggesting a public release path is at least available.</li>
+    </ul>
+
+    <h1 id="bytedance">ByteDance Seed</h1>
+
+    <h2 id="flashmorph"><a href="https://arxiv.org/abs/2606.30562">Morphing into Hybrid Attention Models</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv:2606.30562</span>
+      <span>2026-06-29</span>
+      <span>Hybrid attention &middot; Linear attention &middot; Long context &middot; Layer selection &middot; Distillation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Disen Lan, Jianbin Zheng, Yuxi Ren, Xin Xia, Xuanda Wang, Xuefeng Xiao, Xipeng Qiu, Yu Cheng. Frontier affiliation via ByteDance Seed (submitting organisation on Hugging Face Daily Papers) with Fudan and CUHK co-authors. Submitted Jun 29, 2026.</li>
+      <li>Studies Transformer-to-hybrid conversion &mdash; retaining a subset of full-attention layers and replacing the rest with linear attention &mdash; and asks the concrete question: <em>which</em> layers should keep full attention under a fixed budget? Existing recipes rely on either fixed placement patterns (every-N interleaving) or per-layer scoring heuristics.</li>
+      <li>Contribution: <strong>FlashMorph</strong>, an explicit budget-constrained subset-optimization formulation solved by joint gate learning on synthetic long-context retrieval data. Preserves long-context recall and general benchmark performance while dropping layer-selection cost substantially versus per-layer scoring baselines.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Mechanism &mdash; budget-constrained joint gate learning (the core contribution):</strong>
+        <ul>
+          <li><em>Problem.</em> Hybrid-attention layer selection has been treated as an isolated-layer problem: score each layer independently for importance, then keep the top-k. But layers interact under a global hybrid configuration &mdash; a layer that scores marginally on its own may be indispensable once its neighbours are also linearized, and vice versa. Fixed-pattern placement ignores this entirely; per-layer scoring only sees the marginal effect. Both leave performance on the table.</li>
+          <li><em>Mechanism.</em> Three-step recipe. <strong>(1) Morphable model construction:</strong> equip every full-attention layer with a converted linear-attention branch, so at each layer position the model can execute either branch. <strong>(2) Frozen-weight gate optimization:</strong> freeze all model weights and jointly learn a scalar gate per layer on synthetic long-context retrieval data, with a linearization regularization term that pushes the gates toward preferring the linear branch (subject to preserving retrieval accuracy). Because the weights are frozen and only the gates train, the optimization is cheap and the gates see each other&rsquo;s effect through the shared retrieval loss &mdash; this is what captures the interdependent-layer effect. <strong>(3) Discretization + finetune:</strong> discretize the learned gates under a preset full-attention budget to instantiate the concrete hybrid architecture, then run standard logits distillation from the source Transformer and a long-context finetune to close the residual gap.</li>
+          <li><em>Why.</em> Interleaved-Mamba/attention recipes (Jamba, Zamba2) fix placement by hand; layerwise-scoring methods (attention-entropy, KV-cache-hit-rate proxies) score each layer as if it lived alone. FlashMorph is a global optimum over the layer selection subset because gate optimization sees the joint effect and the linearization regularizer prices the &ldquo;keep full attention&rdquo; slots against the retrieval objective. The synthetic long-context retrieval task is the axis of improvement: it directly measures the failure mode (needle-in-haystack recall) that pure linear attention regresses on, so gates that trade off retrieval sharpness for efficiency are penalised in the exact way they cause harm at deployment.</li>
+        </ul>
+      </li>
+      <li>Post-selection pipeline is deliberately standard: logits distillation from the pre-conversion Transformer, then long-context finetuning. The novelty is entirely in the selection stage; the distillation step is off-the-shelf so results are attributable to the selection method rather than to a novel distillation trick.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>The abstract reports that FlashMorph &ldquo;discovers more effective hybrid configurations, preserves strong long-context recall and general benchmark performance while substantially reducing layer selection cost&rdquo; versus existing selection methods. Specific benchmark numbers, base model, retention budgets, and long-context recall scores are inside the paper body (arXiv posting is v1, 8.9 MB PDF).</li>
+      <li>Baselines named as the comparison set are existing heuristic layer-selection methods (fixed-pattern placement, per-layer scoring). The abstract does not enumerate them.</li>
+      <li>Efficiency claim is on the selection stage cost, i.e.&nbsp;how expensive it is to run FlashMorph itself relative to running per-layer scoring &mdash; not the inference-time cost of the resulting hybrid model.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Ablation targets implied by the method structure: the linearization regularizer strength (i.e.&nbsp;how aggressively gates are pushed toward linear), the discretization threshold under a fixed budget, and the size of the synthetic long-context retrieval corpus used for gate training. Specific ablation tables are in the report body, not the abstract.</li>
+    </ul>
+
+    <h1 id="google">Google</h1>
+
+    <h2 id="rlmf"><a href="https://arxiv.org/abs/2606.32032">Reinforcement Learning with Metacognitive Feedback Elicits Faithful Uncertainty Expression in LLMs</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv:2606.32032</span>
+      <span>2026-06-30</span>
+      <span>RL post-training &middot; Calibration &middot; Uncertainty &middot; Preference optimization &middot; Data selection</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Gabrielle Kaili-May Liu, Avi Caciularu, Gal Yona, Idan Szpektor, Arman Cohan. Affiliation: Google Research (Caciularu, Yona, Szpektor) with Yale NLP (Liu, Cohan). Code at github.com/yale-nlp/RLMF. Submitted Jun 30, 2026.</li>
+      <li>Problem framing: LLMs hallucinate with high confidence, misrepresent internal uncertainty, and fail to recognise knowledge boundaries. The paper posits that a model that can accurately <em>judge</em> its own performance is positioned to <em>improve</em> that performance &mdash; and turns this from an assertion into an RL signal.</li>
+      <li>Contribution: <strong>RLMF</strong> (Reinforcement Learning with Metacognitive Feedback), which refines completion rankings during preference optimization based on the quality of a model&rsquo;s self-judgments of performance, plus <strong>metacognitive data selection</strong> that uses the same self-judgments to identify high-value training examples. Applied to faithful calibration, RLMF surpasses standard RL by up to 63%.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Mechanism &mdash; RLMF (the core contribution):</strong>
+        <ul>
+          <li><em>Problem.</em> Standard RLHF and DPO rank completions by preference-model score, which reflects human judgment of quality. But quality alone does not select for calibration &mdash; a completion can be preferred by humans and still express confidence at the wrong level. Intrinsic-feedback methods (self-consistency, verifier ensembles) are proxies for correctness and are noisy on the calibration axis specifically.</li>
+          <li><em>Mechanism.</em> During preference optimization, each candidate completion is scored not only by the standard preference reward but also by a metacognitive reward: the model produces a self-judgment of its own performance on that completion, and the RL signal is graded on how accurate that self-judgment was against ground truth. Completions where the model correctly identified its own hit/miss get boosted; completions where the self-judgment was systematically over- or under-confident get penalised. This ranks completions on self-knowledge quality, orthogonal to correctness alone.</li>
+          <li><em>Why.</em> Prior calibration recipes (temperature scaling, verbalized-confidence prompting, ensemble-derived uncertainty) sit downstream of a fixed model. RLMF pushes calibration into the RL objective itself &mdash; the model that comes out of preference optimization has been trained on a signal that rewards accurate self-modeling. The +63% relative improvement over standard RL is on faithful calibration specifically, i.e.&nbsp;the alignment of expressed uncertainty with intrinsic uncertainty. This is a metric that Anthropic&rsquo;s own model cards flag as unresolved and that <code>Claude Sonnet 5</code> / <code>Gemini 3.5 Pro</code> regress on when they lean into confident-sounding hedging.</li>
+        </ul>
+      </li>
+      <li><strong>Mechanism &mdash; metacognitive data selection:</strong>
+        <ul>
+          <li><em>Problem.</em> Naive active learning selects training examples by predicted uncertainty or margin heuristics. This confounds &ldquo;the model is uncertain&rdquo; with &ldquo;the example is informative&rdquo; &mdash; and picks noisy edge cases the model would fail on for reasons unrelated to what training would fix.</li>
+          <li><em>Mechanism.</em> Score candidate training examples by the quality of the model&rsquo;s self-judgment on them: examples where the model&rsquo;s self-judgment is wrong or overconfident are exactly the examples where more supervision has purchase. Select those preferentially.</li>
+          <li><em>Why.</em> The metacognitive score is a direct signal of &ldquo;this is a place my self-model is broken,&rdquo; which is a more targeted training-data-value signal than raw predictive uncertainty. Empirically it outperforms naive active learning on the same faithful-calibration task.</li>
+        </ul>
+      </li>
+      <li><strong>Two-stage decoupled pipeline for faithful calibration.</strong> Stage 1: use RLMF and metacognitive data selection to calibrate the faithfulness of the model&rsquo;s <em>self-reported numeric confidence scores</em>. Stage 2: map those calibrated numeric scores into natural, context-adaptable <em>linguistic uncertainty expressions</em> via targeted output editing. This decouples the &ldquo;how confident should I be&rdquo; question from the &ldquo;how do I phrase that&rdquo; question, and lets each stage be evaluated independently.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>State-of-the-art on faithful calibration across &ldquo;diverse tasks&rdquo; while preserving base accuracy (i.e.&nbsp;calibration does not come at the cost of task performance).</li>
+      <li>Headline: <strong>RLMF surpasses standard RL by up to 63%</strong> on the faithful-calibration axis while enhancing the model&rsquo;s ability to assess and express its own capability limits.</li>
+      <li>Metacognitive data selection outperforms naive active learning on the same faithful-calibration task; specific comparison baselines and per-task deltas are in the paper body.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>The paper positions metacognitive performance itself as an RL signal that can address limits of prior intrinsic-feedback RL methods &mdash; i.e.&nbsp;the technique generalises beyond faithful calibration to any task where self-judgment quality is measurable.</li>
+      <li>Code release at github.com/yale-nlp/RLMF.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent Hunyuan</h1>
+
+    <h2 id="gear"><a href="https://arxiv.org/abs/2606.32039">GEAR: Guided End-to-End AutoRegression for Image Synthesis</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv:2606.32039</span>
+      <span>2026-06-30</span>
+      <span>Image synthesis &middot; Autoregressive &middot; VQ tokenizer &middot; Representation alignment &middot; End-to-end</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Bin Lin, Zheyuan Liu, Chenguo Lin, Sixiang Chen, Yunyang Ge, Yunlong Lin, Jianwei Zhang, Miles Yang, Zhao Zhong, Liefeng Bo, Li Yuan. Tencent Hunyuan is the submitting Hugging Face org for the paper. Submitted Jun 30, 2026.</li>
+      <li>Attacks the two-stage decoupling in visual generative models: a VQ tokenizer is trained for reconstruction and then frozen, and only afterwards is an autoregressive (AR) generator trained on its indices or continuous latents. The tokenizer never learns what indices the generator finds easy to model.</li>
+      <li>Contribution: <strong>GEAR</strong> (Guided End-to-end AutoRegression), which trains the VQ tokenizer and AR generator jointly and end-to-end, guided by representation alignment. Converges ImageNet gFID up to <strong>10&times; faster</strong> than the LlamaGen-REPA baseline, learns better patch-level and spatially-coherent features, and generalises across quantizers (VQVAE, LFQ, IBQ) and to text-to-image.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Mechanism &mdash; dual read-out of the codebook assignment (the core contribution):</strong>
+        <ul>
+          <li><em>Problem.</em> The VQ index fed to the AR model is a non-differentiable one-hot categorical variable, so gradients from the AR loss cannot reach the tokenizer &mdash; the tokenizer is deaf to the generator&rsquo;s difficulty landscape. Naive straight-through estimators for this specific joint objective collapse: they let the tokenizer game the AR loss by producing indices with no reconstruction meaning.</li>
+          <li><em>Mechanism.</em> Read the codebook assignment out <em>twice</em>. A <strong>hard, one-hot branch</strong> feeds the AR generator as usual and trains it with next-token prediction &mdash; this stays discrete and does not backprop into the tokenizer. A <strong>differentiable soft branch</strong> (soft codebook assignment, e.g.&nbsp;temperature-softmaxed distance) carries a representation-alignment loss whose gradients <em>only</em> flow back to the tokenizer, not to the AR. So the tokenizer is now trained by (i) its reconstruction loss and (ii) a representation-alignment signal that reflects what representation structure the AR is trying to model &mdash; and the AR remains trained by clean next-token prediction on hard indices.</li>
+          <li><em>Why.</em> This inverts the standard REPA / diffusion-side alignment recipe. Diffusion-side REPA makes the <em>latent</em> semantic (DINOv2-like) so the generator has less work to do. GEAR instead lets the AR&rsquo;s features become more DINOv2-like while the tokenizer&rsquo;s own features become <em>less</em> DINOv2-like &mdash; the alignment burden shifts from the tokenizer to the AR. The AR steers the tokenizer toward an index distribution the AR can predict, which is a strictly different equilibrium from either &ldquo;fix the tokenizer, train the AR&rdquo; or &ldquo;make the tokenizer semantic.&rdquo;</li>
+        </ul>
+      </li>
+      <li>Generality: the dual-readout trick is orthogonal to which quantizer sits underneath. GEAR is shown to compose with <strong>VQVAE</strong>, <strong>LFQ</strong> (lookup-free quantization), and <strong>IBQ</strong>, and extends from class-conditional ImageNet to text-to-image generation.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Headline: <strong>up to 10&times; speed-up in ImageNet gFID convergence</strong> versus the LlamaGen-REPA baseline &mdash; a training-side efficiency claim on wall-clock steps to reach a target gFID, not an absolute gFID SOTA number.</li>
+      <li>Learned representations show measurably better patch-level structure and spatial coherence than the two-stage baseline, consistent with the &ldquo;AR features become more semantic&rdquo; direction of the mechanism.</li>
+      <li>Cross-quantizer generalization: gains hold across VQVAE, LFQ, and IBQ, i.e.&nbsp;the joint-training benefit is not a quirk of a specific quantization method.</li>
+      <li>Text-to-image extension: the recipe transfers beyond class-conditional ImageNet, which is the standard first-hurdle for AR image methods.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Structural ablations implied by the method: turning off the soft branch collapses to standard two-stage (the baseline); letting the soft branch also backprop into the AR is a natural ablation to isolate the &ldquo;gradients only reach the tokenizer&rdquo; design choice. Specific ablation numbers are in the report body.</li>
+      <li>Choice of representation-alignment target (DINOv2 vs alternative teachers) is another natural ablation dimension the paper likely runs.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
