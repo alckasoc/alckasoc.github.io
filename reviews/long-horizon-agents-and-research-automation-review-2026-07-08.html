@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Long-Horizon Agents &amp; Research Automation Review — July 8, 2026 | Auto Lit Review</title>
+<meta name="description" content="Four in-window frontier-lab items: ByteDance Seed's EdgeBench log-sigmoid scaling law of real-world environment learning (R^2=0.998 across 38,000 hours of agent interaction), Alibaba Wan-AI's Wan-Streamer v0.2 640x368 streaming audio-visual model with Ulysses-style performer parallelism, Microsoft's ResearchStudio-Reel + ResearchStudio-Idea skill suites for last-mile dissemination and evidence-grounded ideation, and Anthropic's Making of Claude Code feature." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 8, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#alibaba" class="toc-h1">Alibaba</a>
+          <ul>
+            <li><a href="#wan-streamer-v02" class="toc-h2">Wan-Streamer v0.2</a></li>
+          </ul>
+        </li>
+        <li><a href="#bytedance" class="toc-h1">ByteDance Seed</a>
+          <ul>
+            <li><a href="#edgebench" class="toc-h2">EdgeBench: Scaling Laws of Real-World Environment Learning</a></li>
+          </ul>
+        </li>
+        <li><a href="#microsoft" class="toc-h1">Microsoft</a>
+          <ul>
+            <li><a href="#researchstudio-reel" class="toc-h2">ResearchStudio-Reel</a></li>
+            <li><a href="#researchstudio-idea" class="toc-h2">ResearchStudio-Idea</a></li>
+          </ul>
+        </li>
+        <li><a href="#anthropic" class="toc-h1">Anthropic</a>
+          <ul>
+            <li><a href="#making-of-claude-code" class="toc-h2">The Making of Claude Code</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 8, 2026</div>
+    <h1 class="page-title">Long-Horizon Agents &amp; Research Automation</h1>
+    <div class="page-meta">4 items &middot; 4 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>No Tier 1 flagship launch in the four-day window between Jul 4 (last review) and Jul 8. Three Tier 2 research papers and one Tier 3 Anthropic feature ship instead, and they cluster on the same axis: what happens to agents once they are turned loose in real environments for long horizons. ByteDance Seed&rsquo;s <strong>EdgeBench</strong> is the load-bearing paper &mdash; 38,000 hours of agent interaction across 134 twelve-hour tasks yields the first R<sup>2</sup>=0.998 log-sigmoid scaling law for post-deployment environment learning, with an agent-learning-speed doubling every three months across model generations. Alibaba Wan-AI&rsquo;s <strong>Wan-Streamer v0.2</strong> keeps the v0.1 model formulation but raises interactive output from 192&times;336 to 640&times;368 at 25 FPS while holding 200 ms model-side latency, by moving the &ldquo;performer&rdquo; branch to a Ulysses-style context-parallel group. Microsoft&rsquo;s <strong>ResearchStudio-Reel</strong> and companion <strong>ResearchStudio-Idea</strong> attack the two ends of the research lifecycle &mdash; ideation from 1,947 conference outcomes on the front, dissemination to editable poster/video/blog on the back &mdash; through composed Claude Code and Codex skills with hard pass/fail render gates. Anthropic&rsquo;s Tier 3 feature <strong>The Making of Claude Code</strong> is an origin-story piece on how an internal CLI became the coding agent.</p>
+
+      <h3>Competitiveness</h3>
+      <p>EdgeBench is measured against pretraining scaling laws that already anchor how <code>Claude Sonnet 5</code>, <code>GPT-5.5</code>, and <code>DeepSeek-V4-Pro</code> project capability from data and compute; the paper claims to add the first equivalent regularity for the post-deployment regime, and the 0.998 R<sup>2</sup> across 134 tasks is a strong signal that the emerging &ldquo;experience curve&rdquo; framing has an actual functional form rather than being a marketing thesis. Wan-Streamer v0.2 competes in the streaming audio-visual interaction slice where <code>GPT-5.5 Realtime</code>, <code>Gemini 2.5 Realtime</code>, and Kimi&rsquo;s streaming agent already have public APIs; the axis of comparison is not benchmark leaderboard but latency budget at a given output resolution and Wan-AI is trading GPU count on the performer branch for resolution rather than for wall-clock latency. Microsoft&rsquo;s ResearchStudio pipeline is targeting the same automated-research niche as Sakana AI Scientist v3 and Google&rsquo;s AI Co-Scientist, but on the dissemination side rather than the discovery side &mdash; posters and slide decks that authors can re-open in PowerPoint and Word are a different capability contract from a fully autonomous research agent. Anthropic&rsquo;s Making-of feature is not a benchmark artefact.</p>
+
+      <h3>New frontier releases</h3>
+      <p>No new Tier 1 flagship model in the Jul 4&ndash;8 window. Most recent general-purpose flagship remains <code>Claude Sonnet 5</code> (Anthropic, Jun 30) as the default coding-agent model; <code>Claude Opus 4.8</code> is still the top proprietary reasoning model, <code>DeepSeek-V4-Pro</code> the top open-weight flagship, and Google&rsquo;s Gemini 3.5 Pro remains in limited preview with an announced Jul 17 GA target. <code>Wan-Streamer v0.2</code> ships as a v0.1&rarr;v0.2 point update rather than a new model line.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="wan-streamer-v02"><a href="https://arxiv.org/abs/2607.04443">Wan-Streamer v0.2: Higher Resolution, Same Latency</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv:2607.04443</span>
+      <span>2026-07-05</span>
+      <span>Streaming AV &middot; Real-time interaction &middot; Ulysses parallelism &middot; Latency budget</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Lianghua Huang, Zhi-Fan Wu, Yupeng Shi, Wei Wang, Mengyang Feng, Junjie He, Chen-Wei Xie, Yu Liu, Jingren Zhou, et al. (26 authors). Frontier affiliation: Wan-AI &mdash; the Tongyi Wanxiang video generation team inside Alibaba Cloud/DAMO, submitted from the same org that ships Qwen-Image and Qwen-VL.</li>
+      <li>Positioning: v0.2 is a <em>latency-preserving</em> upgrade of the native-streaming end-to-end audio-visual interaction model. The v0.1 modelling formulation is left intact; the change is in the resolution and the system-level partition of the inference graph. The framing is deliberately not &ldquo;new model&rdquo; &mdash; it is a scaling paper for the streaming regime, where the interesting axis is what you can hold constant.</li>
+      <li>Headline numbers: interactive output stream raised from 192&times;336 to 640&times;368; model-side signal-to-signal latency held at approximately 200 ms at 25 FPS; total remote-interaction latency stays at approximately 550 ms once a 350 ms bidirectional network budget is added.</li>
+    </ul>
+
+    <h3>Architecture &mdash; the thinker/performer split</h3>
+    <ul>
+      <li><strong>Mechanism &mdash; single-GPU thinker, multi-GPU Ulysses-style performer (the core Tier 2 contribution):</strong>
+        <ul>
+          <li><em>Problem.</em> A native-streaming audio-visual model has to hold two very different sequences under a single interaction budget: a short language/state Transformer pass that reads incoming audio and writes the generation cache, and a much longer latent video sequence that has to be denoised every frame at 25 FPS. Naively adding GPUs to raise output resolution grows the latent video sequence quadratically in tokens per frame and blows the 200 ms model-side latency well before the network round-trip is even counted.</li>
+          <li><em>Mechanism.</em> The v0.2 inference graph pins the <strong>thinker</strong> &mdash; streaming perception, the language/state Transformer, and final decoding &mdash; on a single GPU with a low-latency path. The <strong>performer</strong> &mdash; the expensive next-unit latent generation &mdash; becomes a multi-GPU Ulysses-style context-parallel group. Each performer rank writes incoming K/V into a <em>pre-sharded local cache</em>, so the long high-resolution latent video sequence is split across ranks for denoising and gathered through Ulysses communication. The much shorter audio latent sequence is generated without sequence sharding on the same ranks. The thinker&rsquo;s language/state computation only reaches the performer as K/V conditioning, so no separate language sequence needs to be communicated inside the performer group.</li>
+          <li><em>Why.</em> Prior streaming AV agents scale by adding heads or by dropping to a smaller latent (both hurt scene legibility), or by increasing the frame budget (which the user sees as sluggishness). Ulysses-style context parallelism is standard for training long-context Transformers; applying it inside the performer at inference time, while keeping the thinker single-GPU, is what lets Wan-AI concentrate additional hardware on visual generation without adding user-visible delay. The compact thinker&ndash;performer boundary is preserved because the only cross-branch traffic is K/V, not a language sequence.</li>
+        </ul>
+      </li>
+      <li><strong>Mechanism &mdash; scene-grounded mid-shot agent framing.</strong>
+        <ul>
+          <li><em>Problem.</em> 192&times;336 is enough for a talking head with lip-sync but drops posture, gaze direction, hand gestures, and nearby-object identity below legibility &mdash; the interaction reads as a face floating in ambient blur.</li>
+          <li><em>Mechanism.</em> 640&times;368 puts the agent at mid-shot distance in the same latency envelope, so posture, gaze, hands, and local scene layout stay legible while the model keeps 25 FPS output.</li>
+          <li><em>Why.</em> The alternative &mdash; giving the streaming avatar a higher resolution off-line and re-encoding &mdash; loses real-time responsiveness. Ranking scene-grounded framing above per-pixel quality is a specific bet about which failure mode users actually notice in conversation.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>System &amp; latency budget</h3>
+    <ul>
+      <li>Model-side signal-to-signal: <strong>~200 ms</strong> at 25 FPS.</li>
+      <li>Assumed bidirectional network budget: <strong>350 ms</strong>.</li>
+      <li>Total remote-interaction latency: <strong>~550 ms</strong>. The abstract does not disclose the exact performer rank count or the Ulysses degree.</li>
+      <li>The abstract does not disclose parameter count, video codec details, or throughput per rank &mdash; those sit in the report body.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Website: <code>wan-streamer.com</code>. No weights or code repository referenced in the abstract; the paper is licensed CC BY 4.0.</li>
+    </ul>
+
+    <h1 id="bytedance">ByteDance Seed</h1>
+
+    <h2 id="edgebench"><a href="https://arxiv.org/abs/2607.05155">EdgeBench: Unveiling Scaling Laws of Learning from Real-World Environments</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv:2607.05155</span>
+      <span>2026-07-06</span>
+      <span>Scaling laws &middot; Long-horizon agents &middot; Benchmark &middot; Post-deployment learning</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Deyao Zhu, Xin Zhou, Shengling Qin, Xuekai Zhu, Hangliang Ding, Shu Zhong, Zixin Wen, et al. (48 authors), with senior contributors Wenhao Huang and Guang Shi. Frontier affiliation: <strong>ByteDance Seed</strong> (submitting organisation on Hugging Face Daily Papers). Submitted Jul 6, 2026.</li>
+      <li>Framing: pretraining scaling laws already predict how model capability scales with data and compute across generations &mdash; the whole DeepSeek-V4/Qwen3.7/Sonnet-5 planning envelope depends on them. EdgeBench asks the parallel question for the deployment side: does <em>learning from the real-world environment after deployment</em> obey a scaling law too?</li>
+      <li>Headline findings: overall performance during environment learning follows a <strong>log-sigmoid scaling law with R<sup>2</sup>=0.998</strong> across 38,000 hours of agent interaction; across model generations, <strong>agent learning speed roughly doubles every three months</strong>.</li>
+    </ul>
+
+    <h3>Methodology &mdash; the benchmark</h3>
+    <ul>
+      <li><strong>Mechanism &mdash; ultra-long-horizon real-world task suite (the core Tier 2 contribution):</strong>
+        <ul>
+          <li><em>Problem.</em> Existing agent benchmarks (SWE-bench, WebArena, AndroidWorld) run in short episodes with fixed environments and terminal reward. They cannot detect environment-learning dynamics because there is no environment to learn from &mdash; the state distribution is either static or reset every episode. As a result they can only measure &ldquo;model quality at deploy&rdquo;, not &ldquo;how the model improves as it interacts with a real environment for hours.&rdquo;</li>
+          <li><em>Mechanism.</em> EdgeBench is a suite of <strong>134 real-world tasks</strong> covering scientific discovery, software engineering, combinatorial optimization, professional knowledge work, formal mathematics, and interactive games. Each task sustains <strong>at least 12 hours</strong> of continuous agent operation. Every task is built with substantial expert effort and instrumented with <em>rich, multi-level feedback</em> so the agent gets both step-level and outcome-level signal rather than a single terminal reward. The scaling law is measured against this multilevel feedback: performance during environment learning is plotted against interaction time in hours.</li>
+          <li><em>Why.</em> Prior long-horizon agent evals topped out at hours per task with sparse reward; the multi-level feedback design is the axis of improvement &mdash; it exposes the intermediate learning curve. Without multi-level feedback the log-sigmoid signal averages out into noise, which is why prior work reports flat performance-vs-time curves on similar tasks.</li>
+        </ul>
+      </li>
+      <li>Aggregate scale of the study: <strong>~38,000 hours</strong> of agent-environment interaction (134 tasks &times; at least 12 hours per task, plus multiple agent generations).</li>
+      <li>Public release: 51 of the 134 tasks and the full evaluation framework are released &mdash; the remaining 83 stay held out to prevent training-time contamination of the scaling-law fit.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li><strong>Log-sigmoid fit.</strong> Overall performance during environment learning, plotted against interaction time, follows a log-sigmoid: an initial exploratory phase with slow improvement, a rapid learning phase, and a plateau. R<sup>2</sup>=0.998 across the study.</li>
+      <li><strong>Learning-speed doubling.</strong> Across successive frontier-model generations, the &ldquo;learning speed&rdquo; parameter of the log-sigmoid roughly <strong>doubles every three months</strong>. This is the cross-generation regularity that makes the paper a scaling-law paper rather than a single-run benchmark.</li>
+      <li>The abstract does not disclose the specific agents that were run, the exact model generations compared, or the parametric form of the log-sigmoid &mdash; those sit inside the report body.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The abstract does not itemize ablations. The load-bearing structural choices are (i) minimum 12-hour horizon per task, (ii) multi-level feedback rather than terminal reward, and (iii) coverage across scientific discovery, software engineering, combinatorial optimization, professional knowledge work, formal mathematics, and interactive games. Any of these three being dropped would collapse the log-sigmoid signal into noise.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>The paper releases the framework as a shared harness so external groups can drop in their own agents against the 51 open tasks; the held-out 83 stay under the ByteDance Seed evaluator to preserve the leaderboard signal.</li>
+    </ul>
+
+    <h1 id="microsoft">Microsoft</h1>
+
+    <h2 id="researchstudio-reel"><a href="https://arxiv.org/abs/2607.04438">ResearchStudio-Reel: Automate the Last Mile of Research from Paper to Poster, Video, and Blog</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Technical Report</span>
+      <span>arXiv:2607.04438</span>
+      <span>2026-07-05</span>
+      <span>Research automation &middot; Skill composition &middot; Claude Code / Codex &middot; DOCX / PPTX repair</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Lingao Xiao, Yalun Dai, Yangyu Huang, Qihao Zhao, Wenshan Wu, Hugo He, Ruishuo Chen, Jin Jiang, Qianli Ma, Jiahuan Zhang, Xin Zhang, Ying Xin, Yang Ou, Yan Xia, Scarlett Li, Longbo Huang, Zhipeng Zhang, Yang He, Yap Kim Hui, Yan Lu. Frontier affiliation: <strong>Microsoft</strong> (submitting org on Hugging Face Daily Papers, project hosted at <code>aka.ms/ResearchStudio</code>). Submitted Jul 5, 2026.</li>
+      <li>Positioning: prior automation for paper-to-poster / paper-to-video / paper-to-blog re-extracts the source paper from scratch inside each tool, ships one-way renders that cannot be re-opened in PowerPoint or Word, and gates quality on soft VLM-preference scores that plateau while load-bearing sections still read as empty. ResearchStudio-Reel argues the last mile is best built as a <em>composition of skills</em> rather than a monolithic pipeline.</li>
+    </ul>
+
+    <h3>Methodology &mdash; the skill graph</h3>
+    <ul>
+      <li><strong>Mechanism &mdash; shared extractor + measured-fill loop with hard render gates (the core Tier 2 contribution):</strong>
+        <ul>
+          <li><em>Problem.</em> Independent paper-to-X tools duplicate paper extraction, so the factual state seen by each generator drifts &mdash; the poster claims one number, the video says another, the blog quotes a third. Soft VLM-preference scores keep saying &ldquo;looks fine&rdquo; while whole sections read as empty templates.</li>
+          <li><em>Mechanism.</em> Five skills organised into one <em>shared upstream extractor</em> (<code>Paper2Assets</code>) and three parallel generators (<code>Paper2Poster</code>, <code>Paper2Video</code>, <code>Paper2Blog</code>), plus one convergence layer (<code>Paper2Reel</code>). Every generator reads from the same Paper2Assets bundle, so section text, figure crops, and numeric claims are extracted once. Each generator runs a <em>measured-fill loop</em> whose exit is a <em>hard pass/fail render gate</em> rather than a soft preference score &mdash; the poster is not accepted until every load-bearing region is filled and the DOCX/PPTX round-trip is byte-legal.</li>
+          <li><em>Why.</em> Prior single-shot LLM systems (frontier-model-only baselines) and prior automated systems get high VLM-preference scores by hallucinating polished-looking but semantically empty regions. Hard render gates make the failure surface, and the shared extractor stops the three generators from disagreeing with each other. This is the axis of improvement over both automated baselines and single-shot frontier-LLM baselines on the Paper2Poster benchmark.</li>
+        </ul>
+      </li>
+      <li><strong>Mechanism &mdash; Paper2Reel interactive convergence layer.</strong>
+        <ul>
+          <li><em>Problem.</em> Producing three separate artefacts is only useful if the reader can navigate between them; otherwise the poster, video, and blog live in three tabs.</li>
+          <li><em>Mechanism.</em> <code>Paper2Reel</code> binds the three artefacts into a self-contained HTML viewer whose <em>section-level clicks</em> jump the video, slides, captions, and blog to matching content. The section index is derived from the same Paper2Assets bundle that fed the generators, so the cross-artefact anchors are exact.</li>
+          <li><em>Why.</em> This is the reason all three artefacts stay in scope in the same paper &mdash; the value is not any single output but the section-aligned view over all three.</li>
+        </ul>
+      </li>
+      <li>Skills run under the Claude Code and Codex skill contracts, so each skill exposes an agent-readable manifest and wraps deterministic primitives (poster layout, PPTX generation, DOCX repair) that the LLM calls rather than generating from scratch.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li><strong>Paper2Poster benchmark.</strong> Posters lead every aesthetic and information sub-criterion against both prior automated systems and single-shot frontier LLMs. Under two held-out VLM judges, ResearchStudio-Reel posters <em>surpass the authors&rsquo; own</em> on aesthetics and win overall on <strong>84%&ndash;93% of papers</strong>.</li>
+      <li><strong>Capability audit.</strong> Uniquely pairs narration-aligned on-slide highlights (the video branch) with a bilingual blog gated by <em>layout-aware DOCX repair</em>. ResearchStudio-Reel is the only pipeline that ships all three editable artefacts &mdash; poster, video, and blog &mdash; where &ldquo;editable&rdquo; means the DOCX/PPTX round-trips through Word and PowerPoint without breakage.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The abstract does not itemize ablations. The framing directly implies three: (i) shared Paper2Assets bundle vs. per-generator extraction, (ii) hard render gates vs. soft VLM preference, (iii) Paper2Reel section anchors vs. independent artefacts. All three are load-bearing for the claimed 84%&ndash;93% win rate.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Project: <code>aka.ms/ResearchStudio</code>; open-source repo at <code>github.com/microsoft/ResearchStudio</code>. Ships as Claude Code and Codex skills rather than as a hosted service.</li>
+    </ul>
+
+    <h2 id="researchstudio-idea"><a href="https://arxiv.org/abs/2607.04439">ResearchStudio-Idea: An Evidence-Grounded Research-Ideation Skill Suite from ML Conference Outcomes</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Technical Report</span>
+      <span>arXiv:2607.04439</span>
+      <span>2026-07-05</span>
+      <span>Research ideation &middot; Skill composition &middot; Pattern mining &middot; Prior-art collision</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Qihao Zhao, Yangyu Huang, Yalun Dai, Lingao Xiao, Jianjun Gao, Xin Zhang, Wenshan Wu, Scarlett Li, Yang He, Yan Lu, Yap Kim Hui. Frontier affiliation: <strong>Microsoft</strong> (companion paper to ResearchStudio-Reel, same team). Submitted Jul 5, 2026.</li>
+      <li>Positioning: LLM ideation as commonly deployed today generates candidate directions but does not ground them in the current literature, does not check whether the direction has already been claimed, and does not audit the risk of the plan before implementation. ResearchStudio-Idea targets this &ldquo;first mile&rdquo; of ideation as a skill suite that composes the missing steps.</li>
+    </ul>
+
+    <h3>Methodology &mdash; the skill suite</h3>
+    <ul>
+      <li>Three composable skills:
+        <ol>
+          <li><code>Paper-Search</code> &mdash; standalone multi-source literature search skill.</li>
+          <li><code>Scoop-Check</code> &mdash; standalone prior-art collision checker for novelty claims (does the proposed direction already exist under a different name).</li>
+          <li><code>IdeaSpark</code> &mdash; the end-to-end skill that composes evidence grounding, pattern-guided generation, collision retrieval, audit, and idea-card rendering into one workflow.</li>
+        </ol>
+      </li>
+      <li><strong>Mechanism &mdash; outcome-informed pattern mining (the core Tier 2 contribution):</strong>
+        <ul>
+          <li><em>Problem.</em> Ideation LLMs generate plausible-sounding directions from priors, so they under-differentiate against existing solutions and over-index on flashy but risk-heavy plans. There is no principled corpus of &ldquo;how successful ML ideas were actually shaped&rdquo; to condition on.</li>
+          <li><em>Mechanism.</em> <code>IdeaSpark</code> is constructed from a corpus of <strong>1,947 ML conference papers</strong> collected from <strong>ICLR, ICML, and NeurIPS 2021&ndash;2025</strong>, including Oral papers, a separately tracked high-citation subset, and <em>rejected submissions</em>. Analysis reveals <strong>31 recurring ideation sub-patterns</strong>, consolidated into <strong>15 reusable ideation patterns</strong>. Each pattern is operationalised as a structured card containing research contexts, bottleneck types, differentiation strategies, supporting precedents, and common failure modes. Given a research problem plus an evidence bundle, IdeaSpark evaluates evidence readiness, reconstructs the surrounding research context, identifies unresolved bottlenecks, selects relevant patterns, instantiates one candidate direction, retrieves potentially conflicting prior work, and performs outcome-informed auditing.</li>
+          <li><em>Why.</em> Prior ideation systems either produce raw brainstorm output (no grounding) or route through generic prompt templates (no differentiation). Conditioning on outcomes &mdash; including <em>rejected submissions</em>, so failure modes are visible &mdash; is the axis of improvement, because it forces the audit step to be evidence-grounded rather than confidence-weighted.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Blind automated-judge evaluations show that <code>IdeaSpark</code> consistently produces stronger research proposals than no-skill and generic-skill baselines while maintaining competitive novelty. The abstract does not disclose the exact win rate or the judge model; those sit in the report body.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The abstract does not itemize ablations. The load-bearing structural choices are (i) including rejected submissions in the pattern-mining corpus, (ii) consolidating 31 sub-patterns into 15 reusable patterns rather than using the raw taxonomy, and (iii) composing evidence grounding + collision retrieval + audit rather than shipping any of these three as a standalone.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Companion project to ResearchStudio-Reel; both ship as Claude Code / Codex skills through the shared Microsoft ResearchStudio project page.</li>
+    </ul>
+
+    <h1 id="anthropic">Anthropic</h1>
+
+    <h2 id="making-of-claude-code"><a href="https://www.anthropic.com/features/making-of-claude-code">The Making of Claude Code</a></h2>
+    <div class="paper-meta">
+      <span>Tier 3 &middot; Feature / Blog Post</span>
+      <span>anthropic.com</span>
+      <span>2026-07-06</span>
+      <span>Claude Code &middot; Coding agents &middot; Anthropic engineering &middot; Product history</span>
+    </div>
+
+    <ul>
+      <li>Anthropic&rsquo;s Jul 6 feature is an origin-story piece on how Claude Code went from an internal CLI to Anthropic&rsquo;s shipped coding agent, told by the researchers, engineers, and early users who built it. Framed on the site as a terminal-style read (&ldquo;Read in Terminal&rdquo; / &ldquo;Read as Article&rdquo;) that mirrors the CLI aesthetic of the product itself.</li>
+      <li>Timing context: the feature ships six days after the Jun 30 <code>Claude Sonnet 5</code> launch, which set Sonnet 5 as the default model in Claude Code with a native 1M-token context window and $2/$10 per Mtok promotional pricing through Aug 31. The feature is the narrative companion to that launch, positioning Claude Code as the flagship application of Sonnet 5.</li>
+      <li>Companion story: the &ldquo;Government of Alberta uses Claude to find and fix cybersecurity vulnerabilities across government systems&rdquo; case study, also dated Jul 6, is the enterprise-case-study counterpart &mdash; deploying the coding-agent stack against public-sector code.</li>
+      <li>Not a technical artefact &mdash; no benchmarks, model card, or engineering primitives. Value here is that it establishes on-record which internal teams contributed to which Claude Code capabilities, and the timeline from internal CLI to public agent product.</li>
+      <li>Anthropic&rsquo;s other in-window post &mdash; <em>&ldquo;More details on Fable 5&rsquo;s cyber safeguards and our jailbreak framework&rdquo;</em> (Jul 2) &mdash; sits just outside this window but continues the Jun 30 Fable 5 redeployment story with an industry framework for scoring jailbreak severity co-authored with Amazon, Microsoft, Google, and other Glasswing partners.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
