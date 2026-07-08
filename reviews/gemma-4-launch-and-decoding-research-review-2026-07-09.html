@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gemma 4 Launch &amp; Decoding Research Review &mdash; July 9, 2026 | Auto Lit Review</title>
+<meta name="description" content="One Tier 1 flagship launch and three Tier 2 decoding/attention papers: Google DeepMind's Gemma 4 open-weight multimodal family (2.3B-31B dense + 26B-A4B MoE, encoder-free 12B, thinking mode, MTP drafter), Tencent Hunyuan's HiLS-Attention hierarchical sparse attention (512x length extrapolation), DeepSeek's DSpark confidence-scheduled speculative decoding (60-85% speedup in the DeepSeek-V4 serving system), and NVIDIA's Nemotron-Labs-Diffusion tri-mode AR+diffusion+self-speculation LM (4x SPEED-Bench throughput vs Qwen3-8B)." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 9, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#google" class="toc-h1">Google DeepMind</a>
+          <ul>
+            <li><a href="#gemma-4" class="toc-h2">Gemma 4 Technical Report</a></li>
+          </ul>
+        </li>
+        <li><a href="#deepseek" class="toc-h1">DeepSeek</a>
+          <ul>
+            <li><a href="#dspark" class="toc-h2">DSpark</a></li>
+          </ul>
+        </li>
+        <li><a href="#nvidia" class="toc-h1">NVIDIA</a>
+          <ul>
+            <li><a href="#nemotron-labs-diffusion" class="toc-h2">Nemotron-Labs-Diffusion</a></li>
+          </ul>
+        </li>
+        <li><a href="#tencent" class="toc-h1">Tencent Hunyuan</a>
+          <ul>
+            <li><a href="#hils-attention" class="toc-h2">HiLS-Attention</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 9, 2026</div>
+    <h1 class="page-title">Gemma 4 Launch &amp; Decoding Research</h1>
+    <div class="page-meta">4 items &middot; 4 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>One Tier 1 flagship launch anchors the day. Google DeepMind ships <strong>Gemma 4</strong>, a 2.3B&ndash;31B dense plus 26B-A4B MoE open-weight family that is natively multimodal, integrates a thinking mode, and prototypes a unified <em>encoder-free</em> 12B that ingests raw 40 ms audio chunks and 48&times;48&times;3 RGB patches directly. Three Tier 2 decoding/attention papers cluster on the same axis: how to get more useful tokens per forward pass without touching model quality. Tencent Hunyuan&rsquo;s <strong>HiLS-Attention</strong> replaces mean-pooled chunk summaries with landmark-token summaries wired into a hierarchical softmax, making chunk selection end-to-end trainable under the LM loss and extrapolating 512&times; the training context on needle-in-a-haystack. DeepSeek&rsquo;s <strong>DSpark</strong> pairs a parallel drafter with a lightweight sequential module for intra-block dependencies, then adds a load-aware confidence scheduler to pick per-request verification length &mdash; deployed live in <code>DeepSeek-V4</code>, it delivers 60&ndash;85% per-user speedup over the MTP-1 production baseline at matched throughput. NVIDIA&rsquo;s <strong>Nemotron-Labs-Diffusion</strong> trains a single 3B/8B/14B backbone with a joint AR+diffusion objective so it can decode as AR, diffusion, or self-speculation (diffusion drafts, AR verifies); the 8B decodes 6&times; more tokens per forward than <code>Qwen3-8B</code> at matched accuracy, translating to 4&times; SPEED-Bench throughput on GB200 with SGLang.</p>
+
+      <h3>Competitiveness</h3>
+      <p>Gemma 4 31B lands at Elo 1451 on Arena Text as the top dense open model, close behind MoE flagships like <code>DeepSeek V4 Pro Thinking</code> (1458), <code>GLM 5</code> (1457), and <code>Kimi K2.6</code> (1460), and only 57 Elo behind the closed leader <code>Claude Fable 5</code> (1508); it is a leap over the 1366 held by Gemma 3 27B and puts the sub-32B open dense category back into the same conversation as trillion-parameter MoEs. On static benchmarks Gemma 4 31B posts 85.2 MMLU-Pro, 89.2 AIME 2026 no-tools, 84.3 GPQA Diamond, 80.0 LiveCodeBench v6, and Codeforces Elo 2150 in thinking mode &mdash; roughly matching what <code>Claude Opus 4.8</code>-class reasoning models report on the same benchmarks and shipping under Apache 2.0. The three Tier 2 decoding papers sit next to each other on the same Pareto surface: DSpark is production-verified inside the DeepSeek-V4 serving stack (real user traffic, MTP-1 as baseline), Nemotron-Labs-Diffusion is the more speculative research bet (single model, three decoding modes, GB200 numbers), and HiLS-Attention is the long-context play against dense attention and prior sparse variants (<code>NSA</code>, <code>MoBA</code>, <code>NOSA</code>). Reference frontier flagships remain <code>Claude Fable 5</code>, <code>Claude Opus 4.8</code>, <code>GPT-5.5</code>, <code>DeepSeek-V4-Pro</code>, and <code>Kimi K2.6</code>; on the open dense sub-32B slice, Gemma 4 31B is the new SOTA.</p>
+
+      <h3>New frontier releases</h3>
+      <p>New Tier 1 launch: <code>Gemma 4</code> (Google DeepMind, technical report Jul 2, weights released alongside) &mdash; a five-variant open-weight family (E2B, E4B, 12B unified encoder-free, 26B-A4B MoE, 31B dense) under Apache 2.0.</p>
+    </section>
+
+    <h1 id="google">Google DeepMind</h1>
+
+    <h2 id="gemma-4"><a href="https://arxiv.org/abs/2607.02770">Gemma 4 Technical Report</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv:2607.02770</span>
+      <span>2026-07-02</span>
+      <span>Open-weight flagship &middot; Natively multimodal &middot; MoE + dense &middot; Thinking mode &middot; Encoder-free &middot; QAT &middot; MTP</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Gemma Team, Google DeepMind (~275 named contributors + 201 additional). Correspondence: gemma4report@gmail.com. License: Apache 2.0. Weights released; Hugging Face collection under <code>google/</code>.</li>
+      <li>Positioning: the fourth generation of the Gemma open family. Frames itself as an on-device / edge-focused open flagship that rivals larger open MoEs on Arena Text and posts frontier-level static-benchmark numbers in thinking mode, while shipping quantized checkpoints small enough to fit on mobile.</li>
+      <li>Five variants: <code>E2B</code> (2.3B effective / 5B total via per-layer embeddings), <code>E4B</code> (4.5B effective / 8B total), <code>12B</code> dense unified encoder-free, <code>26B-A4B</code> MoE (3.8B activated of 26B total), <code>31B</code> dense. All decoder-only Transformers with pre-norm + post-norm RMSNorm and QKNorm; 262k SentencePiece vocab shared with Gemini.</li>
+      <li>Headline numbers (thinking mode): 31B posts MMLU-Pro 85.2, AIME 2026 no-tools 89.2, LiveCodeBench v6 80.0, Codeforces Elo 2150, GPQA Diamond 84.3, HLE 19.5 (26.5 with search), Big Bench Extra Hard 74.4. Arena Text Elo 1451 (rank 43), top open dense.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+
+    <p><strong>Long-context efficiency &mdash; the <code>p</code>-RoPE + shared-KV design.</strong></p>
+    <ul>
+      <li><em>Problem.</em> A 32k / 128k context with standard MHA blows up the KV cache at inference &mdash; Gemma 3&rsquo;s local/global attention still spent most of the memory in the global layers, capping how big a context could actually be served on-device.</li>
+      <li><em>Mechanism.</em> Three combined changes on the global layers only, keeping local sliding-window attention untouched. (1) Local-to-global ratio is 5:1 for all variants except E2B, which uses 4:1. (2) Positional encoding is <code>p</code>-RoPE with <em>p</em>=0.25 on global layers (only 25% of the RoPE frequencies are rotated); local layers keep standard RoPE. Global RoPE base is 1M, local is 10k. (3) In every global layer except E2B/E4B, keys are reused as values (<code>values = keys</code>), collapsing two KV projections into one and halving the global-layer V-cache. Combined with KV-cache sharing patterns of 20/35 (E2B) and 18/42 (E4B), the global KV footprint shrinks by 37.5%.</li>
+      <li><em>Why.</em> Reusing keys as values at global layers is only viable because <code>p</code>-RoPE prevents aggressive rotation from destroying key/value coherence in the layers doing long-range retrieval; the 5:1 local-to-global ratio means the local (windowed) layers absorb most of the token count and only 1/6 of layers pay the global cost. The memory savings compound multiplicatively with layer count and context length &mdash; Gemma 3 27B needed &sim;27 GB for 32k text with int8 KV cache, Gemma 4 31B fits the same context with a +1.10 GB KV addition on top of a 19.2 GB Q4_0 weight footprint.</li>
+    </ul>
+
+    <p><strong>Encoder-free 12B &mdash; ingest raw patches, drop the vision and audio encoders.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Standard multimodal Gemmas ship a 150M or 550M ViT and a 305M USM-based conformer audio encoder alongside the LLM. On device this means three separate weight blobs, three separate compilations, and memory fragmentation when swapping between modalities.</li>
+      <li><em>Mechanism.</em> The 12B trains from scratch under a unified encoder-free paradigm. For vision, 48&times;48&times;3 RGB patches skip the ViT entirely and are lifted straight into the LLM embedding space by a single 35M-parameter matmul, with 2D coordinate-based positional embeddings + LayerNorm before the first Transformer block. For audio, the 305M USM conformer is discarded outright; raw 16 kHz waveform is segmented into 40 ms chunks (640-dim per chunk) and projected directly into the embedding space with no additional positional encoding because audio is already ordered temporally.</li>
+      <li><em>Why.</em> A dedicated ViT-style encoder is a training-efficiency shortcut, not a correctness requirement &mdash; if the LLM is deep enough, it can absorb the &ldquo;encoder&rdquo; work into its own early layers. Eliminating the separate encoder collapses the memory graph (one weight blob, one compile), removes a source of mid-inference fragmentation, and still delivers competitive FLEURS ASR (WER 0.063 en, 0.038 es, 0.057 ko*) and CoVoST S2TT (BLEU 41.9 de&rarr;en, 44.6 es&rarr;en) without a dedicated audio encoder.</li>
+    </ul>
+
+    <p><strong>MTP drafter &mdash; speculative decoding with a per-model draft head.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Speculative decoding wants a lightweight draft model that shares its KV cache with the main model, but a naive linear draft head has to project into the full 262k vocabulary each step; on E2B / E4B that projection is a substantial fraction of decode latency.</li>
+      <li><em>Mechanism.</em> The MTP head takes the main model&rsquo;s last-layer activations and previous-step token embeddings, then runs a small 4-layer Transformer that cross-attends to the main model&rsquo;s KVs. Model dimension is 256 for E2B/E4B and 1024 for 26B-A4B/31B; the block is 3 local + 1 global attention layer. There is no separate MTP prefill and any draft length is supported. For E2B/E4B the final vocabulary projection is replaced with a top-k over clusters of tokens: the matmul shrinks from <em>d</em>&times;262,000 to <em>d</em>&times;4096 while acceptance rate is preserved.</li>
+      <li><em>Why.</em> The cross-attention design means the drafter reuses the main model&rsquo;s KV cache directly (no draft-side KV rebuild), and the token-cluster top-k eliminates the vocab projection as the drafter bottleneck on the smallest models. Combined with QAT, this is what lets E2B fit in 0.8 GB of quantized weights and still run speculative decoding.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.02770v1/x1.png" alt="Gemma 4 MTP drafter diagram" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). Autoregressive MTP drafter (blue blocks) fed activations and KV cache from the main model (gray blocks). Source: <code>arxiv.org/html/2607.02770v1</code>.</figcaption>
+    </figure>
+
+    <h4>Parameter counts</h4>
+    <table>
+      <thead><tr><th>Model</th><th>Audio Enc.</th><th>Vision Enc.</th><th>Embedder</th><th>Einsums</th><th>Drafter</th></tr></thead>
+      <tbody>
+        <tr><td>E2B</td><td>305M</td><td>150M</td><td>400M + 2,340M</td><td>1,870M</td><td>76M</td></tr>
+        <tr><td>E4B</td><td>305M</td><td>150M</td><td>670M + 2,820M</td><td>3,940M</td><td>77M</td></tr>
+        <tr><td>12B (encoder-free)</td><td>&mdash;</td><td>&mdash;</td><td>1,000M</td><td>10,890M</td><td>400M</td></tr>
+        <tr><td>26B-A4B (MoE)</td><td>&mdash;</td><td>550M</td><td>740M</td><td>24,500M total / 2,800M active</td><td>430M</td></tr>
+        <tr><td>31B</td><td>&mdash;</td><td>550M</td><td>1,410M</td><td>29,290M</td><td>500M</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li>Data: web documents, code, images, and audio (only for E2B/E4B/12B). Data cutoff Jan 2025. Tokenizer inherited from Gemini &mdash; SentencePiece, 262k entries, split digits, preserved whitespace, byte-level fallback.</li>
+      <li>Compute: E2B on 4,096 TPU v6e chips, E4B on 6,144 v6e, 12B on 12,288 TPU v5p, 26B-A4B on 6,144 v6e, 31B on 10,240 v6e. All shard the optimizer state via ZeRO-3 and use GSPMD + MegaScale XLA; multi-pod jobs replica-reduce over the data-center network via Pathways.</li>
+      <li>Slice-Granularity Elasticity (Gemini-style) lets training keep running with fewer TPU slices under a localized failure, reducing interruption delay from minutes to seconds.</li>
+    </ul>
+
+    <p><strong>Quantization-Aware Training &mdash; two profiles.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Post-training quantization typically loses several points on MMLU-class benchmarks at &lt;4-bit weights on Gemma-sized models; on-device deployment needs the small memory number <em>and</em> the eval number.</li>
+      <li><em>Mechanism.</em> Two QAT profiles bake the quantization schedule into training. (1) Mobile quantization: per-channel weights at a mix of int2/int4 with int8 activations, targeting llama.cpp-style inference. (2) Q4_0: blockwise weight quantization. A scalar scale is added per block to bound activation ranges so fp16 inference stays stable. QAT is also applied to the image and audio encoders: on the 150M vision encoder, W8A8 gives 2&times; forward-pass memory reduction (400 MB &rarr; 200 MB) and 44% lower on-device latency vs. Gemma 3n; on the audio encoder, weights are quantized to a per-cluster mix of {2, 4, 8} bits and the audio encoder shrinks 78% on disk (390 MB &rarr; 87 MB).</li>
+      <li><em>Why.</em> QAT preserves quality because gradients see the quantization noise during training; the per-block scalar bounds activations exactly at the range fp16 can represent, so downstream inference engines don&rsquo;t drift. Result: E2B fits in 0.8 GB, E4B in 2.3 GB, 12B in 7.65 GB, 31B in 19.2 GB &mdash; a full 32k KV cache in int8 costs only +0.05, +0.14, +0.28, and +1.10 GB respectively on top of the weights.</li>
+    </ul>
+
+    <h4>Memory footprint (GB, 32k context, int8 KV)</h4>
+    <table>
+      <thead><tr><th>Model</th><th>bf16 weights</th><th>Quantized weights</th><th>+KV cache</th></tr></thead>
+      <tbody>
+        <tr><td>E2B</td><td>4.6</td><td>0.8 (mobile)</td><td>+0.05</td></tr>
+        <tr><td>E4B</td><td>9.0</td><td>2.3 (mobile)</td><td>+0.14</td></tr>
+        <tr><td>12B</td><td>24.0</td><td>7.65 (Q4_0)</td><td>+0.28</td></tr>
+        <tr><td>26B-A4B</td><td>52.0 / 7.6 active</td><td>16.2 / 2.8 active (Q4_0)</td><td>+0.28</td></tr>
+        <tr><td>31B</td><td>64.0</td><td>19.2 (Q4_0)</td><td>+1.10</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li>Broadly the Gemma 3 post-training recipe, with the addition of a thinking mode: models can output a reasoning trace before the final answer, activated by control tokens documented in the appendix. Function calling handled through the same control-token vocabulary.</li>
+      <li>PT vs. IT formatting differs only in the end-of-generation token &mdash; <code>&lt;eos&gt;</code> for PT, <code>&lt;|turn|&gt;</code> for IT. Fine-tuning either type requires adding the appropriate end token.</li>
+      <li>Data filtering: removes personal information, unsafe/toxic outputs, mistaken self-identification, duplicates. Adds subsets that encourage in-context attribution, hedging, and refusal to reduce hallucination; the report claims these subsets do not degrade other metrics.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+
+    <h4>Static benchmarks (thinking mode) vs. Gemma 3 27B</h4>
+    <table>
+      <thead><tr><th>Benchmark</th><th>31B</th><th>26B-A4B</th><th>12B</th><th>E4B</th><th>E2B</th><th>Gemma 3 27B (non-thinking)</th></tr></thead>
+      <tbody>
+        <tr><td>MMLU Pro</td><td>85.2</td><td>82.6</td><td>77.2</td><td>69.4</td><td>60.0</td><td>67.6</td></tr>
+        <tr><td>AIME 2026 no tools</td><td>89.2</td><td>88.3</td><td>77.5</td><td>42.5</td><td>37.5</td><td>20.8</td></tr>
+        <tr><td>LiveCodeBench v6</td><td>80.0</td><td>77.1</td><td>72.0</td><td>52.0</td><td>44.0</td><td>29.1</td></tr>
+        <tr><td>Codeforces Elo</td><td>2150</td><td>1718</td><td>1659</td><td>940</td><td>633</td><td>110</td></tr>
+        <tr><td>SciCode</td><td>43.0</td><td>40.0</td><td>38.0</td><td>24.0</td><td>21.0</td><td>21.0</td></tr>
+        <tr><td>GPQA Diamond</td><td>84.3</td><td>82.3</td><td>78.8</td><td>58.6</td><td>43.4</td><td>42.4</td></tr>
+        <tr><td>Big Bench Extra Hard</td><td>74.4</td><td>64.8</td><td>53.0</td><td>33.1</td><td>21.9</td><td>19.3</td></tr>
+        <tr><td>HLE</td><td>19.5</td><td>8.7</td><td>5.2</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>HLE with search</td><td>26.5</td><td>17.2</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>IFEval</td><td>98.9</td><td>98.5</td><td>97.2</td><td>96.7</td><td>94.6</td><td>90.4</td></tr>
+        <tr><td>MMMLU</td><td>88.4</td><td>86.3</td><td>83.4</td><td>76.6</td><td>67.4</td><td>70.7</td></tr>
+        <tr><td>MRCR v2 8-needle 128k</td><td>66.4</td><td>44.1</td><td>43.4</td><td>25.4</td><td>19.1</td><td>13.5</td></tr>
+        <tr><td>Terminal Bench Hard</td><td>36.0</td><td>14.0</td><td>18.0</td><td>8.0</td><td>3.0</td><td>4.0</td></tr>
+        <tr><td>Tau2 &ndash; retail</td><td>86.4</td><td>85.5</td><td>77.6</td><td>67.1</td><td>34.6</td><td>6.6</td></tr>
+        <tr><td>Tau2 &ndash; telecom</td><td>69.3</td><td>43.0</td><td>54.4</td><td>18.4</td><td>19.7</td><td>3.1</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Arena Text (Elo, as of Jun 19, 2026)</h4>
+    <table>
+      <thead><tr><th>Rank</th><th>Model</th><th>Elo</th><th>Type</th><th>#params / #active</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Claude Fable 5 (closed)</td><td>1508 &plusmn; 9</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>15</td><td>GLM 5.1</td><td>1475 &plusmn; 6</td><td>MoE</td><td>744B / 40B</td></tr>
+        <tr><td>29</td><td>MiMo V2.5 Pro</td><td>1466 &plusmn; 5</td><td>MoE</td><td>1T / 42B</td></tr>
+        <tr><td>34</td><td>Kimi K2.6</td><td>1460 &plusmn; 5</td><td>MoE</td><td>1T / 32B</td></tr>
+        <tr><td>36</td><td>DeepSeek V4 Pro Thinking</td><td>1458 &plusmn; 5</td><td>MoE</td><td>1.6T / 49B</td></tr>
+        <tr><td>37</td><td>GLM 5</td><td>1457 &plusmn; 5</td><td>MoE</td><td>744B / 40B</td></tr>
+        <tr><td>38</td><td>DeepSeek V4 Pro</td><td>1456 &plusmn; 5</td><td>MoE</td><td>1.6T / 49B</td></tr>
+        <tr><td>43</td><td><strong>Gemma 4 31B</strong></td><td>1451 &plusmn; 8</td><td>Dense</td><td>31B</td></tr>
+        <tr><td>44</td><td>Kimi K2.5 Thinking</td><td>1450 &plusmn; 4</td><td>MoE</td><td>1T / 32B</td></tr>
+        <tr><td>57</td><td>Qwen 3.5 397B-A17B</td><td>1444 &plusmn; 4</td><td>MoE</td><td>397B / 17B</td></tr>
+        <tr><td>61</td><td><strong>Gemma 4 26B-A4B</strong></td><td>1438 &plusmn; 8</td><td>MoE</td><td>26B / 4B</td></tr>
+        <tr><td>63</td><td>DeepSeek V4 Flash Thinking</td><td>1436 &plusmn; 5</td><td>MoE</td><td>284B / 13B</td></tr>
+        <tr><td>157</td><td>Gemma 3 27B</td><td>1366 &plusmn; 4</td><td>Dense</td><td>27B</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Vision (thinking, max 1120 vision tokens)</h4>
+    <table>
+      <thead><tr><th>Benchmark</th><th>31B</th><th>26B-A4B</th><th>12B</th><th>E4B</th><th>E2B</th><th>Gemma 3 27B</th></tr></thead>
+      <tbody>
+        <tr><td>MMMU Pro</td><td>76.9</td><td>73.8</td><td>69.1</td><td>52.6</td><td>44.2</td><td>49.7</td></tr>
+        <tr><td>MATH-Vision</td><td>85.6</td><td>82.4</td><td>79.7</td><td>59.5</td><td>52.4</td><td>46.0</td></tr>
+        <tr><td>MedXPertQA MM</td><td>61.3</td><td>58.1</td><td>48.7</td><td>28.7</td><td>23.5</td><td>&mdash;</td></tr>
+        <tr><td>InfographicVQA</td><td>92.0</td><td>89.3</td><td>88.4</td><td>70.0</td><td>63.9</td><td>70.6</td></tr>
+        <tr><td>OmniDocBench 1.5 &darr;</td><td>0.131</td><td>0.149</td><td>0.164</td><td>0.181</td><td>0.290</td><td>0.365</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Long context (no thinking)</h4>
+    <table>
+      <thead><tr><th>Benchmark</th><th>Ctx</th><th>31B</th><th>26B-A4B</th><th>12B</th><th>E4B</th><th>E2B</th><th>Gemma 3 27B</th></tr></thead>
+      <tbody>
+        <tr><td>RULER Accuracy</td><td>32k</td><td>96.8</td><td>97.3</td><td>96.4</td><td>95.2</td><td>83.0</td><td>91.1</td></tr>
+        <tr><td>RULER Accuracy</td><td>128k</td><td>96.4</td><td>89.8</td><td>91.2</td><td>86.6</td><td>70.4</td><td>66.0</td></tr>
+        <tr><td>LOFT Text Retrieval Recall@k</td><td>128k</td><td>79.5</td><td>66.3</td><td>66.4</td><td>58.5</td><td>50.5</td><td>8.6</td></tr>
+        <tr><td>GraphWalks F1</td><td>&lt;128k</td><td>82.3</td><td>72.6</td><td>71.0</td><td>50.9</td><td>4.1</td><td>32.8</td></tr>
+        <tr><td>MTOB chrF eng&rarr;kgv half book</td><td>~128k</td><td>52.9</td><td>50.0</td><td>45.1</td><td>37.8</td><td>15.4</td><td>41.0</td></tr>
+        <tr><td>MTOB chrF eng&rarr;kgv full book</td><td>~256k</td><td>54.3</td><td>48.9</td><td>41.9</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Audio (E2B/E4B vs. Gemma 3n)</h4>
+    <table>
+      <thead><tr><th>Metric</th><th>Gemma 4 E2B</th><th>Gemma 4 E4B</th><th>Gemma 3n E2B</th><th>Gemma 3n E4B</th></tr></thead>
+      <tbody>
+        <tr><td>CoVoST S2TT AVG (BLEU &uarr;)</td><td>35.4</td><td>38.2</td><td>31.6</td><td>34.7</td></tr>
+        <tr><td>FLEURS ASR AVG (WER &darr;)</td><td>0.090</td><td>0.075</td><td>0.108</td><td>0.085</td></tr>
+        <tr><td>Audio encoder on-disk</td><td>87 MB</td><td>87 MB</td><td>390 MB</td><td>390 MB</td></tr>
+        <tr><td>Audio encoder params</td><td>305M</td><td>305M</td><td>680M</td><td>680M</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Safety &amp; limitations</h3>
+    <ul>
+      <li>Safety evaluations conducted without any external safety filters to measure the raw model. The report claims major improvements in every content-safety category vs. Gemma 3 / 3n across text and image modalities, with unjustified refusals held low.</li>
+      <li>Policy coverage: CSAM/exploitation, dangerous content (self-harm, real-world-harm instruction), sexually explicit content, hate speech, harassment. Training data pre-filtered for personal information and other sensitive data.</li>
+      <li>Alignment to Google&rsquo;s Frontier Safety Framework; developers pointed at the Responsible Generative AI Toolkit for downstream integration.</li>
+      <li>Explicit ethical topics: bias and fairness, misinformation/misuse, and privacy considerations, all with instructions to layer application-level safeguards on top.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>License: Apache 2.0. Weights and quantized checkpoints released for all five variants. Companion Hugging Face collection under <code>google/</code>.</li>
+      <li>Two quantization profiles ship alongside the raw checkpoints: mobile (mixed int2/int4 weight, int8 activation) and Q4_0 blockwise; QAT-trained image and audio encoders included separately.</li>
+    </ul>
+
+    <h1 id="deepseek">DeepSeek</h1>
+
+    <h2 id="dspark"><a href="https://arxiv.org/abs/2607.05147">DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv:2607.05147</span>
+      <span>2026-07-06</span>
+      <span>Speculative decoding &middot; Semi-autoregressive drafter &middot; Confidence scheduling &middot; DeepSeek-V4 serving</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Xin Cheng, Xingkai Yu, Chenze Shao, Jiashi Li, et al., with Wenfeng Liang as corresponding &mdash; the DeepSeek team, deployed inside the production DeepSeek-V4 serving system.</li>
+      <li>Positioning: a serving-side speculative-decoding framework, not a new model. Two-part contribution: a semi-autoregressive drafter that mitigates the acceptance decay of parallel drafters, and a per-request confidence-scheduled verification pass that adapts verification length to survival probability and engine throughput.</li>
+      <li>Headline result: replacing MTP-1 as the production baseline inside <code>DeepSeek-V4</code>, DSpark accelerates per-user generation speeds by 60&ndash;85% at matched aggregate throughput levels, and enables interactivity tiers previously unreachable under strict latency SLOs.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+
+    <p><strong>Semi-autoregressive drafter &mdash; a sequential module attached to a parallel backbone.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Parallel drafters (MTP-K, Medusa-style heads, Eagle-parallel) generate a whole block of K candidate tokens in a single forward pass, which is fast but breaks intra-block dependencies. Acceptance rate decays sharply along the block: the first token accepts often, later positions almost never, because each drafted position was produced independently of the ones before it.</li>
+      <li><em>Mechanism.</em> DSpark keeps the parallel backbone that emits K positions in one pass but adds a lightweight sequential module on top that autoregressively refines those positions using the earlier positions as context. Concretely, position <em>k</em> is re-scored conditional on positions 1..<em>k</em>&minus;1 that were sampled from the parallel head, and the sequential module&rsquo;s cost is small enough that a K-token draft still costs one main-model forward pass in total. The verifier then applies standard rejection sampling over the sequential outputs.</li>
+      <li><em>Why.</em> The parallel head gives the throughput of block generation; the sequential module puts back exactly the dependency that made autoregressive drafters (Eagle-1/2, Medusa-2) accept more tokens per verification. Net effect: acceptance rate profile flattens across positions in the block, so accepted-length improves without paying the latency of a fully autoregressive drafter.</li>
+    </ul>
+
+    <p><strong>Confidence-scheduled verification &mdash; load-aware per-request draft length.</strong></p>
+    <ul>
+      <li><em>Problem.</em> In high-concurrency serving, verifying a fixed long draft for every request is wasteful: many requests reject early in the block, and the wasted verification steals batch capacity from other requests. Under strict interactivity SLOs (e.g. TPOT&lt;30 ms), that waste collapses total throughput.</li>
+      <li><em>Mechanism.</em> DSpark estimates, per request, the prefix survival probability at each position of the draft (probability that the draft is still accepted at step k) and combines it with an engine-specific throughput profile of &ldquo;cost of one more verified position vs. gained accepted tokens.&rdquo; The scheduler solves for the verification length K* that maximises expected accepted-tokens-per-batched-verification-slot given the current concurrency level. K* is chosen per request, per step, and adapts as load fluctuates.</li>
+      <li><em>Why.</em> Fixed-K verification underuses capacity in low-load regimes and over-uses it in high-load regimes; a load-aware scheduler gets both. In production this is what preserves throughput under strict SLOs &mdash; DSpark holds a serviceable interactivity tier that MTP-1 collapses in.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Offline benchmarks across diverse domains show DSpark substantially improves the accepted length vs. state-of-the-art AR and parallel drafters (per-benchmark numbers in the paper).</li>
+      <li>Online: deployed inside DeepSeek-V4 serving under live user traffic against the MTP-1 production baseline. Per-user generation speed +60&ndash;85% at matched throughput.</li>
+      <li>The paper frames the online result as shifting the Pareto frontier of the serving system &mdash; strict TPOT SLOs that MTP-1 could not serve at any batch size become achievable under DSpark.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Semi-autoregressive vs. pure parallel drafter: sequential module lifts accepted length; the paper attributes most of the acceptance gains to it, with the confidence scheduler contributing on the throughput axis instead.</li>
+      <li>Confidence scheduler vs. fixed K: fixed K sees increasing waste as concurrency grows; scheduled K holds accepted-tokens-per-slot approximately flat.</li>
+    </ul>
+
+    <h1 id="nvidia">NVIDIA</h1>
+
+    <h2 id="nemotron-labs-diffusion"><a href="https://arxiv.org/abs/2607.05722">Nemotron-Labs-Diffusion: A Tri-Mode Language Model Unifying Autoregressive, Diffusion, and Self-Speculation Decoding</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv:2607.05722</span>
+      <span>2026-07-07</span>
+      <span>Diffusion LM &middot; Joint AR-diffusion training &middot; Self-speculation &middot; GB200 SGLang</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Yonggan Fu, Lexington Whalen, Abhinav Garg, Chengyue Wu, Enze Xie, Song Han, Jan Kautz, Pavlo Molchanov, et al. &mdash; NVIDIA Research.</li>
+      <li>Positioning: a single 3B/8B/14B backbone family (base, instruct, and vision-language) trained under a joint AR-diffusion objective, deployable in three decoding modes without swapping models. Directly competitive with AR LMs of matched size on quality and with diffusion LMs on speed.</li>
+      <li>Headline numbers: 8B decodes 6&times; more tokens per forward than <code>Qwen3-8B</code> at matched accuracy, translating to 4&times; SPEED-Bench throughput with SGLang on a GB200. Speed-of-light analysis: up to 76.5% more tokens per forward vs. self-speculation under an optimal sampler.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+
+    <p><strong>Joint AR-diffusion training objective &mdash; complementary priors in one model.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Autoregressive LMs give clean left-to-right likelihoods and strong linguistic priors, but decoding is inherently sequential. Diffusion LMs can generate multiple tokens per forward pass and plan farther ahead, but training either objective alone forces you to pick a lane &mdash; a diffusion-only model loses AR&rsquo;s linguistic sharpness, an AR-only model can&rsquo;t use diffusion&rsquo;s lookahead at inference.</li>
+      <li><em>Mechanism.</em> Nemotron-Labs-Diffusion is trained with a joint objective that samples the AR loss and the (masked) diffusion loss on the same batches through the same backbone. Because the two losses share parameters, the network learns representations that support both a stepwise causal readout and a full-sequence denoising readout. At inference the same weights can be used as (1) AR: standard causal decode; (2) diffusion: iterative denoising of a masked sequence for lookahead planning; (3) self-speculation: diffusion drafts a block, AR verifies it against its own causal likelihood.</li>
+      <li><em>Why.</em> This isolates the strength of each mode &mdash; AR&rsquo;s left-to-right prior is exactly what you need to verify a draft cheaply; diffusion&rsquo;s parallel readout is exactly what you need to <em>produce</em> the draft. Self-speculation mode outperforms MTP-K style multi-token prediction in both acceptance rate and real-device efficiency because the diffusion draft has richer intra-block dependency structure than a parallel head can capture.</li>
+    </ul>
+
+    <p><strong>Self-speculation decoding mode.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Standard speculative decoding needs a separate draft model, which duplicates parameters and complicates deployment. Multi-token prediction (MTP) heads share weights but fall back to parallel drafters&rsquo; acceptance decay.</li>
+      <li><em>Mechanism.</em> The same backbone drafts by running one diffusion denoising step over a masked block, then verifies the draft against its own AR forward pass. Acceptance is decided position-by-position under the AR probabilities; rejected suffixes are truncated and re-drafted with a fresh mask.</li>
+      <li><em>Why.</em> Because the drafter is the same weights as the verifier, there is no draft-model mismatch to bound acceptance. Diffusion-drafted tokens carry intra-block dependency structure that MTP-K parallel heads miss; on real hardware this compounds with the fewer forward passes needed to hit a target output length.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Scaling: 3B, 8B, 14B backbones with base, instruct, and vision-language variants; consistently outperforms open-source AR and diffusion LMs on both accuracy and speed axes.</li>
+      <li>Nemotron-Labs-Diffusion-8B: 6&times; more tokens per forward pass than <code>Qwen3-8B</code> at comparable accuracy; 4&times; higher throughput on SPEED-Bench with SGLang on a GB200 GPU.</li>
+      <li>Speed-of-light analysis: under an optimal sampler, diffusion decodes up to 76.5% more tokens per forward than the self-speculation configuration, suggesting the sampler is currently the dominant loss vs. theoretical throughput.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>AR-only vs. diffusion-only vs. joint: joint recovers AR&rsquo;s left-to-right likelihood while retaining diffusion&rsquo;s parallel readout. Diffusion-only loses ground on standard AR benchmarks; AR-only cannot exploit self-speculation.</li>
+      <li>Self-speculation vs. MTP-K: same backbone, same size. Self-speculation wins on both acceptance and real-device efficiency because MTP-K has no way to model intra-block dependencies with position-independent heads.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent Hunyuan</h1>
+
+    <h2 id="hils-attention"><a href="https://arxiv.org/abs/2607.02980">Hierarchical Sparse Attention Done Right: Toward Infinite Context Modeling</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv:2607.02980</span>
+      <span>2026-07-03</span>
+      <span>Sparse attention &middot; Chunk selection &middot; Length extrapolation &middot; Continued pre-training</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Xiang Hu, Xinyu Wei, Hao Gu, Minshen Zhang, Tian Liang, Huayang Li, et al. Frontier affiliation: Tencent HY Team (Hunyuan) &mdash; six of the authors, including the core contributors and corresponding author Leo Liang. Collaborators: ShanghaiTech, HKUST, UC San Diego. Code at <code>github.com/Tencent-Hunyuan/HiLS-Attention</code>.</li>
+      <li>Positioning: not a new model line &mdash; a drop-in attention replacement designed to be trainable from scratch and to convert full-attention models via lightweight continued pre-training. Directly targets NSA (Native Sparse Attention), MoBA (Mixture of Block Attention), and NOSA as the prior sparse-attention baselines it needs to beat.</li>
+      <li>Headline results: HiLS-Attention matches full attention at in-domain context lengths, extrapolates 64&times; the training context with 90% retrieval accuracy on needle-in-a-haystack, and reaches 512&times; extrapolation at the 345M-param scale (8K trained &rarr; 4M served). A 7B full-attention model converted with 50B continued-training tokens preserves short-context performance and beats the YaRN-extended full-attention baseline on LongBench.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+
+    <p><strong>HiLS-Attention &mdash; the mechanism.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Existing chunk-wise sparse attention methods (NSA, MoBA, NOSA) all use non-parametric or weakly-parametric chunk summaries (mean pooling, cheap encoders) to score chunks for top-<em>K</em> selection. After the hard top-<em>K</em> pick, the retrieval scores are <em>discarded</em>: they never enter the forward attention weights. Consequently the LM loss cannot flow back through the retrieval decision, so chunk selection stays inaccurate and long-context recall degrades exactly where it matters &mdash; parameter-constrained models on precise in-context retrieval.</li>
+      <li><em>Mechanism.</em> Two-part fix. (1) Each chunk gets a <em>landmark token</em> appended during training; the landmark&rsquo;s key becomes the chunk&rsquo;s summary key. The query-summary scoring operation is derived as the first-order Taylor expansion of full-attention-induced chunk mass, so the summary is provably aligned with what naive Block Sparse Attention would pick if you computed full attention and then summed token mass per chunk. (2) A hierarchical softmax factorises the attention. Each query attends independently within each of its <em>K</em> retrieved chunks to extract chunk-local information; the per-chunk outputs are then fused according to the softmax-normalised retrieval scores. Because those retrieval scores <em>are</em> part of the forward attention weights, they receive gradient from the LM loss directly &mdash; retrieval is trained end-to-end under the language-modeling objective.</li>
+      <li><em>Why.</em> The landmark-derived summary carries enough parametric capacity to represent the full-attention chunk mass (that&rsquo;s the Taylor-expansion argument), so top-<em>K</em> is accurate. The hierarchical softmax means the LM loss can promote chunks that help next-token prediction and suppress irrelevant chunks &mdash; the score is optimised, not just used. Beats NSA / MoBA / NOSA on retrieval accuracy at long context precisely because those methods can&rsquo;t train their selector under LM loss.</li>
+    </ul>
+
+    <p><strong>Practical design.</strong></p>
+    <ul>
+      <li>Positional encoding: standard RoPE per token, plus a chunk-level positional offset consumed by the landmark scoring path so the summary keys carry chunk position.</li>
+      <li>Low-rank query calibration: a small low-rank projection on queries used only for the retrieval-score path, keeping the main attention path unchanged.</li>
+      <li>GQA integration: keys/values grouped as in GQA; the landmark key lives in the shared KV group so retrieval scores are shared across heads within a group, reducing memory.</li>
+      <li>Landmark-token-free alternative: for models where inserting a landmark token is inconvenient, a variant derives the summary from the last real token of each chunk with the same Taylor-alignment argument.</li>
+      <li>Hardware-efficient kernel: a fused kernel that streams the sparse KV loads for the selected chunks &mdash; the sparse KV access pattern is what turns algorithmic FLOP savings into wall-clock speedup.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.02980v1/data/HiLS-Attn.png" alt="HiLS-Attention architecture overview" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 3 (from the paper). HiLS-Attention overview: landmark tokens produce chunk summary keys; queries score chunks with the summary keys and attend within the top-<em>K</em> chunks; per-chunk outputs are fused by the hierarchical softmax of the retrieval scores. Source: <code>arxiv.org/html/2607.02980v1</code>.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Small-scale (345M): HiLS-Attention matches full attention on perplexity in-domain and beats it on RULER; trained at 8K context, needle-in-a-haystack accuracy stays above 90% at 4M served &mdash; 512&times; length extrapolation.</li>
+      <li>At 256K training context: on a challenging variable-tracking task, HiLS-Attention beats full attention by up to 50 points &mdash; the gap widens with context length, opposite to the usual sparse-attention regression.</li>
+      <li>7B scale, continued pre-training: converting a full-attention 7B model with 50B tokens of continued training preserves short-context performance and surpasses the YaRN-extended full-attention baseline on LongBench.</li>
+      <li>Inference efficiency: sparse KV access means constant per-token cost as context grows &mdash; total inference latency at long context is bounded by the number of retrieved chunks, not the sequence length.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Chunk overlap: overlapping chunks (each token belongs to two adjacent chunks) helps at chunk boundaries but is not required for the 90% retrieval accuracy result.</li>
+      <li>Landmark vs. landmark-free variant: landmark-free loses a small amount of retrieval accuracy but is easier to plug into pre-trained models.</li>
+      <li>Low-rank query calibration is what closes the last gap to full attention on short-context perplexity; removing it re-opens the gap.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Related work section frames HiLS as the first chunk-wise sparse attention to demonstrate both stronger long-context performance <em>and</em> more efficient long-context inference than full attention &mdash; a stated departure from the usual efficiency-vs-quality trade-off.</li>
+      <li>Continued-training strategy is the practical upgrade path for existing full-attention models; only 50B tokens are needed to convert a 7B model, small relative to a full pre-training run.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
