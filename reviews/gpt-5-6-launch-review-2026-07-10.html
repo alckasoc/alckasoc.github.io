@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GPT-5.6 Launch Review &mdash; July 10, 2026 | Auto Lit Review</title>
+<meta name="description" content="OpenAI's GPT-5.6 family goes generally available on July 9, 2026: Sol (flagship), Terra (balanced), and Luna (fast/cheap), sharing a 1.05M context, Feb 16 2026 knowledge cutoff, a new max reasoning effort, a new ultra multi-agent mode, and Programmatic Tool Calling in the Responses API." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 10, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#openai" class="toc-h1">OpenAI</a>
+          <ul>
+            <li><a href="#gpt-5-6" class="toc-h2">GPT-5.6 Sol / Terra / Luna</a></li>
+            <li><a href="#gpt-live" class="toc-h2">GPT-Live</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 10, 2026</div>
+    <h1 class="page-title">GPT-5.6 Sol / Terra / Luna Launch</h1>
+    <div class="page-meta">2 items &middot; 1 lab &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>The single Tier 1 event of the window is OpenAI shipping <strong>GPT-5.6</strong> to general availability on July 9, 2026 after a two-week limited preview under the Trump administration&rsquo;s AI cybersecurity order. Three durable capability tiers &mdash; <code>gpt-5.6-sol</code> (flagship), <code>gpt-5.6-terra</code> (balanced, roughly GPT-5.5-competitive at half the price), and <code>gpt-5.6-luna</code> (fastest / cheapest) &mdash; share the same 1.05M-token context window, 128k max output, February 16 2026 knowledge cutoff, and reasoning-effort ladder. Two new modes ride on top of the ladder: <code>max</code> gives a single agent more depth than <code>xhigh</code>, and <code>ultra</code> spawns four (or 16) subagents in parallel and reconciles their outputs, exposed as multi-agent beta in the Responses API. Two other API surfaces ship alongside: <strong>Programmatic Tool Calling</strong>, where the model writes and executes lightweight JavaScript in an isolated V8 runtime to orchestrate tool calls without a chat round-trip, and predictable prompt caching with explicit cache breakpoints, a 30-minute minimum cache life, and separate 1.25&times; cache-write pricing. Companion Tier 3 launch: <strong>GPT-Live</strong> ships on July 8 as a low-latency realtime voice + video model for embedded product experiences.</p>
+
+      <h3>Competitiveness</h3>
+      <p>OpenAI&rsquo;s vendor table puts Sol at frontier or SOTA on most professional and computer-use rows &mdash; 92.2% BrowseComp (ultra), 62.6% OSWorld 2.0, 80 on Artificial Analysis Coding Agent Index v1.1, 88.8% Terminal-Bench 2.1 (91.9% ultra), 96.7% CTF Challenges, 71.2% SEC-Bench Pro (74.3% ultra), 73.5% ExploitBench, 28.7% GeneBench Pro, and a new high of 53.6 on Agents&rsquo; Last Exam that eclipses <code>Claude Fable 5</code> by 13.1 points. It is not a clean sweep: Sol still trails <code>Claude Mythos 5</code> on <code>SWE-Bench Pro</code> (64.6% vs 80.3%) and <code>ExploitBench</code> (73.5% vs 78%), trails <code>Claude Fable 5</code> on <code>GDPval-AA v2</code> (1747.8 vs 1759.6 Elo), <code>Toolathlon</code> (58% vs 61.7%), and <code>Artificial Analysis Intelligence Index v4.1</code> (58.9 vs 59.9), trails <code>Claude Fable 5</code> on FrontierMath Tier 4 (83% vs 87.8%), and <code>Claude Mythos 5</code> is ahead on both GraphWalks BFS long-context rows. Terra&rsquo;s pitch is quality-at-half-price: 87.5% BrowseComp, 87.4% Terminal-Bench 2.1, 89.6% MRCR v2 256K&ndash;512K &mdash; typically within 3 points of Sol at $2.50 / $15 input/output per 1M tokens. Luna at $1 / $6 remains competitive on short-context tool routing (14.9% AutomationBench, 84.7% Terminal-Bench 2.1) but collapses on long-context MRCR (41.3%). Reference frontier flagships remain <code>Claude Fable 5</code>, <code>Claude Mythos 5</code>, <code>DeepSeek-V4-Pro</code>, and <code>Kimi K2.6</code>; on the OpenAI slot, Sol replaces GPT-5.5 as the top-tier default and is now the preferred model in <code>Microsoft 365 Copilot</code>.</p>
+
+      <h3>New frontier releases</h3>
+      <p>New Tier 1 launch: <strong>GPT-5.6</strong> family (OpenAI, GA on July 9 2026) &mdash; <code>Sol</code> at $5 / $30 per 1M input/output tokens, <code>Terra</code> at $2.50 / $15, <code>Luna</code> at $1 / $6, all with a 1.05M-token context window and a Feb 16 2026 knowledge cutoff, plus a Sol Pro tier in ChatGPT and a Cerebras-hosted Sol variant at up to 750 tok/s coming later in July. Companion Tier 3 launch: <strong>GPT-Live</strong> (OpenAI, July 8 2026) &mdash; realtime voice + video model targeting embedded product experiences.</p>
+    </section>
+
+    <h1 id="openai">OpenAI</h1>
+
+    <h2 id="gpt-5-6"><a href="https://openai.com/index/gpt-5-6/">GPT-5.6: Frontier intelligence that scales with your ambition</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch Post + System Card</span>
+      <span>openai.com/index/gpt-5-6</span>
+      <span>2026-07-09</span>
+      <span>Flagship launch &middot; Multi-agent &middot; Programmatic tool calling &middot; Long context &middot; Cyber &middot; Science</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Author: OpenAI. Companion documents grouped into this entry: the June 26 preview post &ldquo;Previewing GPT-5.6 Sol,&rdquo; the GPT-5.6 system card at <code>deploymentsafety.openai.com/gpt-5-6</code>, the GPT-5.6 API model docs, and the Microsoft 365 Copilot integration post.</li>
+      <li>Three durable capability tiers under one generation number: <code>gpt-5.6-sol</code> (flagship, <code>gpt-5.6</code> is an alias for Sol), <code>gpt-5.6-terra</code> (balanced, GPT-5.5-competitive at half the price), <code>gpt-5.6-luna</code> (fastest and cheapest). Naming rule going forward: the number is the generation, the solar-system name is a tier that can advance on its own cadence.</li>
+      <li>Common surface: 1.05M-token context window, 128K max output, Feb 16 2026 knowledge cutoff, reasoning-effort ladder <code>none / low / medium / high / xhigh / max</code>, function-calling + web search + file search + computer use, ZDR-compatible Programmatic Tool Calling, multi-agent beta in the Responses API.</li>
+      <li>Rollout: GA on July 9 2026, globally staged over 24 hours across ChatGPT, ChatGPT Work, Codex, and the API. Sol Pro in ChatGPT for Pro/Enterprise, Sol on Cerebras at up to 750 tok/s later in July for select customers. Microsoft named GPT-5.6 the preferred model in Microsoft 365 Copilot on launch day.</li>
+      <li>Regulatory context: the June 26 preview shipped only to a &ldquo;small group of trusted partners&rdquo; because of the Trump administration&rsquo;s AI cybersecurity Executive Order, which requires 30-day pre-release review of frontier models. The Department of Commerce&rsquo;s Center for AI Standards and Innovation ran additional testing before clearing the GA rollout on July 9, faster than the 30-day default.</li>
+      <li>Headline numbers on OpenAI&rsquo;s vendor benchmark tables: <strong>Agents&rsquo; Last Exam</strong> Sol 53.6 (13.1 above <code>Claude Fable 5</code> at adaptive reasoning); <strong>BrowseComp</strong> Sol 90.4% / Sol Ultra 92.2%; <strong>OSWorld 2.0</strong> Sol 62.6% (surpasses <code>Opus 4.8</code> at 85% fewer output tokens); <strong>Terminal-Bench 2.1</strong> Sol 88.8% / Sol Ultra 91.9%; <strong>SEC-Bench Pro</strong> Sol 71.2% / Sol Ultra 74.3%; <strong>ExploitGym</strong> Sol 33.7% under 6h, more than double GPT-5.5&rsquo;s 15.1% peak; <strong>GeneBench Pro</strong> Sol 28.7% (GPT-5.5 was 12%); <strong>Artificial Analysis Coding Agent Index v1.1</strong> Sol 80 (2.8 above <code>Fable 5</code>).</li>
+    </ul>
+
+    <figure>
+      <img src="https://images.ctfassets.net/kftzwdyauwt9/3T0kxQLJk1VcXVxMwXF97J/4345df401f2b08ed6a1eef88c9588d2e/OAI_ChatGPTWork_ModelBlog_OpenGraph_16x9_1200x630.png?w=1600&amp;h=900&amp;fit=fill" alt="OpenAI GPT-5.6 launch hero" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Launch hero (from OpenAI&rsquo;s GPT-5.6 announcement). Source: <code>openai.com/index/gpt-5-6</code>.</figcaption>
+    </figure>
+
+    <h3>Architecture &amp; capability tiers</h3>
+
+    <p><strong>Three tiers, one generation &mdash; the routing rationale.</strong></p>
+    <ul>
+      <li><em>Problem.</em> A single flagship model forces every deployment into the same price/latency/capability bucket, so teams either overpay for routine calls or under-provision for hard ones. OpenAI&rsquo;s prior GPT-5 numbered releases stacked improvements onto one central model tier, so cost-sensitive workloads (routing, classification, extraction, agent subtasks) had to be routed to older generations that missed the newest capability jumps.</li>
+      <li><em>Mechanism.</em> GPT-5.6 splits the family into three same-generation tiers with the same 1.05M-context window and same Feb 16 2026 cutoff but distinct capability targets. Sol is trained to be the peak-capability model; Terra is trained explicitly as a GPT-5.5-competitive lower-cost model at $2.50 / $15 per 1M tokens; Luna is the highest-throughput, lowest-cost model at $1 / $6, tuned for routing, classification, extraction, and agent subtasks. The tiers are exposed as first-class API model IDs, not as reasoning-effort settings on one model.</li>
+      <li><em>Why.</em> Product economics beat monolithic model choice: an ecosystem where teams can send routine work to Luna, high-quality production work to Terra, and escalations to Sol is cheaper end-to-end than routing everything through the flagship. The naming (generation number + durable tier name) means Sol / Terra / Luna can each advance on their own cadence without renumbering the family. Terra beats <code>Fable 5</code> at &sim;1/16 the cost on Agents&rsquo; Last Exam per OpenAI&rsquo;s launch chart; Luna at $1 / $6 gives the volume tier real capability without dropping to GPT-5.5.</li>
+    </ul>
+
+    <p><strong><code>max</code> reasoning effort &mdash; single-agent depth beyond <code>xhigh</code>.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Reasoning-effort ladders in earlier GPT models topped out at <code>xhigh</code>, which forced a hard cap on how long a single agent could think about one problem. For research synthesis, security triage, and multi-step engineering, correctness scales with search depth and self-check budget, and a single-agent cap leaves free-lunch quality on the table.</li>
+      <li><em>Mechanism.</em> <code>max</code> is a new setting above <code>xhigh</code> in the ladder that gives the model more time to reason, explore alternatives, run checks, and revise its approach on one problem before emitting an answer. It is available to all users with GPT-5.6 access in ChatGPT Work and Codex, gated on toggle in settings. In the API it is the highest effort level for Sol / Terra / Luna, and it stacks with <code>ultra</code>.</li>
+      <li><em>Why.</em> Deepening a single agent along one search path is a different lever than parallelizing across agents. <code>max</code> targets tasks where the answer requires many self-checks against a single chain of reasoning; parallel agents would waste tokens exploring redundant branches. On Terminal-Bench 2.1 Sol at <code>max</code> reaches 88.8%; Terra at <code>max</code> reaches 87.4%. The delta from <code>xhigh</code> to <code>max</code> is small on easy tasks and grows on hard ones, which is why <code>max</code> is off by default and opt-in per request.</li>
+    </ul>
+
+    <p><strong><code>ultra</code> mode &mdash; the multi-agent reconciliation loop.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Single-agent reasoning at <code>max</code> can go arbitrarily deep on one search path, but frontier tasks (hard code migrations, long-horizon browsing, security-triage rollups) benefit from parallel exploration &mdash; different agents catching different failure modes and reconciling. Traditional self-consistency approaches (best-of-<em>N</em> sampling) require a downstream reranker and don&rsquo;t let the sub-agents actually coordinate.</li>
+      <li><em>Mechanism.</em> <code>ultra</code> is a mode &mdash; not just an effort level &mdash; that decomposes the task and spawns four subagents in parallel by default (with a 16-agent variant for BrowseComp and SEC-Bench Pro), lets each work on a component, then reconciles their outputs into a final answer. Reported latency is from the root agent; API cost and output-token totals bill all subagents. Available on Sol in ChatGPT Work (Pro/Enterprise) and Codex (Plus and higher), with an equivalent multi-agent beta in the Responses API for developers.</li>
+      <li><em>Why.</em> The launch charts show <code>ultra</code> shifts the score-latency Pareto up and to the left across BrowseComp, SEC-Bench Pro, and Terminal-Bench 2.1: adding parallel agents reaches stronger results in less wall-clock time than a single agent at <code>max</code>. Concretely: Sol at <code>max</code> lands 88.8% Terminal-Bench 2.1; Sol Ultra hits 91.9% (+3.1 points) purely from parallelization. BrowseComp goes 90.4% &rarr; 92.2%; SEC-Bench Pro 71.2% &rarr; 74.3%. Trade-off is honest &mdash; each subagent bills tokens independently, so a single Ultra call can burn 4&times; or 16&times; the tokens of a single Sol call.</li>
+    </ul>
+
+    <p><strong>Programmatic Tool Calling &mdash; JavaScript in an isolated V8 runtime.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Standard function calling round-trips every tool result through the model, which is expensive when a task is deterministic tool orchestration on top of a large intermediate result set &mdash; e.g. fetch 500 records, filter to a subset, compute a derived value, then reason about it. Every step through the chat channel costs input tokens, output tokens, and a full inference call.</li>
+      <li><em>Mechanism.</em> In the Responses API, GPT-5.6 can write a small program in JavaScript, run it inside an isolated V8 runtime provided by OpenAI, call eligible tools in parallel from the program (including loops and conditionals), retain intermediate results in the hosted runtime, and only return the reduced result to the model. The runtime has no package install, no direct network beyond the tools, no filesystem, no subprocesses, and no persistent state across requests; it is ZDR-compatible.</li>
+      <li><em>Why.</em> Deterministic tool orchestration doesn&rsquo;t need model intelligence per step; it needs the model to <em>write the orchestration</em> once, then a runtime that executes it. Doing the reduce in-runtime rather than through the model saves prompt tokens on the intermediate data and cuts model round-trips. Customer quotes on the launch page report 63.5% fewer tokens for Unity scene construction (PlayCo), 38% fewer prompt tokens for multi-step legal document analysis at no quality loss (Clio), and 24% fewer output tokens plus 28% faster completion on financial research (Rogo).</li>
+    </ul>
+
+    <p><strong>Predictable prompt caching.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Prior OpenAI prompt caching was implicit and best-effort &mdash; developers couldn&rsquo;t reliably predict which prefix would be cached, how long, or how much the cache would save.</li>
+      <li><em>Mechanism.</em> GPT-5.6 introduces explicit cache breakpoints (developers mark cache boundaries in the prompt), a guaranteed 30-minute minimum cache life, cached reads at a 90% discount off input pricing, and cached writes billed at 1.25&times; the uncached input rate as a new pricing line. Both input and output token pricing remain per 1M tokens per tier.</li>
+      <li><em>Why.</em> Explicit breakpoints let developers align cached prefixes with their own prompt structure (system prompt + tool descriptions + few-shot examples cached; user turn variable), and predictable cache life makes serving math tractable for cost-sensitive workflows.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+
+    <p>OpenAI&rsquo;s launch tables report numbers across professional work, coding, computer use, cybersecurity, science &amp; health, self-improvement, multimodal, academic, tool use, long context, and abstract reasoning. Every row below is vendor-reported.</p>
+
+    <p><strong>Professional and knowledge work.</strong> Sol tops Agents&rsquo; Last Exam and Management Consulting Tasks; <code>Fable 5</code> still leads GDPval-AA v2 and Artificial Analysis Intelligence Index v4.1.</p>
+
+    <table>
+      <thead>
+        <tr><th>Eval</th><th>Sol</th><th>Terra</th><th>Luna</th><th>GPT-5.5</th><th>Fable 5</th><th>Opus 4.8</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Agents&rsquo; Last Exam</td><td>52.7%</td><td>50.4%</td><td>50.3%</td><td>46.9%</td><td>40.5%</td><td>45.2%</td></tr>
+        <tr><td>GDPval-AA v2 (Elo)</td><td>1747.8</td><td>1593</td><td>1591.8</td><td>1493.7</td><td>1759.6</td><td>1600.1</td></tr>
+        <tr><td>Management Consulting Tasks</td><td>43.2%</td><td>37.2%</td><td>35.4%</td><td>31.3%</td><td>35.5%</td><td>31.6%</td></tr>
+        <tr><td>Big Finance Bench</td><td>53%</td><td>51%</td><td>36%</td><td>49%</td><td>&mdash;</td><td>44%</td></tr>
+        <tr><td>AA Intelligence Index v4.1</td><td>58.9</td><td>55</td><td>51.2</td><td>54.8</td><td>59.9</td><td>55.7</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Coding and agentic software engineering.</strong> Sol takes Artificial Analysis Coding Agent Index and Terminal-Bench 2.1; SWE-Bench Pro remains firmly Anthropic&rsquo;s row.</p>
+
+    <table>
+      <thead>
+        <tr><th>Eval</th><th>Sol</th><th>Sol Ultra</th><th>Terra</th><th>Luna</th><th>GPT-5.5</th><th>Mythos 5</th><th>Fable 5</th><th>Opus 4.8</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>AA Coding Agent Index v1.1</td><td>80</td><td>&mdash;</td><td>77.4</td><td>74.6</td><td>76.4</td><td>&mdash;</td><td>77.2</td><td>72.5</td></tr>
+        <tr><td>SWE-Bench Pro</td><td>64.6%</td><td>&mdash;</td><td>63.4%</td><td>62.7%</td><td>59.4%</td><td>80.3%</td><td>80%</td><td>69.2%</td></tr>
+        <tr><td>DeepSWE v1.1</td><td>72.7%</td><td>&mdash;</td><td>69.6%</td><td>67.2%</td><td>67%</td><td>&mdash;</td><td>69.7%</td><td>59%</td></tr>
+        <tr><td>Terminal-Bench 2.1</td><td>88.8%</td><td>91.9%</td><td>87.4%</td><td>84.7%</td><td>85.6%</td><td>88%</td><td>83.1%</td><td>78.9%</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Computer use and browsing.</strong> Sol sets SOTA on BrowseComp and OSWorld 2.0; BenchCAD (especially with the Python tool) is one of Sol&rsquo;s cleanest gaps over GPT-5.5.</p>
+
+    <table>
+      <thead>
+        <tr><th>Eval</th><th>Sol</th><th>Sol Ultra</th><th>Terra</th><th>Luna</th><th>GPT-5.5</th><th>Mythos 5</th><th>Opus 4.8</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>OSWorld 2.0</td><td>62.6%</td><td>&mdash;</td><td>50.2%</td><td>45.6%</td><td>47.5%</td><td>&mdash;</td><td>54.8%</td></tr>
+        <tr><td>BrowseComp</td><td>90.4%</td><td>92.2%</td><td>87.5%</td><td>83.3%</td><td>84.4%</td><td>88%</td><td>84.3%</td></tr>
+        <tr><td>BenchCAD</td><td>70.6%</td><td>&mdash;</td><td>62.3%</td><td>63.1%</td><td>44.4%</td><td>38.4%</td><td>27.3%</td></tr>
+        <tr><td>BenchCAD (python tool)</td><td>83.4%</td><td>&mdash;</td><td>78.2%</td><td>73.9%</td><td>55.8%</td><td>65%</td><td>51.8%</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Cybersecurity.</strong> Sol posts frontier-tier CTF and SEC-Bench Pro numbers; <code>Mythos 5</code> still leads ExploitBench.</p>
+
+    <table>
+      <thead>
+        <tr><th>Eval</th><th>Sol</th><th>Sol Ultra</th><th>Terra</th><th>Luna</th><th>GPT-5.5</th><th>Mythos 5</th><th>Opus 4.8</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Capture-the-Flag Challenges</td><td>96.7%</td><td>&mdash;</td><td>91.8%</td><td>85.2%</td><td>88.1%</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>SEC-Bench Pro</td><td>71.2%</td><td>74.3%</td><td>57.7%</td><td>48.9%</td><td>45.8%</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>CyberGym</td><td>84.5%</td><td>&mdash;</td><td>81.8%</td><td>77.9%</td><td>81.8%</td><td>83.8%</td><td>78.1%</td></tr>
+        <tr><td>ExploitBench</td><td>73.5%</td><td>&mdash;</td><td>52.9%</td><td>33.2%</td><td>47.9%</td><td>78%</td><td>40%</td></tr>
+        <tr><td>ExploitGym</td><td>33.7%</td><td>&mdash;</td><td>23.2%</td><td>12.4%</td><td>15.1%</td><td>&mdash;</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Science and health.</strong> Sol posts a large gap on GeneBench Pro (28.7% vs GPT-5.5&rsquo;s 12%). <code>Fable 5</code> is not on GeneBench Pro because it refuses the majority of the eval; the near-tie on HealthBench Professional is under a scoring approach that OpenAI notes is not comparable to Anthropic&rsquo;s system-card numbers.</p>
+
+    <table>
+      <thead>
+        <tr><th>Eval</th><th>Sol</th><th>Terra</th><th>Luna</th><th>GPT-5.5</th><th>Fable 5</th><th>Opus 4.8</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>GeneBench Pro</td><td>28.7%</td><td>23.3%</td><td>10.8%</td><td>12%</td><td>refuses</td><td>16%</td></tr>
+        <tr><td>LifeSciBench</td><td>59.9%</td><td>56%</td><td>51.2%</td><td>50.4%</td><td>&mdash;</td><td>53.6%</td></tr>
+        <tr><td>MedChemBench</td><td>48.3%</td><td>35%</td><td>30.4%</td><td>35.5%</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>HealthBench Professional</td><td>60.5%</td><td>57.7%</td><td>55.7%</td><td>49.5%</td><td>60.9%</td><td>53%</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Long context.</strong> Sol wins short-to-medium ranges; <code>Mythos 5</code> leads GraphWalks BFS at both 256k and 1M. Luna&rsquo;s 41.3% MRCR at 256K&ndash;512K is the visible cost of the small-model tier at long context.</p>
+
+    <table>
+      <thead>
+        <tr><th>Eval</th><th>Sol</th><th>Terra</th><th>Luna</th><th>GPT-5.5</th><th>Mythos 5</th><th>Opus 4.8</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>MRCR v2 8-needle 256K&ndash;512K</td><td>91.5%</td><td>89.6%</td><td>41.3%</td><td>81.5%</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>MRCR v2 8-needle 512K&ndash;1M</td><td>73.8%</td><td>72.5%</td><td>41.3%</td><td>74%</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>GraphWalks BFS 256k F1</td><td>90.7%</td><td>76.9%</td><td>81.3%</td><td>73.7%</td><td>91.1%</td><td>85.9%</td></tr>
+        <tr><td>GraphWalks BFS 1M F1</td><td>77.1%</td><td>71.2%</td><td>51.2%</td><td>45.4%</td><td>79.4%</td><td>68.1%</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Academic + reasoning.</strong> GPQA Diamond is essentially saturated across the frontier; FrontierMath still tilts to <code>Fable 5</code> on the hardest tier; ARC-AGI-3 is Sol&rsquo;s widest lead but still under 10%.</p>
+
+    <table>
+      <thead>
+        <tr><th>Eval</th><th>Sol</th><th>Terra</th><th>Luna</th><th>GPT-5.5</th><th>Fable 5</th><th>Opus 4.8</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>GPQA Diamond</td><td>94.6%</td><td>92.9%</td><td>92.3%</td><td>93.6%</td><td>92.6%</td><td>92%</td></tr>
+        <tr><td>FrontierMath Tier 1&ndash;3 v2</td><td>89%</td><td>84.9%</td><td>78.6%</td><td>85.3%</td><td>87%</td><td>80%</td></tr>
+        <tr><td>FrontierMath Tier 4 v2</td><td>83%</td><td>68.3%</td><td>58.5%</td><td>72.5%</td><td>87.8%</td><td>56.1%</td></tr>
+        <tr><td>ARC-AGI-3</td><td>7.78%</td><td>0.8%</td><td>0.18%</td><td>0.43%</td><td>&mdash;</td><td>1.5%</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Self-improvement / RSI.</strong> OpenAI reports an internal suite tracking progress toward recursive self-improvement, aggregated as an RSI Index at 57.9% for Sol vs 41.7% for GPT-5.5. Internal daily output tokens per active researcher during preview were more than 2&times; GPT-5.5&rsquo;s peak; over six months, internal coding-inference compute grew 100&times; and internal agentic-token usage grew &sim;22&times;.</p>
+
+    <table>
+      <thead>
+        <tr><th>Eval</th><th>Sol</th><th>Terra</th><th>Luna</th><th>GPT-5.5</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Internal Research Debugging</td><td>68.3%</td><td>67.8%</td><td>50.8%</td><td>50%</td></tr>
+        <tr><td>KernelGen 1P</td><td>61.1%</td><td>49.2%</td><td>22.4%</td><td>29.3%</td></tr>
+        <tr><td>NanoGPT</td><td>9.69%</td><td>14.5%</td><td>1.66%</td><td>2.65%</td></tr>
+        <tr><td>PostTrainBench Lite</td><td>50.3%</td><td>51.5%</td><td>29.6%</td><td>38.8%</td></tr>
+        <tr><td>RSI Index</td><td>57.9%</td><td>56.3%</td><td>41.9%</td><td>41.7%</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Efficiency vs prior gen.</strong> On Agents&rsquo; Last Exam, Sol at medium reasoning beats <code>Fable 5</code> by 11.4 points at &sim;25% the estimated cost. On the AA Intelligence Index, Sol at <code>max</code> comes within 1 point of <code>Fable 5</code> while completing tasks in 61% less time at roughly half the estimated cost.</li>
+      <li><strong>Ultra vs. single-agent.</strong> Ultra with 4 default agents shifts the Pareto up-and-left on BrowseComp / SEC-Bench Pro / Terminal-Bench 2.1; the 16-agent variant continues to help on BrowseComp and SEC-Bench Pro. Terra + Ultra was not published as a headline row (Sol Ultra is the primary Ultra column).</li>
+      <li><strong>Programmatic Tool Calling.</strong> PlayCo (Unity scene construction): 63.5% fewer total tokens, 50.1% fewer model turns vs. direct tool calls at comparable visual results. Clio (multi-step legal document analysis): 38% fewer prompt tokens at no quality loss. Rogo (financial research): 24% fewer output tokens, 28% faster.</li>
+      <li><strong>Design / frontend.</strong> Triple Whale&rsquo;s seven-task frontend rubric puts GPT-5.6 at 4.4 vs. 4.0 for GPT-5.5 and 3.5 for <code>Claude 4.8</code>. Canva reports GPT-5.6 &sim;1.6&times; more token-efficient than competitive models on slide creation.</li>
+      <li><strong>Template following on slides.</strong> The launch post shows a paired example: given a reference master slide and instructions to update numbers, GPT-5.5 loses master-slide components; GPT-5.6 preserves the reference structure. Chart is qualitative but consistent with the Model ML result (39% fewer tokens per deck vs. Fable, more polished outputs on FinBench).</li>
+    </ul>
+
+    <figure>
+      <img src="https://images.ctfassets.net/kftzwdyauwt9/3oH3WSMMfaXAjUMh6DcIue/f594bb00b0711acda032f16240f2fe32/input-slide.png?w=1600&amp;q=90&amp;fm=webp" alt="Reference master slide used as input" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Reference slide input (from the OpenAI launch page). Both GPT-5.5 and GPT-5.6 are asked to update numbers using this master&rsquo;s design system. Source: <code>images.ctfassets.net</code>.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://images.ctfassets.net/kftzwdyauwt9/2fzot6TymNQ0vTA2e07NGj/d4b7d478f130ff95ec0863bb4e533d5d/c3e05baf-2b5b-4285-9720-9a34a390a55e.png?w=1600&amp;q=90&amp;fm=webp" alt="GPT-5.5 output slide, missing master-slide components" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>GPT-5.5 output on the same prompt: master-slide components (logo lockup, footer, right-side accent block) are missing. Source: <code>images.ctfassets.net</code>.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://images.ctfassets.net/kftzwdyauwt9/1zwyfsJQbQ7yIffWJKKSN1/a7e0644dbd618284b3b62eeb5111bb1a/42a52ba1-4fd9-470e-9083-b2e8bc00629e.png?w=1600&amp;q=90&amp;fm=webp" alt="GPT-5.6 output slide preserving reference structure" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>GPT-5.6 output on the same prompt: reference master preserved, only the numeric content updated. Source: <code>images.ctfassets.net</code>.</figcaption>
+    </figure>
+
+    <h3>Safety &amp; limitations</h3>
+    <ul>
+      <li><strong>Preparedness classification.</strong> Sol does not cross OpenAI&rsquo;s Cyber Critical threshold. In Chromium and Firefox evaluations, Sol identifies bugs and exploitation primitives but does not autonomously produce a functional full-chain exploit under tested conditions. Biology similarly stays below the Critical threshold: Sol can support legitimate research but does not provide end-to-end capability to create, engineer, or synthesize a novel dangerous biological threat.</li>
+      <li><strong>Layered safeguard stack.</strong> Model-level refusal training + real-time misuse classifiers (cyber and biology) that can pause generation for a larger reasoning-model reviewer + account-level review of flagged activity + differentiated access (Trusted Access for Cyber for verified defenders). OpenAI reports GPT-5.6 Sol cyber safeguards block roughly 10&times; more potentially harmful activity than earlier models.</li>
+      <li><strong>Automated red-teaming.</strong> &sim;700,000 A100e GPU hours dedicated to black-box automated red-teaming aimed at universal jailbreaks (attacks that work across many prompts, not one narrow setting), plus extensive human third-party red-teaming. Rapid-remediation process feeds new jailbreak findings into ongoing evaluations.</li>
+      <li><strong>Trusted Access for Cyber.</strong> Individuals and organizations can verify identity and request access to relaxed cyber safeguards for defensive work (vulnerability triage/validation, malware analysis, detection engineering, patch validation). Members must enable Advanced Account Security with hardware-backed passkeys by September 1 to retain access to the most cyber-capable models; Yubico partnership for preferred passkey pricing.</li>
+      <li><strong>Access controls in high-risk jurisdictions.</strong> OpenAI notes additional restrictions on high-risk entities and jurisdictions consistent with the broader Executive Order compliance regime.</li>
+      <li><strong>Known trade-off.</strong> The stricter safeguards create friction for benign work; ChatGPT and Codex expose a &ldquo;retry on a lower-capability model&rdquo; option to keep dual-use tasks moving. Overblocking is explicitly acknowledged as a security risk of its own.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li><strong>ChatGPT:</strong> Plus, Pro, Business, Enterprise access Sol through medium and higher reasoning effort. Pro and Enterprise can select Sol Pro for highest-quality results.</li>
+      <li><strong>ChatGPT Work + Codex:</strong> Free and Go users get Terra by default. Plus, Pro, Business, Enterprise can select Sol / Terra / Luna and set effort. <code>max</code> is a settings toggle. In ChatGPT Work, <code>ultra</code> is Pro/Enterprise; in Codex, <code>ultra</code> is Plus and above.</li>
+      <li><strong>API:</strong> Sol / Terra / Luna as model IDs; Programmatic Tool Calling in the Responses API is ZDR-compatible; Multi-agent is beta.</li>
+      <li><strong>Pricing (per 1M tokens):</strong> Sol $5 in / $30 out; Terra $2.50 in / $15 out; Luna $1 in / $6 out. Cached read 90% discount; cached write 1.25&times; uncached input rate; 30-minute minimum cache life.</li>
+      <li><strong>Cerebras:</strong> Sol on Cerebras at up to 750 tok/s coming in July for select customers.</li>
+      <li><strong>Microsoft 365 Copilot:</strong> GPT-5.6 named the preferred model on launch day (Jul 9), covered in a companion OpenAI post.</li>
+    </ul>
+
+    <h2 id="gpt-live"><a href="https://openai.com/index/introducing-gpt-live/">Introducing GPT-Live</a></h2>
+    <div class="paper-meta">
+      <span>Tier 3 &middot; Blog Post</span>
+      <span>openai.com/index</span>
+      <span>2026-07-08</span>
+      <span>Realtime voice &middot; Realtime vision &middot; Embedded product experiences</span>
+    </div>
+
+    <ul>
+      <li>Author: OpenAI. Released July 8 2026, day before the GPT-5.6 GA launch, as a companion realtime model targeting embedded product experiences.</li>
+      <li>Positioning: a realtime voice + vision model in the same family as OpenAI&rsquo;s prior <code>gpt-4o-realtime</code> line, updated for the current generation with lower latency and improved multi-turn state.</li>
+      <li>Practical use case is agents in the loop with users at conversation-time latency: voice-first product experiences, multimodal help flows in web/mobile, and hands-free operator agents.</li>
+      <li>Positioned as an alternative to routing every voice turn through Sol / Terra / Luna &mdash; realtime is a different Pareto (latency dominates quality) and OpenAI keeps it as a separate model surface.</li>
+      <li>Not paired with a technical report at launch; treat as a product / engineering post, not a research artifact.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
