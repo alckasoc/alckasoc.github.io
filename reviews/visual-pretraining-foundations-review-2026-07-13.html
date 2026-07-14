@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Visual Pretraining Foundations Review &mdash; July 13, 2026 | Auto Lit Review</title>
+<meta name="description" content="Two Tier 2 frontier-lab papers argue visual signal is a better foundation-model pretraining substrate: Google DeepMind's GenCeption repurposes a text-to-video diffusion backbone as a unified feed-forward vision model, and Shanghai AI Laboratory's Visual Pretraining framework predicts next visual latents from rendered scientific PDFs instead of parsed text." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 13, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#google-deepmind" class="toc-h1">Google DeepMind</a>
+          <ul>
+            <li><a href="#genception" class="toc-h2">GenCeption</a></li>
+          </ul>
+        </li>
+        <li><a href="#shanghai-ai-laboratory" class="toc-h1">Shanghai AI Laboratory</a>
+          <ul>
+            <li><a href="#visual-pretraining" class="toc-h2">Scalable Visual Pretraining</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 13, 2026</div>
+    <h1 class="page-title">Visual Pretraining Foundations</h1>
+    <div class="page-meta">2 papers &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>Two Tier 2 papers appearing on July 10&ndash;13 argue &mdash; from opposite ends of the stack &mdash; that visual signal is the better pretraining substrate for the next generation of foundation models. Google DeepMind&rsquo;s <strong>GenCeption</strong> (ECCV 2026) takes a text-to-video generative diffusion model and converts its multi-step generative backbone into a single feed-forward, prompt-steered vision model that matches or beats task-specific SOTA on depth, surface normal, camera pose, expression-referring segmentation, and 3D keypoint prediction with 7&times; to 500&times; less training data than <code>D4RT</code> and <code>VGGT-&Omega;</code>. Shanghai AI Laboratory&rsquo;s <strong>Scalable Visual Pretraining</strong> continues-pretrains <code>Qwen 3.5</code> and <code>Qwen 3</code> on rendered scientific-PDF pages via a next-visual-latent InfoNCE objective in a frozen ViT+merger feature space and lifts <em>text-only</em> scientific reasoning above matched text-token pretraining across MMLU-Pro, GPQA Diamond, AIME 2025, and HLE, while using only ~25% of the token budget (20B visual vs. 80B parsed text). No Tier 1 launches landed in the window &mdash; Google&rsquo;s Gemini 3.5 Pro rebuild is now scheduled for July 17.</p>
+
+      <h3>Competitiveness</h3>
+      <p>Neither paper produces a new flagship, but both directly bear on frontier competition. GenCeption reframes the &ldquo;what pretraining unlocks generalist vision&rdquo; question that <code>V-JEPA</code>, <code>Video MAE V2</code>, <code>DINOv3</code>, <code>SAM 3</code> and the specialized-model tower (<code>DepthAnything3</code>, <code>Sapiens</code>, <code>Lotus-2</code>, <code>David</code>, <code>Genmo</code>) have been fighting over &mdash; and lands the video-generation backbone at competitive quality on every task with dramatic data efficiency, which is directly relevant to the video-diffusion race between DeepMind Veo, OpenAI Sora, Kling, and Wan-Streamer. Visual Pretraining, meanwhile, targets the current-generation LLM pretraining bottleneck: parsed-text extractors like <code>MinerU2.5</code> discard figures, equations, and layout structure from scientific PDFs, and the paper shows that the discarded evidence is worth 2&ndash;3 points of MMLU-Pro and 1&ndash;3 points of GPQA Diamond on <code>Qwen 3.5</code> when kept as pixels rather than parsed. Neither result challenges the current SOTA holders (<code>Claude Fable 5</code>, <code>Claude Mythos 5</code>, <code>GPT-5.6 Sol</code>, <code>DeepSeek-V4-Pro</code>, <code>Kimi K2.6</code>, <code>Gemma 4</code>) on a benchmark leaderboard, but both proposals would sit upstream in the pretraining stack.</p>
+
+      <h3>New frontier releases</h3>
+      <p>No Tier 1 model launches in the July 11&ndash;13 window. Anthropic <code>Claude Sonnet 5</code> shipped July 1 (before window); Google&rsquo;s <code>Gemini 3.5 Pro</code> full-rebuild launch is scheduled for July 17. Both papers below are research contributions from frontier labs.</p>
+    </section>
+
+    <h1 id="google-deepmind">Google DeepMind</h1>
+
+    <h2 id="genception"><a href="https://arxiv.org/abs/2607.09024">Video Generation Models are General-Purpose Vision Learners</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-10</span>
+      <span>Vision foundation model &middot; Video diffusion pretraining &middot; Multi-task perception &middot; ECCV 2026</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Letian Wang, Chuhan Zhang, Rishabh Kabra, Jasper Uijlings, Steven Waslander, Andrew Zisserman, Joao Carreira, Kaiming He, Misha Andriluka, Eduard Gabriel Bazavan, Andrei Zanfir, Cristian Sminchisescu. Google DeepMind (all authors have affiliation 1); with academic secondaries at University of Toronto, University College London, University of Oxford, MIT, and Lund University. Accepted to ECCV 2026.</li>
+      <li>The paper introduces <strong>GenCeption</strong>, a single feed-forward, text-instruction-steered vision model that is initialized from a pre-trained text-to-video generative diffusion backbone and post-trained on multi-task perception data. The pitch: video generation is the vision-side analogue of next-token prediction &mdash; a scalable unsupervised pretraining objective that captures spatio-temporal world priors and native vision-language alignment, and specialist perception heads can then be replaced by one unified backbone steered by prompts.</li>
+      <li>Task coverage in the released model: monocular depth, surface normal, camera pose, expression-referring segmentation, and 3D keypoint prediction. Baselines the paper claims to match or surpass on those tasks: <code>DepthAnything3</code>, <code>SAM3</code>, <code>D4RT</code>, <code>VGGT-&Omega;</code>, <code>Sapiens</code>, <code>David</code>, <code>Genmo</code>, and <code>Lotus-2</code>.</li>
+      <li>Two comparison axes are called out: (1) as a <em>pretraining paradigm</em>, the video generative backbone beats <code>V-JEPA</code> and <code>VideoMAE V2</code> under matched fine-tuning data; (2) as a <em>generalist</em>, a single jointly-trained GenCeption checkpoint matches per-task specialists.</li>
+      <li>Data efficiency headline: GenCeption reaches performance comparable to <code>D4RT</code> and <code>VGGT-&Omega;</code> with 7&times; to 500&times; fewer training frames.</li>
+      <li>Emergent behaviours the paper flags as evidence of a learned &ldquo;world model&rdquo; inside video generators: (a) sim-to-real transfer &mdash; a model trained purely on synthetic human video generalizes zero-shot to real footage; (b) instance count generalization &mdash; single-object training data transfers to multi-instance real scenes; (c) category generalization &mdash; a model trained only on humans generalizes to animals and robots on the same tasks.</li>
+    </ul>
+
+    <figure>
+      <img src="https://genception.github.io/assets/paradigm_shift.png" alt="GenCeption's unified single-head-single-backbone architecture contrasted with per-task specialized vision models" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Paradigm shift figure (from the GenCeption project page). Specialized models use per-task heads, backbones or losses; GenCeption uses a single head and backbone across all tasks, steered by a task prompt. Source: <code>genception.github.io</code>.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+
+    <p><strong>Repurposing a text-to-video diffusion model as a vision foundation backbone.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Computer vision has stayed task-specific &mdash; separate backbones, heads, and losses for depth, segmentation, keypoints, camera pose &mdash; because no scalable unsupervised objective on video has produced representations that are simultaneously strong at dense perception, sparse perception, vision-language alignment, and open-vocabulary generalization. Alternative unsupervised video pretraining paradigms (<code>V-JEPA</code>, <code>VideoMAE V2</code>) buy general-purpose visual features but do not carry the vision-language alignment or the world-model priors that come free from large-scale text-to-video generation.</li>
+      <li><em>Mechanism.</em> The pretraining base is a pre-trained text-to-video generative diffusion model, chosen for its native spatio-temporal priors (physics, motion, object permanence, occlusion) and its text conditioning. Post-training adapts that backbone in two ways: (1) the generative model is converted from a multi-step iterative denoiser into a single-step feed-forward model that takes an input video plus a text prompt and emits per-task outputs in one pass; (2) dense perception tasks (depth, surface normal, segmentation) are unified in RGB ambient space where supervision is applied efficiently in latent space, while sparse tasks (camera pose, 3D keypoints) are handled by learnable tokens added as extra inputs to the diffusion transformer. Fine-tuning data is predominantly synthetic.</li>
+      <li><em>Why.</em> Multi-step diffusion is expensive at test time, so collapsing to a single feed-forward pass is what makes the backbone competitive on latency with task-specific specialists. Keeping the pretraining as text-to-video &mdash; rather than text-to-image, video prediction, or reconstruction &mdash; delivers the two priors that specialists have to relearn: spatio-temporal geometry (buys depth, normals, pose) and text-conditioning (buys expression-referring segmentation and open-vocabulary transfer). Adding sparse-task learnable tokens preserves the shared backbone without special-casing per-task heads.</li>
+    </ul>
+
+    <p><strong>Unified dense-and-sparse task interface.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Dense pixel-level tasks (depth, normals, segmentation) and sparse structured tasks (camera pose = 6 numbers per frame; 3D keypoints = fixed-length coordinate lists) have historically demanded different output heads, different losses, and different data pipelines, which is why generalist vision models have not existed on the pattern that NLP took.</li>
+      <li><em>Mechanism.</em> Dense tasks re-use the diffusion transformer&rsquo;s native RGB latent output space &mdash; supervision is applied in latent space so no per-task decoder is needed. Sparse tasks introduce learnable input tokens attached to the diffusion transformer that carry the task&rsquo;s query and receive the answer as their output activation. Both are steered by a text prompt that names the task, so the same model performs different tasks by swapping the prompt at inference.</li>
+      <li><em>Why.</em> Reusing latent-space supervision for dense tasks avoids the per-task decoder proliferation that defeats generalist claims for prior unified models. Learnable tokens for sparse output are the same lever used by <code>DETR</code>-style query heads &mdash; but here they attach to a pretrained generative backbone rather than being trained from scratch, which is what allows them to inherit the world-model priors.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+
+    <figure>
+      <img src="https://genception.github.io/assets/results_sota.png" alt="Radar chart showing GenCeption specialist and generalist matching or beating specialized SOTA on depth, normals, camera pose, segmentation and keypoint tasks" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>SOTA comparison radar (from the GenCeption project page). The generalist single-checkpoint GenCeption matches or beats specialists like DepthAnything3, D4RT, VGGT-&Omega;, SAM3, Sapiens, David, Genmo, and Lotus-2. Source: <code>genception.github.io</code>.</figcaption>
+    </figure>
+
+    <ul>
+      <li><strong>SOTA on specialized tasks with a single unified model.</strong> The paper reports two configurations: a <em>specialist</em> trained on one task at a time (upper bound) and a <em>generalist</em> jointly trained across all tasks. Both configurations match or surpass the per-task SOTA specialists <code>DepthAnything3</code>, <code>D4RT</code>, <code>VGGT-&Omega;</code>, <code>SAM3</code>, <code>Sapiens</code>, <code>David</code>, <code>Genmo</code>, and <code>Lotus-2</code>. Per-task numbers are on the paper&rsquo;s radar chart; the paper does not consolidate them in a single table in the version scraped from the project page.</li>
+      <li><strong>Beats prior video pretraining under matched settings.</strong> Under matched fine-tuning data and backbone size, the text-to-video generative pretraining beats the <code>V-JEPA</code> and <code>VideoMAE V2</code> paradigms on the same downstream tasks. The paper reports preliminary data and model scaling: performance improves with larger backbones and more pretraining data along the same curve.</li>
+      <li><strong>Data efficiency.</strong> GenCeption matches <code>D4RT</code> and <code>VGGT-&Omega;</code> with 7&times; to 500&times; fewer training frames on the tasks where those specialists are strongest &mdash; a range wide enough that the paper reports it as a range rather than a single number.</li>
+    </ul>
+
+    <figure>
+      <img src="https://genception.github.io/assets/results_efficiency.png" alt="Data-efficiency plot showing GenCeption reaching comparable accuracy with 7x to 500x fewer training frames than baselines" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Data-efficiency plot (from the GenCeption project page). Under matched fine-tuning data, GenCeption reaches parity with leading specialists on 7&times;&ndash;500&times; fewer frames. Source: <code>genception.github.io</code>.</figcaption>
+    </figure>
+
+    <h3>Ablations &amp; emergent behaviors</h3>
+
+    <p><strong>Emergent generalization from synthetic-only fine-tuning.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Perception models fine-tuned on synthetic data typically fail to transfer to real footage without a domain-adaptation step, and models trained on one visual category rarely generalize open-vocabulary to others.</li>
+      <li><em>Mechanism.</em> Because the diffusion backbone was pretrained on internet-scale text-to-video data, its representations already cover real footage, animals, robots, and multi-instance scenes. Fine-tuning on synthetic human videos only teaches the read-out interface; the backbone&rsquo;s world model transfers open-vocabulary.</li>
+      <li><em>Why.</em> This is the paper&rsquo;s clearest evidence that video generative pretraining is a different regime from <code>V-JEPA</code> / <code>VideoMAE V2</code> reconstruction pretraining &mdash; the reported transfer patterns (sim-to-real, single-to-multi instance, human-to-animal-and-robot) are the sort of open-vocabulary generalization that specialized supervised training does not produce.</li>
+    </ul>
+
+    <h3>Limitations &amp; availability</h3>
+    <ul>
+      <li>Project page notes <em>Code (TBA)</em> as of paper release; the paper is an ECCV 2026 acceptance, so code and possibly weights are expected in the standard ECCV camera-ready window.</li>
+      <li>The public artifact is the paper and the project-page videos; no HuggingFace model repo has been published as of the July 13 snapshot.</li>
+      <li>The paper does not exhaustively table per-task numbers in the version currently visible on <code>genception.github.io</code> &mdash; scores are shown on a radar plot rather than a per-benchmark grid, so entry-level SOTA claims should be read against the paper PDF once camera-ready is posted.</li>
+    </ul>
+
+    <h1 id="shanghai-ai-laboratory">Shanghai AI Laboratory</h1>
+
+    <h2 id="visual-pretraining"><a href="https://arxiv.org/abs/2607.09657">Scalable Visual Pretraining for Language Intelligence</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-10</span>
+      <span>LLM pretraining &middot; Visual documents &middot; Scientific reasoning &middot; Cross-modal alignment</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Yiming Zhang, Zhonghan Zhao, Wenwei Zhang (equal contribution), Haiteng Zhao, Tianyang Lin, Yunhua Zhou, Demin Song, Kuikun Liu, Haochen Ye, Haian Huang, Yuzhe Gu, Haijun Lv, Qipeng Guo, Bin Liu, Gaoang Wang, Kai Chen (corresponding). Primary affiliation: <strong>Shanghai Artificial Intelligence Laboratory</strong>, with secondaries at USTC, Zhejiang University, and SJTU. Corresponding e-mail <code>chenkai@pjlab.org.cn</code>.</li>
+      <li>The paper proposes <strong>Visual Pretraining (VP)</strong>: a continued-pretraining framework where the corpus is the raw rendered page image of a scientific PDF, not the parsed text of that page, and the training objective is a next-visual-latent contrastive loss over a frozen ViT + spatial-merger feature space. The claim is that VP on the same PDF corpus consistently beats matched text-parsed pretraining (TP) &mdash; even when the downstream benchmarks are text-only.</li>
+      <li>Backbones evaluated: a native multimodal model (<code>Qwen 3.5</code>) and language-only models (<code>Qwen 3</code>, <code>Llama 3.2 Vision</code> for the multimodal transfer table).</li>
+      <li>Corpus: scientific PDFs collected from publicly accessible repositories; page rendered as RGB image for VP, and parsed by <code>MinerU2.5</code> into plain text for the TP baseline. Effective visual-token budget in the paper&rsquo;s main setting is &sim;20B; the matched TP baseline consumes &sim;80B parsed text tokens from the same PDFs, so VP achieves its wins at &sim;25% of the token budget.</li>
+      <li>Downstream benchmarks: MMLU-Pro, GPQA (Diamond, pass@8 average), AIME 2025 (average over 32 runs), HLE (pass@1) for text-only reasoning; MMMU-Pro, SFE, ChartQAPro, MathVista for multimodal transfer.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+
+    <p><strong>Visual Pretraining (VP) &mdash; next visual latent prediction over a frozen visual target space.</strong></p>
+    <ul>
+      <li><em>Problem.</em> The default LLM pretraining recipe for visually-rich corpora (scientific PDFs, web pages) first converts pages to plain text with an OCR/layout parser like <code>MinerU2.5</code>, then applies next-token cross-entropy. That pipeline discards figures, equations, tables, and page-level spatial organization &mdash; and, as the paper shows, discards evidence the model would otherwise use for scientific reasoning. Alternative approaches like OCR-conditioned pretraining or contrastive image&ndash;text alignment need paired supervision that isn&rsquo;t available at PDF scale.</li>
+      <li><em>Mechanism.</em> Each PDF page is rendered as an RGB image. A frozen ViT encoder (27 layers, hidden size 1152, 16 heads, patch size 16, spatial-merge size 2) maps the page to a grid of patch features; a frozen spatial merger groups neighbouring patches into a sequence of visual features <code>Z = (z_1, ..., z_L)</code>. Foreground-token filtering drops empty background patches. The LLM is trained autoregressively over the visual sequence in the same next-token structure &mdash; but the loss is an <strong>InfoNCE contrastive loss</strong> where the positive is the true next visual feature <code>u_{i+1}</code> and the negatives are other visual features from the batch. The joint training objective for a native multimodal backbone is <code>L = &lambda;_text * L_CE + &lambda;_vis * L_VP</code> &mdash; standard cross-entropy on interleaved text sequences plus the VP contrastive loss on visual sequences. The vision tower stays frozen the whole time.</li>
+      <li><em>Why.</em> Predicting future visual latents in a frozen visual space is the visual analogue of next-token prediction: the target space is fixed (like the vocabulary is fixed), and the prediction is causal (like autoregressive text). Using InfoNCE with in-batch negatives instead of L2 or cosine regression prevents representation collapse and gives a well-behaved gradient scale across the extended pretraining run. Keeping the ViT and merger frozen means the target space cannot drift underneath the LLM &mdash; a subtle but critical design decision that separates VP from prior joint-training attempts. The paper argues (and Figure 4 illustrates) that visual-token reasoning attends to the same semantic evidence as text reasoning, so VP is not learning a separate skill; it&rsquo;s absorbing reasoning-relevant evidence that OCR extraction would have discarded.</li>
+    </ul>
+
+    <p><strong>Ablation: with vs. without a generative decoder.</strong></p>
+    <ul>
+      <li><em>Problem.</em> An obvious alternative to next-visual-latent prediction is to add a generative decoder that reconstructs the input pixels from the LLM&rsquo;s hidden states &mdash; a masked-image-modeling style objective that has pixel-level supervision.</li>
+      <li><em>Mechanism.</em> The paper compares (a) VP with a generative decoder that attaches a frozen VAE decoder to the LLM to reconstruct the page, and (b) decoder-free VP (the main setting) that uses only the contrastive next-visual-latent loss on frozen visual features. Both variants are evaluated on the same downstream benchmarks.</li>
+      <li><em>Why.</em> The decoder-free variant is what the main results table uses because it delivers better scaling with matched compute &mdash; adding pixel reconstruction burns parameter and compute budget on modeling shading and font rendering, which is not what downstream reasoning wants. The next-visual-latent objective forces the LLM to model semantic evolution over the visual sequence, which is what transfers.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+
+    <p><strong>Table 1 &mdash; VP vs. matched TP on text-only reasoning benchmarks.</strong> All rows start from the same checkpoint and identical SFT stage; TP and VP differ only in whether the scientific-PDF corpus is served as MinerU2.5-parsed text (TP) or as rendered page images (VP). GPQA is Diamond with pass@8 averaged; AIME is 2025 with 32-run average; MMLU-Pro and HLE are pass@1.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Model / Method</th>
+          <th>MMLU-Pro</th>
+          <th>GPQA</th>
+          <th>AIME</th>
+          <th>HLE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5"><strong>Qwen 3.5 (native multimodal)</strong></td></tr>
+        <tr><td>Base</td><td>82.31</td><td>77.84</td><td>81.56</td><td>14.39</td></tr>
+        <tr><td>Text Pretraining</td><td>83.91</td><td>76.24</td><td>89.58</td><td>15.70</td></tr>
+        <tr><td><strong>VP (Ours)</strong></td><td><strong>85.09</strong></td><td><strong>79.29</strong></td><td><strong>90.21</strong></td><td><strong>16.67</strong></td></tr>
+        <tr><td colspan="5"><strong>Qwen 3 (language-only)</strong></td></tr>
+        <tr><td>Base</td><td>81.21</td><td>75.06</td><td>75.44</td><td>10.59</td></tr>
+        <tr><td>Text Pretraining</td><td>81.52</td><td>74.94</td><td>74.99</td><td>11.39</td></tr>
+        <tr><td><strong>VP (Ours)</strong></td><td><strong>81.94</strong></td><td><strong>77.08</strong></td><td><strong>76.98</strong></td><td><strong>11.77</strong></td></tr>
+      </tbody>
+    </table>
+
+    <ul>
+      <li>Two facts stand out. First, on <code>Qwen 3.5</code>, text pretraining actually <em>regresses</em> GPQA Diamond (77.84 &rarr; 76.24) while VP raises it (77.84 &rarr; 79.29) &mdash; consistent with the paper&rsquo;s claim that further TP cannot harvest information from visually rich documents that MinerU2.5 has already flattened. Second, on the language-only <code>Qwen 3</code> backbone, VP still delivers the win despite the backbone having no vision tower at inference &mdash; the visual-space pretraining transfers to text-only downstream evaluation, which is the paper&rsquo;s strongest empirical support for its central claim.</li>
+      <li>The paper reports normalized-gain scaling curves as training tokens grow to 20B: VP&rsquo;s gain over the TP baseline widens with more tokens, up to +2 points on MMLU-Pro and larger deltas on AIME &mdash; the paper frames this as scaling with the same slope as text pretraining but from a better starting point.</li>
+    </ul>
+
+    <p><strong>Table 2 &mdash; multimodal transfer without paired image&ndash;text supervision.</strong> VP was trained without any image-text alignment loss (no CLIP-style contrastive supervision, no image captions). Downstream multimodal benchmarks are graded direct-answer, pass@1.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Model / Method</th>
+          <th>MMMU-Pro</th>
+          <th>SFE</th>
+          <th>ChartQAPro</th>
+          <th>MathVista</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5"><strong>Qwen 3.5</strong></td></tr>
+        <tr><td>Base</td><td>71.39</td><td>53.41</td><td>57.99</td><td>84.30</td></tr>
+        <tr><td>Text Pretraining</td><td>72.14</td><td>53.09</td><td>56.42</td><td>85.50</td></tr>
+        <tr><td><strong>VP (Ours)</strong></td><td><strong>73.87</strong></td><td><strong>56.57</strong></td><td><strong>61.80</strong></td><td><strong>86.70</strong></td></tr>
+        <tr><td colspan="5"><strong>Llama 3.2 Vision</strong></td></tr>
+        <tr><td>Base</td><td>28.55</td><td>28.86</td><td>20.95</td><td>39.80</td></tr>
+        <tr><td>Text Pretraining</td><td>28.21</td><td>29.36</td><td>22.23</td><td>39.60</td></tr>
+        <tr><td><strong>VP (Ours)</strong></td><td><strong>29.19</strong></td><td><strong>31.08</strong></td><td><strong>27.67</strong></td><td><strong>44.40</strong></td></tr>
+      </tbody>
+    </table>
+
+    <ul>
+      <li>The Llama 3.2 Vision row is the more surprising one: ChartQAPro goes 20.95 &rarr; 27.67 (+6.72) and MathVista 39.80 &rarr; 44.40 (+4.60) &mdash; ChartQA improvements are the paper&rsquo;s clearest evidence that pretraining on rendered scientific PDFs internalizes chart and equation structure that OCR extraction discards.</li>
+      <li>The paper also reports an image-to-text retrieval analysis (perplexity-based) on 100 image&ndash;text pairs from scientific documents: R@1 improves substantially after VP for both backbones, indicating that VP produces cross-modal alignment even though there is no explicit image&ndash;text contrastive loss during training.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Visual-token budget vs. rendering resolution.</strong> The main setting balances a modest visual-token budget against rendering resolution; higher-resolution rendering with tighter token budgets is what gives the compute-favourable operating point of &sim;25% tokens for a positive delta.</li>
+      <li><strong>Regression on Qwen 3.5 GPQA.</strong> The Table 1 result that TP <em>regresses</em> GPQA on Qwen 3.5 (77.84 &rarr; 76.24) is a load-bearing ablation: it shows the gap is not just &ldquo;more tokens = more score&rdquo; but that parsed-text tokens from the same PDFs actually carry <em>negative</em> signal on a benchmark whose evidence lives partly in figures and equations, whereas VP on those same pages gains 1.45 points.</li>
+      <li><strong>Attention-map inspection.</strong> Figure 4 in the paper shows visual-token reasoning attends to the same semantic evidence as text reasoning &mdash; the paper reads this as VP surfacing reasoning-relevant visual evidence to the shared LLM in a way that parallels text-based reasoning.</li>
+    </ul>
+
+    <h3>Other &mdash; positioning</h3>
+    <ul>
+      <li>VP&rsquo;s narrative is a direct challenge to the current default LLM pretraining recipe: the paper argues that treating visually-rich sources as text-first (via <code>MinerU2.5</code>, <code>Marker</code>, <code>Nougat</code>) leaves accuracy on the table on exactly the benchmarks the frontier now races on (MMLU-Pro, GPQA Diamond, AIME).</li>
+      <li>The paper is careful about labelling: it is a continued-pretraining study, not a new base model &mdash; the win is against a matched TP baseline that is itself already an improvement over the released base checkpoint. That framing is important for reading the numbers: absolute headline scores don&rsquo;t reset the frontier, but the delta over the matched-TP control is the load-bearing claim.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
