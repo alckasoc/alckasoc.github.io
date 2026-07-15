@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Xiaomi-Robotics-U0 &amp; ABot-N1 Embodied Foundation Launches Review &mdash; July 15, 2026 | Auto Lit Review</title>
+<meta name="description" content="Two embodied foundation-model launches land in the July 14-15 window: Xiaomi Robotics ships Xiaomi-Robotics-U0, a 38B multimodal autoregressive world foundation model that unifies text-to-image, image editing, multi-view embodied scene generation, embodied transfer, and embodied video generation and boosts pi_0.5 OOD from 36.9% to 63.2%; Alibaba AMAP CV Lab ships ABot-N1, a slow-fast VLN foundation model that hits 77.3% POI arrival and 95.4% / 92.9% indoor / outdoor SR. Tier 2 companion: ByteDance Seed / Tsinghua SIA-Lab Direct-OPD transfers RL policy shifts from a small teacher pair to a stronger student without rerunning RL." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 15, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#alibaba" class="toc-h1">Alibaba</a>
+          <ul>
+            <li><a href="#abot-n1" class="toc-h2">ABot-N1</a></li>
+            <li><a href="#abot-agentos" class="toc-h2">ABot-AgentOS</a></li>
+          </ul>
+        </li>
+        <li><a href="#xiaomi" class="toc-h1">Xiaomi</a>
+          <ul>
+            <li><a href="#xiaomi-robotics-u0" class="toc-h2">Xiaomi-Robotics-U0</a></li>
+          </ul>
+        </li>
+        <li><a href="#bytedance-seed" class="toc-h1">ByteDance Seed</a>
+          <ul>
+            <li><a href="#direct-opd" class="toc-h2">Direct-OPD</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 15, 2026</div>
+    <h1 class="page-title">Xiaomi-Robotics-U0 &amp; ABot-N1 Embodied Foundation Launches</h1>
+    <div class="page-meta">4 papers &middot; 3 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>Two frontier-lab embodied foundation-model launches drop in the July 11&ndash;13 arXiv window and hit HF Daily Papers on July 14. Alibaba&rsquo;s AMAP CV Lab ships <strong>ABot-N1</strong>, a slow-fast Visual Language Navigation foundation model built on <code>Qwen-3.5-4B-VL</code> (slow reasoner) and <code>Qwen-3.5-2B</code> (fast action expert) that unifies five navigation paradigms &mdash; point-goal, POI-goal, object-goal, instruction-following, person-following &mdash; behind a single pixel-goal interface, and sets new SOTA on seven benchmarks with 77.3% SR@2m on the new POI benchmark (+35.0 vs. <code>POINav</code>) and 95.4% / 92.9% SR on ABotN-PointBench indoor / outdoor. Xiaomi Robotics ships <strong>Xiaomi-Robotics-U0</strong>, a 38B multimodal autoregressive model initialized from <code>EMU3.5</code> (Qwen-3-32B decoder + IBQ visual tokenizer) that jointly optimizes text-to-image, image editing, embodied scene generation, embodied transfer, and multi-view embodied video generation under a single next-token-prediction objective; checkpoints are on Hugging Face (<code>XiaomiRobotics/Xiaomi-Robotics-U0</code>, <code>Xiaomi-Robotics-U0-FlashAR</code>) and it lifts the OOD success rate of a downstream <code>&pi;<sub>0.5</sub></code> policy from 36.9% to 63.2%. Companion Tier 2 out of Alibaba AMAP CV Lab: <strong>ABot-AgentOS</strong>, an agent-OS runtime layer + <em>EmbodiedWorldBench</em>. Tier 2 out of the ByteDance Seed &times; Tsinghua AIR SIA-Lab: <strong>Direct-OPD</strong>, a weak-to-strong distillation method that reuses the pre-RL vs. post-RL log-ratio of a small teacher pair as a dense implicit reward for a stronger student, lifting <code>Qwen3-1.7B</code> from 48.3% to 58.3% on AIME 2024 in 4 hours on 8&times;A100.</p>
+
+      <h3>Competitiveness</h3>
+      <p>Both Tier 1 releases target embodied intelligence rather than the frontier text-LLM leaderboard, and both plant flags where no dominant public baseline exists yet. Xiaomi-Robotics-U0 goes directly at OpenAI&rsquo;s <code>GPT-Image-2</code> on the embodied-transfer benchmark and wins on every metric on both the Easy and Hard splits (SI-RMSE 0.14 vs. 0.40 / 0.34; Segmentation mIoU 0.76 / 0.74 vs. 0.41 / 0.41), and it ranks first on the World Arena embodied-video-generation benchmark; more importantly, it demonstrates that a single 38B AR world foundation model can serve as a <em>scalable data engine</em> that hallucinates novel-scene demonstrations to rescue a downstream <code>&pi;<sub>0.5</sub></code> policy from 36.9% to 63.2% on real-world manipulation OOD tasks. ABot-N1 clean-sweeps its category against <code>NavFoM</code>, <code>Uni-NaVILA</code>, <code>StreamVLN</code>, <code>NaVILA</code>, <code>CorrectNav</code>, <code>Qwen-VLA</code>, and its own <code>ABot-N0</code> predecessor across VLN-CE R2R, RxR, ABotN-PointBench, ABotN-POIBench, Object-Goal, and Person-Following. Direct-OPD reframes what a completed RLVR run is worth &mdash; the pre-RL/post-RL checkpoint <em>pair</em> is itself a reusable supervision signal &mdash; and outperforms step-matched direct RL on the target model, which is directly relevant to the compounding post-training compute bill at frontier scale (<code>GPT-5.6 Sol</code>, <code>Claude Opus 4.8</code>, <code>DeepSeek-V4-Pro</code>, <code>Kimi K2.6</code>, <code>Gemma 4</code>).</p>
+
+      <h3>New frontier releases</h3>
+      <p>Two Tier 1 launches in the window: Alibaba AMAP CV Lab <code>ABot-N1</code> (arXiv 2026-07-11, HF Daily Papers &#35;2 on 2026-07-14), and Xiaomi Robotics <code>Xiaomi-Robotics-U0</code> (arXiv 2026-07-13, checkpoints on Hugging Face under <code>XiaomiRobotics/Xiaomi-Robotics-U0</code>). No US-lab flagship LLM launches in the window; Google&rsquo;s previously-announced <code>Gemini 3.5 Pro</code> full-rebuild remains scheduled for July 17.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="abot-n1"><a href="https://arxiv.org/abs/2607.10383">ABot-N1: Toward a General Visual Language Navigation Foundation Model</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-07-11</span>
+      <span>Embodied foundation model &middot; Visual-Language Navigation &middot; Slow-fast VLA &middot; GRPO</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Ruiyan Gong, Yingnan Guo, Junjun Hu, et al. (40 authors), corresponding <em>Mu Xu</em>. Affiliation: <strong>AMAP CV Lab, Alibaba Group</strong>. Companion works from the same lab are cross-linked on the project page: SocialNav (CVPR 26), NavForesee (CVPR 26), FantasyVLN (CVPR 26), AstraNav-Memory (CVPR 26), CE-Nav (ICLR 26), OmniNav (ICLR 26).</li>
+      <li><code>ABot-N1</code> is positioned as a step toward a general Visual Language Navigation foundation model that unifies five navigation paradigms behind one interface: <em>point-goal</em> (reach metric coordinates), <em>POI-goal</em> (navigate to a Point-of-Interest entrance), <em>object-goal</em> (open-vocabulary object search), <em>instruction-following</em> (long-horizon natural-language paths), and <em>person-following</em> (dynamic human target tracking).</li>
+      <li>Architecture: an asynchronous <em>slow-fast dual-system</em> factorization &mdash; a slow vision-language reasoner (Qwen-3.5-4B-VL) emits explicit CoT plus a <em>pixel goal</em> at low frequency, and a fast action expert (Qwen-3.5-2B) consumes those anchors plus real-time observations and emits continuous SE(2) waypoints at native control frequency.</li>
+      <li>Headline results: 77.3% SR@2m on ABotN-POIBench (+35.0 over <code>POINav</code> 42.3%), 95.4% / 92.9% SR on ABotN-PointBench indoor / outdoor All, 84.9 / 51.8 SR / SPL on VLN-CE R2R, 70.9 / 67.5 on VLN-CE RxR (Qwen-VLA 57.3 / 51.2), and 3.32 NE on RxR (best NavFoM 4.61).</li>
+      <li>Two new open-source benchmarks released with the paper: <strong>ABotN-PointBench</strong> (31 real-world scenes, 465 reference trajectories, closed-loop SR / SPL) and <strong>ABotN-POIBench</strong> (11 commercial regions, 163 POIs, 3DGS reconstruction, physical entrance annotations, SR@2m).</li>
+      <li>Pre-training data corpus: 30M trajectories, 8,423 3D scenes, 14.7 km<sup>2</sup> total area coverage, 482 km of paths, aggregated across all five task paradigms.</li>
+    </ul>
+
+    <figure>
+      <img src="https://amap-cvlab.github.io/ABot-Navigation/ABot-N1/static/images/model.jpg" alt="Slow-fast dual-system architecture of ABot-N1 with a slow VLM reasoner producing pixel goals and a fast action expert emitting continuous waypoints" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure (from the ABot-N1 project page). Slow-fast dual-system architecture: a low-frequency vision-language reasoner (left) emits CoT plus target-pixel and affordance-pixel anchors; a high-frequency VLM-based action expert (right) attends to those anchors via a learnable QFormer action query and decodes SE(2) waypoints. Source: <code>amap-cvlab.github.io</code>.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+
+    <p><strong>Slow-Fast Dual-System with Pixel-Goal Interface.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Prior VLN foundation models &mdash; monolithic policies that map observations directly to actions &mdash; suffer from <em>coordinate drift</em> (regressing metric waypoints from pixels is under-constrained), <em>poor long-tail semantics</em> (a single black-box policy cannot maintain interpretable grounding across POI-goal, object-goal, instruction-following, and person-following simultaneously), and <em>zero interpretability</em>, so failure modes cannot be diagnosed and cross-task generality can&rsquo;t be enforced.</li>
+      <li><em>Mechanism.</em> Cognition and control are split into two asynchronous VLMs joined by an image-space interface. The <em>slow system</em> (Qwen-3.5-4B-VL) processes historical frames plus the task prompt at low frequency and emits (a) a natural-language CoT trace and (b) two pixel-space anchors &mdash; a <em>target pixel</em> and an <em>affordance pixel</em>. The <em>fast system</em> (Qwen-3.5-2B backbone) jointly encodes real-time tri-view observations, the CoT trace, and the cached pixel anchors; a learnable action query attends to the output hidden states through a QFormer module, and an MLP decodes the queries into a sequence of continuous SE(2) waypoints. When the slow system is deliberating, the fast system continues to track the last cached pixel goal, so the control loop never blocks.</li>
+      <li><em>Why.</em> Pixel goals are the single interface that generalizes across all five tasks: they can encode a metric point (project it into pixels), a POI entrance (detect the storefront), an object goal (segment the target), a next milestone of an instruction, and a person to follow. Compared with prior VLA policies that regress waypoints from pixels directly, the discrete pixel-goal decision made by the slow system concentrates the future-waypoint distribution into a dominant mode, which turns the fast policy&rsquo;s waypoint regression into an approximately uni-modal smooth-<em>L</em><sub>1</sub> problem &mdash; avoiding the mode collapse that vanilla waypoint regression exhibits on multi-modal targets. Making the two systems asynchronous rather than serial is what lets a 4B-parameter CoT reasoner co-exist with a native-frequency control loop.</li>
+    </ul>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li>Both systems initialize from pretrained <code>Qwen-3.5</code> checkpoints (4B-VL and 2B). The slow system is trained with cross-entropy over CoT tokens and pixel-coordinate tokens; the fast system is trained with smooth-<em>L</em><sub>1</sub> on position and heading angle plus a binary <em>arriving</em> loss.</li>
+      <li>The 30M-trajectory pretraining corpus is stratified per navigation paradigm: point-goal (CoT with affordance-pixel + target-perturbation, plus sub-optimal / OOD-correction VLA trajectories); POI-goal (three-stage pipeline &mdash; geometric seed via monocular depth &rarr; 31M street-view pairs distilled by a VLM down to 8M valid paths &rarr; tri-view episodes with positive / negative rejection pairs); object-goal (an iterative flywheel of VLM-seeded CoT rationales, A* consistency filtering, self-play harvesting, yielding 110K structured samples); instruction-following (long instructions decomposed into sub-instructions aligned with milestone frame ranges, then affordance / target pixel generation and verification); person-following (avatar trajectories &rarr; A* waypoint planning &rarr; visibility detection &rarr; stochastic perturbation for CoT; sub-optimal / OOD-correction for VLA).</li>
+      <li>Both systems are trained with noise-injected inputs &mdash; perturbed target coordinates, noisy prior pixel predictions, simulated asynchronous lag &mdash; specifically to make the fast system robust to imperfect slow-system outputs at deployment.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+
+    <p><strong>Task-agnostic GRPO alignment.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Applying preference-based post-training to a navigation VLA runs into two failure modes: (1) biased preference sampling collapses the diversity of the pretrained policy; (2) sparse-reward RL yields reward-hacking equilibria &mdash; the policy learns to <em>withhold predictions</em> or take permanent inaction, both of which trivially satisfy safety reward while failing the task.</li>
+      <li><em>Mechanism.</em> Post-training uses <code>GRPO</code> with an <em>action-balanced batch sampling</em> scheme (each batch is balanced across the discrete action space so preference gradients are unbiased across action modes) and a decomposed reward <code>R = R<sub>format</sub> + R<sub>target</sub> + R<sub>safety</sub></code>. <em>Format</em> and <em>safety</em> rewards are constructed to be task-agnostic: <code>R<sub>format</sub></code> depends only on the output schema; <code>R<sub>safety</sub></code> depends only on scene geometry and traversability rules. Reward-hacking is defused with a strong explicit penalty for missing predictions, so target-withholding is dominated by the target reward. Extending the pipeline to a new task requires only redefining <code>R<sub>target</sub></code>.</li>
+      <li><em>Why.</em> The task-agnostic factoring is what makes the pipeline actually scale to five paradigms &mdash; the same GRPO run works across point-goal, POI-goal, object-goal, instruction-following, and person-following without re-designing the reward loop. Action-balanced sampling avoids the standard GRPO failure of over-representing common actions and killing behavioral diversity. The pipeline was validated at scale on 0.5M point-goal episodes before being reused for the other paradigms.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+
+    <figure>
+      <img src="https://amap-cvlab.github.io/ABot-Navigation/ABot-N1/static/images/bench.jpg" alt="ABotN benchmark suite showing PointBench and POIBench statistics and the LiDAR-SLAM plus 3DGS scene construction pipeline" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure (from the ABot-N1 project page). ABotN benchmark suites: PointBench (31 real-world scenes, 465 trajectories) and POIBench (11 commercial regions, 163 POIs), plus a unified three-stage pipeline &mdash; LiDAR-inertial SLAM data collection, 3DGS scene modeling, and traversability-aware A* reference trajectory generation. Source: <code>amap-cvlab.github.io</code>.</figcaption>
+    </figure>
+
+    <p>ABotN-PointBench (Outdoor All / L / M / H splits by distance):</p>
+    <table>
+      <thead>
+        <tr><th>Method</th><th>SR All</th><th>SR L</th><th>SR M</th><th>SR H</th><th>SPL All</th><th>SPL H</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>GNM</td><td>39.1</td><td>66.7</td><td>32.0</td><td>18.7</td><td>36.7</td><td>16.5</td></tr>
+        <tr><td>ViNT</td><td>62.2</td><td>92.0</td><td>50.7</td><td>44.0</td><td>62.2</td><td>44.0</td></tr>
+        <tr><td>NoMaD</td><td>56.0</td><td>90.7</td><td>45.3</td><td>32.0</td><td>55.7</td><td>31.6</td></tr>
+        <tr><td>CityWalker</td><td>48.9</td><td>73.3</td><td>40.0</td><td>33.3</td><td>48.3</td><td>32.8</td></tr>
+        <tr><td>SocialNav</td><td>72.0</td><td>93.3</td><td>60.0</td><td>58.7</td><td>71.9</td><td>58.7</td></tr>
+        <tr><td>ABot-N0</td><td>76.9</td><td>93.3</td><td>72.0</td><td>65.3</td><td>76.9</td><td>65.3</td></tr>
+        <tr><td><strong>ABot-N1</strong></td><td><strong>92.9</strong></td><td><strong>96.0</strong></td><td><strong>94.7</strong></td><td><strong>88.0</strong></td><td><strong>91.4</strong></td><td><strong>86.4</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p>VLN-CE (R2R and RxR):</p>
+    <table>
+      <thead>
+        <tr><th>Method</th><th>R2R NE&darr;</th><th>R2R OS&uarr;</th><th>R2R SR&uarr;</th><th>R2R SPL&uarr;</th><th>RxR NE&darr;</th><th>RxR SR&uarr;</th><th>RxR SPL&uarr;</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Uni-NaVILA</td><td>5.58</td><td>53.5</td><td>47.0</td><td>42.7</td><td>6.24</td><td>48.7</td><td>40.9</td></tr>
+        <tr><td>NaVILA</td><td>5.22</td><td>62.5</td><td>54.0</td><td>49.0</td><td>6.77</td><td>49.3</td><td>44.0</td></tr>
+        <tr><td>StreamVLN</td><td>4.98</td><td>64.2</td><td>56.9</td><td>51.9</td><td>6.22</td><td>52.9</td><td>46.0</td></tr>
+        <tr><td>CorrectNav</td><td>4.24</td><td>67.5</td><td>65.1</td><td>62.3</td><td>4.09</td><td>69.3</td><td>63.3</td></tr>
+        <tr><td>NavFoM</td><td>4.61</td><td>72.1</td><td>61.7</td><td>55.3</td><td>4.74</td><td>64.4</td><td>56.2</td></tr>
+        <tr><td>Qwen-VLA</td><td>5.10</td><td>69.0</td><td>57.3</td><td>51.2</td><td>5.80</td><td>59.6</td><td>47.8</td></tr>
+        <tr><td>ABot-N0</td><td>3.80</td><td>70.8</td><td>66.4</td><td>63.9</td><td>3.83</td><td>69.3</td><td>60.0</td></tr>
+        <tr><td><strong>ABot-N1</strong></td><td><strong>3.32</strong></td><td><strong>75.2</strong></td><td><strong>70.9</strong></td><td><strong>67.5</strong></td><td><strong>3.13</strong></td><td><strong>73.9</strong></td><td><strong>63.9</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p>POI-Goal (ABotN-POIBench) and Object-Goal:</p>
+    <table>
+      <thead>
+        <tr><th>POI-Goal (ABotN-POIBench)</th><th>SR@2m</th><th>SPL</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>ViNT</td><td>19.0</td><td>18.2</td></tr>
+        <tr><td>OmniNav (vanilla)</td><td>23.9</td><td>22.4</td></tr>
+        <tr><td>OmniNav (BridgeNav training)</td><td>34.4</td><td>31.5</td></tr>
+        <tr><td>ABot-N0</td><td>20.9</td><td>17.7</td></tr>
+        <tr><td>POINav</td><td>42.3</td><td>40.3</td></tr>
+        <tr><td><strong>ABot-N1</strong></td><td><strong>77.3</strong></td><td><strong>72.6</strong></td></tr>
+      </tbody>
+    </table>
+
+    <table>
+      <thead>
+        <tr><th>Object-Goal</th><th>SR&uarr;</th><th>SPL&uarr;</th><th>DTG&darr;</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>StreamVLN</td><td>39.7</td><td>15.8</td><td>2.368</td></tr>
+        <tr><td>NaVILA</td><td>55.4</td><td>26.1</td><td>1.811</td></tr>
+        <tr><td>InternVLA-N1 (S2 only)</td><td>58.5</td><td>30.0</td><td>1.441</td></tr>
+        <tr><td>Uni-NaVILA</td><td>68.7</td><td>34.5</td><td>1.495</td></tr>
+        <tr><td>ABot-N0</td><td>73.2</td><td>35.4</td><td>1.442</td></tr>
+        <tr><td><strong>ABot-N1</strong></td><td><strong>84.9</strong></td><td><strong>51.8</strong></td><td><strong>0.822</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p>Person-Following (Single-Target STT / Distracted DT / Ambiguity AT):</p>
+    <ul>
+      <li>Single-Target: ABot-N1 90.1 SR / 89.8 TR vs. TrackVLA++ 86.0 / 81.0, NavFoM 85.0 / 80.5, ABot-N0 86.9 / 87.6.</li>
+      <li>Distracted: ABot-N1 67.4 / 84.4 vs. TrackVLA++ 66.5 / 68.8, NavFoM 61.4 / 68.2.</li>
+      <li>Ambiguity: ABot-N1 70.0 / 87.8 vs. TrackVLA++ 51.2 / 63.4, ABot-N0 67.3 / 79.5.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>Safety is folded directly into the GRPO reward as <code>R<sub>safety</sub></code>, which depends only on scene geometry and traversability rules. Because it&rsquo;s task-agnostic, the same safety term applies across all five paradigms and prevents cross-task interference where post-training on one navigation mode degrades safe behaviour in another.</li>
+      <li>The action-balanced batch sampling plus strong &ldquo;missing prediction&rdquo; penalty are engineered against two specific reward-hacking equilibria observed during development: <em>target withholding</em> (the policy learns to not commit to a target because non-commitment is not penalized) and <em>permanent inaction</em> (safety reward without target reward is trivially satisfied by standing still).</li>
+      <li>The paper is described as a &ldquo;step toward&rdquo; a general VLN foundation model rather than a full generalist &mdash; the five paradigms are still task-typed at input, and cross-task compositional prompts (e.g. &ldquo;find object X inside POI Y&rdquo;) aren&rsquo;t evaluated.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>arXiv 2607.10383 (v1, 2026-07-11). Project page: <code>amap-cvlab.github.io/ABot-Navigation/ABot-N1</code>. Hugging Face paper page ranked &#35;2 Paper of the Day on 2026-07-14 with 80 upvotes.</li>
+      <li>ABotN-PointBench and ABotN-POIBench released open source; model checkpoints not yet visible on Hugging Face at time of writing.</li>
+    </ul>
+
+    <h2 id="abot-agentos"><a href="https://arxiv.org/abs/2607.10350">ABot-AgentOS: A General Robotic Agent OS with Lifelong Multi-modal Memory</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-11</span>
+      <span>Robotic agent OS &middot; Multi-modal memory &middot; EmbodiedWorldBench</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Jiayi Tian, Shiao Liu, Yuting Xu, Jia Lu et al., corresponding <em>Jiaheng Liu</em>. AMAP CV Lab, Alibaba Group. Companion release to <code>ABot-N1</code>.</li>
+      <li><code>ABot-AgentOS</code> is a runtime layer that sits above low-level VLM / VLA controllers and provides a deliberative agent layer &mdash; scene-conditioned planning, context-isolated skill execution, multi-stage verification, multi-modal memory, and edge-cloud collaboration.</li>
+      <li>Accompanied by <strong>EmbodiedWorldBench</strong>, an executable benchmark with 16 indoor / outdoor / hybrid scenes, four difficulty levels, and 200+ tasks spanning navigation, object search, NPC dialogue, dynamic events, and trace-grounded scoring.</li>
+      <li>Static memory results: 87.5 LoCoMo, 59.9 OpenEQA EM-EQA, 88.6 Mem-Gallery, 76.5 Acc@All on NExT-QA. Self-evolution lifts LoCoMo to 88.7, OpenEQA to 60.4, Mem-Gallery to 89.0.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+
+    <p><strong>Universal Multi-modal Graph Memory + Failure-Driven Self-Evolution.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Long-horizon embodied agents need a persistent memory that survives across episodes and integrates dialogue, visual observations, spatial context, temporal relations, and task traces &mdash; but plugging that memory in over an evaluation benchmark creates a leakage risk: the same agent that failed on split N and stored a corrective memory can trivially recover on the same split at eval time.</li>
+      <li><em>Mechanism.</em> Universal Multi-modal Graph Memory converts each modality &mdash; dialogue, vision, spatial context, temporal relations, task traces &mdash; into <em>typed nodes and edges</em> in a single graph, source-grounded so provenance is preserved for auditing. A failure-driven self-evolution loop takes diagnosed memory failures and converts them into <em>gated runtime evo-assets</em> that are promoted only into <em>later</em> evaluation splits &mdash; the split where the failure occurred is frozen &mdash; which prevents current-split ground-truth leakage while still enabling continual improvement across splits.</li>
+      <li><em>Why.</em> The split-gating discipline is what lets a memory-augmented agent be evaluated fairly on a fixed benchmark. Typed nodes &amp; edges over a single graph are more auditable than the alternative &mdash; per-modality memory silos &mdash; because cross-modal grounding queries (&ldquo;which prior frame corresponds to this task-trace entry?&rdquo;) become a single graph walk rather than an ad-hoc modality bridge.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Improves over a single-controller baseline in both task success and goal completion on an initial EmbodiedWorldBench subset (paper does not include a full leaderboard).</li>
+      <li>Memory benchmark scores under &ldquo;Static&rdquo; vs. &ldquo;Self-Evolution&rdquo;: LoCoMo 87.5 &rarr; 88.7; OpenEQA EM-EQA 59.9 &rarr; 60.4; Mem-Gallery 88.6 &rarr; 89.0; NExT-QA Acc@All 76.5 (self-evolution number not reported in the abstract).</li>
+    </ul>
+
+    <h1 id="xiaomi">Xiaomi</h1>
+
+    <h2 id="xiaomi-robotics-u0"><a href="https://arxiv.org/abs/2607.11643">Xiaomi-Robotics-U0: Unified Embodied Synthesis with World Foundation Model</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-07-13</span>
+      <span>Embodied foundation model &middot; Multi-modal AR &middot; World model &middot; Multi-view generation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Xiaomi Robotics team &mdash; Xinghang Li, Jun Guo, Qiwei Li, Long Qian, Hang Lai et al. (30+ authors), correspondence to <code>mi-robotics@xiaomi.com</code>.</li>
+      <li><code>Xiaomi-Robotics-U0</code> is a <strong>38B-parameter multimodal autoregressive world foundation model</strong> for unified embodied synthesis. It jointly optimizes five generation tasks under a single next-token-prediction objective: (1) Text-to-Image (T2I), (2) Any-to-Image (X2I &mdash; 1&ndash;3 reference images + text, i.e. image editing), (3) embodied scene generation (multi-view robot observations from an embodiment + scene description), (4) embodied transfer (multi-view depth &rarr; multi-view RGB conditioned on a scene description), and (5) embodied video generation (initial observation + task &rarr; 15&ndash;25 RGB frames).</li>
+      <li>Initialized from open-source <code>EMU3.5</code>, which is itself built on the <strong>Qwen-3-32B decoder-only Transformer</strong> plus an IBQ visual tokenizer (16&times;16 spatial compression) so image and text tokens share one vocabulary. Reported as &ldquo;the first model to support high-quality multi-view scene generation across multiple robot embodiments&rdquo; and to &ldquo;introduce structured, controllable embodied transfer for fine-grained editing while preserving multi-view consistency and interaction dynamics.&rdquo;</li>
+      <li>Corpus: 9.5M single-step samples (56.4B tokens) + 2.6M video clips (49.6B tokens), sourced across six domains &mdash; general image-text (<code>ShareGPT4V</code>), embodied manipulation (<code>AgiBotWorld-Beta</code>, <code>Open X-Embodiment</code>, in-house <code>MiBot</code> multi-view, <code>RoboTwin2.0</code>, <code>GenieSim</code>, <code>InternData-A1</code>), autonomous driving (<code>Cosmos-Drive-Dreams</code>), egocentric (<code>EgoWalk</code>), 3D reconstruction (<code>ScanNet++ v2</code>, <code>DL3DV-10K</code>), and game data (<code>Open-P2P</code>).</li>
+      <li>Headline results: outperforms <code>GPT-Image-2</code> in human evaluations of embodied scene generation and embodied transfer; ranks first on <em>World Arena</em> for embodied video generation; lifts the OOD success rate of a downstream <code>&pi;<sub>0.5</sub></code> policy from <strong>36.9% &rarr; 63.2%</strong> on challenging real-world manipulation tasks. FlashAR+ inference is up to 82.9&times; faster than standard AR at 1024&times;1024 T2I; with vLLM integration the latency drops to 5.44 s / image on a single H20 (450.77 s baseline).</li>
+      <li>Two open checkpoints on Hugging Face: <code>XiaomiRobotics/Xiaomi-Robotics-U0</code> (labeled 34B) and <code>XiaomiRobotics/Xiaomi-Robotics-U0-FlashAR</code> (labeled 38B).</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.11643v1/x3.png" alt="Xiaomi-Robotics-U0 architecture overview showing shared Qwen-3-32B + IBQ tokenizer backbone trained under a unified next-token-prediction objective" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 3 (from the paper). Overall structure of Xiaomi-Robotics-U0. All modalities are represented in a unified discrete vocabulary (Qwen text + IBQ image codebook) and trained end-to-end under next-token prediction; an inference-time FlashAR+ extension is provided for efficient decoding. Source: <code>arxiv.org/html/2607.11643v1</code>.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+
+    <p><strong>Unified NTP world foundation model over text, image, and embodied tokens.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Existing embodied world models adapt a pre-trained foundation image / video model by <em>continued training on robot-specific datasets only</em>. Because embodied datasets are much smaller, less diverse, and highly repetitive relative to the internet-scale visual corpora the foundation model was trained on, this &ldquo;robot-only&rdquo; adaptation sacrifices the semantic understanding, controllability, and open-vocabulary generalization that made the base model useful in the first place, and produces embodied outputs with poor multi-view consistency, implausible robot states, and incompatibility with robot control.</li>
+      <li><em>Mechanism.</em> Xiaomi-Robotics-U0 initializes from <code>EMU3.5</code> (Qwen-3-32B decoder + IBQ tokenizer). All five tasks &mdash; T2I, X2I, embodied scene generation, embodied transfer, embodied video generation &mdash; are reformulated as sequences of unified discrete tokens (text, IBQ image tokens, robot-related control tokens) and optimized under a single joint next-token-prediction objective. No task-specific prediction heads. During continued training the T2I / X2I data is <em>co-trained</em> with embodied data specifically to prevent catastrophic forgetting of the pretrained generative capability; embodied scene generation supervises the model to synthesize physically plausible initial robot observations conditioned on embodiment + scene description; embodied transfer supervises cross-scene multi-view generation from multi-view depth conditions.</li>
+      <li><em>Why.</em> Sharing a single AR head across all five tasks is what allows visual-generation priors (materials, lighting, textures, object geometry) to actually reach the embodied tasks &mdash; the alternative, task-specific heads, forces each task to relearn those priors from a much smaller embodied subset. Co-training against T2I / X2I is a direct mechanism against catastrophic forgetting of the pretrained foundation model. Beating <code>GPT-Image-2</code> on the embodied-transfer benchmark (SI-RMSE 0.14 vs. 0.40) demonstrates that <code>GPT-Image-2</code>&rsquo;s failure mode &mdash; visually plausible but geometrically inconsistent images across views &mdash; is exactly what this joint objective fixes: the depth conditions become just another modality inside the same NTP loss.</li>
+    </ul>
+
+    <p><strong>Structured control decomposition for embodied transfer.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Naive text conditioning for embodied scene generation entangles workspace, background, foreground irrelevant objects, target objects, and lighting into a single caption &mdash; which means any augmentation that changes one dimension (e.g. randomize the background) drags along unwanted changes to the others (target-object identity, lighting geometry, workspace layout).</li>
+      <li><em>Mechanism.</em> Structured Embodied Scene Annotation partitions the scene into five orthogonal semantic dimensions &mdash; <em>workspace</em>, <em>task objects</em>, <em>irrelevant objects</em>, <em>lighting</em>, and <em>background</em> &mdash; each with its own text description generated by <code>Qwen3-VL-235B</code>. At inference the five dimensions can be independently swapped and re-composed, producing controllable augmentations that keep geometry and interaction dynamics stable.</li>
+      <li><em>Why.</em> This is what turns the model into a <em>scalable data engine</em>: for each real trajectory, 1000 alternative descriptions per non-task-object dimension are generated and randomly composed, and the resulting augmentations preserve the multi-view geometric consistency that a downstream manipulation policy needs. Concretely, this augmentation pipeline is what lifts <code>&pi;<sub>0.5</sub></code> from 36.9% to 63.2% on OOD real-world manipulation.</li>
+    </ul>
+
+    <p><strong>FlashAR+ inference extension.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Serial token-by-token generation over a 1024&times;1024 IBQ latent grid is intolerably slow for AR image generation &mdash; 450.77 s per image on a single H20 in the standard AR baseline.</li>
+      <li><em>Mechanism.</em> FlashAR+ extends <code>FlashAR</code>&rsquo;s post-training / inference paradigm from single-image T2I to full X2I (T2I, I2I, multi-reference). During training the model treats text + reference images + control conditions + target image header as a fixed conditional prefix (loss is applied only on target tokens; references are never supervised). The target image is generated in <em>anti-diagonal steps</em> &mdash; tokens sharing <code>r+c = step</code> are decoded in parallel via a horizontal head and a vertical head fused by a per-position learnable gate <code>g(r,c) &isin; [0,1]</code>. A step-causal 2D attention mask inside the target region prevents information leakage between same-step tokens. The loss is <code>&#8466;<sub>fuse</sub> + 0.05&#8466;<sub>h</sub> + 0.05&#8466;<sub>v</sub> + 0.2&#8466;<sub>distill</sub></code>; the small <code>0.05&#8466;<sub>h</sub></code> and <code>0.05&#8466;<sub>v</sub></code> auxiliary losses explicitly supervise the horizontal and vertical heads to prevent H/V gate collapse toward an under-trained branch.</li>
+      <li><em>Why.</em> FlashAR+ drops latency to 16.56 s / image (27.22&times; over standard AR), and vLLM integration (batched execution + paged KV cache + a diagonal scheduler synchronizing CFG conditional / unconditional requests) drops it further to 5.44 s / image at <code>max_num_seq=28</code> &mdash; a 3.04&times; additional speedup, totaling ~82.9&times; over baseline AR. The auxiliary H / V losses are the design detail that keeps the gated fusion stable: without them the gate collapses toward the H branch under longer training, and the fused prediction degenerates into a single-direction (unstable) prediction.</li>
+    </ul>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li><em>Data volume.</em> 9.5M single-step samples (56.4B tokens) after autonomous filtering (motion blur, image-quality detection, gripper-state alignment), plus 2.6M video clips (49.6B tokens) for sequential generation.</li>
+      <li><em>Unified annotation pipeline.</em> Uses <code>Qwen3-VL-235B</code> to produce dense structured captions along four decoupled branches: (1) General scene captions after temporal downsampling on all videos; (2) Structured embodied scene captions with the five-dimension decomposition (workspace / task objects / irrelevant objects / lighting / background); (3) Geometric-modality extraction of temporally-consistent inverse depth via <code>Video Depth Anything</code>; (4) Trajectory-level subtask decomposition via HDBSCAN clustering on end-effector poses and gripper signals to segment motion / grasp transitions.</li>
+      <li><em>Data balancing.</em> Fine-grained hierarchical grouping over task goals, scene contexts, target objects, spatial relations, subtask phases, and atomic manipulation skills. Downsample redundant embodiment-task-object combinations; up-weight long-tail categories (rare objects, seldom-used skills, core interaction phases &mdash; grasping, releasing, placing, object state transitions).</li>
+      <li><em>Training curriculum.</em> Two setups. <em>Single-step training</em> jointly trains T2I + X2I + embodied scene generation + embodied transfer, using the general T2I / X2I data as an anchor against catastrophic forgetting. <em>Sequential training</em> extends the model to long-horizon behaviour: image-text interleaved subtask-subgoal sequences (each language subtask paired with the multi-view observations after execution) plus embodied manipulation videos at multiple frame rates (FPS 1, 3, 5), where sparse frames drive long-horizon planning and dense frames drive fine-grained interaction dynamics.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+
+    <p>Embodied Transfer benchmark (300 samples, 150 Easy / 150 Hard splits, comparing against <code>GPT-Image-2</code>). Numbers below are Xiaomi-Robotics-U0 (Ours) vs. GPT-Image-2, on Easy / Hard:</p>
+    <table>
+      <thead>
+        <tr><th>Metric</th><th>GPT-Image-2 (Easy)</th><th>GPT-Image-2 (Hard)</th><th>U0 (Easy)</th><th>U0 (Hard)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Depth SI-RMSE &darr;</td><td>0.4007</td><td>0.3444</td><td><strong>0.1407</strong> (&minus;0.260)</td><td><strong>0.1435</strong> (&minus;0.201)</td></tr>
+        <tr><td>Depth &delta;<sub>1</sub> &uarr;</td><td>0.5307</td><td>0.5340</td><td><strong>0.8017</strong> (+0.271)</td><td><strong>0.7846</strong> (+0.251)</td></tr>
+        <tr><td>Depth AbsRel &darr;</td><td>0.4350</td><td>0.4045</td><td><strong>0.1647</strong> (&minus;0.270)</td><td><strong>0.1702</strong> (&minus;0.234)</td></tr>
+        <tr><td>Canny F1 &uarr;</td><td>0.0519</td><td>0.0507</td><td><strong>0.2066</strong> (+0.155)</td><td><strong>0.1815</strong> (+0.131)</td></tr>
+        <tr><td>Canny Precision &uarr;</td><td>0.0560</td><td>0.0536</td><td><strong>0.2037</strong> (+0.148)</td><td><strong>0.1770</strong> (+0.123)</td></tr>
+        <tr><td>Canny Recall &uarr;</td><td>0.0572</td><td>0.0582</td><td><strong>0.2290</strong> (+0.172)</td><td><strong>0.2176</strong> (+0.159)</td></tr>
+        <tr><td>Segmentation mIoU &uarr;</td><td>0.4105</td><td>0.4098</td><td><strong>0.7621</strong> (+0.352)</td><td><strong>0.7436</strong> (+0.334)</td></tr>
+        <tr><td>Segmentation Recall &uarr;</td><td>0.6208</td><td>0.6524</td><td><strong>0.8136</strong> (+0.193)</td><td><strong>0.8032</strong> (+0.151)</td></tr>
+      </tbody>
+    </table>
+
+    <p>Additional headline numbers reported in the paper:</p>
+    <ul>
+      <li><em>Human evaluation on embodied scene generation and embodied transfer.</em> Xiaomi-Robotics-U0 preferred over <code>GPT-Image-2</code>. GPT-Image-2 in the failure analysis produces &ldquo;plausible, well-aligned images but violates the input depth and produces multi-view-inconsistent results,&rdquo; while Xiaomi-Robotics-U0 &ldquo;adheres to the geometry of every view and keeps the views mutually consistent.&rdquo;</li>
+      <li><em>Embodied video generation.</em> First place on the <strong>World Arena</strong> benchmark; strong zero-shot multi-view embodied video generation demonstrated qualitatively across multiple embodiments.</li>
+      <li><em>Zero-shot data augmentation as a data engine.</em> For four real-world tasks &mdash; pack box, fold towel, pack phone, pack earphone &mdash; the paper prompts <code>Qwen3-VL</code> to generate 1000 diverse alternatives for each of background / workspace / lighting (with task objects held fixed), randomly composes them, and feeds each composition to Xiaomi-Robotics-U0 for generation. The augmented trajectories lift the OOD success rate of a downstream <code>&pi;<sub>0.5</sub></code> policy from 36.9% to 63.2%.</li>
+      <li><em>General image generation retained.</em> Model retains dominant general image generation performance on Geneval and ImageEdit benchmarks (specific numbers reported in the paper).</li>
+      <li><em>Inference speed at 1024&times;1024 T2I on 1&times;H20:</em> baseline AR 450.77 s, FlashAR+ 16.56 s (27.22&times;), FlashAR+ &times; vLLM 5.44 s (3.04&times; over FlashAR+, 82.9&times; over baseline AR).</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>The main practical limitation is inference cost at 38B and the reliance on <code>EMU3.5</code> initialization &mdash; the FlashAR+ speedup measurements are reported only for T2I / X2I at 1024&times;1024, not for full embodied video sequences.</li>
+      <li>The zero-shot augmentation is validated on four tasks and one downstream policy (<code>&pi;<sub>0.5</sub></code>); how the 36.9 &rarr; 63.2 gain generalizes across policy classes and manipulation task families is not reported.</li>
+      <li>No red-team safety card is provided in the technical report; the model is a visual world generator without action outputs, so safety concerns are those of foundation image / video models (e.g., generated content policy) rather than robot-action safety.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>arXiv 2607.11643 (v1, 2026-07-13, cs.RO). Code and checkpoints released: <code>robotics.xiaomi.com/xiaomi-robotics-u0.html</code>.</li>
+      <li>Hugging Face model repos: <code>XiaomiRobotics/Xiaomi-Robotics-U0</code> (34B, updated ~12h before this review), <code>XiaomiRobotics/Xiaomi-Robotics-U0-FlashAR</code> (38B).</li>
+    </ul>
+
+    <h1 id="bytedance-seed">ByteDance Seed</h1>
+
+    <h2 id="direct-opd"><a href="https://arxiv.org/abs/2607.05394">Weak-to-Strong Generalization via Direct On-Policy Distillation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-08</span>
+      <span>RL post-training &middot; Weak-to-strong distillation &middot; Implicit reward &middot; RLVR</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Shiyuan Feng, Huan-ang Gao, Haohan Chi, Hanlin Wu, Zhilong Zhang, Zheng Jiang, Bingxiang He, Wei-Ying Ma, Ya-Qin Zhang, Hao Zhou. From the <strong>SIA-Lab</strong>, a joint lab of <em>Tsinghua AIR</em> and <em>ByteDance Seed</em>. Project page: <code>bytedtsinghua-sia.github.io/Direct-OPD</code>.</li>
+      <li>Motivation: RLVR (RL with verifiable rewards) on frontier LLMs is compute-dominated by rollouts &mdash; re-running RL on every new stronger target model is prohibitive because the target itself must generate the training rollouts. As target scale grows, post-training compute is the bottleneck.</li>
+      <li>Direct-OPD introduces a <em>weak-to-strong</em> alternative: run RL on a small model where rollouts are cheap; reuse what that RL run learned to improve a stronger target model. Simple distillation from the post-RL small model is not enough &mdash; the small teacher&rsquo;s final policy mixes useful RL gains with the limitations of being a small model, so imitating it can drag a stronger student <em>down</em>.</li>
+      <li>Empirical headline: on AIME 2024, Direct-OPD boosts <code>Qwen3-1.7B</code> from 48.3% to 58.3% in 4 hours on 8&times;A100. In a second setting: 1.5B teacher pair (post-RL teacher score 51.3), 7B student before transfer 56.7; vanilla on-policy distillation of the post-RL teacher <em>drops the student to ~50</em>, while Direct-OPD lifts it to 63.1 (+6.4). Outperforms step-matched direct RL on the target and admits sequential composition of multiple policy shifts.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+
+    <p><strong>Policy shift as an implicit reward &mdash; distill the delta, not the teacher.</strong></p>
+    <ul>
+      <li><em>Problem.</em> The obvious weak-to-strong route &mdash; run RLVR on a small model, then distill the resulting post-RL policy into a stronger target &mdash; fails when the target is already stronger than the post-RL small teacher. Vanilla on-policy distillation drags the target policy toward the teacher&rsquo;s ceiling (see the AIME setting where a 56.7% 7B is pulled down to ~50 by imitating a 51.3% teacher). The teacher&rsquo;s <em>final</em> policy mixes RL gains with small-model limitations; the imitator inherits both.</li>
+      <li><em>Mechanism.</em> Compare the post-RL small teacher <code>&pi;<sub>post</sub></code> against its own <em>pre-RL</em> reference <code>&pi;<sub>pre</sub></code>, treat the log-ratio <code>log &pi;<sub>post</sub>(a|s) &minus; log &pi;<sub>pre</sub>(a|s)</code> as a dense <em>implicit reward</em> that identifies which actions RL made the small model more (or less) likely to take, and apply that reward on the <em>stronger student&rsquo;s own on-policy states</em>. The student never has to imitate the small teacher&rsquo;s absolute policy; it only inherits the RL-induced <em>direction</em>. This turns the pair <code>(&pi;<sub>pre</sub>, &pi;<sub>post</sub>)</code> into the reusable RL artifact, not <code>&pi;<sub>post</sub></code> alone.</li>
+      <li><em>Why.</em> The pre-RL vs. post-RL log-ratio is exactly the sufficient statistic for &ldquo;what RL taught this model&rdquo; that is <em>orthogonal</em> to the model&rsquo;s absolute capability &mdash; it captures direction of change, not the level. Applying that signal on the student&rsquo;s own rollouts is what preserves the student&rsquo;s superior starting policy while still letting it inherit the small-model&rsquo;s RL discovery. Compared with distilling the post-RL teacher (which pulls the student toward the teacher&rsquo;s ceiling) and with step-matched direct RL on the target (which pays the full rollout cost), Direct-OPD both wins on final AIME score and dominates on wall-clock training time.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><em>AIME 2024 headline.</em> <code>Qwen3-1.7B</code>: 48.3% &rarr; 58.3% (+10.0) in 4 hours on 8&times;A100 GPUs.</li>
+      <li><em>Cross-scale reuse.</em> 1.5B teacher pair (pre-RL &rarr; post-RL, post-RL scored at 51.3); a 7B student that scored 56.7 before transfer degrades to ~50 under vanilla on-policy distillation, but reaches 63.1 (+6.4) under Direct-OPD.</li>
+      <li><em>Comparison to step-matched direct RL.</em> Direct-OPD outperforms step-matched direct RL on the target model &mdash; a real-world compute win, since running RL on the small model + Direct-OPD is cheaper per step than running RL on the target.</li>
+      <li><em>Sequential composition.</em> Multiple <code>(&pi;<sub>pre</sub>, &pi;<sub>post</sub>)</code> policy-shift pairs from different weak-model RL runs can be composed on the same student, i.e., the RL discoveries stack.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>The framing reinterprets what a completed RLVR run is worth: not just the final checkpoint, but the pair <code>(&pi;<sub>pre</sub>, &pi;<sub>post</sub>)</code> as a reusable, model-agnostic supervision signal &mdash; a claim directly relevant to the compounding post-training compute bill at frontier scale.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
