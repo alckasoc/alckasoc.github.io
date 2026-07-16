@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ring-2.5-1T-Zero Launch Review &mdash; July 16, 2026 | Auto Lit Review</title>
+<meta name="description" content="Ant Group's inclusionAI ships Ring-2.5-1T-Zero, a 1-trillion-parameter (63B activated) MoE reasoning model trained purely by zero-RL on Ling-2.5-1T-Base with a four-stage pipeline and BF16/FP32 mixed-precision softmax control. Tier 2 companions: ByteDance Seed's SpectraReward turns pretrained MLLMs into training-free rewards for text-to-image RL; Tencent Hunyuan's Harness Handbook synthesizes a behavior-centric map of agent codebases for LLM-planned edits. Tier 3: OpenAI's GPT-Red announces automated self-play red-teaming that drove GPT-5.6 Sol's direct-prompt-injection failure rate to 0.05%." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 16, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#ant-group" class="toc-h1">Ant Group</a>
+          <ul>
+            <li><a href="#ring-2-5-1t-zero" class="toc-h2">Ring-2.5-1T-Zero</a></li>
+          </ul>
+        </li>
+        <li><a href="#bytedance-seed" class="toc-h1">ByteDance Seed</a>
+          <ul>
+            <li><a href="#spectra-reward" class="toc-h2">SpectraReward</a></li>
+          </ul>
+        </li>
+        <li><a href="#tencent-hunyuan" class="toc-h1">Tencent Hunyuan</a>
+          <ul>
+            <li><a href="#harness-handbook" class="toc-h2">Harness Handbook</a></li>
+          </ul>
+        </li>
+        <li><a href="#openai" class="toc-h1">OpenAI</a>
+          <ul>
+            <li><a href="#gpt-red" class="toc-h2">GPT-Red</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 16, 2026</div>
+    <h1 class="page-title">Ring-2.5-1T-Zero Launch</h1>
+    <div class="page-meta">4 papers &middot; 4 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>Ant Group&rsquo;s <code>inclusionAI</code> ships the Tier 1 launch of the window: <strong>Ring-2.5-1T-Zero</strong>, a 1-trillion-parameter Mixture-of-Experts reasoning model with 63B activated parameters, trained purely by verifiable-reward RL from <code>Ling-2.5-1T-Base</code> without any supervised CoT data. The paper documents a minimalist four-stage pipeline &mdash; clipped-importance first-stage RL for reasoning elicitation, self-distillation to compress verbose CoT and reset the Megatron/SGLang engine gap, sample-level second-stage RL for sustained optimization, and tier-based third-stage RL for adaptive reasoning depth &mdash; plus infrastructure work that keeps attention softmax and LM head in FP32 while running the body in BF16, and swaps ring attention for all-to-all CP on MLA layers and AllGather on Lightning Attention layers. On seven mathematical benchmarks Ring-2.5-1T-Zero is competitive with frontier reasoning models, and the trillion-scale run makes five cognitive behaviors emerge spontaneously without any hand-crafted incentives &mdash; anthropomorphism, structured formatting, self-verification, parallel reasoning, and context anxiety. Tier 2 out of ByteDance Seed / HKU: <strong>SpectraReward</strong> turns any pretrained MLLM into a training-free reward for text-to-image RL by reading the prompt back from the generated image via one teacher-forced pass and using the mean prompt log-likelihood as the reward. Tier 2 out of Tencent Hunyuan: <strong>Harness Handbook</strong>, a static-analysis + LLM-structured behavior map of an agent harness codebase that fixes the behavior-to-code localization bottleneck for coding agents editing large agentic systems. Tier 3 out of OpenAI: <strong>GPT-Red</strong>, an automated self-play red-teamer used to adversarially train <code>GPT-5.6 Sol</code>, dropping the direct-prompt-injection failure rate to 0.05%.</p>
+
+      <h3>Competitiveness</h3>
+      <p>Ring-2.5-1T-Zero plants a 1T-parameter open-weight flag in the reasoning race. The public checkpoint <code>inclusionAI/Ring-2.6-1T</code> shipped to Hugging Face 11 hours before this review and is the first open-weight trillion-parameter zero-RL reasoning model on the market, alongside the flagship <code>Ling-2.6-1T</code> and <code>Ling-2.6-flash</code> lines. The paper reports Ring-2.5-1T-Zero &ldquo;competitive with frontier models&rdquo; on seven math benchmarks; the frontier reference set the reader should hold up is the current-generation reasoning cohort &mdash; <code>GPT-5.6 Sol</code>, <code>Claude Opus 4.8</code>, <code>Gemini 2.5 Pro</code>, <code>DeepSeek-V4-Pro</code>, <code>Kimi K2.6</code>, <code>Gemma 4</code>, <code>GLM-5</code>, and Alibaba&rsquo;s <code>Qwen3.5-Omni</code>. Ring&rsquo;s bigger practical claim isn&rsquo;t a specific delta on AIME &mdash; it&rsquo;s the demonstration that pure zero-RL at 1T beats <code>Ling-2.5-flash-Base</code>&rsquo;s 104B ceiling in both sample efficiency and asymptote, and that at 1T the model auto-discovers structured formatting, parallel reasoning, self-verification, and context anxiety without any of the hand-crafted &ldquo;think, then verify, then aggregate&rdquo; templates that <code>GPT-5.5 System Card</code> and <code>Kimi K2.6</code> shipped. SpectraReward is directly interesting for the text-to-image RL stack behind <code>Qwen-Image-2.0</code>, <code>Qwen-Image-VAE-2.0</code>, and <code>Boogu-Image-0.1</code>: on BAGEL, prompt likelihood beats scalar 1&ndash;5 scoring by +11.8 GenEval and VQA-decomposition (AlphaGRPO&rsquo;s DVReward) by +6.4, and Self-SpectraReward using BAGEL&rsquo;s own understanding branch (7B-class) matches or beats <code>Qwen3-VL-235B-A22B</code> as an external reward, reshaping the &ldquo;bigger reward model is better&rdquo; assumption. Harness Handbook is the first paper to attack behavior-to-code localization inside agent harnesses head-on &mdash; the same problem that surfaced in Anthropic&rsquo;s <em>The Making of Claude Code</em> retrospective. GPT-Red is the safety-side counterpart of the &ldquo;model-improves-model&rdquo; flywheel that OpenAI has been running since GPT-5.3, and reports a monotone drop in attack success rate across every GPT release, ending at 0.05% for <code>GPT-5.6 Sol</code>.</p>
+
+      <h3>New frontier releases</h3>
+      <p>One Tier 1 launch: Ant Group / inclusionAI <code>Ring-2.5-1T-Zero</code> (arXiv 2026-07-14, checkpoint <code>inclusionAI/Ring-2.6-1T</code> on Hugging Face). No US-lab flagship LLM launches in the window &mdash; Anthropic shipped <code>Claude Sonnet 5</code> on June 30 and OpenAI shipped <code>GPT-5.6</code> on July 9. Google&rsquo;s previously-announced <code>Gemini 3.5 Pro</code> full-rebuild remains scheduled for July 17.</p>
+    </section>
+
+    <h1 id="ant-group">Ant Group</h1>
+
+    <h2 id="ring-2-5-1t-zero"><a href="https://arxiv.org/abs/2607.12395">Ring-Zero: Scaling Zero RL to a Trillion Parameters for Emergent Reasoning</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-07-14</span>
+      <span>Reasoning &middot; Zero-RL &middot; Trillion-parameter MoE &middot; Emergent behaviors</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Xinyu Tang, Gangqiang Cao, Yurou Liu, et al. (16 authors), corresponding Wayne Xin Zhao / Zhiqiang Zhang / Jun Zhou. Affiliation: <strong>Ant Group AGI initiative (inclusionAI / Ant Ling team)</strong>, home of the <code>Ling</code> and <code>Ring</code> model families. Companion HF drop <code>inclusionAI/Ring-2.6-1T</code> landed on the org page ~11 hours before this review.</li>
+      <li><code>Ring-2.5-1T-Zero</code> is a pure zero-RL reasoning model &mdash; no supervised chain-of-thought data anywhere in the pipeline &mdash; trained on top of <code>Ling-2.5-1T-Base</code>, a 1-trillion-parameter Mixture-of-Experts LLM with 63B activated parameters per token. A parallel 104B / 7.4B-activated variant is trained from <code>Ling-2.5-flash-Base</code> for scale ablations.</li>
+      <li>The paper&rsquo;s central thesis is a validation of the &ldquo;bitter lesson&rdquo; of scaling: at 1T parameters, sample efficiency and performance ceilings both jump, training passes through a &ldquo;discovery&rdquo; phase followed by a &ldquo;sharpening&rdquo; phase, and the model spontaneously discovers advanced cognitive strategies without any hand-crafted incentive &mdash; anthropomorphism, structured formatting, self-verification, parallel reasoning, and context anxiety.</li>
+      <li>Beyond final-answer accuracy, the paper introduces a three-axis CoT quality framework &mdash; <em>comprehensibility</em> (LLM-as-Judge pairwise on logical coherence), <em>reproducibility</em> (downstream gain of a weaker student distilled on the traces), and <em>efficiency</em> (average token count of correct traces) &mdash; and demonstrates clear wins on all three.</li>
+      <li>Infrastructure: 320&times;H200 GPUs; <code>Megatron</code> as training engine; <code>SGLang</code> as rollout engine; orchestrated by <code>Areal</code>. Training runs the model body in BF16 while forcing FP32 in the attention softmax and LM head.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.12395v1/x1.png" alt="Overview of Ring-2.5-1T-Zero: four-stage training pipeline, infrastructure optimizations, and emergent behaviors" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). Overview of Ring-2.5-1T-Zero. (a) Four-stage pipeline: First-stage RL incentivizes reasoning from the base model; Self-Distillation compresses CoT and resets the training-inference engine gap; Second-stage RL switches to sample-level loss for sustained improvement; Third-stage RL introduces tier-based training for adaptive reasoning depth. (b) Infrastructure optimizations for stable, efficient training at scale. (c) Emergent behaviors that arise spontaneously without explicit supervision. Source: <code>arxiv.org/html/2607.12395v1</code>.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>Base is <code>Ling-2.5-1T-Base</code>: a 1T-parameter Mixture-of-Experts LLM with 63B activated parameters per token. The MoE stack is hybrid, mixing DeepSeek-style <code>MLA</code> (Multi-head Latent Attention) layers &mdash; which compress keys and values into a low-rank latent space &mdash; with <code>Lightning Attention</code> layers, which maintain a small fixed-size KV state matrix instead of a growing KV cache.</li>
+      <li>The 104B / 7.4B-activated <code>Ling-2.5-flash-Base</code> variant is used as a scale ablation twin. Both share the four-stage training pipeline verbatim.</li>
+    </ul>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li>Pre-training of the two <code>Ling-2.5</code> base models is deferred to the Ling-2.5 technical report. The Ring-Zero paper picks up strictly at the RL stage; no continued pre-training or SFT is applied before RL.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+
+    <p><strong>Stage 1 &mdash; First-Stage RL: Reasoning Elicitation with clipped importance sampling.</strong></p>
+    <ul>
+      <li><em>Problem.</em> A base model that has never seen CoT assigns very low probability to reasoning tokens. Vanilla PPO-clip zeroes out gradients for tokens whose importance ratio falls outside the clip range, so exactly the tokens you need to amplify to elicit reasoning receive no learning signal, and the base policy stays stuck producing terse non-CoT answers.</li>
+      <li><em>Mechanism.</em> The clipped importance-sampling policy gradient (following MiniMax 2025) applies <em>stop-gradient only to the clipped ratio</em>, so every generated token contributes <code>sg(&rho;&#770;<sub>i,t</sub>) &middot; A&#770;<sub>i,t</sub> &middot; &nabla; log &pi;<sub>&theta;</sub></code>. Two extra tweaks lock down stability at 1T: (1) the numerator of the importance ratio uses the actual training-engine (Megatron) logits, not the inference-engine (SGLang) logits, so cross-engine numerical drift between BF16 kernels is measured rather than compounded; (2) only an upper clip <code>&epsilon;<sub>high</sub>=5.0</code> is applied &mdash; no lower bound &mdash; to fully allow amplification of low-probability tokens. A frozen-reference KL penalty at <code>&beta;=10<sup>-4</sup></code> prevents drift. The loss is token-level (sum over tokens, not mean) so longer correct responses accumulate stronger gradients, and the response-window length is expanded curriculum-style through the stage.</li>
+      <li><em>Why.</em> Standard PPO-clip trades off gradient noise against instability by zeroing out extremes; that&rsquo;s exactly wrong for zero-RL, where the extremes are the entire training signal. Amplifying low-probability CoT tokens is the only way to lift them above the base policy&rsquo;s output distribution. Applying stop-gradient to the ratio rather than the token gives you the stability of PPO-clip on the ratio while keeping the reasoning-token gradients intact. Correcting the numerator with training-engine logits is what makes the whole loop survive at 1T: at that scale, even &plusmn;1e-4 logit differences between Megatron and SGLang compound through softmax exponentiation into ratio blow-ups.</li>
+    </ul>
+
+    <p><strong>Stage 2 &mdash; Self-Distillation: Compression and Stabilization.</strong></p>
+    <ul>
+      <li><em>Problem.</em> The token-level loss in Stage 1 is unbounded in length, so once the model learns to reason, CoT traces explode into repetitive, circular, verbose derivations. Worse, the Megatron/SGLang numerical drift accumulates through those long rollouts, so the training-inference gap eventually inflates enough to collapse optimization.</li>
+      <li><em>Mechanism.</em> Freeze the Stage-1 expert policy <code>&pi;<sub>expert</sub></code>. For every training query, sample <code>G=16</code> rollouts, pick the <em>shortest correct</em> one, then have the model self-critique and prune redundant segments from it. Fine-tune the <em>original base model</em> &mdash; not the Stage-1 checkpoint &mdash; on that refined corpus with standard supervised MLE: <code>&minus;E<sub>q,o</sub>[&sum;<sub>t</sub> log &pi;<sub>&theta;</sub>(o<sub>t</sub> | q, o<sub>&lt;t</sub>)]</code>.</li>
+      <li><em>Why.</em> Distilling into the fresh base model rather than continuing to train the drifted Stage-1 checkpoint wipes out the accumulated Megatron/SGLang numerical divergence in one shot. The two-step &ldquo;shortest-correct then self-prune&rdquo; filter is what gets rid of circular derivations without hurting correctness &mdash; longer traces are correlated with correctness only up to a point, and the self-prune step is a distributionally aligned way to catch the redundant tail that even shortest-correct still contains. What comes out is a capable, concise, engine-aligned starting point for Stage 2 RL, without which the second RL stage would immediately re-collapse.</li>
+    </ul>
+
+    <p><strong>Stage 3 &mdash; Second-Stage RL: Sustained Optimization with sample-level loss.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Keep the token-level loss from Stage 1 after distillation, and length grows without bound again &mdash; wiping out the conciseness the distillation step just bought. Keep the KL penalty and further exploration gets throttled.</li>
+      <li><em>Mechanism.</em> The clipped importance-sampling gradient and training-engine ratio correction stay, but the outer loss switches to sample-level normalization: <code>&minus;E[&sum;<sub>i</sub> (1/|o<sub>i</sub>|) &sum;<sub>t</sub> sg(&rho;&#770;<sub>i,t</sub>)&middot;A&#770;<sub>i,t</sub>&middot;log&pi;<sub>&theta;</sub>]</code>. The KL penalty is dropped entirely.</li>
+      <li><em>Why.</em> Sample-level normalization makes the gradient magnitude independent of output length, so the model can improve on hard problems without being paid per-token for verbosity. Dropping KL after the distilled starting point is well-calibrated frees the second stage to explore &mdash; the KL leash was Stage-1 medicine, not Stage-2 medicine.</li>
+    </ul>
+
+    <p><strong>Stage 4 &mdash; Third-Stage RL: Adaptive Reasoning Depth via tier-based training.</strong></p>
+    <ul>
+      <li><em>Problem.</em> After two RL stages, the model reasons well but operates in a single mode with a fixed response budget. Simple queries get over-reasoned and expensive; hard problems still hit the ceiling of the trained window.</li>
+      <li><em>Mechanism.</em> Partition training questions into three difficulty tiers <code>{T<sub>l</sub>, T<sub>m</sub>, T<sub>h</sub>}</code>. Each tier gets a distinct system prompt <code>p<sub>k</sub></code> and a distinct maximum-response-token budget. The Stage-2 sample-level RL objective is summed over the three tiers with rollouts conditioned on the tier prompt; truncation happens at the tier window. At deploy time, the operator or user selects the tier via the system prompt.</li>
+      <li><em>Why.</em> Difficulty-conditioned RL teaches the model that different prompts warrant different amounts of computation, which is the missing pole vs. GRPO&rsquo;s single-mode outputs. Because the reward, budget, and system prompt vary together, the model learns to route compute based on system-prompt signal alone &mdash; giving the deployment surface a compute knob that doesn&rsquo;t require retraining.</li>
+    </ul>
+
+    <p><strong>Infrastructure &mdash; Mixed-precision softmax control and hybrid-attention CP.</strong></p>
+    <ul>
+      <li><em>Problem.</em> The importance ratio <code>&rho;<sub>i,t</sub></code> is a ratio of softmaxed probabilities. Softmax involves exponentiation, which amplifies tiny logit-precision errors into massive ratio blow-ups &mdash; a fatal instability at 1T where BF16 rounding compounds through hundreds of RL steps. Standard ring attention for context parallelism forces each device to wait for a full ring of KV passes before finishing attention, creating a sequential latency bottleneck that dominates as parallelism scales.</li>
+      <li><em>Mechanism.</em> (1) Mixed-precision control: keep the model body in BF16, but compute <em>both</em> the attention softmax and the LM head in FP32. This preserves speed everywhere it doesn&rsquo;t matter and forces precision exactly where exponentiation amplifies error. (2) Hybrid-attention CP: for <code>MLA</code> layers, use all-to-all CP &mdash; reshuffle along the head dimension in a single collective so each device computes full attention for a subset of heads across the full sequence; the low-rank KV compression makes this dramatically cheaper than sending full KV. For <code>Lightning Attention</code> layers, the state is a small fixed-size matrix, so replace ring passing with a single <code>AllGather</code> that broadcasts local states to every device at once.</li>
+      <li><em>Why.</em> Isolating FP32 to softmax and LM head is the surgical fix &mdash; it eliminates the exact loss spikes the paper attributes to Megatron/SGLang numerical drift, without paying the BF16&rarr;FP32 cost on the majority of the network. The CP redesign matches the mathematical structure of each attention type: MLA&rsquo;s latent-compressed KV rewards all-to-all with a single collective; Lightning Attention&rsquo;s fixed-size state rewards AllGather; both are mathematically equivalent to ring attention and produce identical gradients.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Evaluated on seven challenging mathematical benchmarks; the paper reports Ring-2.5-1T-Zero as &ldquo;competitive with frontier models&rdquo; without pushing a single headline delta.</li>
+      <li>The 1T model shows &ldquo;vastly superior sample efficiency and a significantly higher performance bound&rdquo; compared to the 104B ablation twin trained with an identical four-stage pipeline &mdash; the paper&rsquo;s core scaling claim.</li>
+      <li>CoT quality framework: on <em>comprehensibility</em>, an LLM-as-Judge pairwise comparison prefers Ring-2.5-1T-Zero&rsquo;s traces for logical coherence and clarity. On <em>reproducibility</em>, distilling a weaker student model on Ring-2.5-1T-Zero&rsquo;s CoT yields larger downstream gains than distilling from baseline traces, suggesting the traces encode more transferable strategies. On <em>efficiency</em>, the model produces the shortest correct-CoT average across compared systems.</li>
+      <li>Hyperparameters: <code>G=16</code> rollouts per query at <code>T=1.0</code>; Adam with <code>&beta;<sub>1</sub>=0.9, &beta;<sub>2</sub>=0.999</code>; constant LR <code>2&times;10<sup>-6</sup></code>; weight decay <code>0.01</code>; off-policy batch 512 then 256, minibatch 32; Stage-1 KL <code>&beta;=10<sup>-4</sup></code>; upper clip <code>&epsilon;<sub>high</sub>=5.0</code>, no lower clip.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>RL algorithms: the paper compares its clipped-IS-with-stop-gradient objective against standard GRPO, sample-level GRPO, and pure PPO-clip; the stop-gradient formulation is what keeps low-probability reasoning tokens contributing gradients in Stage 1, and swapping to pure PPO-clip immediately kills reasoning elicitation.</li>
+      <li>Format reward: an explicit format-reward channel is not needed once training-inference ratio correction and stop-gradient are in place. This is the &ldquo;bitter lesson&rdquo; version of Stage-1 &mdash; the format shows up on its own.</li>
+      <li>Length inertia: the token-level Stage-1 loss creates a length ratchet (length grows monotonically) that the sample-level Stage-2 loss + distillation-based reset both need to counter; either one alone is insufficient.</li>
+      <li>Mixed-precision ablation: switching either the attention softmax or the LM head back to BF16 re-introduces sudden loss spikes and the Megatron/SGLang gap re-inflates; both must be FP32.</li>
+      <li>Scale ablation: <code>Ring-2.5-104B-Zero</code> (7.4B activated) trained under the same pipeline plateaus well below the 1T twin on all seven math benchmarks and on every axis of the CoT quality framework.</li>
+    </ul>
+
+    <h3>Emergent behaviors (&ldquo;A Bitter Lesson&rdquo;)</h3>
+    <ul>
+      <li><em>Anthropomorphism.</em> Traces spontaneously acquire first-person deliberative markers (&ldquo;let me check&hellip;&rdquo;, &ldquo;wait&rdquo;, &ldquo;actually&rdquo;) that historically had to be induced through prompt templates or SFT data.</li>
+      <li><em>Structured formatting.</em> The model auto-adopts numbered steps, sub-cases, and visually blocked derivations without any format reward or template supervision &mdash; the structure the community engineered by hand shows up on its own.</li>
+      <li><em>Parallel reasoning.</em> On harder problems, Ring-2.5-1T-Zero begins exploring multiple candidate approaches in parallel within a single response before committing, an emergent form of internal ensembling.</li>
+      <li><em>Context anxiety.</em> When the remaining token budget approaches the response limit, the model spontaneously exhibits &ldquo;finish-under-pressure&rdquo; behavior &mdash; abbreviating, jumping to conclusions, or explicitly noting the budget constraint. This is the first time this failure mode has been documented as an emergent behavior of scale rather than a training artifact.</li>
+      <li><em>Self-verification.</em> The model routinely re-derives, sanity-checks with alternative methods, or plugs answers back into the problem &mdash; without any explicit verification reward.</li>
+      <li>The unified takeaway: the trillion-scale run rendered the hand-crafted thinking-mechanism designs of the last year of RLHF/RLVR literature largely redundant.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>arXiv 2607.12395, CC BY 4.0. Hugging Face collection <code>inclusionAI/Ring-2.6</code>; latest checkpoint <code>inclusionAI/Ring-2.6-1T</code> published ~11 hours before this review. Sibling <code>Ling-2.6-1T</code>, <code>Ling-2.6-flash</code> (107B), and <code>Ling-2.6-flash-fp8</code>/<code>-int4</code> quantizations are already public. Hosted inference on <code>ZenMux</code> and <code>OpenRouter</code>.</li>
+    </ul>
+
+    <h1 id="bytedance-seed">ByteDance Seed</h1>
+
+    <h2 id="spectra-reward"><a href="https://arxiv.org/abs/2607.11886">Read It Back: Pretrained MLLMs Are Zero-Shot Reward Models for Text-to-Image Generation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-13</span>
+      <span>Text-to-image RL &middot; MLLM reward &middot; Unified multimodal &middot; Training-free</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Runhui Huang<sup>1</sup>, Qihui Zhang<sup>3</sup>, Zhe Liu<sup>1</sup>, Yu Gao<sup>2</sup>, Jie Wu<sup>2</sup>, Hengshuang Zhao<sup>1</sup>. Affiliations: <sup>1</sup>The University of Hong Kong, <sup>2</sup><strong>ByteDance Seed</strong>, <sup>3</sup>Peking University. Project page <code>huangrh99.github.io/SpectraReward</code>, code <code>github.com/huangrh99/AlphaGRPO</code>.</li>
+      <li><strong>SpectraReward</strong> is a training-free reward for text-to-image RL: instead of asking an MLLM to <em>judge</em> an image or answer decomposed <em>yes/no</em> verification questions, condition a frozen MLLM on the generated image and run one teacher-forced pass over the prompt; the average image-conditioned prompt log-likelihood is the reward.</li>
+      <li><strong>Self-SpectraReward</strong> is the specialization to unified multimodal models: for BAGEL-class UMMs, use the policy&rsquo;s own <em>understanding</em> branch as the reward for its <em>generation</em> branch &mdash; a closed-loop self-reward with no external model, no preference labels, no reward-model fine-tuning.</li>
+      <li>Evaluated across 2 diffusion backbones (SD3.5-M, BAGEL), 3 RL algorithms (AWM, FlowGRPO, DiffusionNFT), 9 reward MLLM backbones spanning 4 families (Gemma3, InternVL3.5, Qwen3-VL, BAGEL&rsquo;s own branch) from 4B to 235B, and 5 out-of-distribution T2I benchmarks (TIIF-Bench, WISE, DPG-Bench, GenEval, GenEval2).</li>
+    </ul>
+
+    <figure>
+      <img src="https://huangrh99.github.io/SpectraReward/static/images/teaser_ab.jpg" alt="Teaser: pretrained MLLM reads the prompt back from the generated image; reward and quality rise together during RL" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Teaser (from the project page). (a) A pretrained MLLM reads the generated image back into the prompt, forming a semantic spectrum whose average is the training-free reward. (b) During RL training, the reward rises together with visible improvements in complex-scene generation. Source: <code>huangrh99.github.io/SpectraReward</code>.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+
+    <p><strong>SpectraReward: prompt-likelihood as reward.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Every existing MLLM-derived reward for text-to-image RL either asks the MLLM to output a discrete 1&ndash;5 scalar (sensitive to judge calibration, degrades GenEval by 6.3 vs. baseline in this paper&rsquo;s ablation) or decomposes the prompt into atomic yes/no questions and aggregates <code>P(yes)</code> as DVReward / AlphaGRPO do (needs a two-stage pipeline with a decomposition bottleneck, marginal gains). Both approaches burn compute at the wrong layer of the MLLM.</li>
+      <li><em>Mechanism.</em> Condition a frozen MLLM <code>M</code> on the generated image <code>y</code>, teacher-force the ground-truth prompt <code>x</code> through <code>M</code> in a single forward pass, and use the mean next-token log-likelihood as the reward: <code>R<sub>M</sub>(x, y) = (1/(T&minus;1)) &sum;<sub>t=1</sub><sup>T&minus;1</sup> log p<sub>M</sub>(x<sub>t+1</sub> | x<sub>&le;t</sub>, y)</code>. Group-relative RL (AlphaGRPO, FlowGRPO, DiffusionNFT, AWM) then ranks images within a prompt group by <code>R<sub>M</sub></code> and updates the diffusion policy.</li>
+      <li><em>Why.</em> Prompt likelihood is the most direct signal from MLLM pretraining &mdash; it&rsquo;s literally the objective the reward MLLM was trained on. Because the reward is a per-token sequence of log-likelihoods, drops localize <em>which</em> prompt requirement the image failed (miss a counted object &rarr; the count token&rsquo;s likelihood collapses), turning the reward into a &ldquo;semantic spectrum&rdquo; while still delivering a stable scalar via the mean. It sidesteps discrete-scalar calibration bias and the yes/no decomposition&rsquo;s question-generation bottleneck.</li>
+    </ul>
+
+    <p><strong>Self-SpectraReward: policy&rsquo;s own understanding branch as reward.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Even a well-calibrated external reward MLLM introduces distributional mismatch with the generation policy &mdash; the reward and the generator disagree on what &ldquo;a photorealistic cat&rdquo; looks like &mdash; and adding a giant external MLLM (Qwen3-VL-235B-A22B) as a reward is expensive per rollout.</li>
+      <li><em>Mechanism.</em> Inside a unified multimodal model (BAGEL-class), the understanding and generation branches share tokenizer, vision encoder, and pretraining distribution. Route the SpectraReward computation through the model&rsquo;s <em>own</em> understanding branch during RL: the generation branch samples images from the current policy; the understanding branch computes image-conditioned prompt log-likelihood and returns the reward; only the generation branch receives the policy-gradient update.</li>
+      <li><em>Why.</em> Reward-policy alignment is by construction &mdash; the understanding branch scores samples from the generation branch under exactly the same latent distribution both were pretrained on. This removes the &ldquo;bigger external reward is better&rdquo; assumption entirely: BAGEL&rsquo;s own understanding branch (7B-class) tops every external reward in the paper on GenEval, including Qwen3-VL-235B-A22B (30&times; larger).</li>
+    </ul>
+
+    <figure>
+      <img src="https://huangrh99.github.io/SpectraReward/static/images/method.png" alt="Method diagram comparing scalar scoring, VQA decomposition, SpectraReward prompt likelihood, and Self-SpectraReward inside a unified multimodal model" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Method (from the project page). SpectraReward computes image-conditioned prompt likelihood via one teacher-forced pass; Self-SpectraReward instantiates the same reward inside a UMM using the policy&rsquo;s own understanding branch. Source: <code>huangrh99.github.io/SpectraReward</code>.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; results</h3>
+
+    <p><strong>Reward-function ablation on BAGEL with AWM.</strong></p>
+    <table>
+      <thead>
+        <tr><th>Reward function</th><th>GenEval &uarr;</th><th>TIIF-Short &uarr;</th><th>TIIF-Long &uarr;</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>BAGEL (no RL)</td><td>84.0</td><td>75.2</td><td>78.6</td></tr>
+        <tr><td>Scalar Scoring (1&ndash;5)</td><td>77.7</td><td>67.5</td><td>76.0</td></tr>
+        <tr><td>VQA-Score (P(yes))</td><td>83.1</td><td>77.4</td><td>78.9</td></tr>
+        <tr><td><strong>Prompt Likelihood (ours)</strong></td><td><strong>89.5</strong></td><td><strong>85.1</strong></td><td><strong>84.3</strong></td></tr>
+      </tbody>
+    </table>
+
+    <ul>
+      <li>Headline deltas on BAGEL: SpectraReward vs. baseline is +5.5 GenEval and +10.0 TIIF-Short; Self-SpectraReward reaches the top GenEval of 89.5, matching or beating every external MLLM reward tested including <code>Qwen3-VL-235B-A22B</code>.</li>
+      <li>Scalar scoring hurts every metric versus the no-RL baseline &mdash; giving the RL loop a miscalibrated discrete signal is worse than no reward at all.</li>
+      <li>Across 9 reward MLLM backbones on SD3.5-M and BAGEL, SpectraReward consistently improves the baseline &mdash; the prompt-likelihood objective is architecture-agnostic.</li>
+      <li>Reward-MLLM scale is non-monotonic: on Qwen3-VL, 8B&rarr;30B improves every metric but 235B drops. A ~30B MLLM already saturates most of the benefit. <code>Gemma3-12B-Pretrain</code> beats its Instruct counterpart because captioning-style pretraining better matches SpectraReward&rsquo;s objective than instruction-tuned scoring.</li>
+      <li>Holding the reward fixed to Self-SpectraReward, <code>AWM</code> is the strongest optimizer over <code>FlowGRPO</code> and <code>DiffusionNFT</code>. Under comparable RL training, Self-SpectraReward outperforms prior preference-based and MLLM-derived rewards &mdash; <code>HPSv3</code>, <code>UnifiedReward</code>, <code>VIEScore</code>, and <code>AlphaGRPO</code>&rsquo;s <code>DVReward</code>.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Token-level sensitivity: when a generated image misses a counted object or swaps an object identity, the drop in per-token likelihood concentrates on exactly the corresponding semantic token, giving a diagnostic signal alongside the scalar reward.</li>
+      <li>Reward-ranking reliability: within a prompt group, SpectraReward ranks images consistently with prompt fidelity &mdash; the exact property that group-relative RL algorithms consume.</li>
+      <li>&ldquo;Alignment can rival scale&rdquo; is the paper&rsquo;s core reframing: reward quality is dominated by pretraining distribution match with the policy, not by raw reward-model parameter count.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Directly relevant to the text-to-image RL stack at ByteDance (BAGEL, <code>Boogu-Image-0.1</code>), Alibaba (<code>Qwen-Image-2.0</code>, <code>Qwen-Image-VAE-2.0</code>), and any future unified multimodal system &mdash; the &ldquo;use your own understanding branch as reward&rdquo; recipe generalizes.</li>
+    </ul>
+
+    <h1 id="tencent-hunyuan">Tencent Hunyuan</h1>
+
+    <h2 id="harness-handbook"><a href="https://arxiv.org/abs/2607.13285">Harness Handbook: Making Evolving Agent Harnesses Readable, Navigable, and Editable</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-14</span>
+      <span>Agent harnesses &middot; Behavior localization &middot; Coding agents &middot; Static analysis + LLM</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Ruhan Wang, Yucheng Shi, Zongxia Li, Zhongzhi Li, Yue Yu, Junyao Yang, Kishan Panaganti, Haitao Mi, Dongruo Zhou, Leoweiliang. Corresponding through Ruhan Wang. <strong>Tencent Hunyuan</strong> affiliation attached on the paper&rsquo;s HF Daily Papers card via Haitao Mi (Tencent Hunyuan Team). Project page <code>ruhan-wang.github.io/Harness-Handbook</code>. 29 pages, 6 figures.</li>
+      <li>The paper reframes a well-known but under-discussed bottleneck: as coding agents (Claude Code, Codex, Cursor) start editing their <em>own</em> harnesses &mdash; the prompt-construction, state-management, tool-invocation, and execution-coordination code that sits between the foundation model and the world &mdash; a developer or agent has to find <em>every</em> code location that implements the target behavior before making a modification. On production harnesses this is scattered across tightly-coupled modules and cross-cuts, so behavior-to-code localization is the actual gating step for harness evolution.</li>
+      <li>Two artifacts are introduced: (1) the <strong>Harness Handbook</strong>, a behavior-centric representation synthesized automatically from a harness codebase via static analysis + LLM-assisted structuring, with each documented behavior linked to its supporting source; (2) <strong>Behavior-Guided Progressive Disclosure (BGPD)</strong>, a search strategy that walks agents from high-level behaviors down to implementation details and verifies candidate edit locations against the current source.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+
+    <p><strong>Harness Handbook: static analysis + LLM-structured behavior map.</strong></p>
+    <ul>
+      <li><em>Problem.</em> Repositories are organized by files and modules; modification requests describe what the system <em>should do</em>. Code search, repo indexing, and long-context reads let an agent inspect the source, but leave the behavior-to-code mapping to be recovered by hand each time. On large agent harnesses this is the main cause of missed edit sites, scattered patches, and broken cross-module interactions.</li>
+      <li><em>Mechanism.</em> Run static analysis over the harness codebase to extract the call graph, entry points, tool-invocation sites, prompt-construction sites, and state-transition points. Feed the graph plus source snippets to an LLM which is asked to produce a behavior-centric representation: for each behavior (e.g. &ldquo;expand a follow-up question in the planner&rdquo;, &ldquo;fall back on a tool failure&rdquo;), list the source locations that implement it and the cross-module interactions the behavior depends on. Each behavior is stored with pointers back into the source, so the Handbook is queryable both by behavior name and by file/line.</li>
+      <li><em>Why.</em> Behaviors, not files, are the units modification requests are phrased in; a behavior-indexed map removes the &ldquo;translate request to code locations&rdquo; step that a raw repo-index or long-context read leaves undone. Building the map with static analysis grounds it in the actual call graph rather than the LLM&rsquo;s hallucinated model of the code; using LLM-assisted structuring on top of the graph produces human-readable behavior names.</li>
+    </ul>
+
+    <p><strong>Behavior-Guided Progressive Disclosure (BGPD).</strong></p>
+    <ul>
+      <li><em>Problem.</em> Even with the Handbook, feeding an agent the entire behavior graph on every request is wasteful and pushes it toward hallucinated locations. Feeding only the top-level behavior misses cross-module dependencies.</li>
+      <li><em>Mechanism.</em> BGPD guides the planner from high-level behavior descriptions to relevant implementation details progressively: start with the behavior list, expand only the branches relevant to the modification request, and at each step verify candidate edit locations against the current source (to defend against stale maps). Verified locations become the edit plan; unverified candidates get pruned.</li>
+      <li><em>Why.</em> Disclosure keeps the planner-token count low while still covering scattered sites; the source-verification step turns the Handbook from a purely LLM-produced artifact into a grounded one, which is what lets edit-plan quality improve without silently drifting when the harness is edited between runs.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Evaluated on diverse modification requests against two open-source harnesses. Handbook-Assisted planning improves behavior localization <em>and</em> edit-plan quality while using fewer planner tokens.</li>
+      <li>The largest gains are on the three cases that hurt raw code-search + long-context most: <em>scattered sites</em> (a behavior implemented in five places), <em>rarely executed paths</em> (fallback branches that never surface in normal traces), and <em>cross-module interactions</em> (where a change in module A silently requires a change in module B).</li>
+      <li>The paper&rsquo;s framing &mdash; edits and edit-location-finding as separable problems &mdash; is directly consistent with the harness-evolution pain points documented in Anthropic&rsquo;s <em>Making of Claude Code</em> feature (2026-07-06).</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Implicitly a bet on how frontier labs will maintain their own coding agents at scale: as harnesses evolve alongside the model, the behavior-to-code map becomes as important an artifact as the harness code itself.</li>
+    </ul>
+
+    <h1 id="openai">OpenAI</h1>
+
+    <h2 id="gpt-red"><a href="https://openai.com/index/unlocking-self-improvement-gpt-red/">GPT-Red: Unlocking Self-Improvement for Robustness</a></h2>
+    <div class="paper-meta">
+      <span>Tier 3 &middot; Research Blog Post</span>
+      <span>openai.com</span>
+      <span>2026-07-15</span>
+      <span>Automated red-teaming &middot; Self-play &middot; Prompt injection &middot; Post-training</span>
+    </div>
+
+    <ul>
+      <li>Authors: OpenAI (safety / alignment). Blog post announces a pre-print &ldquo;later this week.&rdquo;</li>
+      <li><strong>GPT-Red</strong> is OpenAI&rsquo;s automated safety red-teaming model, trained by self-play RL against a pool of diverse defender LLMs across an expansive library of realistic prompt-injection scenarios: local files, webpage banners, email bodies, tool outputs. Attackers are rewarded for eliciting a valid failure; defenders are rewarded for resisting and completing the original task.</li>
+      <li><em>Problem.</em> Human red-teaming doesn&rsquo;t scale &mdash; it&rsquo;s slow, and even successful attacks don&rsquo;t produce the volume or diversity of adversarial data needed to adversarially train a production model. Current robustness benchmarks have been saturated by recent GPT releases.</li>
+      <li><em>Mechanism.</em> Train GPT-Red at post-training-scale compute (&ldquo;unprecedented amount of compute dedicated purely for improving safety&rdquo;) via self-play RL where both the attacker and a population of defenders update in the same loop. Each training scenario carries an explicit threat model: which parts GPT-Red controls (e.g. an email body, a webpage banner, a tool response) and which conditions count as a successful attack (e.g. exfil, unauthorized action). Every subsequent production model since <code>GPT-5.3</code> has been adversarially trained on prompts generated by GPT-Red or its precursors. GPT-Red itself is kept out of production to avoid handing a strong attacker to malicious users.</li>
+      <li><em>Why.</em> Adversarial defense scales with adversarial diversity; a self-play attacker whose reward is exactly &ldquo;find a working exploit&rdquo; and whose training environment is a moving population of defenders produces attack distributions that neither static red-teaming datasets nor human red-teamers can match. Threat-modeling per environment gives the attacker a well-defined action space, which is what lets self-play converge instead of collapse.</li>
+      <li>Generalization result: on a replicated version of the indirect-prompt-injection arena from Dziemian et al. (2025), GPT-Red succeeds on 84% of scenarios vs. 13% for human red-teamers &mdash; distinct from its training scenarios.</li>
+      <li>Live-agent transfer: GPT-Red iterated on attacks in simulation, then transferred to a production &ldquo;Vendy&rdquo; vending-machine agent produced by Andon Labs, achieving all three malicious objectives &mdash; changing an expensive item&rsquo;s price to $0.50, ordering a new $100+ item at $0.50, and canceling another customer&rsquo;s order. Vulnerabilities were disclosed; new safeguards are being tested.</li>
+      <li>Codex CLI held-out data-exfil: on 10 held-out scenarios against a Codex CLI agent backed by <code>GPT-5.4 Mini</code>, GPT-Red is both more effective and more token-efficient than a prompted <code>GPT-5.5</code> baseline.</li>
+      <li>Defensive impact: an early version of GPT-Red discovered &ldquo;Fake Chain-of-Thought&rdquo; direct-prompt-injection attacks with &gt;95% success on <code>GPT-5.1</code>; those attacks are now below 10% on <code>GPT-5.6 Sol</code>. Indirect-injection benchmarks targeting developer tools and browsing have been saturated by the latest model (&gt;97% accuracy). On the union of GPT-Red&rsquo;s direct-injection environments, <code>GPT-5.6 Sol</code> fails on only 0.05% of attempts.</li>
+      <li>Robustness-vs-capability check: general frontier-capability evals and targeted over-refusal tasks show no capability degradation, so the robustness gains come from resistance to malicious instructions rather than from refusal drift.</li>
+      <li>Cadence: automated red-teamers have been part of every production model post-<code>GPT-5.3</code>; each release&rsquo;s attack-success rate on GPT-Red&rsquo;s environments has dropped monotonically.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
