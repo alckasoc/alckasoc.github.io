@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>WanSong v1.0 Launch Review &mdash; July 17, 2026 | Auto Lit Review</title>
+<meta name="description" content="Alibaba's Wan Team ships WanSong v1.0, a ~25B pure-diffusion, dual-stem song generation foundation model that outputs demixed vocals and BGM up to 5 minutes in a single run, trained on 6M hours of multilingual song data with flow matching and RLHF (DPO + ReFL). Tier 2 companion: Ant Group's SearchOS-V1 turns implicit web-search progress into an explicit Frontier Task / Evidence Graph / Coverage Map / Failure Memory state and drives multi-agent information seeking with a pipeline-parallel scheduler." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 17, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#alibaba" class="toc-h1">Alibaba</a>
+          <ul>
+            <li><a href="#wansong-v1-0" class="toc-h2">WanSong v1.0</a></li>
+          </ul>
+        </li>
+        <li><a href="#ant-group" class="toc-h1">Ant Group</a>
+          <ul>
+            <li><a href="#searchos-v1" class="toc-h2">SearchOS-V1</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 17, 2026</div>
+    <h1 class="page-title">WanSong v1.0 Launch</h1>
+    <div class="page-meta">2 papers &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>Alibaba&rsquo;s Wan Team ships the Tier 1 launch of the window: <strong>WanSong v1.0</strong>, a <code>~25B</code> pure-diffusion song generation foundation model that directly outputs demixed vocals and background music (BGM) stems for high-fidelity, multilingual songs up to 5 minutes long in a single run. The technical report documents a hybrid-MMDit backbone with fully-shared AdaLN inherited from Wan2.1, a dual-stem token scheme with joint-learning-in-layer, a 1-D continuous VAE at compression ratio 1024 (half of Stable Audio 2), a three-stage flow-matching pre-training pipeline (90s &rarr; 300s &rarr; SFT), and a two-stage RLHF post-training combining DPO then ReFL along three axes &mdash; musicality, lyric accuracy, and prompt alignment. On the WanSong benchmark, the model reaches a <code>7.43%</code> Pronunciation Error Rate versus <code>22.80%</code> for Suno V5, <code>12.7%</code> for Mureka V7.6, and <code>27.11%</code> for LeVo, alongside the top score across every SongEval dimension and a <code>5.49</code> musicality score (versus Suno V5&rsquo;s <code>4.18</code>). Tier 2 out of Ant Group: <strong>SearchOS-V1</strong> tackles the failure mode where multi-agent web-search systems loop on failed queries by turning implicit search progress into explicit persistent state &mdash; a Frontier Task, an Evidence Graph, a Coverage Map, and Failure Memory &mdash; and driving sub-agent execution with a pipeline-parallel scheduler that refills freed slots against unresolved coverage gaps.</p>
+
+      <h3>Competitiveness</h3>
+      <p>WanSong plants a diffusion-native flag in the frontier music-generation category that has been dominated by closed autoregressive stacks (Suno V5, Mureka V7.6) and open AR/diffusion cascades (LeVo, DiffRhythm2, Yue). The direct-to-stereo, single-stage diffusion design gives WanSong two structural wins over the AR cohort: (i) editable dual-stem outputs (vocals and BGM as separate channels) that skip the source-separation step downstream production pipelines usually paste onto AR song generators, and (ii) step-distilled fast inference on a flow-matching backbone. The Pronunciation Error Rate delta on the WanSong bench &mdash; <code>7.43%</code> vs <code>22.80%</code> Suno V5 &mdash; is roughly a <code>3&times;</code> reduction, which if it holds up on external benchmarks reshapes the vocal-clarity floor for commercial-grade song generation. Against the current frontier LLM cohort &mdash; <code>GPT-5.6 Sol</code>, <code>Claude Opus 4.8</code>, <code>Gemini 3.5 Flash</code>, <code>Ring-2.5-1T-Zero</code>, <code>DeepSeek-V4-Pro</code>, <code>Kimi K2.6</code>, <code>Gemma 4</code>, <code>GLM-5</code> &mdash; the story of the day is that Alibaba is broadening the Wan family beyond video (Wan2.1, Wan-Streamer) into a full audio-visual foundation-model stack. SearchOS-V1 lands next to Anthropic&rsquo;s Claude research agent, OpenAI&rsquo;s Deep Research, and DeepSeek&rsquo;s open-domain search stack; the paper reports SearchOS leads all evaluated single- and multi-agent baselines on WideSearch and GISA, meaning the &ldquo;persistent explicit state&rdquo; blueprint is now the best open recipe for multi-agent long-horizon web research. No US-lab flagship LLM launches in the window &mdash; <code>Gemini 3.5 Pro</code>&rsquo;s widely leaked July 17 target date passed without an official Google technical report or model card at publication time.</p>
+
+      <h3>New frontier releases</h3>
+      <p>One Tier 1 launch: Alibaba Wan Team <code>WanSong v1.0</code> (arXiv 2026-07-16). No US-lab flagship LLM launches in the window &mdash; Google&rsquo;s widely leaked <code>Gemini 3.5 Pro</code> July 17 target date passed without an official announcement, model card, or technical report at publication time, so the review does not treat it as a released model.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="wansong-v1-0"><a href="https://arxiv.org/abs/2607.14749">WanSong v1.0 Technical Report</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-07-16</span>
+      <span>Song generation &middot; Diffusion &middot; Dual-stem &middot; Flow matching &middot; RLHF</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Binghui Chen, Pandeng Li, Yu Liu, Jingren Zhou. Affiliation: <strong>Wan Team, Alibaba Group</strong> (the same team behind the <code>Wan2.1</code> video foundation model and the <code>Wan-Streamer</code> interactive video line).</li>
+      <li><code>WanSong v1.0</code> is a pure diffusion song-generation foundation model with <strong>~25B parameters</strong>. Unlike prior autoregressive (Suno V5, Mureka, Yue, LeVo, SongGen) and cascaded AR&rarr;diffusion (DiffRhythm2, SongCreator) pipelines, WanSong treats audio as continuous tokens and generates end-to-end in a single stage, directly emitting <strong>dual stems</strong> (vocals and BGM as separated channels) for songs up to <strong>5 minutes</strong>.</li>
+      <li>The report&rsquo;s central design bet is that vocal and BGM must be modeled as separate output streams rather than entangled targets: when a single CFG scalar has to trade off vocal accuracy vs. BGM strength, both suffer. Dual-stem output with joint-learning-in-layer resolves the CFG-tradeoff bind.</li>
+      <li>Training data: <strong>&gt;6 million hours of multilingual song data</strong>, curated through a five-stage pipeline (collection &rarr; pre-processing &rarr; filtering &rarr; captioning &rarr; sampling). The VAE alone trains on ~<code>2.6&times;10^8</code> audio clips balanced at <code>Music : Speech : Sound = 50% : 40% : 10%</code>.</li>
+      <li>Public deliverable: benchmark plus technical report. The paper does not disclose weights or a checkpoint URL; it is a launch of the WanSong bench and the WanSong v1.0 model card.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>1-D continuous VAE.</strong> Compresses a 44.1 kHz stereo waveform <code>x &isin; R^{2&times;T}</code> to a latent <code>z &isin; R^{C_z &times; T&#8242;}</code> with <code>C_z = 64</code> and downsampling factor <code>1024</code> (~43.1 Hz latent frame rate). This is <em>half</em> the compression of Stable Audio 2 (2048), and the report frames that halving as the single most impactful architectural decision &mdash; validated by ablations below.</li>
+      <li><strong>VAE training objective.</strong> Adversarial training with generator loss <code>L_G = &lambda;_mag L_mag + &lambda;_fmap L_fmap + &lambda;_adv L_Adv(G;D) + &lambda;_KL L_KL</code>, where <code>L_mag</code> is a multi-resolution STFT magnitude loss computed on both Mid-Side and Left-Right channels (crucial for stereo fidelity), <code>L_fmap</code> is an &ell;<sub>1</sub> discriminator feature-matching loss, <code>L_Adv</code> is a hinge adversarial loss, and <code>L_KL</code> is KL to a standard normal prior. Trained on 32&times;A100 for 1.5M steps with 1.5s stereo crops; random noise augmentation on latents in the late stage robustifies the decoder against OOD artifacts at inference.</li>
+      <li><strong>Hybrid-MMDit diffusion backbone.</strong> Text tokens (from a decoder-only LLM) and dual-stem audio continuous tokens (from the VAE) are concatenated into one sequence and fed into a transformer-based diffusion model. Following MMDit and Flux&rsquo;s hybrid variant, WanSong does not learn per-modality parameters in every layer &mdash; only a subset of layers are &ldquo;modality-split.&rdquo; The layer split ratio is set to <code>N/(N+K) = 0.3</code> (~30% modality-split blocks, ~70% shared). Fully-shared AdaLN is used within each block, following the parameter-efficient recipe from Wan2.1.</li>
+      <li>Tokens from different samples are packed into a single sequence at training time to improve throughput and per-batch token utilization, a standard MMDit-scaling trick.</li>
+      <li><strong>Dual-stem output with joint-learning-in-layer.</strong> This is the paper&rsquo;s central named contribution. <em>Problem.</em> A single CFG scalar cannot preserve both vocal phoneme accuracy and BGM strength &mdash; large CFG improves phonemes but suppresses BGM; small CFG restores BGM but degrades vocals. <em>Mechanism.</em> At the model&rsquo;s <em>output</em>, vocal and BGM tokens are produced as two independent streams (two heads / two channel groups). At the per-block level <em>inside</em> the transformer, they are treated as two channels of the <em>same</em> token, so every block simultaneously learns each stem&rsquo;s marginal distribution and their cross-dependencies. Loss is a weighted sum of two flow-matching MSEs, one per stem, with coefficients <code>&alpha;_vocal</code> and <code>&alpha;_bgm</code>. <em>Why it works.</em> The two output streams give CFG one knob per stem (or the flexibility to drop CFG on one branch entirely), while the shared per-block channel packing preserves the vocal-BGM correlations that a naive two-tower dual model would sever. This beats prior source-separation-after-AR-generation because the model never had to entangle them in the first place, and it beats single-stream diffusion (Stable Audio 2, DiffRhythm2) because it exposes stem-level editability for downstream production without a source-separation post-step.</li>
+    </ul>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li><strong>Flow-matching objective.</strong> Follows Rectified Flows &mdash; for latent <code>X_1</code>, noise <code>X_0 ~ N(0, I)</code>, and timestep <code>t &isin; [0,1]</code> from a logit-normal schedule, the intermediate latent is <code>X_t = t &middot; X_1 + (1-t) &middot; X_0</code>, and the model predicts the ground-truth velocity <code>V_t = X_1 - X_0</code>. The dual-stem loss is <code>L = &alpha;_vocal &middot; E_t[||&theta;(X_{vocal,t}, C_txt, t) - V_{vocal,t}||^2] + &alpha;_bgm &middot; E_t[||&theta;(X_{bgm,t}, C_txt, t) - V_{bgm,t}||^2]</code> where <code>C_txt</code> is the caption embedding.</li>
+      <li><strong>Three-stage pre-training curriculum.</strong> Stage 1 &mdash; 90s-duration training on shorter clips to establish local musical structure. Stage 2 &mdash; 300s-duration training to scale to full-song time horizons. Stage 3 &mdash; supervised fine-tuning (SFT) on a curated high-quality subset for commercial-grade finish. The multi-dimensional data labeling (musical style, vocals, instruments, mode/key, language, reverb, emotion, lyrics) is used to schedule the training data flexibly across stages.</li>
+    </ul>
+
+    <h3>Post-training (RLHF)</h3>
+    <ul>
+      <li><strong>Three reward models</strong> trained on human-preference pairs along three axes: <em>musicality</em>, <em>lyric accuracy</em>, and <em>prompt alignment</em>. Each reward model minimizes the Bradley-Terry pairwise loss <code>L = -E_{a+,a-}[log &tau;(R(a+) - R(a-))]</code>.</li>
+      <li><strong>Two-stage RL: DPO then ReFL.</strong> The paper frames these as complementary rather than substitutable. DPO uses the pairwise formulation and supervises every timestep <code>t &isin; [0,1]</code>, which makes it strong for global-structure optimization but noisy at the fine-detail level. ReFL directly backpropagates from a precise reward evaluation but only operates in the low-noise stage of the diffusion trajectory, which makes it strong at fine details but vulnerable to reward hacking. Running DPO first fixes global structure, then ReFL refines the low-noise regime.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>VAE reconstruction.</strong> On the WanSong music benchmark (200 held-out clips) and the SeedTTS speech benchmark (2000 random samples), the WanSong VAE at compression <code>1024</code> materially outperforms Stable Audio 2 and the ablated <code>2048</code> variant of the same architecture.</li>
+    </ul>
+    <p><em>Table 1. VAE reconstruction quality on the WanSong music benchmark (200 clips).</em></p>
+    <table>
+      <thead><tr><th>Method</th><th>STFT &darr;</th><th>MEL &darr;</th><th>SI-SDR (dB) &uarr;</th></tr></thead>
+      <tbody>
+        <tr><td>Stable Audio 2</td><td>1.430</td><td>0.856</td><td>4.386</td></tr>
+        <tr><td>Ours (2048)</td><td>1.163</td><td>0.772</td><td>4.661</td></tr>
+        <tr><td><strong>Ours (1024)</strong></td><td><strong>1.029</strong></td><td><strong>0.629</strong></td><td><strong>7.246</strong></td></tr>
+      </tbody>
+    </table>
+    <p><em>Table 2. VAE reconstruction quality on the SeedTTS speech benchmark (2000 random samples).</em></p>
+    <table>
+      <thead><tr><th>Method</th><th>STFT &darr;</th><th>MEL &darr;</th><th>SI-SDR (dB) &uarr;</th></tr></thead>
+      <tbody>
+        <tr><td>Stable Audio 2</td><td>0.999</td><td>0.754</td><td>8.653</td></tr>
+        <tr><td>Ours (2048)</td><td>0.783</td><td>0.593</td><td>10.371</td></tr>
+        <tr><td><strong>Ours (1024)</strong></td><td><strong>0.698</strong></td><td><strong>0.458</strong></td><td><strong>12.922</strong></td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Halving the compression ratio 2048 &rarr; 1024 gives <strong>+2.86 dB SI-SDR</strong> on the WanSong music bench and <strong>+4.27 dB SI-SDR</strong> on SeedTTS speech &mdash; the single largest fidelity jump in the ablation.</li>
+      <li>At matched compression 2048, WanSong&rsquo;s VAE also beats Stable Audio 2 by <code>-19%</code> STFT and <code>+0.28 dB</code> SI-SDR on music and <code>-22%</code> STFT and <code>+1.72 dB</code> SI-SDR on speech, which the paper attributes to the 260M-clip domain-balanced corpus (50% music / 40% speech / 10% sound) plus wider encoder/decoder capacity.</li>
+      <li><strong>End-to-end song generation.</strong> 200-sample WanSong bench covering Chinese, English, Japanese, Korean and 10+ Level-1 genres (Pop, Funk, EDM, Rock, Country, Jazz, ...) at ~4-minute durations. Metrics: Pronunciation Error Rate (PER, %), SongEval&rsquo;s five dimensions &mdash; Clarity (Cla), Coherence (Coh), Memorability (Mem), Musicality (Mus), Naturalness (Nat) &mdash; and Muq text alignment.</li>
+    </ul>
+    <p><em>Table 3. Objective quantitative evaluations on the WanSong bench.</em></p>
+    <table>
+      <thead>
+        <tr><th>Model</th><th>PER (%) &darr;</th><th>SongEval Cla &uarr;</th><th>Coh &uarr;</th><th>Mem &uarr;</th><th>Mus &uarr;</th><th>Nat &uarr;</th><th>Muq &uarr;</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>LeVo</td><td>27.11</td><td>3.42</td><td>3.59</td><td>3.47</td><td>3.45</td><td>3.28</td><td>0.34</td></tr>
+        <tr><td>Mureka V7.6</td><td>12.7</td><td>4.38</td><td>4.51</td><td>4.47</td><td>4.35</td><td>4.32</td><td>0.43</td></tr>
+        <tr><td>Suno V5</td><td>22.80</td><td>4.44</td><td>4.56</td><td>4.53</td><td>4.41</td><td>4.34</td><td>0.44</td></tr>
+        <tr><td><strong>WanSong (ours)</strong></td><td><strong>7.43</strong></td><td><strong>4.47</strong></td><td>4.55</td><td><strong>4.57</strong></td><td><strong>4.46</strong></td><td><strong>4.40</strong></td><td>0.44</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>WanSong sweeps every SongEval dimension except Coherence (0.01 behind Suno V5) and takes the lowest PER by a large margin: <strong>7.43%</strong> versus 12.7% (Mureka V7.6), 22.80% (Suno V5), and 27.11% (LeVo).</li>
+      <li>SongEval&rsquo;s five-dimension scores compress into a narrow band across frontier systems, so the paper introduces its own musicality evaluator trained on 80k human-annotated songs. That model weights melody, structure, and overall listening experience (harmony, texture, arrangement, emotion, vocals, reverb) at 0.4 / 0.25 / 0.35.</li>
+    </ul>
+    <p><em>Table 4. Musicality score (0&ndash;10) from the WanSong Team&rsquo;s 80k-song human-trained evaluator.</em></p>
+    <table>
+      <thead><tr><th>Model</th><th>Musicality &uarr;</th></tr></thead>
+      <tbody>
+        <tr><td>LeVo</td><td>1.69</td></tr>
+        <tr><td>Mureka V7.6</td><td>3.83</td></tr>
+        <tr><td>Suno V5</td><td>4.18</td></tr>
+        <tr><td><strong>WanSong (ours)</strong></td><td><strong>5.49</strong></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Token compression ratio ablation.</strong> Three settings compared on the PT-90s stage: (i) VAE at 2048 compression + patch size 1 (effective 2048), (ii) VAE at 1024 + patch size 2 (effective 2048), (iii) VAE at 1024 + patch size 1 (effective 1024). Metrics: PER (%) and a 1&ndash;5 quality score from expert assessors (the paper explicitly notes that EvalScore and AudioBox cannot precisely measure song audio quality at this stage, so human raters are used).</li>
+    </ul>
+    <p><em>Table 5. Ablation on effective token compression ratio (PT-90s).</em></p>
+    <table>
+      <thead>
+        <tr><th>VAE compression</th><th>Patch size</th><th>Effective compression</th><th>PER (%) &darr;</th><th>Quality (1&ndash;5) &uarr;</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>2048</td><td>1</td><td>2048</td><td>19.2</td><td>2.1</td></tr>
+        <tr><td>1024</td><td>2</td><td>2048</td><td>20.6</td><td>2.4</td></tr>
+        <tr><td><strong>1024</strong></td><td><strong>1</strong></td><td><strong>1024</strong></td><td><strong>15.0</strong></td><td><strong>3.2</strong></td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Two takeaways. First, patch-based re-compression (1024 &rarr; effective 2048) does <em>not</em> recover the fidelity of a genuinely lower base compression: PER <em>rises</em> to 20.6% and quality stays at 2.4. The compression damage happens at the token level, not at the VAE level, and a downstream patch-merge cannot undo it. Second, the true low-compression VAE (1024, patch 1) is the only setting to break into Quality &ge; 3.0 territory, at the cost of longer token sequences. The paper explicitly does not go below 1024 because the token-count blow-up would dominate training and inference cost.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>The report focuses on capabilities and fidelity; it does not enumerate a safety framework, watermarking, artist-consent policy, or usage restrictions. Given that WanSong ships direct multilingual voice-cloning-adjacent capability (high-fidelity vocal generation controllable by text), the omission is notable for a release in the Suno / Mureka / Udio market segment where those questions are actively litigated.</li>
+      <li>The strongest evaluations (Musicality, Quality 1&ndash;5) use WanSong-team-trained evaluators. The Team&rsquo;s 80k-song musicality evaluator is not open-sourced, and Table 4&rsquo;s <code>5.49</code> vs Suno V5&rsquo;s <code>4.18</code> should be read with that self-eval caveat.</li>
+      <li>No FAD, KLD, or MOS numbers reported. The SongEval metric family and Muq alignment score are used instead, and their scores collapse close together across frontier systems (see Table 3).</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Technical report is public on arXiv (<a href="https://arxiv.org/abs/2607.14749">2607.14749</a>). No public checkpoint URL, weights link, API, or demo page is disclosed in the report itself. The report is labeled &ldquo;Wan Team&rdquo; and slots into the same release cadence as Wan2.1 (video) and Wan-Streamer (interactive video) &mdash; historically both have shipped with paired Hugging Face model drops within days of the arXiv release.</li>
+    </ul>
+
+    <h1 id="ant-group">Ant Group</h1>
+
+    <h2 id="searchos-v1"><a href="https://arxiv.org/abs/2607.15257">SearchOS-V1: Towards Robust Open-Domain Information-Seeking Agent Collaboration</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-16</span>
+      <span>Search agents &middot; Multi-agent &middot; Persistent state &middot; Pipeline scheduling</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Yuyao Zhang, Junjie Gao, Zhengxian Wu, et al. (14 authors), corresponding Ji-Rong Wen and Zhicheng Dou. Affiliation: <strong>Ant Group</strong> (via the <code>antins-labs/SearchOS</code> release org, mirrored on the Hugging Face <code>Ant Group</code> paper page); co-authors from Renmin University of China&rsquo;s Gaoling School of AI.</li>
+      <li><code>SearchOS-V1</code> targets the dominant failure mode of long-horizon information-seeking agents: as history grows, both single-agent and multi-agent systems lose track of task progress, and when a search sub-goal fails they get trapped in repetitive query loops that burn the search budget without producing new evidence.</li>
+      <li>The framing move is to formalize open-domain information seeking as <strong>relational schema completion with grounded citations</strong>: agents discover entities, populate attributes across linked tables, and anchor every value to a source. This turns &ldquo;did we make progress&rdquo; from a soft judgment into a schema-fill delta.</li>
+      <li>On <code>WideSearch</code> and <code>GISA</code>, SearchOS-V1 leads all metrics among the evaluated single- and multi-agent baselines. Code at <a href="https://github.com/antins-labs/SearchOS">antins-labs/SearchOS</a>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Search-Oriented Context Management (SOCM).</strong> This is the paper&rsquo;s main named contribution. <em>Problem.</em> In today&rsquo;s multi-agent search stacks, the shared context is either a raw scratchpad or an implicit chat history &mdash; both scale poorly with turn count, and neither exposes &ldquo;what has already been tried and failed.&rdquo; That opacity is what drives the repeat-query loops. <em>Mechanism.</em> SOCM externalizes the evolving search state into four typed, persistent objects: a <strong>Frontier Task</strong> queue (the tasks still to attempt), an <strong>Evidence Graph</strong> (grounded citations linked to schema fields), a <strong>Coverage Map</strong> (which schema slots are still unfilled), and a <strong>Failure Memory</strong> (which query &times; source combinations have already dead-ended). Sub-agents read from and write to these objects instead of just accumulating tokens in a shared prompt. <em>Why.</em> Explicit persistent state means (i) the scheduler can price freed compute slots against unresolved coverage rather than by round-robin, and (ii) query planners can consult Failure Memory to avoid re-firing a known-bad plan &mdash; the exact anti-loop mechanism prior single- and multi-agent baselines lacked. This improves over prior context-management approaches (memory-augmented ReAct, chain-of-agents scratchpads) by moving from a monolithic chat log to a typed relational state that the scheduler and planner can each query independently.</li>
+      <li><strong>Pipeline-parallel scheduling.</strong> Built on top of SOCM. Sub-agents execute in overlapped pipeline slots; as one finishes, the freed slot is refilled with a task chosen to target an unresolved Coverage Map gap (not the next task in the queue). This maximizes utilization and throughput and biases compute toward closing the schema, not toward exploring dead ends.</li>
+      <li><strong>Search Tool Middleware Harness.</strong> A shim between the agent policy and the actual search tool. It intercepts model&harr;tool interactions to (i) record grounded evidence into the Evidence Graph, (ii) detect stalls or budget exhaustion and react (kill the sub-agent, spawn a new plan), and (iii) expose a reusable hierarchical skill system with two skill types &mdash; <em>strategy skills</em> (how to plan a search) and <em>access skills</em> (how to reach a source) &mdash; that persist across runs so a Failure Memory entry from one run informs the next.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Evaluated on <strong>WideSearch</strong> and <strong>GISA</strong>. On both benchmarks SearchOS-V1 &ldquo;leads all metrics among the evaluated single- and multi-agent baselines&rdquo; per the abstract. The paper does not disclose the specific benchmark scores in the arXiv abstract; the full metric table lives in the paper body.</li>
+      <li>Design implication: the persistent state architecture is complementary to the reasoning/tool-use RL work that DeepSeek, OpenAI, and Anthropic have been shipping &mdash; SearchOS-V1 attacks the <em>coordination</em> layer while those attack the <em>policy</em> layer. A future frontier stack likely combines both.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>The paper explicitly targets the failure mode Anthropic has been openly discussing for research-agent deployments and that DeepSeek&rsquo;s <code>OpenSeeker-v2</code> also flagged: the compounding cost of search-budget waste in multi-turn autonomous research. SearchOS&rsquo;s answer &mdash; explicit typed state plus a coverage-driven scheduler &mdash; is a competing design against the prevalent &ldquo;bigger memory + smarter policy&rdquo; approach.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
