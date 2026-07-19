@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Robot Context Scaling, Streaming Video Framing, and Flow-Model RL Review &mdash; July 19, 2026 | Auto Lit Review</title>
+<meta name="description" content="NVIDIA's RoboTTT scales visuomotor context to 8K timesteps by integrating Test-Time Training fast weights into GR00T N1.7 and combining sequence action forcing with truncated BPTT, unlocking one-shot imitation from human video, DAgger Distillation, and full completion of a five-minute ten-stage assembly task. Alibaba Wan Team's Wan-Streamer v0.3 reframes native-streaming generation as world plus event stream and widens the agent to open-vocabulary behavior through a role-play chat format, preserving v0.2's 640x368 25 FPS, ~200 ms model-side latency. Tencent Hunyuan's MeanFlowNFT is the first forward-process RL framework for MeanFlow generators, driving 4-step Wan2.1 to VBench 84.33, surpassing 50-step LongCat-Video RL 82.57." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 19, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#alibaba" class="toc-h1">Alibaba</a>
+          <ul>
+            <li><a href="#wan-streamer-v0-3" class="toc-h2">Wan-Streamer v0.3</a></li>
+          </ul>
+        </li>
+        <li><a href="#nvidia" class="toc-h1">NVIDIA</a>
+          <ul>
+            <li><a href="#robottt" class="toc-h2">RoboTTT</a></li>
+          </ul>
+        </li>
+        <li><a href="#tencent" class="toc-h1">Tencent</a>
+          <ul>
+            <li><a href="#meanflownft" class="toc-h2">MeanFlowNFT</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 19, 2026</div>
+    <h1 class="page-title">Robot Context Scaling, Streaming Video Framing, and Flow-Model RL</h1>
+    <div class="page-meta">3 papers &middot; 3 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>No new flagship model launched in the window. The day&rsquo;s frontier research is a set of three method papers, one each from a distinct lab, that push at long-standing structural bottlenecks of their respective foundations. NVIDIA GEAR&rsquo;s <strong>RoboTTT</strong> makes context length a scaling axis for robot foundation models: it splices Test-Time Training layers into GR00T N1.7, scales training visuomotor context to <code>8K</code> timesteps &mdash; three orders of magnitude past prior VLAs &mdash; and combines <em>sequence action forcing</em> with truncated backpropagation through time so long context is trainable under a fixed GPU-memory budget. Alibaba Wan Team&rsquo;s <strong>Wan-Streamer v0.3</strong> reframes native-streaming audio-visual generation as a <em>world + event stream</em> decomposition and widens the agent&rsquo;s expressive range from listening behavior to open-vocabulary behavior encoded as parenthesized role-play directives inside the language stream, while inheriting v0.2&rsquo;s serving topology (<code>640&times;368</code>, <code>25</code> FPS, <code>~200</code> ms model-side latency). Tencent Hunyuan&rsquo;s <strong>MeanFlowNFT</strong> is the first forward-process RL framework for MeanFlow few-step generators: through the MeanFlow identity, the average-velocity network yields an induced instantaneous-velocity predictor, and DiffusionNFT&rsquo;s policy-improvement objective is applied to that induced predictor while sampling stays average-velocity and few-step.</p>
+
+      <h3>Competitiveness</h3>
+      <p>The competitive story of the window is not a headline model but three sharp structural pushes. On robotics, RoboTTT is the first result to show a clean, monotonic scaling curve of closed-loop task success in pretraining context length up to <code>8K</code> timesteps (~4 minutes of visuomotor stream at <code>30</code> Hz control): the same policy pretrained at <code>8K</code> beats its <code>1K</code>-context twin by <code>63%</code> in task completion score with no saturation, and beats the best short-context GR00T N1.7 baseline by <code>57%</code>. That reframes what &ldquo;scaling axis&rdquo; means for VLA foundations: today&rsquo;s public frontier &mdash; Figure AI Helix, Physical Intelligence <code>&pi;0.5+</code>, Xiaomi-Robotics-U0, ABot-N1 &mdash; still operates at single-step or short-history context and inherits none of the emergent capabilities RoboTTT reports (one-shot in-context imitation from human video, on-the-fly DAgger-style recovery). On real-time interaction, Wan-Streamer v0.3 keeps the <code>640&times;368</code> at <code>25</code> FPS with <code>~200</code> ms model-side latency operating point already set by v0.2 in the July 8 window, but breaks the agent out of the fixed w/a/s/d style behavior grammar used by roaming models and comparable interactive stacks (Doubao real-time voice, GPT-Live, EVI3). Wan is the only frontier lab actively publishing an incremental version cadence on real-time streaming audio-video foundations. On flow-model post-training, MeanFlowNFT plants the flag as the first efficient forward-process RL for MeanFlow generators; the reported <code>4</code>-step MeanFlowNFT on <code>Wan2.1 1.3B</code> reaches VBench <code>84.33</code>, surpassing <code>50</code>-step LongCat-Video RL <code>82.57</code>, which promises order-of-magnitude wall-clock reductions on RL-aligned diffusion serving at frontier quality. No US-lab flagship LLM launches in the window &mdash; <code>Gemini 3.5 Pro</code>&rsquo;s widely leaked mid-July target date remains unconfirmed by an official Google technical report or model card at publication time.</p>
+
+      <h3>New frontier releases</h3>
+      <p>No Tier 1 flagship model launches in the 36-hour window. Three Tier 2 research papers from three frontier labs: <code>RoboTTT</code> from NVIDIA GEAR (arXiv 2026-07-16); <code>Wan-Streamer v0.3</code> from Alibaba Wan Team (arXiv 2026-07-16); <code>MeanFlowNFT</code> from Tencent Hunyuan (arXiv 2026-07-16). Publication-window note: the arXiv <em>v1</em> timestamps sit at <code>2026-07-16 14:19&ndash;17:59</code> UTC, at the 36-hour edge; because the July 17 review only ingested WanSong v1.0 and SearchOS-V1 and these three papers were not otherwise covered, this review picks them up as the immediately-following window.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="wan-streamer-v0-3"><a href="https://arxiv.org/abs/2607.15038">Video = World + Event Stream (Wan-Streamer v0.3)</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-16</span>
+      <span>Streaming video &middot; Real-time interaction &middot; World models &middot; VLA</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Lianghua Huang, Zhi-Fan Wu, Yupeng Shi, Wei Wang, et al. Affiliation: <strong>Wan Team, Alibaba Group</strong>. Same group that shipped <code>Wan-Streamer v0.1</code> (native-streaming end-to-end audio-visual interaction), <code>Wan-Streamer v0.2</code> (higher resolution, Ulysses-style context-parallel performer, covered in the July 8 review), and <code>WanSong v1.0</code> (covered in the July 17 review).</li>
+      <li>The paper is the launch of <code>Wan-Streamer v0.3</code>, but it is deliberately a <em>conceptual</em> version bump. It leaves the modeling contract, serving topology, and operating point of v0.2 intact and instead reframes the pretraining objective so the same architecture can serve a broader family of real-time downstream tasks.</li>
+      <li>Central claim: any video can be read as a persistent <em>world</em> plus a time-varying <em>event stream</em>. Pretraining on that decomposition over ordinary internet video defines a general-purpose objective &mdash; given a world and streaming input, predict the next event unit and its audio-visual realization &mdash; that can be specialized to real-time interaction, roaming/first-person world-model control, embodied manipulation, and other streaming tasks. This paper studies only the real-time full-duplex audio-visual interaction specialization.</li>
+      <li>Downstream expansion: v0.1/v0.2 agents mostly spoke and showed visible listening behavior; v0.3 opens the agent&rsquo;s event stream to open-vocabulary behavior described in natural language via a role-play chat format that interleaves spoken words with parenthesized behavior directives.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>World-event decomposition (central named contribution).</strong> <em>Problem.</em> Prior versions treat one target application &mdash; the talking agent &mdash; as the training objective, folding persistent context (scene, character identity, ambient sound, voice timbre) into the causal history alongside per-frame changes. That entanglement (i) forces re-encoding of unchanging conditioning at every unit and (ii) ties the pretraining objective to one downstream interface. <em>Mechanism.</em> The world is represented as a flexible structured record <code>W = {w_j}_{j&isin;S(W)}</code> whose schema depends on the clip / task; fields typically group visual context (medium, environment, layout), acoustic context (ambient sound, voice characteristics), and character records (identity, appearance, persona, visibility). Each event is a time-localized record <code>e_k = (&tau;_k, c_k, d_k)</code> where <code>&tau;_k</code> is its active interval, <code>d_k</code> is a free-form language description of the change, and <code>c_k</code> associates the event with a character in <code>W</code> or explicitly marks it as character-independent. A video is <code>W</code> with its <code>{e_k}</code> stream unrolled; audio-visual pixels are produced by the causal decoders inherited from v0.1. <em>Why it works.</em> The world is tokenized and prefilled once before streaming, so long, high-value context (e.g. a full character bible) is amortized over the whole interaction rather than re-encoded per unit; naming the persistent context first-class also decouples the training objective from any single downstream interface, so the same pretrained weights specialize to roaming, embodied manipulation, or interaction by only changing what plays the roles of <code>W</code> and the driving input <code>x_&le;k</code>.</li>
+      <li><strong>Streaming world-event factorization.</strong> The model learns <code>p_&theta;(e_{1:K} | W, x_{1:K}) = &prod;_k p_&theta;(e_k | W, x_&le;k, e_{&lt;k})</code>. The v0.1 autoregressive factorization is the special case where <code>W</code> is folded into the history and <code>x</code> is the user observation. Discrete parts of <code>e_k</code> (language, and now behavior directives) train with next-token prediction; continuous audio and video latents train with conditional flow matching under the same clean context, so speech, motion, appearance, and scene evolution are denoised as one coupled response and then committed back into the history for the next unit.</li>
+      <li><strong>Free-form behavior in a role-play format.</strong> <em>Problem.</em> Prior interactive video agents pick an action grammar upfront (w/a/s/d roaming moves, fixed emotion labels, listening/idle motion) and cannot express behaviors outside it. <em>Mechanism.</em> The agent&rsquo;s language stream interleaves spoken words with parenthesized behavior directives &mdash; e.g. <em>(reaches into the grass and picks up a green leaf)</em> &ldquo;Look what I found&rdquo; &mdash; and the parenthesized part can be any behavior expressible in language. Because behavior directives and spoken words share one token stream, their timing, ordering, and interleaving with speech are learned jointly rather than scheduled by an external controller. Directives are short language tokens, so they add negligible cost to the token-causal path. <em>Why it works.</em> Beats prior fixed-vocabulary agents on expressive range without adding a new latency-critical path, because behavior conditions the same audio-video decoders as the language stream already did.</li>
+      <li><strong>Serving topology.</strong> Inherited unchanged from v0.2: thinker + Ulysses context-parallel performer. This is the source of the preserved operating point.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.15038v1/x2.png" alt="World is prefilled once, then language, audio, and video share a causal timeline." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). The world context is tokenized and prefilled once before streaming. Language, audio, and video inputs and outputs share a causal timeline coordinated by block-causal attention; predicted tokens condition synchronized audio-video generation. Parentheses in the agent text stream denote free-form behavior.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Operating point (preserved from v0.2).</strong> <code>640&times;368</code> video at <code>25</code> FPS, <code>160</code> ms streaming unit, <code>~200</code> ms model-side response latency, <code>~550</code> ms total interaction latency under a <code>350</code> ms bidirectional network budget.</li>
+      <li>The paper reports only qualitative behavior observations for v0.3: in generated <code>640&times;368</code> conversations, the agent speaks while performing open-vocabulary behavior in real time; behavior directives are realized as coherent facial expressions, posture changes, responses to sounds, and interactions with nearby objects that remain synchronized with speech and grounded in the configured scene and character. Between explicit behavior events, the agent maintains stable idle and listening behavior.</li>
+      <li>No new quantitative benchmark is published in v0.3; the paper explicitly leaves systematic evaluation of roaming, embodied manipulation, and other downstream specializations to future work.</li>
+    </ul>
+
+    <p><em>Table 1. Summary of Wan-Streamer versions. Emphasized cells (marked *) are what v0.3 changes; unemphasized cells are what it preserves from v0.2.</em></p>
+    <table>
+      <thead>
+        <tr><th>Aspect</th><th>v0.1</th><th>v0.2</th><th>v0.3</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Framing</td><td>End-to-end streaming A/V interaction</td><td>Same, higher resolution</td><td>* Video = world + event stream</td></tr>
+        <tr><td>Core objective</td><td>Interaction data</td><td>Interaction data</td><td>* General-purpose world-event pretraining, then specialization</td></tr>
+        <tr><td>Output resolution</td><td>192&times;336</td><td>640&times;368</td><td>640&times;368</td></tr>
+        <tr><td>Frame rate</td><td>25 FPS</td><td>25 FPS</td><td>25 FPS</td></tr>
+        <tr><td>Model-side latency</td><td>~200 ms</td><td>~200 ms</td><td>~200 ms</td></tr>
+        <tr><td>Total latency</td><td>~550 ms (350 ms network)</td><td>~550 ms (350 ms network)</td><td>~550 ms (350 ms network)</td></tr>
+        <tr><td>Serving</td><td>Thinker + single-GPU performer</td><td>Thinker + Ulysses context-parallel performer</td><td>Same as v0.2</td></tr>
+        <tr><td>Agent event stream</td><td>Speech + visible listening behavior</td><td>Speech + listening, higher fidelity</td><td>* Speech + open-vocabulary free-form behavior</td></tr>
+        <tr><td>Behavior format</td><td>Implicit listening/idle motion</td><td>Implicit listening/idle motion</td><td>* Role-play with parenthesized behavior directives</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Public deliverable: technical report + <code>wan-streamer.com</code> website. No weight or checkpoint release is disclosed in the paper.</li>
+      <li>Relationship to other Wan-family launches this month: <code>WanSong v1.0</code> (song generation, July 17 review) shares Alibaba&rsquo;s hybrid-MMDit / fully-shared AdaLN parameter-efficient recipe, but the two share no weights &mdash; WanSong is a pure-diffusion audio foundation model, Wan-Streamer is a causal streaming interaction model. Together they extend the Wan brand from video (Wan2.1) into a full audio-visual streaming stack.</li>
+    </ul>
+
+    <h1 id="nvidia">NVIDIA</h1>
+
+    <h2 id="robottt"><a href="https://arxiv.org/abs/2607.15275">RoboTTT: Context Scaling for Robot Policies</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-16</span>
+      <span>Robot foundation models &middot; Test-Time Training &middot; VLA &middot; Long context</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Yunfan Jiang, Yevgen Chebotar, Ruijie Zheng, Fengyuan Hu, Yunhao Ge, Jimmy Wu, Tianyuan Dai, Scott Reed, Li Fei-Fei, Yuke Zhu, Linxi &ldquo;Jim&rdquo; Fan. Affiliations: <strong>NVIDIA</strong> (GEAR lab), Stanford University, UT Austin. Equal-advising senior authors: Fei-Fei, Zhu, Fan.</li>
+      <li>Central claim: recent robot foundation models (Physical Intelligence <code>&pi;0.5</code>, Figure AI Helix, and the GR00T N-series) operate on single-step or short-history (2&ndash;8 frame) visuomotor context. RoboTTT scales pretraining visuomotor context to <code>8K</code> timesteps &mdash; roughly <code>4</code> minutes at <code>30</code> Hz control &mdash; without growing inference latency, and shows this unlocks new closed-loop capabilities that emerge only after context length is scaled.</li>
+      <li>Backbone: RoboTTT is instantiated on top of <code>GR00T N1.7</code>. It adds a TTT layer after each of the <code>16</code> DiT action-head layers; each fast model is a two-layer MLP. Pretraining uses a mixture of tabletop bimanual robot data and egocentric human data, gradually increasing pretraining context length to the target (e.g. <code>8K</code>) for <code>30K</code> steps on <code>16&times;NVIDIA GB200</code> GPUs; post-training runs on each downstream task at <code>1K</code> context length for <code>20K</code> steps.</li>
+      <li>Benchmark: three long-horizon, multi-stage bimanual assembly tasks &mdash; <em>Pup Go Car</em> (toy vehicle assembly, ~2 min episodes), <em>Circuit</em> (80 assembly configurations specified by language prompt or a one-shot human video demo, ~1 min episodes; trained on 20 configs, tested on 60), <em>Gear Bot</em> (10-stage, ~5 min episodes &mdash; the longest-horizon task).</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.15275v1/x2.png" alt="RoboTTT model architecture with TTT layers inside the DiT action head." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). RoboTTT model architecture, training, and inference. TTT layers are added after the attention layers in the DiT action head: attention operates within each timestep, while TTT layers operate across timesteps. Training uses a sequence flow-matching loss with sequence action forcing, sampling the noise level independently per action chunk. Inference starts from the learned initialization W<sub>0</sub>, updating fast weights on each observation and propagating them forward.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Test-Time Training layers in the DiT action head (central named contribution).</strong> <em>Problem.</em> Long visuomotor context has to solve three coupled requirements: encode long histories with sufficient capacity, effectively exploit the conditioned context, and keep per-step inference cost constant. Full-attention with a KV cache satisfies capacity but grows with history; RNNs (LSTM) keep inference constant but under-scale; naive frame concatenation introduces spurious correlations. <em>Mechanism.</em> The input to the DiT is a robot trajectory <code>[R_t, &Phi;_t, q_t, &Atilde;_t]</code> repeated across <code>T</code> timesteps, where <code>&Phi;_t</code> are VL tokens from the VLM, <code>q_t</code> the proprioception token, <code>&Atilde;_t</code> the noised action tokens, and <code>R_t</code> are <code>N=16</code> learned register tokens prepended per timestep. Attention layers operate on the per-timestep tokens <code>(R_t, q_t, &Atilde;_t)</code> and cross-attend to <code>&Phi;_t</code>; per-timestep attention outputs are then concatenated along time and passed through TTT layers whose fast weights <code>W_t</code> are updated inside the layer by <code>W_t &larr; W_{t-1} - &eta;&nabla;_W&#8467;&#8203;<sub>FW</sub>(f_{W_{t-1}}(K_t), V_t)</code> with an MSE fast-weight loss, and whose apply step computes <code>O_t = f_{W_t}(Q_t)</code>. VL tokens <code>&Phi;</code> are not sent through TTT directly for compute efficiency; the smaller register token pool carries VL information across time. <em>Why it works.</em> Fast weights parameterize a nonlinear MLP that is (i) more expressive than the vector-valued state of Gated DeltaNet, (ii) meta-learned end-to-end so the outer task loss shapes the fast-weight initialization <code>W_0</code> and update dynamics, and (iii) constant-cost at inference. Ablations show the TTT-linear variant is <code>27%</code> worse than the MLP fast model, echoing prior TTT results in language.</li>
+      <li><strong>Gating for preserving pretrained capabilities.</strong> A learned per-layer vector <code>&alpha; &isin; &Ropf;<sup>d</sup></code> is initialized near zero (<code>0.001</code>) and gates the TTT contribution: <code>O = tanh(&alpha;) &odot; O_TTT + O_attn</code>. This keeps the TTT signal small at the start of training and lets the model gradually turn it up as it learns to use it, without overwriting the base VLA capabilities of GR00T N1.7.</li>
+      <li><strong>Sequence action forcing (named contribution).</strong> <em>Problem.</em> Sequence training with a flow-matching action head naively shares one noise level <code>&tau;</code> across the whole training sequence (&ldquo;full-sequence diffusion&rdquo;). That makes entire sequences uniformly easy (low noise) or uniformly hard (high noise) to learn and destabilizes training. <em>Mechanism.</em> Sample the flow-matching timestep <code>&tau;_t</code> <em>independently</em> for each action chunk in the sequence: <code>&tau;_t = s(1-u)</code>, <code>u ~ Beta(1.5, 1)</code>, <code>s = 0.999</code>. The per-timestep loss regresses <code>v_&theta;(&Phi;_t, A_t^{&tau;_t}, q_t; W_{t-1})</code> against <code>A_t - &epsilon;</code>. <em>Why.</em> The ablation shows removing sequence action forcing collapses closed-loop performance: the resulting policy&rsquo;s motions are inaccurate enough that the robot cannot make meaningful progress on Pup Go Car. Beats naive full-sequence diffusion echoing findings in image-sequence generation work by Chen et al.</li>
+      <li><strong>Truncated backpropagation through time (TBPTT) with carried fast weights.</strong> <em>Problem.</em> Full BPTT on <code>8K</code>-timestep sequences stores activations for every timestep; GPU memory grows with sequence length and blows past a fixed budget. <em>Mechanism.</em> The training sequence is split into segments; gradients flow only within each segment; fast weights <em>carry across</em> segment boundaries with their gradients detached. So TTT continues over the whole sequence while GPU memory is set by the segment length, not the sequence length. The fast weight initialization <code>W_0</code> still receives gradients through the first segment. <em>Why.</em> Decouples the training compute budget from the target context length, so <code>8K</code> pretraining context is trainable on the same hardware as <code>1K</code>.</li>
+      <li><strong>DAgger Distillation (named contribution).</strong> <em>Problem.</em> Standard DAgger fine-tunes on the human corrections and discards the suboptimal robot actions that preceded them. Those suboptimal robot actions carry no imitation signal (the paper verifies: fine-tuning GR00T N1.7 on the full trajectories, robot actions included, performs identically to corrections alone &mdash; <code>57%</code> for both). <em>Mechanism.</em> During sequence training, all executed actions &mdash; including the suboptimal robot actions themselves &mdash; update the TTT fast weights, but the flow-matching loss is masked to the human corrections only. <em>Why.</em> The failure-to-correction mapping is distilled into the fast weights: the model learns to <em>produce</em> corrections in response to failures rather than imitate corrections in isolation. Beats standard DAgger fine-tuning (<code>+13%</code> avg on the sequence models) with a further <code>+33%</code> avg improvement over base policies (<code>+36%</code> for RoboTTT, <code>+29%</code> for GDN), from the same DAgger data.</li>
+      <li><strong>One-shot imitation from in-context human video.</strong> Human video demonstration <code>&xi;<sup>video</sup></code> is paired with a robot trajectory <code>&xi;<sup>robot</sup></code> of the same task. The video sequence updates the fast weights only (its flow-matching loss is masked), while the action loss is computed on the robot trajectory conditioned on those updated fast weights. At test time, conditioning on a single human video of an unseen task configuration yields one-shot imitation.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Main long-horizon evaluation.</strong> Task completion score averaged over Pup Go Car, Circuit, and Gear Bot: RoboTTT <code>79%</code>, GR00T N1.7 (single-step) <code>42%</code> (RoboTTT is <code>+87%</code> higher), GR00T N1.7 Hist. (one history frame) <code>45.6%</code>, GDN (RoboTTT&rsquo;s TTT layers replaced with Gated DeltaNet) <code>56%</code> (RoboTTT is <code>+41%</code> higher).</li>
+      <li><strong>Gear Bot &mdash; the five-minute assembly.</strong> RoboTTT is the only method with any full successes on Gear Bot (<code>2/10</code>). Every baseline scores <code>0/10</code>.</li>
+    </ul>
+
+    <p><em>Table 1. Fully successful trials on the three assembly tasks, out of 20 per task (10 for Gear Bot).</em></p>
+    <table>
+      <thead>
+        <tr><th>Method</th><th>Pup Go Car</th><th>Circuit</th><th>Gear Bot</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>RoboTTT</td><td>9 / 20</td><td>13 / 20</td><td>2 / 10</td></tr>
+        <tr><td>GR00T N1.7 (single-step)</td><td>3 / 20</td><td>3 / 20</td><td>0 / 10</td></tr>
+        <tr><td>GR00T N1.7 Hist.</td><td>0 / 20</td><td>8 / 20</td><td>0 / 10</td></tr>
+        <tr><td>GDN (Gated DeltaNet)</td><td>3 / 20</td><td>8 / 20</td><td>0 / 10</td></tr>
+      </tbody>
+    </table>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.15275v1/x8.png" alt="Closed-loop task completion scales with pretraining context length up to 8K." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 8 (from the paper). Closed-loop performance scales with pretraining context length. Average task completion score across the three tasks as pretraining context length grows from 128 to 8K timesteps. RoboTTT improves steadily, surpassing the best short-context baseline from 1K onward with no sign of saturation; GDN does not benefit from longer context.</figcaption>
+    </figure>
+
+    <ul>
+      <li><strong>Context-length scaling law.</strong> RoboTTT-8K reaches <code>71.5%</code> average task completion score; the same model pretrained at <code>1K</code> reaches <code>43.9%</code> (<code>+63%</code> relative gain); best short-context baseline GR00T N1.7 Hist. reaches <code>45.6%</code> (RoboTTT-8K is <code>+57%</code> higher). GDN shows no such trend across the same context sweep &mdash; its linear-associative state admits no meta-learning of the initialization.</li>
+      <li><strong>One-shot imitation on Circuit.</strong> Conditioning on one in-context human video of an unseen configuration, using the identical &ldquo;assemble circuit&rdquo; prompt across configs: RoboTTT succeeds on <code>6/10</code> trials with a <code>65%</code> task completion score; GDN fails entirely (<code>0/10</code>, <code>33%</code> score), picking up wrong components or assembling in the wrong order.</li>
+      <li><strong>Perturbation robustness (within-episode conditioning).</strong> A human removes the yellow roof or a tire after installation, and the policy is scored on whether it returns to the pre-perturbation stage and reinstalls the part. Roof: RoboTTT <code>15/20</code>, GR00T N1.7 <code>10/20</code>, GR00T N1.7 Hist. <code>3/20</code>, GDN <code>13/20</code>. Tire: RoboTTT <code>18/20</code>, GDN <code>18/20</code>, GR00T N1.7 <code>11/20</code>, Hist. <code>5/20</code>.</li>
+      <li><strong>DAgger Distillation on Pup Go Car.</strong> From a pool of <code>100</code> DAgger trajectories (<code>50</code> each collected with RoboTTT and GR00T N1.7 as the base policy): standard DAgger fine-tuning on corrections alone yields <code>+9%</code> average across the four methods and <code>+13%</code> across the two sequence models; DAgger Distillation yields <code>+33%</code> average (<code>+36%</code> RoboTTT, <code>+29%</code> GDN).</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Sequence action forcing.</strong> Removing it collapses closed-loop performance on Pup Go Car; the resulting inaccurate motions leave the robot unable to make meaningful progress.</li>
+      <li><strong>Fast-model architecture.</strong> Replacing the two-layer MLP with a linear layer (<em>TTT Linear</em>) drops performance <code>27%</code> relative to the MLP fast model; TTT-linear still beats GR00T N1.7 but remains suboptimal.</li>
+      <li><strong>Component roadmap on Pup Go Car.</strong> Starting from a TTT MLP over state tokens only: adding action tokens through the TTT layers yields <code>+23%</code> relative improvement (past actions help capture environment dynamics); adding <code>16</code> learned register tokens yields another <code>+18%</code> relative improvement. Register tokens do not help GR00T N1.7 by themselves, so the isolation shows they only pay off when paired with TTT&rsquo;s temporal modeling.</li>
+    </ul>
+
+    <h3>Limitations</h3>
+    <ul>
+      <li>Below <code>1K</code> pretraining context, RoboTTT still outperforms GDN at matched context length but falls short of longer-context variants; the paper attributes this to rollout horizons exceeding the training context (<code>1K</code> timesteps ~<code>30</code> seconds &mdash; shorter than the shortest task episode), so at inference the fast weights update far beyond the window seen in training and positional embeddings extend to unseen positions.</li>
+      <li>All experiments use a single YAM bimanual setup with four RGB cameras; cross-embodiment scaling is left to future work.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="meanflownft"><a href="https://arxiv.org/abs/2607.15273">MeanFlowNFT: Bringing Forward-Process RL to Average-Velocity Generators</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-16</span>
+      <span>Flow matching &middot; RL &middot; Few-step generation &middot; T2I &middot; T2V</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Yushi Huang, Xiangxin Zhou, Jun Zhang, Liefeng Bo, Tianyu Pang (corresponding). Affiliations: <strong>Tencent Hunyuan</strong> (primary) and HKUST. Public deliverables: <a href="https://harahan.github.io/meanflownft-project-page/">project page</a>, <a href="https://github.com/Harahan/MeanFlowNFT">GitHub</a>, <a href="https://huggingface.co/Harahan/MeanFlowNFT">Hugging Face weights</a>.</li>
+      <li>Setting. Flow-matching / diffusion models synthesize a sample by integrating an instantaneous velocity field over many sequential steps, which is slow. MeanFlow (Geng et al. 2026) removes this by predicting the <em>average</em> velocity over a time interval, so a few steps suffice at inference. Reinforcement learning &mdash; typically GRPO-style policy gradients over the reverse process (Flow-GRPO, Xue et al.) &mdash; is the standard tool for aligning these generators to reward. DiffusionNFT (Zheng et al. 2026) instead RL-tunes directly on the <em>forward</em> process: it contrasts positive/negative generations split by reward to form an implicit policy-improvement direction and folds rewards into a flow-matching objective &mdash; likelihood-free and solver-agnostic.</li>
+      <li>Gap the paper closes: DiffusionNFT optimizes the instantaneous velocity <code>v(x_t, t)</code>, but MeanFlow samples with an average velocity <code>u(x_t, s, t)</code> over an interval <code>[s, t]</code>. Applying DiffusionNFT directly to a MeanFlow network is ill-defined and, as the appendix shows, breaks the policy-improvement guarantee.</li>
+      <li>Central claim: MeanFlowNFT is the first forward-process RL framework for MeanFlow generators. It applies the DiffusionNFT objective to an <em>induced instantaneous-velocity predictor</em> derived from the average-velocity network via the MeanFlow identity, keeping training likelihood-free and leaving the efficient few-step sampler unchanged.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.15273v1/x1.png" alt="Qualitative comparison on Wan2.1 1.3B video generation." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). Qualitative comparison on Wan2.1 1.3B video generation between Wan2.1 (50 steps), LongCat-Video RL (50 steps), AnyFlow (4 steps), and MeanFlowNFT (4 steps).</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>MeanFlow identity as the bridge.</strong> The MeanFlow average velocity satisfies <code>u(x_t, s, t) = (1/(t-s)) &int;_s^t v(x_&tau;, &tau;) d&tau;</code> and reduces to <code>v(x_t, t)</code> as <code>s &rarr; t</code>. Differentiating the displacement form <code>(t-s)u = &int;_s^t v d&tau;</code> with respect to <code>t</code> yields the exact identity <code>v(x_t, t) = u(x_t, s, t) + (t-s)&sdot;(d/dt)u(x_t, s, t)</code>, so a MeanFlow network <code>u_&theta;</code> yields an <em>induced instantaneous-velocity predictor</em> <code>v&#770;_&theta; := u_&theta; + (t-s)&sdot;(du_&theta;/dt)</code>.</li>
+      <li><strong>MeanFlowNFT objective (central named contribution).</strong> <em>Problem.</em> DiffusionNFT&rsquo;s objective is defined for instantaneous velocity <code>v</code>. Applying it naively to a MeanFlow network optimizes the wrong quantity and, as Appendix B proves, fails to guarantee policy improvement. <em>Mechanism.</em> Apply the DiffusionNFT-style objective to the induced instantaneous predictor <code>v&#770;_&theta;</code> instead of the average-velocity network directly. Training is on the forward noising process, so no reverse-trajectory sampling and no likelihood estimation are needed; the trainable and reference predictors in the algorithm share the same finite-difference estimate of the total-derivative term, computed along the forward-process conditional velocity. Sampling remains an average-velocity few-step MeanFlow rollout. <em>Why it works.</em> The paper proves that in an idealized setting, the optimum of the induced predictor matches DiffusionNFT&rsquo;s improved-policy target and this improvement provably carries over to the average-velocity generator. Beats naive drop-in adaptations of DiffusionNFT to MeanFlow (which the appendix shows break the guarantee) and beats reverse-process RL (Flow-GRPO, DanceGRPO) because it never has to sample reverse trajectories or estimate per-step likelihoods.</li>
+      <li><strong>Practical implementation.</strong> The total-derivative term <code>du/dt</code> in the induced predictor is approximated by a finite difference. The trainable and reference networks share the same finite-difference estimate at each training step, which the appendix shows preserves DiffusionNFT&rsquo;s policy-improvement direction in the average-velocity network.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Text-to-video (Wan2.1 1.3B).</strong> <code>4</code>-step MeanFlowNFT reaches VBench score <code>84.33</code>, surpassing <code>50</code>-step LongCat-Video RL at <code>82.57</code>. This is roughly a <code>12&times;</code> sampling-step reduction at higher aggregate VBench.</li>
+      <li><strong>Text-to-image (SD3.5-M).</strong> MeanFlowNFT outperforms prior SOTA RL-tuned few-step generators on <code>6</code> of <code>8</code> reported metrics; qualitative comparisons vs Flow-GRPO (<code>40</code> steps), DiffusionNFT (<code>40</code> steps), and AnyFlow (<code>4</code> steps) are in Figure 2.</li>
+      <li>The paper reports MeanFlowNFT can even surpass multi-step RL-tuned diffusion baselines using only a few sampling steps, and that it scales gracefully at test time (more sampling steps improve quality further, with full test-time-scaling curves in Appendix E).</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The paper trades off induced-predictor design choices (linear vs. exact total-derivative, shared vs. separate finite-difference estimates for trainable and reference); full ablation numbers are in Appendix D.</li>
+      <li>Appendix B analyzes why naive plug-ins &mdash; applying DiffusionNFT directly to <code>u_&theta;</code> without going through the MeanFlow identity &mdash; lose DiffusionNFT&rsquo;s strict policy-improvement guarantee.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Open weights on Hugging Face (<code>Harahan/MeanFlowNFT</code>) and open source on GitHub, so the method is directly plug-in for public MeanFlow generators.</li>
+      <li>Positioning vs. AnyFlow (Alibaba, May 14 review): AnyFlow distills a many-step video diffusion model into a few-step generator via on-policy flow-map distillation; MeanFlowNFT instead does RL-alignment of an already-few-step MeanFlow generator on the forward process. The two are complementary rather than substitutable &mdash; AnyFlow reduces sampling steps, MeanFlowNFT aligns the few-step generator to reward.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
