@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Xiaomi-Robotics-1 Launch Review &mdash; July 20, 2026 | Auto Lit Review</title>
+<meta name="description" content="Xiaomi Robotics launches Xiaomi-Robotics-1, a 2.6B/5.1B/10.5B foundational VLA model pretrained on 100k+ hours of UMI trajectories with an auto-labeled state-transition captioning pipeline; sets new state-of-the-art on RoboCasa365 (57.4% vs 46.6% ABot-M0.6), RoboDojo (20.07 vs 13.07), RoboCasa (74.5%), and VLABench (59.1%), and lifts low-data downstream fine-tuning from pi_0.5's 40% to 75% success. Tier 3: Alibaba Qwen previews Qwen3.8-Max, a 2.4T-parameter multimodal MoE, at WAIC 2026 without a model card, benchmark table, or license." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 20, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#xiaomi" class="toc-h1">Xiaomi</a>
+          <ul>
+            <li><a href="#xiaomi-robotics-1" class="toc-h2">Xiaomi-Robotics-1</a></li>
+          </ul>
+        </li>
+        <li><a href="#alibaba" class="toc-h1">Alibaba</a>
+          <ul>
+            <li><a href="#qwen-3-8-max-preview" class="toc-h2">Qwen3.8-Max Preview</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 20, 2026</div>
+    <h1 class="page-title">Xiaomi-Robotics-1 Launch</h1>
+    <div class="page-meta">2 entries &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>Xiaomi Robotics ships the Tier 1 launch of the window: <strong>Xiaomi-Robotics-1</strong>, a foundational vision-language-action (VLA) model at three scales (<code>2.6B</code>, <code>5.1B</code>, <code>10.5B</code>) pretrained on over <code>100,000</code> hours of real-world UMI-collected manipulation trajectories under a two-stage recipe (embodiment-free pre-training on state-transition-captioned UMI data, then cross-embodiment post-training on ~<code>10K</code> hours of robot data). The model couples a <code>Qwen3-VL</code> backbone to a matched-depth, half-hidden-size DiT action head via a Mixture-of-Transformers arrangement, adds a Choice-Policies auxiliary VLM regression head for faster convergence, and generates <code>H</code>-step action chunks by flow-matching Euler integration. It sets a new state-of-the-art of <code>57.4%</code> on <strong>RoboCasa365</strong> (previous best: <code>ABot-M0.6</code> at <code>46.6%</code>), <code>20.07</code> avg on <strong>RoboDojo</strong> (vs the prior best <code>13.07</code>), <code>74.5%</code> on <strong>RoboCasa</strong>, and <code>59.1%</code> on <strong>VLABench</strong>. Downstream, it reaches <code>75%</code> average success (<code>90%</code> progress) on four novel dexterous / mobile tasks with less than <code>10</code> hours of demonstrations per task &mdash; almost double <code>&pi;<sub>0.5</sub></code>&rsquo;s <code>40%</code> under the same budget &mdash; and scales further to <code>85%</code> with <code>&lt;40</code> hours per task. The companion Tier 3 story is Alibaba Qwen&rsquo;s <strong>Qwen3.8-Max preview</strong>, previewed at WAIC 2026 as a <code>2.4T</code>-parameter multimodal model &ldquo;second only to <code>Fable 5</code>&rdquo; but shipped without a benchmark table, active-parameter count, model card, or license.</p>
+
+      <h3>Competitiveness</h3>
+      <p>Xiaomi-Robotics-1 is the strongest published open robot foundation policy on the current mainline VLA benchmark battery. Its <code>+10.8</code>-point RoboCasa365 lead over <code>ABot-M0.6</code> (Alibaba AMAP, July 15 review) is the largest single-launch jump on that benchmark in 2026, and its <code>7.0-point</code> RoboDojo gap over the prior best is even larger relative to the scale. Against <code>&pi;<sub>0.5</sub></code> &mdash; the reigning US frontier VLA reference &mdash; the four-task low-data ablation is decisive: <code>75%</code> vs <code>40%</code> average success on the same held-out phone packing / laundry loading / printer refilling / box packing suite at &lt;<code>10</code> hours/task. The result puts Xiaomi Robotics at parity or ahead of every other 2026 Chinese-lab embodied foundation launch this quarter (<code>Xiaomi-Robotics-U0</code> world model, <code>ABot-N1</code>, <code>ABot-AgentOS</code>), and the paper&rsquo;s clean data- and model-scaling curves (out-of-the-box real-robot success rising monotonically from <code>26%</code> without action pre-training to <code>75%</code> at 100% data, and from <code>61%</code> at 2B to <code>79%</code> at 10B) are the first clean published scaling law on real-robot success from a single VLA family. On the language side, Qwen3.8-Max&rsquo;s <code>2.4T</code>-parameter claim would put it at parity with Moonshot&rsquo;s <code>2.8T</code> <code>Kimi K3</code> release two days prior, but with no published benchmark table it is not yet possible to compare it to <code>GPT-5.6 Sol</code>, <code>Claude Opus 4.8</code>, <code>Gemini 3.5 Pro</code>, <code>DeepSeek V4 Pro</code>, or <code>Fable 5</code>; Alibaba&rsquo;s previous verified flagship <code>Qwen3.7-Max</code> holds <code>92.4</code> GPQA Diamond, <code>80.4%</code> SWE-Bench Verified, and <code>69.7</code> Terminal-Bench 2.0 as the pricing / capability baseline the preview must beat.</p>
+
+      <h3>New frontier releases</h3>
+      <p>One Tier 1 flagship launch: Xiaomi Robotics&rsquo; <code>Xiaomi-Robotics-1</code> (arXiv 2607.15330, July 16; surfaced as HuggingFace daily-papers #3 on July 20 with the code and checkpoint release forthcoming). One Tier 3: Alibaba Qwen&rsquo;s <code>Qwen3.8-Max-Preview</code>, previewed on July 19 at the World AI Conference in Shanghai; live for paying users through Alibaba&rsquo;s Token Plan, Qoder, and QoderWork at 10% of standard pricing, with open weights promised &ldquo;soon.&rdquo; No Tier 2 papers cleared the window&rsquo;s frontier-lab filter after dedup against the July 19 review.</p>
+    </section>
+
+    <h1 id="xiaomi">Xiaomi</h1>
+
+    <h2 id="xiaomi-robotics-1"><a href="https://arxiv.org/abs/2607.15330">Xiaomi-Robotics-1: Scaling Vision-Language-Action Models with over 100K Hours of Real-World Trajectories</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-07-16</span>
+      <span>Robot foundation models &middot; VLA &middot; Flow matching &middot; UMI &middot; Scaling</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Xiaomi Robotics Team (Jun Guo, Piaopiao Jin, Jason Li, Peiyan Li, Yingyan Li, Futeng Liu, Wanli Peng, Optimus Qin, Yifei Su, Nan Sun, Qiao Sun, Runze Suo, Heyun Wang, Yunhong Wang, Rujie Wu, Caoyu Xia, Lina Zhang, Jack Zhao, Guoliang Chen, Wenlong Chen, Xinze He, +12 more). Affiliation: <strong>Xiaomi Robotics</strong>. Correspondence: <code>mi-robotics@xiaomi.com</code>. Project page: <a href="https://robotics.xiaomi.com/xiaomi-robotics-1.html">robotics.xiaomi.com/xiaomi-robotics-1.html</a>; code + <a href="https://github.com/XiaomiRobotics/Xiaomi-Robotics-1">GitHub</a> to be released.</li>
+      <li>Central claim: robotics can follow the LLM/VLM scaling recipe if it treats a large, embodiment-<em>free</em> real-world manipulation corpus (over <code>100,000</code> hours of UMI handheld-gripper trajectories) as the pretraining substrate, and reserves cross-embodiment robot data for post-training alignment. The paper backs this with three separate scaling curves: pretraining validation loss vs data scale, pretraining validation loss vs model size, and out-of-the-box real-robot success rate vs each of the two.</li>
+      <li>This is a distinct model line from <code>Xiaomi-Robotics-U0</code> (July 15 review), which is a <code>38B</code> multimodal autoregressive <em>world foundation model</em> initialized from <code>EMU3.5</code>. <code>Xiaomi-Robotics-1</code> is a smaller (<code>2.6B</code>&ndash;<code>10.5B</code>) end-to-end VLA policy built on <code>Qwen3-VL</code> + DiT. The two share the Xiaomi Robotics team, but no weights.</li>
+      <li>Reported flagship results: <code>57.4%</code> avg on <strong>RoboCasa365</strong> (previous SOTA <code>46.6%</code>), <code>20.07</code> avg on <strong>RoboDojo</strong> (previous SOTA <code>13.07</code>), <code>74.5%</code> on <strong>RoboCasa</strong>, <code>59.1%</code> on <strong>VLABench</strong>; <code>75%</code> average success on four novel real-robot tasks in the low-data (&lt;<code>10</code> hours/task) setting vs <code>40%</code> for <code>&pi;<sub>0.5</sub></code>. A single <code>Xiaomi-Robotics-1</code>-<code>10B</code> policy also completes a room-scale <code>10-minute</code> mobile suitcase-packing task autonomously.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.15330v1/x1.png" alt="Overview of Xiaomi-Robotics-1 two-stage recipe and scaling." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). Overview. Xiaomi-Robotics-1 is pre-trained on over 100k hours of real-world UMI trajectories with auto-labeled state-transition prompts, then aligned to robot embodiments and imperative instructions via cross-embodiment post-training. It scales with data and model size, performs multiple tasks in unseen environments out-of-the-box, and adapts efficiently to new tasks.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Mixture-of-Transformers VLA (central named contribution).</strong> <em>Problem.</em> Existing VLAs either bolt a small action head onto a frozen VLM (VLM under-participates in action generation) or share one transformer between the VLM and action head (VLM compute dominates and inference slows). Neither cleanly amortizes the VLM cost across many DiT forward passes. <em>Mechanism.</em> A Mixture-of-Transformers architecture couples a pretrained <code>Qwen3-VL</code> backbone to a diffusion transformer (DiT) with the <em>same</em> number of layers but a <em>smaller</em> hidden size. Per timestep, the VLM encodes <code>(o<sub>t</sub>, l)</code> once and exposes its KV cache. The DiT conditions on the VLM KV cache, the robot proprioceptive state token <code>s<sub>t</sub></code>, and a per-timestep flow-matching noise level <code>&tau;</code>, and generates an <code>H</code>-step action chunk <code>a<sub>t:t+H</sub></code> by 5-step Euler integration of a learned vector field, with <code>&tau;</code> injected through adaLN. <em>Why.</em> Halving the DiT hidden size relative to the VLM concentrates capacity in the language-visual reasoning path while making the flow-matching inner loop cheap; the VLM cost is further amortized by sampling <code>4</code> flow-matching timesteps per VLM forward pass and packing all resulting DiT inputs into a single DiT pass. Beats single-transformer VLAs on inference speed at the same total parameter budget, and beats frozen-VLM heads by letting the VLM re-shape its own representations toward action generation via the auxiliary Choice-Policies head.</li>
+      <li><strong>Choice-Policies auxiliary action head on the VLM (named contribution).</strong> <em>Problem.</em> Adding a VLM-side action head has historically caused shortcut learning &mdash; the DiT stops grounding in vision and language and just copies the VLM&rsquo;s action tokens. <em>Mechanism.</em> The proprioceptive state is MLP-encoded to a token; <code>K</code> action-query tokens and <code>K</code> score-query tokens are appended to the VLM sequence. The VLM predicts <code>K</code> candidate action chunks and <code>K</code> scores; winner-takes-all: only the candidate with the smallest <code>L<sub>1</sub></code> distance to the ground truth contributes to the action loss, while the scores regress against the <code>L<sub>1</sub></code> distances themselves. Crucially, DiT attention is masked to <em>exclude</em> the action-related VLM tokens from the KV cache. <em>Why.</em> The VLM is pushed toward action-supportive representations, but the DiT is denied a copy-and-paste shortcut, so it must recompute the action from grounded visual-linguistic context. Empirically this accelerates convergence without collapsing the DiT.</li>
+      <li><strong>Model scaling variants (Table 1 from the paper).</strong></li>
+    </ul>
+
+    <p><em>Table 1. Model configurations for Xiaomi-Robotics-1 variants.</em></p>
+    <table>
+      <thead>
+        <tr><th>Model</th><th># Layers</th><th>VLM Hidden</th><th>VLM Params</th><th>DiT Hidden</th><th>DiT Params</th><th>Total</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Xiaomi-Robotics-1-2B</td><td>28</td><td>2048</td><td>2.1B</td><td>1024</td><td>470M</td><td><strong>2.6B</strong></td></tr>
+        <tr><td>Xiaomi-Robotics-1-5B</td><td>36</td><td>2560</td><td>4.4B</td><td>1024</td><td>604M</td><td><strong>5.1B</strong></td></tr>
+        <tr><td>Xiaomi-Robotics-1-10B</td><td>36</td><td>4096</td><td>8.8B</td><td>2048</td><td>1.5B</td><td><strong>10.5B</strong></td></tr>
+      </tbody>
+    </table>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.15330v1/x2.png" alt="Mixture-of-Transformers architecture: Qwen3-VL VLM and matched-depth DiT with flow matching." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). Model architecture. Qwen3-VL encodes the observation and language and additionally predicts action chunks via Choice Policies to accelerate training. Conditioned on the robot state and the VLM&rsquo;s KV cache (with action-related tokens excluded), the DiT generates the action chunk via flow matching.</figcaption>
+    </figure>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li><strong>Scalable auto-labeling pipeline (central named contribution).</strong> <em>Problem.</em> Manual segmentation and instruction-labeling of <code>100,000</code> hours of trajectory data is prohibitive; naive per-trajectory VLM captioning is I/O-bound and would take months. <em>Mechanism.</em> A producer&ndash;consumer pipeline decouples clip segmentation (CPU worker threads write fixed-length clips to an in-memory filesystem) from caption labeling (client threads keep hundreds of <code>Qwen3.5-27B</code> captioning requests in flight). The VLM captions each clip as a natural-language description of the state transition of the grippers and interacting objects, not a task instruction. <em>Why.</em> Two weeks of wall time labels the whole <code>100K</code>-hour corpus, and the state-transition target is a strictly denser training signal than an instruction: the language explicitly specifies what changes and how, so the model is trained to <em>bring the scene from the current state into the described target state</em>. That is a well-defined pointwise supervision even where the same visual clip is compatible with many high-level instructions.</li>
+      <li><strong>Data.</strong> Over <code>100,000</code> hours of UMI handheld-gripper egocentric trajectories collected across households, commercial premises, industrial sites, offices, and outdoor spaces (<code>1,700+</code> scenarios). Embodiment-free by design: because UMI grippers are handheld and not tied to a specific robot morphology, the data spans a much broader distribution of objects, environments, and manipulation behaviors than teleoperated robot data can practically reach.</li>
+      <li><strong>Objective.</strong> Joint minimization of <code>L<sub>Flow</sub></code> (DiT flow-matching loss with <code>&tau; ~ Beta(1.5, 1)</code>-derived noise levels, weighted to noisier timesteps) + <code>L<sub>Regression</sub></code> (VLM Choice-Policies winner-takes-all <code>L<sub>1</sub></code> + score MSE) + <code>&lambda; &middot; L<sub>NTP</sub></code> (co-training next-token prediction on a curated VL dataset from Xiaomi-Robotics-0, with <code>&lambda; = 0.1</code>). Data mix: VL : UMI = <code>1 : 9</code>. Throughput trick: pack all VL tokens in a batch into one VLM sequence; per sample, run <code>4</code> flow-matching timesteps sharing that VLM KV cache and pack them into one DiT pass.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.15330v1/x3.png" alt="Pre-training dataset composition." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 3 (from the paper). Pre-training dataset. Over 100k hours of real-world UMI trajectories from households, commercial premises, industrial sites, offices, and outdoor spaces.</figcaption>
+    </figure>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li><strong>Goal.</strong> Bridge two gaps at once: (i) map UMI-gripper action generation onto the action spaces of real robot embodiments, and (ii) shift language conditioning from state-transition descriptions (pretraining) to the imperative instructions humans naturally use with robots.</li>
+      <li><strong>Data mix (~<code>10,000</code> hours total).</strong> <code>7,200+</code> hours of in-house real-robot data collected with mobile manipulators and dual-arm robots across real homes; <code>1,000+</code> hours of human-annotated UMI data with temporal segments and instruction labels; open-source robot datasets Bridge V2, RT-1, DROID. Idle segments are filtered out. Trajectory sampling ratio VL : open-source robot : instruction-UMI : in-house robot = <code>0.5 : 0.5 : 0.5 : 8.5</code>.</li>
+      <li><strong>Unified cross-embodiment action space.</strong> Arm actions use relative delta end-effector poses in the current EE frame; EE-frame orientations are unified across UMI and all robot data so that similar motions yield consistent target values regardless of hardware. For mobile robots, base action is base velocity and waist action is relative delta waist position. Heterogeneous embodiments share one unified action vector with missing dimensions masked out during loss computation.</li>
+      <li><strong>Objective.</strong> Same three-term loss as pretraining; same asynchronous inference recipe (inherited from Xiaomi-Robotics-0) for downstream fine-tuning.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.15330v1/x4.png" alt="Post-training dataset: cross-embodiment robot data + instruction-UMI + open-source." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 4 (from the paper). Post-training dataset: ~10k hours of cross-embodiment trajectories, dominated by 7.2k hours of in-house mobile-manipulator and dual-arm robot data.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Pre-training scaling.</strong> Data scaling (<code>Xiaomi-Robotics-1-5B</code>, 12.5% / 25% / 50% / 100% of a 20k-hour subset): validation action MSE decreases monotonically with data scale; the 12.5% and 25% runs overfit (loss re-increases), while 50% and 100% keep dropping, with the 100% run showing a steeper descent. Model scaling (2B, 5B, 10B on the same 20k-hour data): action MSE decreases monotonically with model size, but the gap is smaller than the gap across data scales &mdash; suggesting data volume is currently the tighter bottleneck at this parameter count.</li>
+      <li><strong>Post-training out-of-the-box real-robot success (unseen envs and object instances).</strong> Four tasks: shoe storage, bag packing, table organization, sofa tidying.
+        <ul>
+          <li>Scaling pretraining data (<code>5B</code>, 4 pretraining scales + no-action-pretraining baseline): overall success rises monotonically <code>26% &rarr; 53% &rarr; ... &rarr; 75%</code> at 100% pretraining data. Shoe tidying goes from <code>0%</code> without action pretraining to <code>75%</code> with 100% data. Even 12.5% pretraining more than doubles the baseline (<code>26% &rarr; 53%</code>). No saturation: 50% &rarr; 100% still adds <code>+6</code> points.</li>
+          <li>Scaling model size (2B / 5B / 10B all pretrained on the 20k-hour subset): overall success rises <code>61% &rarr; 75% &rarr; 79%</code>. Shoe tidying rises <code>58% &rarr; 75% &rarr; 92%</code> across the three sizes.</li>
+        </ul>
+      </li>
+      <li><strong>Downstream fine-tuning (4 held-out challenging tasks: phone packing, laundry loading, printer refilling, box packing).</strong>
+        <ul>
+          <li>Low-data setting (~<code>36</code> h total, avg &lt;<code>10</code> h/task): <code>Xiaomi-Robotics-1</code> reaches <code>75%</code> average success and <code>90%</code> average progress, vs <code>&pi;<sub>0.5</sub></code> <code>40%</code>/<code>66%</code>.</li>
+          <li>High-data setting (<code>144</code> h total): reaches <code>85%</code> average success. Every task benefits from more data; <code>Xiaomi-Robotics-1</code> is substantially more data-efficient than <code>&pi;<sub>0.5</sub></code> and <code>Xiaomi-Robotics-0</code> in both settings.</li>
+          <li>Task-level highlights (low-data): printer refilling (deformable-object manipulation) goes from best-baseline <code>20%</code> to <code>Xiaomi-Robotics-1</code> <code>70%</code>; laundry loading (long-horizon mobile) reaches <code>80%</code> success / <code>96%</code> progress where <code>&pi;<sub>0.5</sub></code> fails to open the washing machine and <code>Xiaomi-Robotics-0</code> cannot complete the task; box packing hits <code>100%</code> at high data across all methods.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.15330v1/x5.png" alt="Data-scaling and model-scaling pre-training validation curves." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 5 (from the paper). Pre-training scaling. Validation action-MSE curves for the data-scaling and model-scaling pretraining experiments. 12.5% and 25% data runs are terminated early on overfitting.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.15330v1/x8.png" alt="Out-of-the-box real-robot success across pretraining scales and model sizes." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 8 (from the paper). Quantitative post-training results. Out-of-the-box real-robot success rate rises monotonically with both pretraining data scale and model size across four tasks in unseen environments.</figcaption>
+    </figure>
+
+    <p><em>Table 2. RoboCasa (single-arm kitchen manipulation, 24 tasks, unseen instances and 2 unseen scene styles). Average success rate across 100 evaluation episodes/task across five scenes.</em></p>
+    <table>
+      <thead>
+        <tr><th>Method</th><th>Avg. Success (%)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>UVA</td><td>50.0</td></tr>
+        <tr><td>UWM</td><td>60.8</td></tr>
+        <tr><td>&pi;<sub>0.5</sub></td><td>62.1</td></tr>
+        <tr><td>&pi;<sub>0</sub>-FAST</td><td>63.6</td></tr>
+        <tr><td>GR00T N1.6</td><td>66.2</td></tr>
+        <tr><td>Cosmos Policy</td><td>67.1</td></tr>
+        <tr><td>RLDX-1</td><td>70.6</td></tr>
+        <tr><td>World2Act</td><td>72.6</td></tr>
+        <tr><td><strong>Xiaomi-Robotics-1</strong></td><td><strong>74.5</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p><em>Table 3. RoboCasa365 (365 tasks over 2,500+ procedurally-generated kitchen scenes; 50 tasks split 18 seen atomic / 16 seen composite / 16 unseen composite). Task success rate (%).</em></p>
+    <table>
+      <thead>
+        <tr><th>Method</th><th>Average</th><th>Atomic</th><th>Comp.-Seen</th><th>Comp.-Unseen</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Diffusion Policy</td><td>6.1</td><td>15.7</td><td>0.2</td><td>1.3</td></tr>
+        <tr><td>&pi;<sub>0.5</sub></td><td>16.9</td><td>39.6</td><td>7.1</td><td>1.2</td></tr>
+        <tr><td>GigaWorld-Policy 0.1</td><td>20.7</td><td>44.4</td><td>11.8</td><td>2.9</td></tr>
+        <tr><td>GR00T-N1.6</td><td>21.9</td><td>51.1</td><td>9.4</td><td>1.7</td></tr>
+        <tr><td>WorldDreamer</td><td>35.3</td><td>66.3</td><td>26.7</td><td>9.0</td></tr>
+        <tr><td>Qwen-RobotManip</td><td>35.9</td><td>68.6</td><td>20.1</td><td>14.9</td></tr>
+        <tr><td>RLDX-1</td><td>36.0</td><td>67.6</td><td>27.9</td><td>8.5</td></tr>
+        <tr><td>ABot-M0.5</td><td>40.4</td><td>75.9</td><td>38.3</td><td>2.7</td></tr>
+        <tr><td>ABot-M0.6</td><td>46.6</td><td>79.4</td><td>48.3</td><td>7.9</td></tr>
+        <tr><td><strong>Xiaomi-Robotics-1</strong></td><td><strong>57.4</strong></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:var(--ink-faint);">Per-split numbers for Xiaomi-Robotics-1 are reported in the paper but omitted here where the section-average is the load-bearing figure.</p>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Action pre-training is decisive.</strong> Skipping the UMI pre-training stage entirely (initialize post-training from stock Qwen3-VL) collapses out-of-the-box success from <code>75%</code> to <code>26%</code>. Contact-rich tasks (shoe tidying: <code>0%</code> without pre-training vs <code>75%</code> with) show the largest gain.</li>
+      <li><strong>Data volume beats model capacity at billions-parameter scale.</strong> Pretraining MSE gaps across data scales exceed gaps across model sizes on the same 20k-hour data. The paper reads this as: current data volume is the primary bottleneck at 2B&ndash;10B; further scale should prioritize data.</li>
+      <li><strong>State-transition captions beat instruction captions in pretraining.</strong> Post-training uses instruction language; pretraining uses state-transition captions. The paper argues (and Figure 12 in the appendix illustrates) that state-transition captions are strictly denser signals for action learning &mdash; a given clip is compatible with many instructions but with essentially one state transition.</li>
+      <li><strong>Action-token attention masking on the DiT side is what makes Choice Policies safe.</strong> Without excluding the VLM&rsquo;s action-related tokens from the DiT&rsquo;s KV cache, the DiT copy-pastes the VLM action tokens instead of grounding in visual/language context (paper section 2.1).</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li><strong>Code + checkpoints:</strong> to be released via <a href="https://github.com/XiaomiRobotics/Xiaomi-Robotics-1">github.com/XiaomiRobotics/Xiaomi-Robotics-1</a>. Not yet public at time of writing.</li>
+      <li><strong>Project page:</strong> <a href="https://robotics.xiaomi.com/xiaomi-robotics-1.html">robotics.xiaomi.com/xiaomi-robotics-1.html</a>. Includes the room-scale 10-minute mobile suitcase-packing video referenced in Section 3.</li>
+      <li><strong>Paper:</strong> <a href="https://arxiv.org/abs/2607.15330">arXiv 2607.15330</a> (v1, 16 Jul 2026).</li>
+      <li><strong>License / weights:</strong> the arXiv abstract states &ldquo;code and model checkpoints will be released&rdquo;; no license is announced yet.</li>
+    </ul>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="qwen-3-8-max-preview"><a href="https://x.com/Alibaba_Qwen/status/2078759124914098291">Qwen3.8-Max-Preview: 2.4T-parameter multimodal preview at WAIC 2026</a></h2>
+    <div class="paper-meta">
+      <span>Tier 3 &middot; Blog Post</span>
+      <span>Alibaba Qwen (X post + Token Plan)</span>
+      <span>2026-07-19</span>
+      <span>Flagship model &middot; MoE &middot; Multimodal &middot; Preview</span>
+    </div>
+
+    <ul>
+      <li><strong>What was announced.</strong> On July 19 at the World AI Conference in Shanghai, Alibaba&rsquo;s Qwen team previewed <code>Qwen3.8-Max</code>: a <code>2.4</code>-trillion-parameter model the team describes as their first multimodal flagship above <code>1T</code> parameters (text, images, video, documents). The team&rsquo;s stated positioning is &ldquo;second only to <code>Fable 5</code>&rdquo; among the systems it benchmarked. Qwen developer Shuai Bai adds that it should beat <code>Qwen3.7-Max</code> on coding, full-stack development, data analysis, and office workflows.</li>
+      <li><strong>Named contribution &mdash; sparse MoE flagship.</strong> <em>Problem.</em> The obvious way to keep scaling Qwen&rsquo;s Max tier past <code>Qwen3.7-Max</code> is to widen the total parameter budget, but a dense scale-up is intractable at frontier serving cost. <em>Mechanism.</em> Consistent with the Qwen3 Max tier lineage (<code>Qwen3-235B-A22B</code> activates <code>22B</code>/<code>235B</code>; <code>Qwen3-30B-A3B</code> activates <code>~3B</code>/<code>30B</code>), <code>Qwen3.8-Max</code> is sparse MoE and multimodal, but Alibaba has not disclosed the activated-parameter count. <em>Why (as claimed).</em> Sparse MoE at <code>2.4T</code> lets Alibaba announce a leaderboard-competitive total parameter count while preserving low activated compute per token; without the activated-parameter number, the serving-cost claim cannot yet be verified.</li>
+      <li><strong>What is confirmed.</strong> The preview is live for paying users via Alibaba&rsquo;s <em>Token Plan</em>, <em>Qoder</em>, and <em>QoderWork</em> at <code>10%</code> of standard pricing. API surface is OpenAI- and Anthropic-protocol compatible so existing coding-agent harnesses point at it unchanged. Open weights are promised &ldquo;soon.&rdquo;</li>
+      <li><strong>What is <em>not</em> yet confirmed.</strong> No benchmark table; no active-parameter count; no model card or system card; no Hugging Face repository; no license (Alibaba&rsquo;s last two Max flagships shipped closed-weight, so the open-weight promise breaks that pattern); no independent-eval numbers on MMLU-Pro, SWE-Bench Verified, GPQA Diamond, Terminal-Bench, or Artificial Analysis / LMArena. The &ldquo;second only to Fable 5&rdquo; framing rests on internal evaluation.</li>
+      <li><strong>Context.</strong> Timing puts the preview two days after Moonshot AI&rsquo;s <code>Kimi K3</code> (<code>2.8T</code>-parameter open-weight, July 17) and on the same day as DeepSeek-V4 general availability at WAIC. As a preview announcement without a technical report or model card, this entry is Tier 3 today; when Alibaba publishes an activated-parameter count, a benchmark table, or a technical report, the launch becomes Tier 1 and moves into that review&rsquo;s window.</li>
+      <li><strong>Verified baseline that any future Qwen3.8 numbers must beat.</strong> <code>Qwen3.7-Max</code> (May 2026, closed weights): <code>92.4</code> GPQA Diamond, <code>80.4%</code> SWE-Bench Verified, <code>69.7</code> Terminal-Bench 2.0, <code>1M</code>-token context, <code>$1.25</code> / <code>$3.75</code> per <code>1M</code> input / output tokens.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
