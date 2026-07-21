@@ -36,6 +36,13 @@
       <!-- REVIEW_LIST_START -->
       <ul class="review-list">
         <li class="review-item">
+          <span class="date">July 21, 2026</span>
+          <div>
+            <h2><a href="reviews/rynnbrain-1-1-launch-review-2026-07-21.html">RynnBrain 1.1 Launch</a></h2>
+            <p>Alibaba DAMO Academy ships the Tier 1 launch of the window: <strong>RynnBrain 1.1</strong>, a family of embodied foundation models at three scales (<code>2B</code>, <code>9B</code>, <code>122B-A10B</code>) built on <code>Qwen3.5</code>, extending <code>RynnBrain 1.0</code> with contact-point prediction (compact <code>(p, &theta;)</code> action-anchor representation over 2.6M rendered grasp samples) and native 3D grounding (9D <code>(cx, cy, cz, w, l, h, pitch, yaw, roll)</code> box tokens for the 2B and 9B). All spatial outputs share a <code>[0, 1000]</code>-quantized autoregressive vocabulary. Post-training yields <strong>RynnBrain-VLA</strong>, a single-stream Diffusion Transformer flow-matching policy with a shared <code>81</code>-D action space partitioned into body-part groups (Arm-Joint 14D, Arm-EEF 18D, Gripper 2D, Hand 40D, Torso 4D, Head 3D) driven by an embodiment mask, plus Real-Time Chunking (<code>32</code>-step chunks, re-inference every <code>5</code> steps, <code>&beta; = 10.0</code> action guidance) for smooth <code>200</code> Hz control. The <code>122B-A10B</code> sets a new state-of-the-art on VSI-Bench (<code>75.0</code>), MMSI (<code>52.0</code>), RefSpatial-Bench (<code>79.1</code>), MindCube (<code>89.6</code>), and RynnBrain-Affordance (<code>91.3</code>) &mdash; leading every evaluated open-source and proprietary model, including <code>Gemini 3 Pro</code>, <code>GPT-5.4</code>, <code>Claude Sonnet 4.6</code>, <code>Gemini Robotics-ER 1.5</code>, and Tencent <code>HY-Embodied 0.5</code>. RynnBrain-VLA beats Qwen-based VLAs and representative generalists on Unitree G1, Astribot-S1, and Tianji-Wuji, with joint multi-task / multi-embodiment training gaining over per-task fine-tuning. Tier 2: Microsoft Research&rsquo;s <strong>LLM-as-a-Coach</strong> retires scalar RL rewards on non-verifiable tasks in favor of textual <em>experiential knowledge</em> distilled from an LLM-as-a-Judge, conditions a teacher, and internalizes improvements via on-policy context distillation &mdash; beating rubric-based RL on held-out and unseen open-ended tasks and mitigating reward hacking under both self-feedback and proprietary-model feedback.</p>
+          </div>
+        </li>
+        <li class="review-item">
           <span class="date">July 20, 2026</span>
           <div>
             <h2><a href="reviews/xiaomi-robotics-1-launch-review-2026-07-20.html">Xiaomi-Robotics-1 Launch</a></h2>

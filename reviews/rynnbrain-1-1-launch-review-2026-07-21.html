@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RynnBrain 1.1 Launch Review &mdash; July 21, 2026 | Auto Lit Review</title>
+<meta name="description" content="Alibaba DAMO Academy ships RynnBrain 1.1, a family of embodied foundation models at 2B, 9B, and 122B-A10B scales with contact-point prediction and native 3D grounding. The 122B-A10B tops VSI-Bench (75.0), MMSI (52.0), and RefSpatial-Bench (79.1), and RynnBrain-VLA with a unified 81D cross-embodiment action space beats Qwen-based and generalist VLAs on Unitree G1, Astribot-S1, and Tianji-Wuji. Tier 2: Microsoft Research's LLM-as-a-Coach replaces scalar RL rewards with textual experiential knowledge distilled from an LLM-as-a-Judge, and internalized via on-policy context distillation, outperforming rubric-based RL on non-verifiable tasks and mitigating reward hacking." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 21, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#alibaba" class="toc-h1">Alibaba</a>
+          <ul>
+            <li><a href="#rynnbrain-1-1" class="toc-h2">RynnBrain 1.1</a></li>
+          </ul>
+        </li>
+        <li><a href="#microsoft" class="toc-h1">Microsoft</a>
+          <ul>
+            <li><a href="#llm-as-a-coach" class="toc-h2">LLM-as-a-Coach</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 21, 2026</div>
+    <h1 class="page-title">RynnBrain 1.1 Launch</h1>
+    <div class="page-meta">2 entries &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>Alibaba DAMO Academy ships the Tier 1 launch of the window: <strong>RynnBrain 1.1</strong>, a family of embodied foundation models at three scales (<code>2B</code>, <code>9B</code>, <code>122B-A10B</code>) built on <code>Qwen3.5</code>, extending <code>RynnBrain 1.0</code> with two new pretraining tasks &mdash; <em>contact-point prediction</em> (compact <code>(p, &theta;)</code> action-anchor representation over 2.6M grasp samples) and <em>native 3D grounding</em> (9D <code>(cx, cy, cz, w, l, h, pitch, yaw, roll)</code> box tokens for the 2B and 9B variants). All variants share a unified spatio-temporal autoregressive framework with a <code>[0,1000]</code>-quantized spatial output vocabulary; the <code>122B-A10B</code> uses a sparse MoE. Post-training yields <strong>RynnBrain-VLA</strong>, a single-stream Diffusion Transformer flow-matching policy with a shared <code>81</code>-D action space partitioned into semantically aligned body-part groups (Arm-Joint 14D, Arm-EEF 18D, Gripper 2D, Hand 40D, Torso 4D, Head 3D) driven by an embodiment-specific mask, plus a decoupled model/control/embodiment stack and Real-Time Chunking (<code>32</code>-step chunks, re-inference every <code>5</code> steps, <code>&beta; = 10.0</code> action guidance) for smooth <code>200</code> Hz control. RynnBrain 1.1-122B-A10B sets a new state-of-the-art on <strong>VSI-Bench</strong> (<code>75.0</code>), <strong>MMSI</strong> (<code>52.0</code>), and <strong>RefSpatial-Bench</strong> (<code>79.1</code>) against every evaluated open-source and proprietary model (including <code>Gemini 3 Pro</code>, <code>GPT-5.4</code>, <code>Claude Sonnet 4.6</code>, <code>Gemini Robotics-ER 1.5</code>, and Tencent&rsquo;s <code>HY-Embodied 0.5</code>). RynnBrain-VLA beats Qwen-based VLAs and representative generalists (<code>&pi;<sub>0.5</sub></code>, NVIDIA GR00T) on Unitree G1, Astribot-S1, and Tianji-Wuji, with joint multi-task and multi-embodiment training raising average process scores over per-task fine-tuning. Tier 2 accompaniment: Microsoft Research&rsquo;s <strong>LLM-as-a-Coach</strong>, which retires scalar RL rewards on non-verifiable tasks in favor of textual <em>experiential knowledge</em> distilled from an LLM-as-a-Judge and internalized via on-policy context distillation.</p>
+
+      <h3>Competitiveness</h3>
+      <p>RynnBrain 1.1-122B-A10B is the strongest published open embodied cognition model on the current benchmark battery. Its <code>+6.7</code>-point VSI-Bench margin over <code>HY-Embodied 0.5</code> (Tencent Robotics X, the prior best open proprietary embodied model at <code>68.3</code>) and <code>+12.8</code>-point advantage over <code>Gemini 3 Pro</code> (<code>62.2</code>) on the same benchmark are decisive, and its <code>+8.2</code>-point MindCube margin over <code>Gemini 3 Pro</code> (<code>81.4</code>) is the largest reported multi-view spatial reasoning lead by an open model in 2026. On <strong>RefSpatial-Bench</strong>, the 122B-A10B posts <code>79.1</code> vs <code>65.5</code> for <code>Gemini 3 Pro</code>, <code>26.7</code> for <code>GPT-5.4</code>, and <code>14.6</code> for <code>Claude Sonnet 4.6</code>, exposing how far proprietary generalists still trail on grounded spatial reference. The scaling story matters: paired against raw <code>Qwen3.5</code> at matched sizes, RynnBrain 1.1 gains <code>+38.6%</code> on reasoning-intensive cognition while raw <code>Qwen3.5</code> shows <em>negative</em> scaling (<code>-39.2%</code>), so the 50.8-point gap at 122B-A10B is not a data-mixture artifact but evidence that embodied supervision is a prerequisite for scaling multi-view reasoning capability. On the VLA axis, RynnBrain-VLA&rsquo;s wins over <code>&pi;<sub>0.5</sub></code> and NVIDIA GR00T on Astribot-S1 and Tianji-Wuji put it at or ahead of every 2026 open real-robot foundation policy other than Xiaomi Robotics&rsquo; <code>Xiaomi-Robotics-1</code> (July 20 review), which uses a larger UMI pretraining corpus but does not attempt the language-conditioned 3D grounding or contact-point capabilities that RynnBrain 1.1 targets. On the RL-methodology side, Microsoft&rsquo;s LLM-as-a-Coach is a direct methodological alternative to GRPO-family rubric-RL scalarization; its reported gains on held-out and unseen open-ended tasks, plus reduced reward hacking, position it as a candidate replacement for scalar RLAIF in the post-training stacks of frontier models like <code>Claude Sonnet 5</code> and <code>GPT-5.6 Sol</code>.</p>
+
+      <h3>New frontier releases</h3>
+      <p>One Tier 1 flagship launch: Alibaba DAMO Academy&rsquo;s <code>RynnBrain 1.1</code> (arXiv 2607.17977, submitted July 20; project page, GitHub, HuggingFace, and ModelScope collections all live). One Tier 2: Microsoft Research&rsquo;s <code>LLM-as-a-Coach</code> (arXiv 2607.18110, submitted July 20). No other frontier-lab papers cleared the 36-hour window&rsquo;s dedup filter against the prior July 20 review.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="rynnbrain-1-1"><a href="https://arxiv.org/abs/2607.17977">RynnBrain 1.1: Towards More Capable and Generalizable Embodied Foundation Model</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-07-20</span>
+      <span>Embodied foundation model &middot; VLA &middot; 3D grounding &middot; Cross-embodiment &middot; Scaling</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Kehan Li, Bohan Hou, Minghao Zhu, Tianyi Zhang, Zesen Cheng, Zhikai Wang, Sicong Leng, Xin Li, Xiao Lin, Biying Yao, +20 more. Affiliation: <strong>DAMO Academy, Alibaba Group</strong> and Hupan Lab. Project lead: Kehan Li and Xin Li. Project: <a href="https://alibaba-damo-academy.github.io/RynnBrain">alibaba-damo-academy.github.io/RynnBrain</a>; code: <a href="https://github.com/alibaba-damo-academy/RynnBrain">GitHub</a>; weights: <a href="https://huggingface.co/collections/Alibaba-DAMO-Academy/rynnbrain-11">HuggingFace</a> and <a href="https://modelscope.cn/collections/DAMO_Academy/RynnBrain-11">ModelScope</a> collections.</li>
+      <li>Central claim: an embodied foundation model can be upgraded along two orthogonal axes at once. (1) On the <em>base-model</em> side, augment pretraining with contact-point prediction and native 3D grounding so the model&rsquo;s outputs are closer to what a downstream manipulation policy needs. (2) On the <em>VLA</em> side, wrap the base with a unified cross-embodiment action space and embodiment-specific masking so a single policy generalizes across heterogeneous robots. The paper defends both axes with base-model benchmark leadership at 2B/9B/122B-A10B and controlled real-robot experiments on three embodiments.</li>
+      <li>This launch supersedes <code>RynnBrain 1.0</code> (Dang et al., 2026), which had the unified spatio-temporal / physically-grounded framework but no contact-point head, no 3D grounding, and only limited cross-embodiment VLA. It is deployed on the <strong>Unitree G1</strong> humanoid, the <strong>Astribot-S1</strong> bimanual manipulator, and the <strong>Tianji-Wuji</strong> dexterous-hand system.</li>
+      <li>Reported flagship results: <code>75.0</code> on <strong>VSI-Bench</strong>, <code>52.0</code> on <strong>MMSI</strong>, <code>79.1</code> on <strong>RefSpatial-Bench</strong>, <code>89.6</code> on <strong>MindCube</strong>, <code>91.3</code> on <strong>RynnBrain-Affordance</strong> at 122B-A10B &mdash; each the top result against every evaluated proprietary model (<code>Gemini 3 Pro</code>, <code>GPT-5.4</code>, <code>Claude Sonnet 4.6</code>, <code>Gemini Robotics-ER 1.5</code>) and open-source competitor (<code>Cosmos 3 Super</code>, <code>RoboBrain 2.0-32B</code>, <code>Cosmos-Reason2-32B</code>, <code>Pelican-VL-72B</code>, <code>Qwen3.5-122B-A10B</code>, Tencent <code>HY-Embodied 0.5</code>). On <strong>SUN RGB-D</strong>, the 9B posts <code>41.12</code> AP@15 (vs <code>48.3</code> for the proprietary <code>Gemini Robotics-ER</code>); on <strong>WildDet3D-Bench</strong>, the 9B posts <code>23.44</code> AP<sub>3D</sub>, surpassing the specialized WildDet3D detector (<code>22.6</code>).</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.17977v1/x3.png" alt="RynnBrain 1.1 family: 2B, 9B, and 122B-A10B base models plus RynnBrain-VLA across cognition, localization, 3D grounding, and contact prediction." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). The RynnBrain 1.1 family &mdash; 2B, 9B, and 122B-A10B variants, plus the post-trained RynnBrain-VLA &mdash; achieves leading performance across a broad suite of benchmarks in cognition, localization, 3D grounding, and contact-point prediction, and enables action prediction across diverse embodiments within a unified action space.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Unified spatio-temporal decoder-only VLM (framework contribution).</strong> <em>Problem.</em> Robot manipulation requires the model to jointly predict text (instruction following, reasoning) and structured spatial outputs (boxes, points, trajectories, 3D boxes, grasp anchors) from images and videos, and prior stacks bolt task-specific heads onto a frozen VLM &mdash; splitting the loss surface and blocking shared spatial reasoning across tasks. <em>Mechanism.</em> A vision encoder + vision&ndash;language projector + <code>Qwen3.5</code> LLM backbone (2B / 9B / 122B-A10B) with DeepStack for multimodal integration and Interleaved MRoPE for long-context spatio-temporal modeling. All spatial outputs (2D boxes, points, trajectories, 3D 9-tuples, grasp <code>(x, y, &theta;)</code>) are normalized to <code>[0, 1000]</code> integer tokens and emitted through the <em>same</em> autoregressive next-token head as language. The whole family (including 3D-grounded 2B/9B) uses a single causal cross-entropy loss <code>&Lscr; = -&sum;<sub>i</sub> log P(y<sub>i</sub> | y<sub>&lt;i</sub>, V; &Theta;)</code>. <em>Why.</em> Sharing one output space and one loss lets the model learn transfer among semantic reasoning, coordinate localization, and 3D physical reasoning &mdash; the paper credits this design for the fact that even the 2B model exceeds Qwen3.5-122B-A10B on many localization tasks.</li>
+      <li><strong>Native 3D grounding as autoregressive tokens (2B / 9B only, named contribution).</strong> <em>Problem.</em> Robots operate in 3D but VLMs produce only image-plane predictions; downstream perception then has to lift 2D outputs into 3D, which loses depth and orientation. <em>Mechanism.</em> Given an image + language instruction + camera intrinsics, the model directly emits a 9-D 3D bounding box in the camera frame: center <code>(cx, cy, cz)</code>, dimensions <code>(w, l, h)</code>, orientation <code>(pitch, yaw, roll)</code>, all in meters/radians and discretized to the same <code>[0, 1000]</code> integer vocabulary as 2D coordinates. Training uses <strong>WildDet3D-Essential</strong> (102,979 images, 374K verified annotations, 12,064 categories), <strong>WildDet3D-Synthetic</strong> (896,004 images, 888K annotations filtered by a fine-tuned Molmo2 six-criterion scorer), and <strong>FoundationPose</strong> (1,849K images with noise-free 3D boxes from ground-truth object-to-camera transforms over 928 Google Scanned Objects). Referring queries are auto-generated by Qwen-VL. <em>Why.</em> Diverse-but-noisy WildDet3D annotations plus metric-exact FoundationPose synthetics combine into a corpus large enough that 3D box regression can be learned inside a general-purpose autoregressive framework. The 9B variant reaches <code>23.44</code> AP<sub>3D</sub> on WildDet3D-Bench &mdash; beating the specialized detector (<code>22.6</code>) trained on the same in-domain data &mdash; because the shared autoregressive interface amortizes 3D reasoning across all localization tasks rather than fitting it in isolation.</li>
+      <li><strong>Contact-point grasp representation (named contribution).</strong> <em>Problem.</em> RynnBrain 1.0 (and Grasp-Anything family) represent planar grasps as an oriented rectangle with four corners. But a target object typically admits many functionally equivalent grasps; rectangle IoU against a single reference penalizes valid alternatives; rectangle extent depends on gripper geometry and dataset annotation conventions and is not directly action-relevant; and the four-corner autoregressive output introduces redundant variables and geometric-consistency constraints. <em>Mechanism.</em> Replace the rectangle with a compact <code>(p, &theta;)</code> pair, where <code>p = (x, y)</code> is the grasp <em>center</em> (normalized to <code>[0, 1000]</code>) and <code>&theta;</code> is the in-plane gripper angle. Each target is serialized as <code>&lt;grasp pose&gt; (x, y), &theta; &lt;/grasp pose&gt;</code>. A view-conditioned rendering pipeline projects multidimensional simulation grasp annotations into image-space <code>(p, &theta;)</code>, discarding views where the object is truncated, too near/far, or the grasp is not visually resolvable. <em>Why.</em> The representation factors out annotation- and embodiment-dependent extent while preserving an action-anchor + orientation cue that a downstream policy can turn into an executable grasp (depth, approach, aperture, kinematics remain the policy&rsquo;s job). The corpus &mdash; 2.6M rendered samples from Grasp-Anything, Jacquard V2, GraspFactory, GraspNet-1B, and GraspClutter6D &mdash; lets the base model learn instruction-conditioned contact prediction (e.g., predict the <em>handle</em> when asked to pick up a mug, and re-locate it when the mug is overturned).</li>
+      <li><strong>Model configurations (Table 1 from the paper).</strong></li>
+    </ul>
+
+    <p><em>Table 1. Pretraining hyperparameters for the RynnBrain 1.1 family.</em></p>
+    <table>
+      <thead>
+        <tr><th>Parameter</th><th>RynnBrain 1.1-2B</th><th>RynnBrain 1.1-9B</th><th>RynnBrain 1.1-122B-A10B</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Base Model</td><td>Qwen3.5-2B</td><td>Qwen3.5-9B</td><td>Qwen3.5-122B-A10B (MoE)</td></tr>
+        <tr><td>Optimizer</td><td>AdamW</td><td>AdamW</td><td>AdamW</td></tr>
+        <tr><td>Learning rate (LLM)</td><td>5&times;10<sup>-6</sup></td><td>2&times;10<sup>-6</sup></td><td>2&times;10<sup>-6</sup></td></tr>
+        <tr><td>Learning rate (vision)</td><td>1&times;10<sup>-6</sup></td><td>2&times;10<sup>-6</sup></td><td>2&times;10<sup>-6</sup></td></tr>
+        <tr><td>Global batch size</td><td>512</td><td>1024</td><td>1024</td></tr>
+        <tr><td>Warmup ratio</td><td>0.03</td><td>0.03</td><td>0.03</td></tr>
+      </tbody>
+    </table>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.17977v1/x4.png" alt="RynnBrain 1.1 architecture: vision encoder, projector, and dense or MoE decoder producing text, regions, trajectories, pointing, 3D boxes, and contact signals." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). Given language and omni-visual inputs (single-view images, multi-view images, videos), RynnBrain produces text, regions, trajectories, pointing, 3D perception, and contact signals through either a dense or an MoE decoder.</figcaption>
+    </figure>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li><strong>Two-principle framework.</strong> Same as RynnBrain 1.0: (1) <em>spatio-temporal memory</em> aggregates past observations (objects, locations, events, motion dynamics) via uniformly sampled frames encoded to visual tokens with temporal position information; (2) <em>physical-world grounding</em> forces part of the output to be explicit spatial tokens (boxes, points, trajectories, affordances) rather than free-form language. RynnBrain 1.1 extends the framework in two ways: unified training recipe across 2B, 9B, and 122B-A10B (so downstream differences are attributable to scale, not infrastructure), and explicit 3D grounding for 2B / 9B.</li>
+      <li><strong>Data mixture (Table 2 from the paper).</strong> Six categories: (i) General MLLM &mdash; LLaVA-OV-SI, LLaVA-Video, ShareGPT-4o-video, VideoGPT-plus, FineVideo, CinePile, ActivityNet, YouCook2, LLaVA-SFT, VL3, plus self-collected RynnBrain-Thinking to align with Qwen3.5-Thinking style; (ii) Cognition &mdash; object understanding (RynnBrain-Object, RefCOCO, Osprey-724K, DAM, VideoRefer-700K), spatial (SenseNova-SI-800K, VSI-590K, VLM-3R, RynnBrain-Spatial), counting (Molmo2, RynnBrain-Counting), OCR (RynnBrain-OCR, Llama-Nemotron-VLM OCR), egocentric task understanding (EgoRe-5M, EgoTaskQA, Env-QA, QAEgo4D, RoboVQA, Robo2VLM, ShareRobot); (iii) Localization &mdash; object (ADE20K, COCOStuff, Mapillary, PACO-LVIS, PASCAL-Part, VG, RoboAfford-Object, RynnBrain-Grounding), area (RefSpatial, RoboAfford-Area, Molmo2, RynnBrain-Area, RoboRefer), affordance (RynnBrain-Affordance, RoboAfford-Affordance), trajectory (RynnBrain-Trajectory, FSD, MolmoAct); (iv) 3D grounding &mdash; WildDet3D-Essential + Synthetic + FoundationPose; (v) Contact/grasp &mdash; the 2.6M-sample rendered corpus; (vi) Planning &mdash; AgibotWorld, Open X-Embodiment, RynnBrain-Planning, Galaxea-G0 (with high-level task instructions synthesized by Gemini 3.1 Pro from sub-task annotations).</li>
+      <li><strong>Training infrastructure.</strong> Online sequence-length-aware load balancing, per-sample loss reduction, ZeRO + gradient checkpointing for memory, expert parallelism with efficient token dispatching for the 122B-A10B MoE. Same pipeline across scales so cross-scale comparisons isolate model capacity and data updates.</li>
+    </ul>
+
+    <h3>Post-training (RynnBrain-VLA)</h3>
+    <ul>
+      <li><strong>Flow-matching single-stream DiT (VLA architecture).</strong> The RynnBrain base model itself serves as a single-stream Diffusion Transformer. The input packs language instruction, multi-camera observations, robot state, and noisy action chunks; each layer processes dense vision-language-action interaction; iterative denoising predicts an action chunk. Actions are placed at the sequence tail so the instruction / observation prefix can be KV-cached during inference. Conversation format is native Qwen3.5: <code>&lt;|im_start|&gt;user INSTRUCTION: ... OBSERVATION: &lt;camera_1&gt;&lt;camera_2&gt;&lt;camera_3&gt; STATE: &lt;state&gt; What action should the robot take?&lt;|im_end|&gt;</code>. Follows <code>&pi;<sub>0</sub></code>-style flow matching.</li>
+      <li><strong>Unified <code>81</code>-D cross-embodiment action space (named contribution).</strong> <em>Problem.</em> Multi-robot VLA training either shares low-level action indices across incompatible embodiments (arms with different DoF, dexterous vs parallel grippers, wheeled vs humanoid bases) &mdash; which forces incorrect alignment &mdash; or trains per-robot heads, which prevents cross-embodiment transfer of body-part-generic motor skills. <em>Mechanism.</em> Partition an 81-D action vector into semantically aligned body-part groups: Arm-Joint (14D, up to 7D per arm), Arm-EEF (18D, up to 9D per arm), Gripper (2D), Hand (40D), Torso (4D), Head (3D). Each embodiment activates only its physically available dimensions via a fixed embodiment mask; the loss is computed only on active dimensions. Concretely: <em>Unitree G1</em> activates 14D Hand (7D per dexterous hand) plus a separate 64D SONIC latent motion token; <em>Tianji-Wuji</em> activates 14D Arm-Joint + 40D Hand (54 active dims); <em>Astribot-S1</em> activates 14D Arm-Joint + 2D Gripper + 3D Head + 4D Torso. <em>Why.</em> Shared components (e.g., left/right-arm joint motion) receive supervision from multiple embodiments and learn robot-independent manipulation primitives; embodiment-specific components remain updated only by their own data. No explicit action-space alignment is required. The paper&rsquo;s Section 5.6.4 shows this yields joint-training gains over per-task fine-tuning.</li>
+      <li><strong>Cross-embodiment / cross-driver deployment stack (named contribution).</strong> A three-layer runtime decouples the VLA from robot-specific control. <em>Model layer</em>: runs the VLA to produce a 32-step action chunk in the standard 81-D space. <em>Control layer</em>: a 30-Hz low-frequency loop coordinates inference timing, UI, and action-source switching; a 200-Hz high-frequency loop interpolates the chunk to the target control rate and dispatches commands; the two loops communicate via shared memory. <em>Embodiment layer</em>: dispatches standard-format actions (left/right arm, gripper, hand, torso) to the corresponding actuators and reformats robot state / multi-camera images for the model layer. Adding a new embodiment requires implementing only the embodiment layer.</li>
+      <li><strong>Real-Time Chunking (RTC).</strong> Predict a 32-step chunk but re-invoke inference every 5 steps while the current chunk is still executing, guided by Black et al. (2026) action guidance at strength <code>&beta; = 10.0</code>. Each step of the previous chunk gets a guidance weight: (i) steps guaranteed to execute before the new chunk arrives (initial 5 + inference-latency budget, estimated as the sliding average of the past 10 inference times) get weight 1; (ii) transition region decays smoothly from 1 to 0; (iii) chunk tail receives weight 0 (no consistency enforced). Ensures smooth boundary continuity while letting the model react to new observations.</li>
+      <li><strong>Fine-tuning setup.</strong> Teleoperation demonstrations on all three embodiments; controlled comparison uses the same data, VLA pipeline, and optimization across Qwen-based baseline and RynnBrain-VLA (60k steps, lr <code>2&times;10<sup>-5</sup></code>, batch 32, short-side 384 resize).</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.17977v1/x5.png" alt="RynnBrain-VLA architecture: single-stream DiT flow-matching policy with the 81-D unified action space and embodiment-specific masking." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 3 (from the paper). (Left) RynnBrain-VLA adopts a flow-matching framework in which the RynnBrain base model serves as a single-stream Diffusion Transformer. It takes a packed sequence of language, multi-camera observations, robot state, and noisy action chunks, then iteratively denoises to predict an action chunk; the instruction prefix is KV-cached. (Right) The shared 81-D action space is partitioned into Arm-Joint (14D), Arm-EEF (18D), Gripper (2D), Hand (40D), Torso (4D), and Head (3D); each embodiment activates only its available dimensions via an embodiment mask.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Base-model benchmarks.</strong> RynnBrain 1.1 improves over RynnBrain 1.0 on reasoning-intensive and spatially demanding tasks at both 2B and 9B: at 2B, MMSI 34.1 &rarr; 40.5, MindCube 50.1 &rarr; 61.7, RynnBrain-Spatial 57.2 &rarr; 63.8; at 9B, wins on 8 / 10 shared benchmarks with MindCube 56.6 &rarr; 86.9, MMSI 39.6 &rarr; 47.0, RynnBrain-Spatial 59.9 &rarr; 67.9, RefSpatial-Bench 59.2 &rarr; 67.2. The 122B-A10B extends the lead: MMSI 47.0 &rarr; 52.0 (2B: 40.5 &rarr; 9B: 47.0 &rarr; 122B: 52.0) and MindCube 86.9 &rarr; 89.6.</li>
+      <li><strong>Large-scale head-to-head (Table 5 from the paper, selected).</strong></li>
+    </ul>
+
+    <p><em>Table 2. Large-scale open-source and proprietary comparison on embodied cognition and localization. * = our reproduction. Bold winner per row.</em></p>
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th>RynnBrain 1.1 122B-A10B</th><th>Cosmos 3 Super 32B</th><th>Qwen3.5 122B-A10B</th><th>Gemini 3 Pro</th><th>GPT-5.4</th><th>Claude Sonnet 4.6</th><th>Gemini Robotics-ER 1.5</th><th>HY-Embodied 0.5 (Tencent)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>VSI-Bench</td><td><strong>75.0</strong></td><td>60.9</td><td>66.6*</td><td>48.8*</td><td>49.2*</td><td>44.4*</td><td>45.8</td><td>68.3</td></tr>
+        <tr><td>MMSI</td><td><strong>52.0</strong></td><td>41.8</td><td>9.2*</td><td>49.2</td><td>37.5*</td><td>33.0*</td><td>&mdash;</td><td>39.2</td></tr>
+        <tr><td>ERQA</td><td>54.3</td><td>51.2</td><td>62.0</td><td><strong>70.5</strong></td><td>47.5*</td><td>44.8*</td><td>54.8</td><td>62.3</td></tr>
+        <tr><td>RoboSpatial-Overall</td><td><strong>70.3</strong></td><td>56.7*</td><td>65.7*</td><td>53.0*</td><td>56.1*</td><td>38.0*</td><td>62.6</td><td>&mdash;</td></tr>
+        <tr><td>MindCube</td><td><strong>89.6</strong></td><td>40.2*</td><td>30.8*</td><td>70.8</td><td>10.4*</td><td>21.0*</td><td>54.7</td><td>69.2</td></tr>
+        <tr><td>EmbSpatial</td><td><strong>83.7</strong></td><td>83.8*</td><td>80.5</td><td>83.6</td><td>81.8*</td><td>61.5*</td><td>78.4</td><td>&mdash;</td></tr>
+        <tr><td>RefSpatial-Bench</td><td><strong>79.1</strong></td><td>57.0</td><td>69.3</td><td>65.5</td><td>26.7*</td><td>14.6*</td><td>48.5</td><td>57.2</td></tr>
+        <tr><td>RynnBrain-Affordance</td><td><strong>91.3</strong></td><td>84.6</td><td>79.0</td><td>86.0</td><td>83.4</td><td>60.0</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>RynnBrain-Trajectory</td><td>69.7</td><td>69.3</td><td>62.8</td><td>72.0</td><td><strong>72.8</strong></td><td>56.7</td><td>&mdash;</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.17977v1/x6.png" alt="Scaling analysis: RynnBrain 1.1 vs Qwen3.5 from 2B to 122B-A10B, decomposed into general cognition, reasoning-intensive cognition, and localization." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 4 (from the paper). RynnBrain 1.1 vs. Qwen3.5 from 2B to 122B-A10B, averaged over three capability groups. Panel (d) decomposes the 2B performance floor and the gain from scaling to 122B-A10B.</figcaption>
+    </figure>
+
+    <ul>
+      <li><strong>3D grounding.</strong> On <strong>SUN RGB-D</strong>, RynnBrain 1.1-2B posts <code>34.28</code> AP@15, already ahead of general-purpose VLMs like Seed1.5-VL (<code>33.5</code>) and Gemini 2.0 Pro (<code>32.5</code>); scaling to 9B raises the number to <code>41.12</code>, narrowing the gap to closed-source Gemini Robotics-ER (<code>48.3</code>). On <strong>WildDet3D-Bench</strong>, the 2B posts <code>17.36</code> AP<sub>3D</sub>; the 9B reaches <code>23.44</code>, surpassing the specialized WildDet3D detector (<code>22.6</code>) trained on the same in-domain data.</li>
+      <li><strong>Contact-point prediction.</strong> No standardized metric applies (pixel distance to a single reference penalizes functionally equivalent grasps), so evaluation is qualitative: the 9B model selects the mug <em>handle</em> when asked to pick up the mug, re-locates the grasp when the mug is overturned, and produces functionally valid grasp centers + orientations for thin objects, boxes, and irregularly shaped items, distinguishing the referenced target in cluttered scenes.</li>
+      <li><strong>Real-robot evaluation.</strong> Deployed on Unitree G1 (whole-body dexterous, 14D Hand + 64D SONIC), Astribot-S1 (bimanual + gripper + head + torso), and Tianji-Wuji (bimanual dexterous). Each task gets 20 trials with randomized initial placements; report both final success rate and a process score <code>ProcessScore = (1/20K) &sum;<sub>i,j</sub> s<sub>i,j</sub></code> for K-sub-task tasks. Two headline findings from Section 5.6: (a) RynnBrain-VLA outperforms Qwen-based VLA under matched pretraining and post-training pipelines &mdash; a stronger embodied base yields a better VLA. (b) Joint multi-task and multi-embodiment training raises the average process score and final success rate over separately fine-tuned per-task policies.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.17977v1/x10.png" alt="Real-robot evaluation across all embodiments and tasks, showing execution snapshots and per-task success rates over 20 trials." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 8 (from the paper). Real-robot evaluation across the tasks considered in the experiments, covering whole-body manipulation, bimanual coordination, dexterous-hand operation, object placement, furniture interaction, and object delivery. Representative execution snapshots and success rates over 20 trials shown per task.</figcaption>
+    </figure>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Non-uniform embodied scaling laws.</strong> Comparing RynnBrain 1.1 (2B / 9B / 122B-A10B) to raw Qwen3.5 at matched sizes reveals three regimes. (1) <em>General embodied cognition</em>: both scale monotonically, gap narrows &mdash; larger raw VLMs partially compensate for missing embodied supervision. (2) <em>Reasoning-intensive cognition</em> (multi-view + video-temporal): RynnBrain 1.1 gains <code>+38.6%</code> from 2B to 122B-A10B; raw <code>Qwen3.5</code> shows <em>negative</em> scaling (<code>-39.2%</code>), widening the gap from <code>18.2</code> to <code>50.8</code> points. Multi-view and temporal reasoning are <em>not emergent</em> from general VLM scaling and require explicit embodied supervision as a prerequisite; without spatiotemporal grounding, stronger language priors in larger models override weak visual-spatial signals and produce confidently wrong answers. (3) <em>Embodied localization</em>: both improve substantially, but Qwen3.5-122B still underperforms RynnBrain 1.1-2B &mdash; data-side coordinate supervision beats parameter scaling for spatial pointing.</li>
+      <li><strong>3D grounding scale.</strong> AP<sub>3D</sub> on WildDet3D-Bench: 2B posts <code>17.36</code>, 9B posts <code>23.44</code>. Explicit 3D-grounded pretraining plus larger capacity together bridge to specialized 3D detectors while retaining the shared autoregressive interface.</li>
+      <li><strong>Stronger embodied base &rArr; better VLA.</strong> Under the matched teleoperation-data, matched-hyperparameter comparison in Section 5.6.3, RynnBrain-VLA beats a Qwen3.5-initialized VLA on the same task battery, isolating the contribution of the embodied pretraining to downstream manipulation success.</li>
+      <li><strong>Joint multi-task / multi-embodiment training helps.</strong> Section 5.6.4 finds that the unified 81-D action space plus embodiment masking lets a single policy trained jointly on Astribot / Tianji-Wuji / Unitree G1 data outperform the same policy trained per-embodiment or per-task, at both process-score and final-success granularities.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>No dedicated safety card in this technical report &mdash; the release focuses on capability. Contact-point prediction outputs an action anchor rather than an executable grasp; depth, approach direction, gripper aperture, collision avoidance, and kinematics are the downstream policy&rsquo;s responsibility, which limits the model&rsquo;s exposure to unsafe direct-control failure modes.</li>
+      <li>No standardized quantitative contact-point metric exists; the paper concedes that pixel-distance and rectangle-IoU metrics do not track functional grasp validity, so contact-point evaluation is qualitative only.</li>
+      <li>3D grounding relies partly on monocular-lifted annotations (WildDet3D-Synthetic filtered by fine-tuned Molmo2), which inherit residual noise from the lifting pipeline. FoundationPose synthetics provide metric-exact supervision but cover only 928 objects.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Weights: three variants (2B, 9B, 122B-A10B) on the <a href="https://huggingface.co/collections/Alibaba-DAMO-Academy/rynnbrain-11">HuggingFace</a> and <a href="https://modelscope.cn/collections/DAMO_Academy/RynnBrain-11">ModelScope</a> collections.</li>
+      <li>Code: <a href="https://github.com/alibaba-damo-academy/RynnBrain">github.com/alibaba-damo-academy/RynnBrain</a>. Project page: <a href="https://alibaba-damo-academy.github.io/RynnBrain">alibaba-damo-academy.github.io/RynnBrain</a>.</li>
+      <li>Deployed on Unitree G1, Astribot-S1, and Tianji-Wuji reference platforms; the cross-embodiment / cross-driver stack allows new embodiments by implementing only the embodiment layer.</li>
+    </ul>
+
+    <h1 id="microsoft">Microsoft</h1>
+
+    <h2 id="llm-as-a-coach"><a href="https://arxiv.org/abs/2607.18110">LLM-as-a-Coach: Experiential Learning for Non-Verifiable Tasks</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-20</span>
+      <span>RL post-training &middot; Non-verifiable tasks &middot; Reward hacking &middot; Context distillation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Tianzhu Ye, Li Dong, Guanheng Chen, He Zhu, Xun Wu, Shaohan Huang, <strong>Furu Wei</strong>. Affiliation: <strong>Microsoft Research</strong>.</li>
+      <li>Central claim: RL on open-ended, non-verifiable tasks (open-ended writing, instruction following, dialogue quality) collapses a rubric-based LLM judgment into a scalar reward, discarding the rich textual feedback that made the judge useful in the first place, and conflating responses with distinct quality profiles under the same score. Replacing the scalar reward with <em>experiential knowledge</em> (structured textual assessments distilled from the judge) as the training signal recovers the fine-grained supervision that scalarization threw away.</li>
+      <li>Reported wins: <em>Experiential Learning</em> (EL) consistently outperforms rubric-based RL on held-out and unseen open-ended tasks across two policy families, with two feedback sources (self-feedback and a proprietary teacher). Generalizes better beyond the training distribution and mitigates reward hacking &mdash; the two failure modes rubric-RL is most notorious for on non-verifiable tasks.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Experiential Learning &mdash; LLM-as-a-Coach in place of LLM-as-a-Judge (central named contribution).</strong> <em>Problem.</em> On non-verifiable tasks, current RL pipelines take a rubric-based LLM judge and reduce its assessment to a scalar: this discards the reasoning behind the score, treats a response that&rsquo;s <em>almost right for the wrong reason</em> the same as one that&rsquo;s <em>almost right for the right reason</em>, and gives the policy no differentiable structure to prefer high-quality responses over merely high-scoring ones. The scalar bottleneck is also what lets reward hacking flourish, since any surface pattern that satisfies the rubric&rsquo;s coarse score profile gets amplified. <em>Mechanism.</em> Reuse the same feedback model, but query it for <em>textual experiential knowledge</em> about each on-policy response &mdash; a distilled, transferable articulation of what worked and what did not, structured to be useful as context for a teacher. That experiential knowledge conditions a teacher model, which produces improved responses; the policy internalizes the improvement through <em>on-policy context distillation</em>. The rubric-RL loop (sample &rarr; score &rarr; policy-gradient) is replaced by a coach loop (sample &rarr; textual assessment &rarr; teacher-conditioned improved response &rarr; distill into policy). <em>Why.</em> The feedback channel from judge to policy is now higher-bandwidth &mdash; a paragraph of experiential knowledge per response instead of one float &mdash; so the training signal preserves fine-grained preferences among high-quality responses instead of collapsing them into a scalar. Because the policy is trained against distilled improved trajectories rather than the score itself, surface patterns that game the rubric no longer receive gradient; this mitigates reward hacking. Empirically, EL beats rubric-based RL on held-out and unseen open-ended tasks with feedback from either the policy itself or a proprietary model, and improves out-of-distribution generalization &mdash; the axis on which rubric-RL is weakest.</li>
+      <li><strong>Setup.</strong> Two base policy families, evaluated with (i) self-feedback (the policy itself acts as coach) and (ii) proprietary-model feedback (an external LLM as coach). The training loop is on-policy context distillation: sample a response, generate experiential knowledge from the coach, condition a teacher on that knowledge to produce the improved response, distill the improved response into the policy&rsquo;s next-token distribution.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Across both policy families and both feedback sources, EL outperforms rubric-based RL on held-out open-ended tasks &mdash; the paper&rsquo;s in-distribution comparison &mdash; and continues to outperform rubric-based RL on <em>unseen</em> open-ended tasks, the more demanding OOD comparison. The unseen-task gap is the paper&rsquo;s cleanest positive signal: rubric-RL closes the training-distribution gap by fitting the rubric, but the experiential-knowledge channel produces representations that transfer.</li>
+      <li>Reward hacking is measurably reduced under EL relative to rubric-based RL, with the paper attributing the reduction to the coach&rsquo;s critique text being harder to game than a scalar score.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Same-family feedback vs. proprietary-model feedback: EL wins in both settings, so the gain is attributable to the textual-feedback channel rather than to feedback-model capability. The paper argues that experiential knowledge is a richer and more generalizable learning signal for post-training on non-verifiable tasks, not merely a stronger judge.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positions EL as a drop-in alternative to the RLAIF / GRPO family for the non-verifiable slice of post-training pipelines &mdash; complementary to verifiable-reward RL on math / code / long-horizon tool use rather than a replacement for it.</li>
+      <li>Positions the paper within the same &ldquo;richer post-training signal&rdquo; thread as SpectraReward (July 16 review) on the vision side and the harness-in-the-loop literature (Harness Handbook, July 16; Recursive Harness Self-Improvement, July 20 HF Daily) on the agent side: all three swap a coarse signal for a structured one to fix a scale-vs-quality tradeoff.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
