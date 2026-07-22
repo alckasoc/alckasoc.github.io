@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gemini 3.6 Flash and Mage-Flow Launches Review &mdash; July 22, 2026 | Auto Lit Review</title>
+<meta name="description" content="Google DeepMind ships the Tier 1 launch group of the window: Gemini 3.6 Flash, Gemini 3.5 Flash-Lite, and Gemini 3.5 Flash Cyber, a coordinated agentic-Flash triad delivering 17% fewer output tokens, 350 tok/s throughput, and CyberGym-frontier cyber-defense capability at Flash economics. Microsoft ships a second Tier 1: Mage-Flow, a compact 4B-scale text-to-image and instruction-editing family with Mage-VAE (12.3x/22.3x fewer encode/decode MACs than FLUX.2-VAE), a Native-Resolution MMDiT backbone with packed CFG, and Base/RL-aligned/Turbo variants delivering 0.59s/1.02s per image at 1024^2 on a single A100. Tier 2: Meta AI's GAMUT introduces a two-level meta-rubric benchmark for factual completeness in long-form generation with 1,813 wearable-imagery questions and shows Gemini 3.1 Pro tops out at 58.7%; Tencent Hunyuan's SAT (Staleness-Adaptive Trust Region) contracts only the sign-selected endpoint of the PPO interval under high staleness, restoring AIME24 avg@8 stability at up to lag 8 in asynchronous MoE RL." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 22, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#google-deepmind" class="toc-h1">Google DeepMind</a>
+          <ul>
+            <li><a href="#gemini-3-6-flash-family" class="toc-h2">Gemini 3.6 Flash, 3.5 Flash-Lite, 3.5 Flash Cyber</a></li>
+          </ul>
+        </li>
+        <li><a href="#microsoft" class="toc-h1">Microsoft</a>
+          <ul>
+            <li><a href="#mage-flow" class="toc-h2">Mage-Flow</a></li>
+          </ul>
+        </li>
+        <li><a href="#meta" class="toc-h1">Meta</a>
+          <ul>
+            <li><a href="#gamut" class="toc-h2">GAMUT</a></li>
+          </ul>
+        </li>
+        <li><a href="#tencent" class="toc-h1">Tencent</a>
+          <ul>
+            <li><a href="#sat" class="toc-h2">SAT (Stale but Stable)</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 22, 2026</div>
+    <h1 class="page-title">Gemini 3.6 Flash and Mage-Flow Launches</h1>
+    <div class="page-meta">4 entries &middot; 4 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>Two independent Tier 1 launches land inside the window. Google DeepMind ships a coordinated agentic-Flash triad &mdash; <strong>Gemini 3.6 Flash</strong> (workhorse successor to <code>3.5 Flash</code>), <strong>Gemini 3.5 Flash-Lite</strong> (fastest 3.5-class model at <code>350</code> output tok/s), and <strong>Gemini 3.5 Flash Cyber</strong> (a 3.5 Flash derivative fine-tuned for vulnerability discovery, deployed exclusively via the CodeMender agent). <code>3.6 Flash</code> consumes <code>17%</code> fewer output tokens than <code>3.5 Flash</code> per the Artificial Analysis Index and drops output price from <code>$9.00/M</code> to <code>$7.50/M</code>; DeepSWE jumps from <code>37%</code> to <code>49%</code>, MLE Bench from <code>49.7%</code> to <code>63.9%</code>, OSWorld-Verified from <code>78.4%</code> to <code>83.0%</code>, GDPval-AA v2 from <code>1349</code> to <code>1421</code>. <code>3.5 Flash-Lite</code> at <code>$0.30/M</code> input, <code>$2.50/M</code> output beats <code>3 Flash</code> on SWE-Bench Pro (<code>54.2%</code> vs <code>49.6%</code>) and OSWorld-Verified (<code>74.0%</code> vs <code>65.1%</code>) while running <code>&sim;3&times;</code> faster. <code>3.5 Flash Cyber</code> paired with CodeMender reaches CyberGym-frontier performance at Flash economics, finds <code>55</code> unique confirmed V8 bugs (vs <code>47</code> for <code>3.5 Flash</code> and <code>36</code> for <code>Claude Opus 4.6</code>), and independently produced a <code>100%</code>-reliable RCE exploit that bypassed ASLR and W&Hat;X against a sensitive Google production service in <code>2</code> h. Microsoft ships the day&rsquo;s second Tier 1: <strong>Mage-Flow</strong>, a compact <code>4B</code>-scale text-to-image and instruction-editing family built around two co-designed components &mdash; <strong>Mage-VAE</strong>, a one-step diffusion-style tokenizer distilled from <code>FLUX.2-VAE</code> that matches its reconstruction fidelity (PSNR <code>36.61</code> on CLIC 2020, <code>40.67</code> on FFHQ <code>1024&sup2;</code>) at <code>12.3&times;</code>/<code>22.3&times;</code> fewer encode/decode MACs per pixel &mdash; and <strong>NR-MMDiT</strong>, a 4B Native-Resolution MMDiT with rectified-flow training, native-resolution packing (FlashAttention var-len + per-sample 2D RoPE), and stack-level fused CUDA kernels (MFU <code>33.2% &rarr; 77.3%</code>, <code>2.49&times;</code> per-step speedup). The family ships in Base, Diffusion-NFT-aligned, and 4-step Turbo variants for both text-to-image (<code>Mage-Flow</code>) and instruction-based editing (<code>Mage-Flow-Edit</code>). Turbo latency at <code>1024&sup2;</code> on a single A100: <code>0.59</code>s generate, <code>1.02</code>s edit, <code>18</code>&ndash;<code>20</code> GB peak memory &mdash; matches or beats <code>Qwen-Image 20B</code>, <code>Z-Image 6B</code>, <code>FLUX.2 32B</code>, and <code>FireRed-Image-Edit 20B</code>. Tier 2 accompaniments: Meta AI&rsquo;s <strong>GAMUT</strong> pivots long-form factuality evaluation from precision to completeness with a two-level meta-rubric framework and finds the best of <code>14</code> frontier models tops out at <code>58.7%</code> (<code>Gemini 3.1 Pro</code>); Tencent Hunyuan&rsquo;s <strong>SAT</strong> (Staleness-Adaptive Trust Region) contracts only the sign-selected endpoint of the PPO clip interval under high policy&ndash;inference divergence, restoring AIME24 avg@8 to <code>34.79</code> at lag <code>8</code> in decoupled asynchronous MoE RL over <code>Qwen3-30B-A3B-Base</code>.</p>
+
+      <h3>Competitiveness</h3>
+      <p>The Gemini triad is not a headline-grabbing intelligence jump &mdash; it is a decisive economics move on the Flash tier that reshapes agentic-workload economics for everyone downstream. Against the reference Flash tier, <code>3.6 Flash</code> improves DeepSWE by <code>+12</code> points and MLE Bench by <code>+14.2</code> points while cutting output cost by <code>17%</code>, putting the effective cost-per-completed-task well below the Anthropic Haiku 4.5 and OpenAI GPT-5.6 Luna cost curves at published prices; <code>3.5 Flash-Lite</code> at <code>350</code> tok/s and <code>$0.30/$2.50</code> per million tokens undercuts every current sub-frontier model on throughput-per-dollar, and its dominance over <code>3 Flash</code> on both SWE-Bench Pro (<code>+4.6</code>) and OSWorld-Verified (<code>+8.9</code>) shows the Lite tier no longer trails the previous-generation mainline. <code>3.5 Flash Cyber</code> reaches CyberGym parity with much larger cybersecurity-specialist stacks at Flash economics, and its <code>55</code>-unique-bug V8 result (<code>+8</code> vs mainline <code>3.5 Flash</code>, <code>+19</code> vs <code>Claude Opus 4.6</code>, with <code>10</code> bugs uniquely found) is the strongest published open account of a Flash-scale model out-competing frontier general-purpose models on a real vulnerability corpus &mdash; the fact that Opus 4.6 and later Claude releases now refuse the Chrome-commit task under safety guardrails is itself an important comparability caveat. Microsoft&rsquo;s Mage-Flow rewrites the size-vs-quality frontier for open image generation. Against <code>Qwen-Image 20B</code> (July 2026&rsquo;s dominant open T2I model), <code>Mage-Flow-Turbo</code> at <code>4B</code> matches on GenEval (<code>0.88</code>) and DPG-Bench (<code>85.48</code>) and beats on TIIF-Short (<code>83.58</code> vs the same backbone with <code>FLUX.2-VAE</code> at <code>81.18</code>) &mdash; and does it in <code>0.59</code>s vs <code>Qwen-Image</code>&rsquo;s multi-second latency at <code>&sim;5&times;</code> the parameter count. Against <code>FLUX.2 32B</code> at <code>8&times;</code> the size, <code>Mage-Flow</code> stays inside <code>&sim;1</code> point on GenEval / GEdit-Bench-EN with <code>&sim;5&times;</code> lower single-GPU memory footprint. Cross-tokenizer swaps show <code>Mage-VAE</code> is a drop-in replacement for <code>FLUX.2-VAE</code> inside FLUX.2-Klein-4B without generation-quality regression &mdash; the reduction is pure infrastructure, not information. On the RL-methodology side, Tencent&rsquo;s <code>SAT</code> is the first published trust-region alternative to PPO/GSPO clipping that provably contracts only the outward endpoint under staleness rather than the whole interval; combined with routing replay (<code>R3</code>), it targets exactly the failure mode &mdash; MoE routing drift &mdash; that has kept asynchronous RL from scaling to trillion-parameter routers in Tier 1 launches like <code>Ring-2.5-1T-Zero</code> and <code>Kimi K3</code>. Meta&rsquo;s <code>GAMUT</code> is the most consequential open-ended-generation benchmark of the July window: its two-level meta-rubric structure changes the null hypothesis for what &ldquo;factuality&rdquo; means &mdash; the <code>58.7%</code> ceiling from <code>Gemini 3.1 Pro</code> signals that no current frontier model, including <code>GPT-5.6 Sol</code> and <code>Claude Sonnet 5</code>, is remotely saturated on factual completeness in long-form multimodal grounded generation.</p>
+
+      <h3>New frontier releases</h3>
+      <p>Two Tier 1 launch groups clear the 36-hour window. Google DeepMind&rsquo;s <code>Gemini 3.6 Flash</code>, <code>Gemini 3.5 Flash-Lite</code>, and <code>Gemini 3.5 Flash Cyber</code> shipped on July 21 via the joint <em>Introducing Gemini 3.6 Flash, 3.5 Flash-Lite, and 3.5 Flash Cyber</em> blog post plus separate <code>3.5 Flash Cyber</code> DeepMind blog (Popa &amp; Flynn) and standalone <code>3.6 Flash</code> / <code>3.5 Flash-Lite</code> model cards; the two general-availability models are live in AI Studio, Gemini Enterprise, Google Antigravity, and the Gemini app, while <code>3.5 Flash Cyber</code> is CodeMender-only under a limited-access pilot. Microsoft&rsquo;s <code>Mage-Flow</code> ships as arXiv 2607.19064 (July 21) with Base and Turbo weights on the <a href="https://huggingface.co/collections/microsoft/mage">microsoft/Mage HuggingFace collection</a>, code at <a href="https://github.com/microsoft/Mage">github.com/microsoft/Mage</a>, and a project page at <a href="https://microsoft.github.io/Mage">microsoft.github.io/Mage</a>. Two Tier 2 papers: Meta AI&rsquo;s <code>GAMUT</code> benchmark for factual completeness (arXiv 2607.19322, July 21), and Tencent Hunyuan&rsquo;s <code>SAT / Stale but Stable</code> (arXiv 2607.18722, July 21) with code at <a href="https://github.com/jyyang26/SAT">github.com/jyyang26/SAT</a>.</p>
+    </section>
+
+    <h1 id="google-deepmind">Google DeepMind</h1>
+
+    <h2 id="gemini-3-6-flash-family"><a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-6-flash-3-5-flash-lite-3-5-flash-cyber/">Introducing Gemini 3.6 Flash, 3.5 Flash-Lite, and 3.5 Flash Cyber</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Blog Launch + Companion Model Cards</span>
+      <span>blog.google &middot; deepmind.google</span>
+      <span>2026-07-21</span>
+      <span>Flagship Flash tier &middot; Agentic &middot; Computer use &middot; Cybersecurity &middot; Cost efficiency</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors / sources: <em>Introducing Gemini 3.6 Flash, 3.5 Flash-Lite, and 3.5 Flash Cyber</em> by Tulsee Doshi (Sr. Director, PM, on behalf of the Gemini team) on the Google Keyword blog, plus the DeepMind companion post <em>Introducing Gemini 3.5 Flash Cyber</em> by Raluca Ada Popa and Four Flynn, and standalone <a href="https://deepmind.google/models/model-cards/gemini-3-6-flash/">3.6 Flash</a> and <a href="https://deepmind.google/models/model-cards/gemini-3-5-flash-lite/">3.5 Flash-Lite</a> model cards. Affiliation: <strong>Google DeepMind</strong> and Google Cloud Vulnerability Research.</li>
+      <li>Central claim: the Flash tier is the correct optimization target for the current agentic-workload regime, and the correct move at that tier is efficiency &mdash; fewer output tokens, fewer reasoning steps, fewer tool calls, at lower price &mdash; while still improving raw benchmark scores. The three-model release is structured to cover the three main Flash use cases: <code>3.6 Flash</code> as the workhorse with better coding / knowledge work / multimodal; <code>3.5 Flash-Lite</code> as the throughput / cost anchor; <code>3.5 Flash Cyber</code> as a domain specialization for CodeMender-driven vulnerability workflows.</li>
+      <li>Coordinated launch group with Gemini 3.5 Pro flagged as &ldquo;currently testing with partners&rdquo; and Gemini 4 flagged as having begun its most ambitious pre-training run yet. This is Google&rsquo;s first coordinated Flash-tier triad since the <code>3 Flash</code> generation.</li>
+      <li>Deployment (all live July 21): <code>3.6 Flash</code> in Gemini API via Google AI Studio, Android Studio, Google Antigravity, Gemini Enterprise Agent Platform, and the Gemini Enterprise / Gemini app; <code>3.5 Flash-Lite</code> in Gemini API + rolling out to Google Search; <code>3.5 Flash Cyber</code> exclusively inside CodeMender under a limited-access pilot for governments and trusted partners.</li>
+    </ul>
+
+    <figure>
+      <img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-5_3-6_3-5-Cyber__key-art__statement_.width-1300.jpg" alt="Gemini 3.6 Flash, 3.5 Flash-Lite, and 3.5 Flash Cyber launch key art." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Launch key art (from the Google Keyword blog). Coordinated launch of the three new Flash-tier Gemini models.</figcaption>
+    </figure>
+
+    <h3>Architecture and positioning</h3>
+    <ul>
+      <li><strong>Three-model Flash triad (family-level design).</strong> <em>Problem.</em> Production agentic workloads want throughput and cost-per-completed-task, not raw intelligence per token; a single Flash checkpoint can&rsquo;t simultaneously optimize high-throughput low-latency subagent calls, workhorse multi-step multimodal reasoning, and specialized security-agent inner loops. <em>Mechanism.</em> Google splits the tier into three checkpoints with a shared 3.5-family lineage. <code>3.6 Flash</code> is the workhorse, trained to spend fewer output tokens per completed task and take fewer tool calls in multi-step workflows. <code>3.5 Flash-Lite</code> holds fixed the intelligence class of <code>3.5 Flash</code> but strips latency to <code>350</code> output tokens/second and exposes controllable thinking levels (minimal / low / higher) so developers can pick throughput vs. reasoning per call. <code>3.5 Flash Cyber</code> is a fine-tuned derivative of <code>3.5 Flash</code> targeting CodeMender&rsquo;s many-parallel-call security workflows. <em>Why.</em> Splitting the tier lets each checkpoint move further along its preferred axis than a single one-size-fits-all Flash could. The published proof is that <code>3.5 Flash-Lite</code> at <code>350</code> tok/s and <code>$0.30/M</code> input beats the previous-mainline <code>3 Flash</code> on both SWE-Bench Pro (<code>54.2%</code> vs <code>49.6%</code>) and OSWorld-Verified (<code>74.0%</code> vs <code>65.1%</code>) &mdash; Lite is no longer a compromise SKU.</li>
+      <li><strong>Computer use as a built-in client-side tool (new deployment surface).</strong> <em>Problem.</em> Prior computer-use behavior in Gemini 3.5 Flash required custom orchestration; agents that need to click, type, and read the OS surface were building the tool integration themselves. <em>Mechanism.</em> Both <code>3.6 Flash</code> and <code>3.5 Flash-Lite</code> ship with computer use as a first-class tool in the Gemini API and Gemini Enterprise, with the tool executed client-side. <em>Why.</em> Making computer use a first-class tool removes a major source of integration variance and lets Google measure OSWorld-Verified against a canonical harness across releases (<code>3.6 Flash</code>: <code>83.0%</code>; <code>3.5 Flash-Lite</code>: <code>74.0%</code>).</li>
+      <li><strong>Enhanced Frontier Safety safeguards (3.6 Flash).</strong> <em>Problem.</em> Prior Frontier Safety Framework versions traded resistance to CBRN / cyber-offense jailbreaks against over-refusal on beneficial workloads. <em>Mechanism.</em> <code>3.6 Flash</code> ships with enhanced CBRN and cyber-offense safeguards inside the Frontier Safety Framework, and the safety-training recipe explicitly minimizes refusals for beneficial uses. See the <a href="https://deepmind.google/models/model-cards/gemini-3-6-flash/">3.6 Flash model card</a> for the framework detail. <em>Why.</em> The refusal-minimization goal is the direct answer to the customer-side headache visible in <code>3.5 Flash Cyber</code>&rsquo;s own benchmarks: Google reports that Opus 4.6-and-later Claude releases now refuse the Chrome-production-commit-scanning task under safety guardrails, so the Chrome-commit chart cannot compare against them at all.</li>
+    </ul>
+
+    <h3>Pricing and efficiency</h3>
+    <ul>
+      <li><code>3.6 Flash</code> pricing: <strong>$1.50/M input, $7.50/M output</strong> (previous <code>3.5 Flash</code> output: <code>$9.00/M</code>). This is a <code>17%</code> price cut on output alone, compounding with the <code>17%</code>-fewer-output-tokens efficiency reported on the Artificial Analysis Index to lower effective cost-per-completed-task by more than <code>30%</code> on typical multi-step workloads (Google reports up to <code>65%</code> savings on DeepSWE by Datacurve).</li>
+      <li><code>3.5 Flash-Lite</code> pricing: <strong>$0.30/M input, $2.50/M output</strong>, and <strong>350 output tok/s</strong> per the Artificial Analysis Index. The reported step-up over <code>3.1 Flash-Lite</code> is significant: Terminal-Bench 2.1 <code>54%</code> vs <code>31%</code>, GDM-MRCR v2 long-context <code>72.2%</code> vs <code>60.1%</code>, GDPval-AA v2 <code>1140</code> vs <code>642</code>.</li>
+      <li>Both <code>3.6 Flash</code> and <code>3.5 Flash-Lite</code> retain the 3.5-family <code>1M</code>-token input context window and <code>64K</code>-token maximum output limit, native multimodal input (text / image / video / audio), and thinking controls. Knowledge cutoff advances from January 2025 (in <code>3.5 Flash</code>) to March 2026.</li>
+      <li>Efficiency is not marketing-only: Google publishes a specific concrete claim &mdash; <code>3.6 Flash</code> &ldquo;takes fewer reasoning steps and tool calls to accomplish multi-step workflows&rdquo; &mdash; and the DeepSWE (Datacurve) improvement of <code>+12</code> points is delivered under the same harness that produced the previous <code>3.5 Flash</code> baseline, so the delta is attributable to the model, not to prompting or scaffolding.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+
+    <p><strong>Gemini 3.6 Flash vs Gemini 3.5 Flash (published deltas).</strong></p>
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th>3.5 Flash</th><th>3.6 Flash</th><th>Delta</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>DeepSWE (Datacurve)</td><td>37%</td><td><strong>49%</strong></td><td>+12.0</td></tr>
+        <tr><td>MLE Bench</td><td>49.7%</td><td><strong>63.9%</strong></td><td>+14.2</td></tr>
+        <tr><td>OSWorld-Verified (computer use)</td><td>78.4%</td><td><strong>83.0%</strong></td><td>+4.6</td></tr>
+        <tr><td>GDPval-AA v2 (knowledge work)</td><td>1349</td><td><strong>1421</strong></td><td>+72</td></tr>
+        <tr><td>Output-token consumption (Artificial Analysis Index)</td><td>1.00&times;</td><td><strong>0.83&times;</strong></td><td>&minus;17%</td></tr>
+        <tr><td>Output price ($/M tokens)</td><td>$9.00</td><td><strong>$7.50</strong></td><td>&minus;17%</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Gemini 3.5 Flash-Lite (published comparisons).</strong></p>
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th>3.1 Flash-Lite</th><th>3.5 Flash-Lite</th><th>3 Flash (previous mainline)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Terminal-Bench 2.1</td><td>31%</td><td><strong>54%</strong></td><td>&mdash;</td></tr>
+        <tr><td>GDM-MRCR v2 (long context)</td><td>60.1%</td><td><strong>72.2%</strong></td><td>&mdash;</td></tr>
+        <tr><td>GDPval-AA v2</td><td>642</td><td><strong>1140</strong></td><td>&mdash;</td></tr>
+        <tr><td>SWE-Bench Pro</td><td>&mdash;</td><td><strong>54.2%</strong></td><td>49.6%</td></tr>
+        <tr><td>OSWorld-Verified</td><td>&mdash;</td><td><strong>74.0%</strong></td><td>65.1%</td></tr>
+        <tr><td>Output throughput (Artificial Analysis Index)</td><td>&mdash;</td><td><strong>350 tok/s</strong></td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Gemini 3.5 Flash Cyber (V8 JavaScript Engine vulnerability discovery, fixed number of invocations).</strong></p>
+    <table>
+      <thead>
+        <tr><th>Model</th><th>Unique confirmed V8 issues</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Gemini 3.5 Flash Cyber</strong></td><td><strong>55</strong> (including 10 not caught by any other model tested)</td></tr>
+        <tr><td>Gemini 3.5 Flash (mainline)</td><td>47</td></tr>
+        <tr><td>Claude Opus 4.6</td><td>36</td></tr>
+      </tbody>
+    </table>
+
+    <ul>
+      <li>Additional <code>3.5 Flash Cyber</code> results reported without comparator tables (Big Sleep evaluation and Google Chrome&rsquo;s production commit-scanning pipeline): <code>3.5 Flash Cyber</code> significantly surpasses mainline <code>3.5 Flash</code> and <code>3.6 Flash</code> on Big Sleep pass@1; on Chrome production commit scanning, <code>3.5 Flash Cyber</code> shows &ldquo;significant uplift&rdquo; over <code>3.5 Flash</code>. Google notes that Opus 4.6-and-later Claude releases refuse the Chrome-commit task under safety guardrails and are therefore absent from that chart &mdash; this is the most explicit published account of a competitor&rsquo;s refusal policy blocking a like-for-like security-benchmark comparison at the frontier.</li>
+      <li>Real-world uplift reported by Google&rsquo;s Cloud Vulnerability Research team: <code>3.5 Flash Cyber</code> uncovered remote code execution vulnerabilities in public APIs and a memory-corruption vulnerability in a sensitive production service inside <code>2</code> h, then generated a <code>100%</code>-reliable RCE exploit bypassing ASLR and W&Hat;X. Wiz and Cloud CISO Security Engineering testers reported the capability improvement over mainline <code>3.5 Flash</code> as significant.</li>
+    </ul>
+
+    <figure>
+      <img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-6-flash__evals__figure-.width-1200.format-webp.webp" alt="Gemini 3.6 Flash evaluation figure: cost-quality Pareto frontier vs 3.5 Flash and prior Flash generations." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Evaluation chart (from the Google blog). Gemini 3.6 Flash cost-vs-quality position relative to prior Flash generations.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-5-flash-lite__evals__co.width-1200.format-webp.webp" alt="Gemini 3.5 Flash-Lite evaluation chart across coding, computer use, and long-context benchmarks." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Evaluation chart (from the Google blog). Gemini 3.5 Flash-Lite benchmark coverage across coding, computer use, and long-context tasks.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-5-flash-cyber__evals__c.width-1200.format-webp.webp" alt="Gemini 3.5 Flash Cyber CyberGym benchmark comparison against significantly larger cybersecurity models." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>CyberGym benchmark (from the Google blog). 3.5 Flash Cyber + CodeMender (up to 5 invocations per final report) reaches competitive performance against significantly larger cybersecurity models. Competitor scores sourced from provider self-reported numbers.</figcaption>
+    </figure>
+
+    <h3>Safety &amp; availability</h3>
+    <ul>
+      <li>Enhanced Frontier Safety Framework safeguards in <code>3.6 Flash</code>: substantially more resistant to jailbreaks in CBRN and cyber-offense misuse domains, with explicit training to minimize refusals for beneficial uses (per the <a href="https://deepmind.google/models/model-cards/gemini-3-6-flash/">3.6 Flash model card</a>).</li>
+      <li><code>3.5 Flash Cyber</code> deployment is dual-use-aware: CodeMender-only, limited-access pilot with governments and trusted partners &mdash; <em>not</em> a general Gemini API SKU. The parallel path for Gemini Enterprise customers is CodeMender&rsquo;s foundational capabilities delivered through generally available Gemini models via the <a href="https://cloud.google.com/blog/products/identity-security/find-and-fix-software-vulnerabilities-with-codemender">Gemini Enterprise Agent Platform</a>.</li>
+      <li>Gemini 3.5 Pro is confirmed as testing with partners with a planned broad release; Gemini 4 pre-training has begun.</li>
+    </ul>
+
+    <h1 id="microsoft">Microsoft</h1>
+
+    <h2 id="mage-flow"><a href="https://arxiv.org/abs/2607.19064">Mage-Flow: An Efficient Native-Resolution Foundation Model for Image Generation and Editing</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-07-21</span>
+      <span>Text-to-image &middot; Instruction editing &middot; Diffusion transformer &middot; VAE &middot; Distillation &middot; RL alignment</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Xinjie Zhang, Peng Zhang, Shicheng Zheng, Jinghao Guo, Zhaoyang Jia, Yifei Shen, Xun Guo, Yuxuan Luo, Jiahao Li, Wenxuan Xie, Fanyi Pu, Xiaoyi Zhang, Kaichen Zhang, Zongyu Guo, Tianci Bi, Dongnan Gui, Zhening Liu, Zimo Wen, Zihan Zheng, Senqiao Yang, Xiao Li, Jinglu Wang, Bin Li, Yan Lu (24 authors). Affiliation: <strong>Microsoft Mage Team</strong>. Project: <a href="https://microsoft.github.io/Mage">microsoft.github.io/Mage</a>; code: <a href="https://github.com/microsoft/Mage">github.com/microsoft/Mage</a>; weights: <a href="https://huggingface.co/collections/microsoft/mage">microsoft/Mage HuggingFace collection</a> (<code>microsoft/Mage-Flow</code>, <code>microsoft/Mage-Flow-Base</code>, and 10 more).</li>
+      <li>Central claim: careful tokenizer&ndash;backbone&ndash;system co-design at compact <code>4B</code> scale can match or beat open-source image generation and editing systems <code>5&ndash;20&times;</code> its size (<code>Z-Image 6B</code>, <code>Qwen-Image 20B</code>, <code>FLUX.2 32B</code>, <code>Hunyuan-Image-3.0 80B</code>, <code>FireRed-Image-Edit 20B</code>) while producing images fast enough for interactive desktop use. This is deliberately framed against the &ldquo;open weights but not practical to deploy&rdquo; gap in recent open-source image generation.</li>
+      <li>The Mage-Flow stack is one shared design instantiated into two families &mdash; <code>Mage-Flow</code> for text-to-image and <code>Mage-Flow-Edit</code> for instruction-based editing &mdash; each with Base, Diffusion-NFT-aligned, and 4-step Turbo variants. Base and Turbo weights are already live on HuggingFace as of July 21.</li>
+      <li>Reported flagship results at <code>1024&sup2;</code> on a single NVIDIA A100 with peak memory <code>18</code>&ndash;<code>20</code> GB: <code>Mage-Flow</code> generates in <code>4.37</code>s; <code>Mage-Flow-Turbo</code> in <code>0.59</code>s; <code>Mage-Flow-Edit</code> edits in <code>10.55</code>s (30 steps); <code>Mage-Flow-Edit-Turbo</code> in <code>1.02</code>s. Native-resolution support spans <code>512</code>&ndash;<code>2048</code> in each dimension including <code>4:1</code> aspect ratios like <code>512&times;2048</code> and <code>2048&times;512</code>.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.19064v1/figures/t2i_teaser_compressed.jpg" alt="Mage-Flow qualitative showcase: native-resolution samples spanning editorial design, photorealism, food photography, bilingual text rendering, portraits, and stylized art at 512-2048 resolutions." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). Qualitative showcase of Mage-Flow. Native-resolution samples spanning editorial design, photorealism, food photography, bilingual text rendering, portraits, and stylized art at <code>512</code>&ndash;<code>2048</code> resolutions and extreme <code>4:1</code> aspect ratios.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Mage-VAE: one-step diffusion-style tokenizer with anchor-latent KL (named contribution).</strong> <em>Problem.</em> Modern latent generative pipelines invoke the VAE during training, inference, and repeated editing, but the VQGAN- and LDM-derived architectures inherited by <code>SD-VAE</code>, <code>SD-3.5-VAE</code>, <code>FLUX-VAE</code>, and <code>FLUX.2-VAE</code> were designed for <code>256&sup2;</code> images. At <code>1K</code> and <code>2K</code>, they use global attention and heavy high-resolution blocks whose per-pixel MACs grow unfavorably &mdash; in <code>FLUX.2-Klein-4B</code>&rsquo;s 4-step generation, the VAE decoder accounts for <code>14%</code> of end-to-end time. Naively swapping in a smaller tokenizer breaks the diffusion backbone&rsquo;s latent geometry. <em>Mechanism.</em> Mage-VAE is trained from scratch under three principles. (1) The decoder is a fully convolutional one-step pixel-diffusion model derived from CoD-Lite, pre-trained with a compression-oriented objective and distilled to one step &mdash; no global attention, no multi-step decode. (2) The encoder is the architectural dual: a one-step diffusion model that generates latents conditioned on pixels, making encoding as cheap as decoding. (3) The standard Gaussian-prior KL is replaced with an <em>anchor-latent KL</em> that regularizes the posterior toward the latent distribution of <code>FLUX.2-VAE</code>, producing a generation-ready latent space with <code>16&times;</code> spatial reduction and <code>128</code> channels (internalizing the <code>2&times;</code> patchification that <code>FLUX.2-VAE</code> requires downstream). Training runs in three stages: multi-step flow-matching pre-training, one-step decoder distillation with DMD + compression-teacher + DINOv2-projected GAN losses, and joint encoder/decoder fine-tuning with the anchor-latent KL. <em>Why.</em> Compression-oriented pre-training is empirically the right transfer objective for lightweight learned tokenizers (per CoD-Lite); the dual-symmetric encoder amortizes the tokenizer cost across both training and iterative editing; and the anchor-latent KL is what lets Mage-VAE be a drop-in replacement for <code>FLUX.2-VAE</code> in an already-trained backbone like <code>FLUX.2-Klein-4B</code> without regressing GenEval / DPG-Bench / TIIF / GEdit / TextEdit scores. The result: reconstruction PSNR <code>36.61</code> on CLIC 2020 (vs <code>FLUX.2-VAE</code> at <code>36.88</code>) and <code>40.67</code> on FFHQ <code>1024&sup2;</code> (vs <code>40.47</code>) at <code>&sim;12.3&times;</code> fewer encoding and <code>&sim;22.3&times;</code> fewer decoding MACs per pixel.</li>
+      <li><strong>Native-Resolution MMDiT (NR-MMDiT) with native-resolution packing (named contribution).</strong> <em>Problem.</em> Conventional MMDiT training bucket-quantizes the resolution distribution: each optimization step is restricted to samples from a single fixed resolution/aspect-ratio bucket, so the model learns a discretized subset of real image sizes and struggles with extreme aspect ratios unless dedicated buckets are added. <em>Mechanism.</em> NR-MMDiT is a 4B SD3-style joint-self-attention MMDiT with modality-specific normalization and projection for text and image streams. Instead of buckets, images with different resolutions and aspect ratios are Mage-VAE-encoded, flattened into variable-length latent-token sequences, and packed with variable-length text-token sequences into a single contiguous batch under a fixed token budget. FlashAttention&rsquo;s variable-length kernels handle intra-sample attention via per-sample cumulative offsets, avoiding explicit block-diagonal masks; per-sample 2D RoPE embeds each image&rsquo;s native spatial layout. The same packing trick is reused for CFG: conditional and unconditional branches pack into one forward pass, saving <code>1.09&times;</code>&ndash;<code>1.15&times;</code> per denoising step without changing the denoising trajectory. <em>Why.</em> Native-resolution packing turns resolution diversity into a training signal &mdash; every update mixes heterogeneous image sizes, so a single checkpoint generalizes to <code>512</code>&ndash;<code>2048</code> on any aspect ratio, including the <code>4:1</code> extremes. The paper credits this design for the fact that <code>Mage-Flow-Turbo</code> at 4B beats <code>FLUX.2-Klein-4B</code> at the same parameter count on TIIF-Short (<code>83.58</code> vs <code>77.40</code>) and TIIF-Long (<code>84.16</code> vs <code>79.43</code>) with the exact same VAE.</li>
+      <li><strong>Text conditioning:</strong> frozen <code>Qwen3-VL-4B-Instruct</code> text encoder producing contextual embeddings that are packed with the visual tokens.</li>
+      <li><strong>Editing conditioning (Mage-Flow-Edit):</strong> shared Mage-VAE latent space and NR-MMDiT backbone, but the conditioning is extended with editing instructions and source-image latents so the same architecture handles semantic content editing, appearance transformation, image restoration, and structure-aware outputs.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.19064v1/x4.png" alt="Mage-Flow architecture: Qwen3-VL text encoder + Mage-VAE image encoder feed variable-length packed sequences into the 4B NR-MMDiT with per-sample 2D RoPE and joint self-attention." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 5 (from the paper). Mage-Flow architecture. Qwen3-VL encodes text prompts; Mage-VAE maps images into compact transformer-ready latents; images at different resolutions are flattened into variable-length latent-token sequences and packed with variable-length text tokens into a single batch. The 4B NR-MMDiT processes the packed sequences with per-sample 2D rotary embeddings and FlashAttention variable-length attention, avoiding fixed resolution buckets. Right panel: MMDiT block with modality-specific normalization / projection and joint self-attention.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.19064v1/x5.png" alt="Mage-VAE distilled from FLUX.2-VAE latent space with compression-oriented one-step encoder and decoder." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 6 (from the paper). Mage-VAE is a lightweight pixel-diffusion-based VAE distilled from the FLUX.2-VAE latent space. FLUX.2-VAE provides the anchor latent distribution used for diffusion pre-training and anchor-latent regularization. The decoder is distilled to reconstruct images from FLUX.2-aligned latents; the encoder is trained to produce latents compatible with the same anchor space, yielding an efficient one-step encoder-decoder interchangeable with FLUX.2-VAE in downstream generators.</figcaption>
+    </figure>
+
+    <p><strong>Mage-VAE reconstruction and efficiency (Table 1 from the paper).</strong></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Enc Params (M)</th>
+          <th>Dec Params (M)</th>
+          <th>Enc kMACs/px</th>
+          <th>Dec kMACs/px</th>
+          <th>CLIC 2020 PSNR&uarr; / SSIM&uarr; / LPIPS&darr;</th>
+          <th>FFHQ (val 10k) PSNR&uarr; / SSIM&uarr; / LPIPS&darr;</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>SD-VAE</td><td>34</td><td>49</td><td>2130</td><td>4796</td><td>30.10 / 0.8156 / 0.0565</td><td>33.00 / 0.8662 / 0.0461</td></tr>
+        <tr><td>SD-3.5-VAE</td><td>34</td><td>50</td><td>2132</td><td>4797</td><td>32.79 / 0.8896 / 0.0271</td><td>36.23 / 0.9330 / 0.0189</td></tr>
+        <tr><td>FLUX-VAE</td><td>34</td><td>50</td><td>2132</td><td>4797</td><td>34.80 / 0.9264 / 0.0188</td><td>38.43 / 0.9587 / 0.0129</td></tr>
+        <tr><td>FLUX.2-VAE</td><td>34</td><td>50</td><td>2134</td><td>4798</td><td><strong>36.88</strong> / 0.9447 / 0.0139</td><td>40.47 / 0.9682 / 0.0102</td></tr>
+        <tr><td>Qwen-Image-VAE</td><td>54</td><td>73</td><td>3378</td><td>5423</td><td>34.95 / 0.9129 / 0.0571</td><td>38.75 / 0.9515 / 0.0422</td></tr>
+        <tr><td>HunyuanVideo-VAE</td><td>100</td><td>146</td><td>6198</td><td>14096</td><td>36.14 / 0.9305 / 0.0250</td><td>39.86 / 0.9610 / 0.0205</td></tr>
+        <tr><td>HunyuanImage-3.0-VAE</td><td>389</td><td>871</td><td>28053</td><td>49836</td><td>33.80 / 0.8864 / 0.0546</td><td>36.84 / 0.9259 / 0.0468</td></tr>
+        <tr><td><strong>Mage-VAE</strong></td><td>49</td><td>52</td><td><strong>173</strong></td><td><strong>215</strong></td><td>36.61 / <strong>0.9450</strong> / <strong>0.0148</strong></td><td><strong>40.67</strong> / <strong>0.9708</strong> / <strong>0.0107</strong></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li><strong>Data pipeline.</strong> Text-to-image data is filtered with sample-level quality signals, cross-sample deduplication, multi-granularity captioning (short + long captions per image), and concept-aware synthesis / balancing to correct long-tail concept distributions. Image-editing data is synthesized programmatically, VLM-filtered against edit-fidelity criteria, and tagged / balanced by edit type (semantic content, appearance transformation, restoration, structure-aware) so that no single edit type dominates.</li>
+      <li><strong>Backbone pre-training.</strong> <code>Mage-Flow-Base</code> is trained from scratch as a 4B native-resolution foundation model with rectified flow-matching in the Mage-VAE latent space. Every optimization step processes a packed batch of variable-length latent-token sequences under a fixed token budget (paper reports <code>50,000</code> tokens per packed sample, <code>8</code>-GPU B200 node in the training-efficiency ablation).</li>
+      <li><strong>Editing pre-training.</strong> <code>Mage-Flow-Edit-Base</code> reuses the same latent space and backbone, extending the conditioning to include editing instructions and source-image latents. Editing pre-training mixes editing data with generation data so the model retains an open-ended generative prior while learning source-conditioned editability &mdash; the paper reports this data mix improves editing fidelity without hurting text-to-image quality.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li><strong>Diffusion-NFT alignment (Base &rarr; RL-aligned).</strong> <em>Problem.</em> Rectified-flow generators are hard to RL-align: their ODE sampler is deterministic and lacks an explicit action distribution, so <code>DPO</code>/<code>PPO</code> objectives don&rsquo;t apply directly, and prior fixes like Flow-GRPO have to convert the ODE into a stochastic SDE. <em>Mechanism.</em> Mage-Flow adopts Diffusion-NFT: instead of RL over reverse-process denoising, it performs negative-aware fine-tuning on the forward process, requiring neither likelihood estimation nor a specific ODE solver. Applied to capability-targeted generation data, it targets prompt following, aesthetics, bilingual text rendering, and preference alignment. Applied to editing data, it targets editing fidelity. <em>Why.</em> Forward-process negative-aware alignment sidesteps the solver-lock-in and sampling-mode-limitation of SDE-conversion approaches like Flow-GRPO, and preserves the deterministic ODE sampler at inference &mdash; important because it&rsquo;s the same sampler that the Turbo distillation targets.</li>
+      <li><strong>Decoupled-DMD few-step distillation with adversarial perceptual guidance (RL-aligned &rarr; Turbo).</strong> <em>Problem.</em> Turbo variants have to reach 4-step generation quality without collapsing to bland or texture-poor images &mdash; DMD alone tends to lose visual detail at very small step counts. <em>Mechanism.</em> Mage-Flow-Turbo uses Decoupled-DMD, which separates CFG augmentation from distribution matching (CFG augmentation as the &ldquo;spear,&rdquo; distribution matching as the &ldquo;shield&rdquo;) and allows independent noise schedules for the two objectives. On top of that, SenseFlow-style adversarial perceptual guidance from frozen VFMs (CLIP + DINOv2) provides feature-space discriminator gradients to preserve semantic alignment and realism at low step counts. <em>Why.</em> The decoupling stabilizes distillation at high CFG scales (which the base Mage-Flow relies on for prompt adherence), and VFM-based adversarial guidance is stronger than pixel-space adversarial losses at preserving semantic identity at 4 steps.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+
+    <p><strong>Tokenizer compatibility ablation (Table 2 from the paper, higher is better).</strong> Swapping <code>Mage-VAE</code> for <code>FLUX.2-VAE</code> inside a fixed backbone (both directions) shows Mage-VAE preserves generation-ready latent geometry.</p>
+    <table>
+      <thead>
+        <tr><th>Backbone</th><th>Tokenizer</th><th>GenEval</th><th>DPG-Bench</th><th>TIIF-Short</th><th>TIIF-Long</th><th>CVTG-2K</th><th>OneIG-EN</th><th>OneIG-CN</th><th>LongText-EN</th><th>LongText-CN</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Mage-Flow-Turbo</strong></td><td>Mage-VAE</td><td>0.88</td><td>85.48</td><td><strong>83.58</strong></td><td><strong>84.16</strong></td><td><strong>0.873</strong></td><td>0.523</td><td>0.491</td><td><strong>0.911</strong></td><td><strong>0.801</strong></td></tr>
+        <tr><td>Mage-Flow-Turbo</td><td>FLUX.2-VAE</td><td>0.88</td><td>85.49</td><td>81.18</td><td>81.09</td><td>0.869</td><td>0.523</td><td>0.491</td><td>0.909</td><td>0.800</td></tr>
+        <tr><td>FLUX.2-Klein-4B</td><td>FLUX.2-VAE</td><td>0.83</td><td>85.53</td><td>78.91</td><td>79.04</td><td>0.628</td><td>0.500</td><td>0.364</td><td>0.649</td><td>0.068</td></tr>
+        <tr><td>FLUX.2-Klein-4B</td><td>Mage-VAE</td><td>0.83</td><td>85.52</td><td>77.40</td><td>79.43</td><td>0.623</td><td>0.502</td><td>0.361</td><td>0.654</td><td>0.068</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Editing tokenizer swap (Table 2b, higher is better).</strong></p>
+    <table>
+      <thead>
+        <tr><th>Backbone</th><th>Tokenizer</th><th>ImgEdit</th><th>GEdit-EN</th><th>GEdit-CN</th><th>TextEdit-Syn</th><th>TextEdit-Real</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Mage-Flow-Edit-Turbo</strong></td><td>Mage-VAE</td><td><strong>4.38</strong></td><td><strong>8.271</strong></td><td><strong>8.264</strong></td><td>12.77</td><td><strong>15.41</strong></td></tr>
+        <tr><td>Mage-Flow-Edit-Turbo</td><td>FLUX.2-VAE</td><td>4.34</td><td>8.098</td><td>8.112</td><td><strong>12.85</strong></td><td>15.26</td></tr>
+        <tr><td>FLUX.2-Klein-4B</td><td>FLUX.2-VAE</td><td>4.01</td><td>7.717</td><td>7.750</td><td>11.84</td><td>14.46</td></tr>
+        <tr><td>FLUX.2-Klein-4B</td><td>Mage-VAE</td><td>3.95</td><td>7.734</td><td>7.672</td><td>11.65</td><td>14.46</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Packed CFG inference speedup (Table 3, single A100).</strong> Packing conditional and unconditional CFG branches into one forward pass without changing the denoising trajectory.</p>
+    <table>
+      <thead>
+        <tr><th>Model</th><th>Steps</th><th>Separate CFG</th><th>Packed CFG</th><th>Speedup</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Mage-Flow-Base</td><td>30</td><td>7.51s</td><td>6.52s</td><td>1.15&times;</td></tr>
+        <tr><td>Mage-Flow</td><td>20</td><td>5.01s</td><td>4.37s</td><td>1.15&times;</td></tr>
+        <tr><td>Mage-Flow-Edit-Base</td><td>30</td><td>11.55s</td><td>10.56s</td><td>1.09&times;</td></tr>
+        <tr><td>Mage-Flow-Edit</td><td>30</td><td>11.60s</td><td>10.55s</td><td>1.10&times;</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Ablations</h3>
+
+    <p><strong>Training-efficiency ablation (Table 4, 8-GPU B200 node, FlashAttention-4, global batch 8, packed sequence length <code>50,000</code>).</strong> Progressive replacement of FLUX.2-VAE with Mage-VAE and progressive fused-kernel enablement across VAE / Text encoder / DiT.</p>
+    <table>
+      <thead>
+        <tr><th>Tokenizer</th><th>VAE Fuse</th><th>Text Fuse</th><th>DiT Fuse</th><th>Peak Mem (GB)</th><th>MFU</th><th>Time (s)</th><th>Speedup</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>FLUX.2-VAE</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>175.45</td><td>33.20%</td><td>1.9259</td><td>1.00&times;</td></tr>
+        <tr><td>Mage-VAE</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>175.47</td><td>45.63%</td><td>1.3634</td><td>1.41&times;</td></tr>
+        <tr><td>Mage-VAE</td><td>&check;</td><td>&mdash;</td><td>&mdash;</td><td>175.47</td><td>45.85%</td><td>1.3586</td><td>1.42&times;</td></tr>
+        <tr><td>Mage-VAE</td><td>&check;</td><td>&check;</td><td>&mdash;</td><td>175.47</td><td>47.20%</td><td>1.3196</td><td>1.46&times;</td></tr>
+        <tr><td>Mage-VAE</td><td>&check;</td><td>&check;</td><td>&check;</td><td><strong>141.44</strong></td><td><strong>77.26%</strong></td><td><strong>0.7748</strong></td><td><strong>2.49&times;</strong></td></tr>
+      </tbody>
+    </table>
+
+    <ul>
+      <li><strong>Finding 1 (paper&rsquo;s own):</strong> Anchor-latent supervision enables efficient VAE distillation without breaking the generation-ready latent space &mdash; aligning a lightweight one-step encoder&ndash;decoder to a strong-but-costly VAE&rsquo;s latent distribution preserves reconstruction and cross-generator compatibility while substantially reducing encoding/decoding cost.</li>
+      <li><strong>Finding 2 (paper&rsquo;s own):</strong> Native-resolution packing turns resolution diversity into a training signal &mdash; removing the single-bucket restriction lets each update mix heterogeneous sizes and aspect ratios, improving resolution flexibility while enabling efficient packed CFG inference.</li>
+    </ul>
+
+    <h3>Safety &amp; limitations</h3>
+    <ul>
+      <li>The paper does not include a dedicated safety section; the license is CC BY 4.0 on arXiv, and released weights are on Microsoft&rsquo;s HuggingFace organization under standard Microsoft model licensing terms (see the collection page for per-model license).</li>
+      <li>Reported quality&ndash;efficiency Pareto is measured against <code>Qwen-Image 20B</code>, <code>Z-Image 6B</code>, <code>FLUX.2 32B</code> (dev), <code>Hunyuan-Image-3.0 80B</code>, and <code>FireRed-Image-Edit 20B</code>. Comparisons against closed-source systems (<code>GPT-Image</code>, <code>Nano Banana 2</code>, <code>Seedream 4.0</code>) are qualitative only; the paper is explicit that closed-source transparency and reproducibility limits prevent direct benchmark comparison.</li>
+      <li>The FLUX.2-VAE anchor-latent dependency means Mage-Flow&rsquo;s generation quality is upper-bounded by the FLUX.2 latent geometry &mdash; if FLUX.2-VAE releases a substantially different latent standard, Mage-VAE would need re-alignment.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Base and Turbo weights for <code>Mage-Flow</code> and <code>Mage-Flow-Edit</code> live on the <a href="https://huggingface.co/collections/microsoft/mage">microsoft/Mage HuggingFace collection</a> (12 models linked from the paper page). Code + inference scripts at <a href="https://github.com/microsoft/Mage">github.com/microsoft/Mage</a>. HuggingFace Space demo: <a href="https://huggingface.co/spaces/hugging-apps/mage-flow">hugging-apps/mage-flow</a>.</li>
+    </ul>
+
+    <h1 id="meta">Meta</h1>
+
+    <h2 id="gamut"><a href="https://arxiv.org/abs/2607.19322">Two-Level Meta-Rubrics for Evaluating Open-Ended Generation: GAMUT, a Benchmark for Factual Completeness</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-21</span>
+      <span>Benchmark &middot; Long-form generation &middot; Factuality &middot; Multimodal &middot; Wearable imagery &middot; Rubric evaluation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Xilun Chen, Zhaleh Feizollahi, Ross Goodwin, Seungwhan Moon, Scott Yih, Pinar Donmez, Babak Damavandi, Luna Dong. Affiliation: <strong>AI at Meta (FAIR)</strong>.</li>
+      <li>Central claim: long-form factuality evaluation has focused almost entirely on <em>precision</em> (are the model&rsquo;s claims correct?) and neglected <em>completeness</em> (does the response contain everything it should?). Existing decompose-search-verify pipelines catch incorrect claims but cannot enumerate what a complete answer should have covered, especially when the required facts form open-ended sets, ordered processes, or relational structures rather than flat lists of independent boolean checks.</li>
+      <li>Contribution: a two-level meta-rubric framework, instantiated as <strong>GAMUT</strong> (Grounded Assessment of Multimodal factUalTy), with <code>1,813</code> questions grounded in real wearable imagery across <code>10</code> diverse domains, each paired with an evidence-backed rubric verified by expert human annotators. A modality-agnostic text-only variant is released alongside the multimodal benchmark.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Two-level meta-rubric representation (named contribution).</strong> <em>Problem.</em> Flat checklist rubrics collapse structural information: they cannot express that some facts belong to open-ended coverage sets, that others must appear in a specific process order, or that certain fact clusters have relational dependencies. This means an LLM judge scoring a flat rubric may miss whole classes of completeness failures. <em>Mechanism.</em> Each question is annotated with a <em>structured meta-rubric</em> that captures the organization and relative importance of required content (open-ended set membership, process ordering, relational structure). At evaluation time, the structured meta-rubric is mechanically compiled into a flat checklist of binary, machine-gradable rubrics that an LLM judge can score reliably. Compilation is deterministic, so the same meta-rubric produces the same downstream checklist. <em>Why.</em> The two-level structure lets annotators express what a complete answer <em>should look like</em> without asking the LLM judge to do structural reasoning, and lets the LLM judge focus on the one thing it does well: yes/no verification of individual atomic claims. The paper argues this decoupling is what makes the benchmark robust to judge choice, and reports the ranking is stable across judges.</li>
+      <li><strong>Grounded question construction.</strong> <code>1,813</code> questions grounded in real wearable-imagery evidence across <code>10</code> diverse domains. Each question is paired with an evidence-backed rubric (i.e., every required fact has a provenance in the grounding image), and expert human annotators verify the rubric. This is not synthetic-question construction: the wearable-imagery corpus provides the domain and the ground truth simultaneously, so the rubric can only include facts a model could in principle derive from the input.</li>
+      <li><strong>Text-only variant.</strong> Because the meta-rubric framework is modality-agnostic, Meta releases a text-only companion benchmark alongside the multimodal one, allowing evaluation of text-only frontier models against the same completeness structure.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li><strong>14 frontier and open-weight models evaluated.</strong> The paper reports the benchmark is genuinely challenging: the top score is <code>58.7%</code> from <code>Gemini 3.1 Pro</code>. That is far from saturation for a benchmark whose target property (factual completeness) is what production long-form workloads &mdash; report drafting, meeting summarization, document analysis &mdash; actually need.</li>
+      <li><strong>Discriminative and judge-robust.</strong> The paper reports the benchmark is highly discriminative across the <code>14</code> models and robust to the choice of LLM judge &mdash; a direct answer to the primary methodological complaint against rubric-based benchmarks, which is that they inherit the biases of whichever judge model scores them.</li>
+      <li>Meta positions GAMUT as complementary to precision-focused factuality suites (FActScore-style decompose-verify pipelines): together, precision + completeness give a two-axis picture that neither alone does.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Benchmark release, including the meta-rubrics and the text-only variant, are announced in the paper; the arXiv abstract does not specify a public code/data URL beyond the arXiv listing.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="sat"><a href="https://arxiv.org/abs/2607.18722">Stale but Stable: Staleness-Adaptive Trust Regions for Stabilizing Asynchronous Reinforcement Learning</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-21</span>
+      <span>Asynchronous RL &middot; Trust region &middot; PPO / GSPO &middot; MoE routing &middot; Reasoning post-training</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Junyao Yang, Yucheng Shi, Zongxia Li, Zhongzhi Li, Ruhan Wang, Xiangxin Zhou, Kishan Panaganti, Haitao Mi, Leowei Liang. Affiliation: <strong>Tencent Hunyuan</strong>. Code: <a href="https://github.com/jyyang26/SAT">github.com/jyyang26/SAT</a>. Blog: <a href="https://jyyang26.github.io/stable_async_analysis">jyyang26.github.io/stable_async_analysis</a>.</li>
+      <li>Central claim: asynchronous RL improves throughput by decoupling rollout generation from optimization, but staleness &mdash; a mismatch between the policy that generated a rollout and the current training policy &mdash; is inevitable and compounded by policy lag, engine delays, and MoE routing drift. PPO&rsquo;s clipping only gates sampled outward updates and acts as a sampled surrogate rather than a full-policy trust-region constraint; in the asynchronous regime where staleness matters most, high-mismatch updates remain weakly controlled. The <strong>Staleness-Adaptive Trust Region (SAT)</strong> is a strictly-tighter alternative that contracts only the sign-selected endpoint of the nominal PPO interval on high-mismatch tokens, preserving baseline behavior on ordinary tokens.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Staleness-Adaptive Trust Region (SAT, named contribution).</strong> <em>Problem.</em> From a trust-region perspective, PPO clipping bounds a <em>sampled</em> log-ratio and constrains only the outward direction of a sampled update; under asynchronous rollouts, high-staleness updates have an unbounded finite-horizon approximation error that PPO clipping does not gate. MoE routing drift is a specific instance: routes chosen under the rollout policy may not correspond to routes taken by the current policy, so the log-ratio proxy is noisier than in dense-model RL. <em>Mechanism.</em> SAT uses the <em>detached</em> sampled log-ratio as a practical staleness proxy: for each token in the batch, the log-ratio between rollout and current policy is measured without gradient flow. High-mismatch tails within each batch are identified via a staleness-based kernel scaling. On identified high-mismatch tokens, SAT contracts <em>only the sign-selected endpoint</em> of the nominal PPO interval &mdash; if the update direction is outward, the outward endpoint is pulled inward; the inward endpoint is left untouched. Ordinary-staleness tokens see the baseline PPO interval unchanged. The paper proves two properties: <em>local interval containment</em> (the SAT interval is a subset of the PPO interval) and <em>pointwise pessimism relative to PPO</em> (the SAT update magnitude is bounded above by the PPO update magnitude at every point). <em>Why.</em> Contracting only the sign-selected endpoint preserves the sample-efficiency advantage of PPO&rsquo;s asymmetric clipping while restoring trust-region-like behavior on exactly the tokens where the sampled surrogate is weakest. The design is complementary to <em>routing replay</em> (R3, which replays MoE routing decisions from the rollout policy to reduce routing drift): SAT targets the mismatch tails, R3 targets the routing inconsistency, and the two combine multiplicatively in the reported results.</li>
+      <li><strong>Experimental setup.</strong> Decoupled asynchronous RL setup on <code>Qwen3-30B-A3B-Base</code>, SGLang as inference engine, Megatron for training. SAT is composed with GSPO (a group-relative sequence policy optimization variant common in 2026 reasoning post-training) and with the R3 routing-replay stabilizer.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>AIME24 avg@8 under decoupled asynchronous RL over <code>Qwen3-30B-A3B-Base</code>: <strong>SAT-GSPO + R3</strong> achieves the best observed score, reaching <code>35.83</code> at lag <code>1</code> and <code>34.79</code> at lag <code>8</code>. SAT-GSPO alone reaches <code>34.17</code> at lag <code>1</code>. These are the highest reported AIME24 avg@8 numbers in the asynchronous regime at both low and high lag.</li>
+      <li>The lag-1 to lag-8 gap of only <code>1.04</code> points for SAT-GSPO+R3 is the key stability claim: standard GSPO shows a much larger degradation from lag 1 to lag 8 under the same setup (the paper reports adaptive clipping and routing replay act as complementary stabilizers targeting mismatch tails and routing inconsistency respectively).</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Ablating routing replay (R3) alone vs. SAT alone vs. SAT + R3 shows the two mechanisms address orthogonal failure modes: R3 alone stabilizes routing but does not fully control mismatch tails; SAT alone controls mismatch tails but does not fix routing drift; the combination gives the best AIME24 avg@8 at high lag.</li>
+      <li>The paper proves the SAT clipping interval is a strict subset of the PPO clipping interval and that the SAT update magnitude is pointwise bounded by the PPO update magnitude, giving a formal guarantee that SAT can only be more conservative than PPO on any given token.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioned as a candidate replacement for scalar PPO / GSPO clipping in the asynchronous MoE-RL stacks powering recent 2026 Tier 1 launches like <code>Ring-2.5-1T-Zero</code> and <code>Kimi K3</code>, where staleness compounded by routing drift is a known bottleneck for scaling asynchronous rollouts to trillion-parameter MoE routers.</li>
+      <li>28 pages, 9 figures, 9 tables in the arXiv v1 version.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
