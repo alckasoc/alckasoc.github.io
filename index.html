@@ -36,6 +36,13 @@
       <!-- REVIEW_LIST_START -->
       <ul class="review-list">
         <li class="review-item">
+          <span class="date">July 23, 2026</span>
+          <div>
+            <h2><a href="reviews/rubric-oriented-rag-set-selection-review-2026-07-23.html">Rubric-Oriented RAG Set Selection</a></h2>
+            <p>No Tier 1 launch in the 36-hour window. One Tier 2 frontier-lab research paper: Tencent Yuanbao&rsquo;s <strong>Rubric4Setwise</strong> (arXiv 2607.19747), which reframes RAG reranker evaluation from per-document relevance to set-level quality across three levels and nine dimensions. Companion benchmark <strong>SetwiseEvalKit</strong> (~<code>28K</code> query-specific rubrics over multi-hop QA and multi-turn ResearchQA / DR.Tulu-8B) exposes a universal cross-document coordination weakness: even the best of 12 mainstream rerankers &mdash; <code>SetR (8B)</code> at <code>45.85%</code> overall coverage &mdash; caps at <code>&le;45%</code>, and no method dominates both short- and long-form settings. Rubric coverage predicts downstream generation quality at Pearson <code>r = 0.92</code> (<code>p = 0.0013</code>) across the 12 methods, licensing rubric signals as a set-selection utility. The training-free Rubric4Setwise reranker (Qwen3-8B backbone, chain-of-thought over query-specific rubrics as its set-utility function <code>f(S; q, R)</code>, adaptive cardinality) tops both scenarios &mdash; short-form <code>26.10</code> EM / <code>29.32</code> F1 with <code>2.66</code> documents on average (<code>+7.47</code> EM, <code>+8.22</code> F1 over vanilla no-reranking); long-form <code>70.57</code> LLM-judge with <code>20.52</code> unique docs and <code>4.52</code> rounds &mdash; and is the only method to hold SOTA on both simultaneously. Tier 3: Anthropic publishes the research agenda for its <code>$200M</code> <strong>Economic Futures Research Fund</strong>, prioritizing five directions of external labor-market research (firm-level AI integration RCTs, retraining and job-placement evaluations, UI reforms and long-duration unconditional-income pilots, pre-distributive capital accounts and dividend mechanisms, human- and community-facing public-investment pilots) with grants in the <code>$5&ndash;30M</code> range.</p>
+          </div>
+        </li>
+        <li class="review-item">
           <span class="date">July 22, 2026</span>
           <div>
             <h2><a href="reviews/gemini-3-6-flash-and-mage-flow-launches-review-2026-07-22.html">Gemini 3.6 Flash and Mage-Flow Launches</a></h2>

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rubric-Oriented RAG Set Selection Review &mdash; July 23, 2026 | Auto Lit Review</title>
+<meta name="description" content="Tencent Yuanbao's Rubric4Setwise reframes retrieval reranking as an evaluate-diagnose-optimize loop over a three-level, nine-dimension rubric taxonomy (SetwiseEvalKit, ~28K rubrics) that measures inter-document redundancy, conflict, complementarity, and reachability instead of nDCG. Existing rerankers cap at ~45% coverage; Rubric4Setwise turns rubrics into a training-free set-selection signal that lifts EM +7.47 / F1 +8.22 on multi-hop QA with only 2.66 documents vs the fixed top-5 baseline. Tier 3: Anthropic publishes the Economic Futures Research Fund research agenda with a $200M commitment for external labor-market research." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 23, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#tencent" class="toc-h1">Tencent</a>
+          <ul>
+            <li><a href="#rubric4setwise" class="toc-h2">Rubric4Setwise</a></li>
+          </ul>
+        </li>
+        <li><a href="#anthropic" class="toc-h1">Anthropic</a>
+          <ul>
+            <li><a href="#economic-futures-fund" class="toc-h2">Economic Futures Research Fund agenda</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 23, 2026</div>
+    <h1 class="page-title">Rubric-Oriented RAG Set Selection</h1>
+    <div class="page-meta">2 entries &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>No Tier 1 flagship model release in the 36-hour window. The one substantive frontier-lab research paper is Tencent Yuanbao&rsquo;s <strong>Rubric4Setwise</strong>, which reframes RAG reranker evaluation from single-document relevance scoring toward set-level quality. The authors argue that the industry-standard nDCG-over-independent-scores pipeline is structurally blind to inter-document redundancy, factual conflict, and coverage &mdash; the exact properties that determine what an LLM does with a retrieved context &mdash; and that closing this gap requires two matched artifacts: a benchmark that scores document <em>sets</em> along nine dimensions, and a training-free reranker that uses those same rubric signals as its selection function. Their benchmark <strong>SetwiseEvalKit</strong> (three levels &times; nine dimensions, ~28K query-specific rubrics, short-form multi-hop QA + long-form multi-turn search) shows that even the best of 12 mainstream rerankers achieves &le;<code>45%</code> overall coverage and every method is weak on cross-document coordination dimensions. Their reranker <strong>Rubric4Setwise</strong> (Qwen3-8B backbone, chain-of-thought over query-specific rubrics as its set-utility function <code>f(S; q, R)</code>) tops both scenarios and is the <em>only</em> method that maintains SOTA on both simultaneously. Tier 3 companion: Anthropic publishes the research agenda for its <code>$200M</code> <strong>Economic Futures Research Fund</strong>, prioritizing five directions of external empirical research on AI&rsquo;s labor-market impact.</p>
+
+      <h3>Competitiveness</h3>
+      <p>Rubric4Setwise is a direct challenge to the leading 2026 set-oriented rerankers &mdash; <code>SetR</code> (Lee et al., 2025, adaptive set selection) and <code>Rank4Gen</code> (Fan et al., 2026, RAG-preference-aligned set ranking) &mdash; and to the reasoning-enhanced rerankers <code>ReasonRank</code> (Liu et al., 2025) and <code>Rearank</code> (Zhang et al., 2025) that had defined the state of the art on reasoning-intensive multi-turn search. In the short-form multi-hop QA setting on <code>HotpotQA</code>, <code>2WikiMultihopQA</code>, <code>MuSiQue</code>, and <code>Bamboogle</code>, Rubric4Setwise (<code>2.66</code> docs, EM <code>26.10</code>, F1 <code>29.32</code>) beats the strongest reasoning-enhanced baseline <code>ReasonRank</code> (<code>5</code> docs, EM <code>20.14</code>, F1 <code>22.75</code>) by <code>+5.96</code> EM and <code>+6.57</code> F1 at roughly half the document count, and beats the set-oriented <code>SetR</code> (<code>2.75</code> docs, EM <code>25.13</code>) by <code>+0.97</code> EM. In the long-form multi-turn setting on <code>ResearchQA</code> driven by <code>DR.Tulu-8B</code>, Rubric4Setwise reaches an LLM-judge score of <code>70.57</code> vs <code>68.36</code> for <code>ReasonRank</code> and <code>70.54</code> for <code>SetR</code>, using <code>20.52</code> unique documents and <code>4.52</code> average search rounds (vs SetR&rsquo;s <code>29.23</code> docs and <code>4.73</code> rounds). The paper&rsquo;s empirical central claim &mdash; that rubric coverage on SetwiseEvalKit correlates with downstream generation quality at Pearson <code>r = 0.92</code>, <code>p = 0.0013</code> across 12 rerankers &mdash; is the key measurement result: it says a benchmark that only measures set-level quality is a valid proxy for downstream RAG generation quality. The authors are transparent that Rubric4Setwise operates in an oracle setting where reference answers are available for rubric generation, positioning it as an empirical upper bound rather than a deployable production reranker. The natural next step, distilling rubric preferences into a trainable reward, is left to future work. On the policy side, Anthropic&rsquo;s <code>$200M</code> Economic Futures Research Fund is now the largest single AI-lab commitment to external empirical labor-market research; the agenda is US-centric but explicitly global in scope and prioritizes RCTs and ambitious pilots in the <code>$5&ndash;30M</code> range.</p>
+
+      <h3>New frontier releases</h3>
+      <p>No Tier 1 model launches in the window (July 22 morning through July 23). One Tier 2 research paper: Tencent Yuanbao&rsquo;s <strong>Rubric4Setwise</strong> (<a href="https://arxiv.org/abs/2607.19747">arXiv 2607.19747</a>, submitted July 22). One Tier 3 blog post: Anthropic&rsquo;s <strong>Economic Futures Research Fund</strong> research agenda (<a href="https://www.anthropic.com/news/economic-futures-research-fund-agenda">anthropic.com/news</a>, July 22).</p>
+    </section>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="rubric4setwise"><a href="https://arxiv.org/abs/2607.19747">Beyond Relevance-Centric Retrieval: Rubric-Oriented Document Set Selection and Ranking</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-22</span>
+      <span>RAG &middot; Retrieval &middot; Reranking &middot; Evaluation &middot; Set selection</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Kailin Jiang<sup>1,2,*</sup>, Lei Liu<sup>1,&dagger;</sup>, Jian Xi<sup>2</sup>, Hui Xu<sup>2</sup>, Junlin Liu<sup>3</sup>, Baochen Fu<sup>4</sup>, Shaoqing Ren<sup>1</sup>, Bin Li<sup>1</sup>, Vichwang<sup>2</sup>, Yu Lu<sup>2</sup>, Haibo Shi<sup>2</sup>. Affiliations: <sup>1</sup>University of Science and Technology of China, <sup>2</sup><strong>Yuanbao Team, Tencent</strong>, <sup>3</sup>University of Chinese Academy of Sciences, <sup>4</sup>Shandong University. First-author work done during internship at <strong>Tencent Yuanbao</strong>; corresponding author Lei Liu (USTC). Project page: <a href="https://rubric4setwise.github.io">rubric4setwise.github.io</a>; code: <a href="https://github.com/Rubric4Setwise/Rubric4Setwise">GitHub</a>; dataset: <a href="https://huggingface.co/datasets/kailinjiang/SetwiseEvalKit">HuggingFace</a>.</li>
+      <li>Central claim: RAG reranker evaluation should shift from per-document relevance to <em>set-level</em> quality, and the same rubric signals that measure set quality can drive a training-free reranker. The paper defends both halves with a benchmark (SetwiseEvalKit) that reveals a universal cross-document-coordination bottleneck in existing rerankers (best overall coverage &le; <code>45%</code>) and a reranker (Rubric4Setwise) that tops both short-form and long-form scenarios &mdash; the only method to hold SOTA in both.</li>
+      <li>Positioning: extends the trajectory from <em>Adhoc</em> pointwise/listwise reranking (BGE-Reranker, MonoT5, RankT5, RankLlama, RankVicuna, RankZephyr, Setwise), through <em>Reasoning-Enhanced</em> reranking (Rank1, Rearank, ReasonRank), to <em>Setwise</em> reranking (SetR by Lee et al. 2025; Rank4Gen by Fan et al. 2026). Where SetR and Rank4Gen already optimize sets, Rubric4Setwise makes the optimization <em>criterion</em> multi-dimensional and query-specific rather than an implicit reward.</li>
+      <li>Headline result: on SetwiseEvalKit&rsquo;s short-form scenario, rubric coverage scores across 12 rerankers correlate with downstream EM at Pearson <code>r = 0.92</code>, <code>p = 0.0013</code> &mdash; the paper&rsquo;s empirical anchor that the benchmark is measuring the right thing. Rubric4Setwise itself lifts short-form EM by <code>+7.47</code> and F1 by <code>+8.22</code> over vanilla no-reranking with only <code>2.66</code> documents on average vs the top-5 baseline, and reaches <code>70.57</code> long-form LLM-judge score (best across all methods) using <code>20.52</code> unique documents and <code>4.52</code> average search rounds.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.19747v1/figures/motivation.png" alt="Motivating example: five documents all scored relevant to a Miss USA multi-hop query, but the set exhibits redundancy, conflict, and missing key evidence undetectable by nDCG." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). Limitations of previous evaluation. Although all retrieved documents are relevant (<code>nDCG@5 = 100%</code>), the set exhibits critical defects undetectable by traditional metrics: information conflict (Doc [11] contains factual errors), redundancy (Docs [11] &amp; [12], [8] &amp; [5] repeat content), and missing key information.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Task formulation (framework contribution).</strong> <em>Problem.</em> The dominant reranker-evaluation stack (TREC-DL, BEIR, MTEB, BRIGHT for retrieval; RAGAS, ARES, RA-nWG for RAG) scores each document <code>d &isin; S<sub>m</sub></code> independently for relevance and aggregates via <code>nDCG</code>. Under this contract, a set of five nearly identical relevant documents scores as high as a complementary five, and factual conflict inside the set is invisible. In a RAG pipeline the retrieved set is the <em>context</em>, and set-level pathologies (redundancy consumes context budget; conflict misleads the generator; missing evidence forces extra search rounds) determine downstream quality more than per-document relevance does. <em>Mechanism.</em> Formulate evaluation as scoring the whole set: given query <code>q</code> and reference answer <code>a</code>, generate a query-specific rubric set <code>R = {r<sub>1</sub>, &hellip;, r<sub>K</sub>}</code> covering nine dimensions; a reranker&rsquo;s selection <code>S<sub>m</sub> &sube; C</code> receives a nine-dimensional score <code>Score(S<sub>m</sub>) = E(q, S<sub>m</sub>, R) &isin; R<sup>9</sup></code> from an LLM-judge <code>E</code>. Selection itself becomes <code>S* = argmax<sub>S &sube; C</sub> f(S; q, R)</code>, with cardinality <code>|S*|</code> determined by rubric satisfaction rather than a fixed <em>top-k</em>. <em>Why.</em> Both the evaluation criterion and the selection utility are now driven by the same query-conditioned, multi-dimensional signal, closing the evaluate-diagnose-optimize loop that prior benchmarks left open. Prior set-oriented work (SetR shifts from ranking to set selection; Rank4Gen aligns to RAG preferences) already selects at the set level but keeps the optimization objective implicit; Rubric4Setwise makes the objective explicit, structured, and reusable as a benchmark.</li>
+      <li><strong>SetwiseEvalKit three-level nine-dimension taxonomy (named contribution).</strong> <em>Problem.</em> Existing benchmarks conflate &ldquo;relevance&rdquo; with &ldquo;set utility for generation.&rdquo; A single flat relevance score cannot distinguish redundancy from complementarity, cannot expose factual conflict, and cannot say whether the set closes a reasoning chain. <em>Mechanism.</em> Nine dimensions organized by scope. <em>Doc-level</em>: <strong>Relevance</strong> (semantic match to the information need beyond surface keywords), <strong>Authenticity</strong> (factual consistency with the reference answer), <strong>Quality</strong> (structural focus and extractability). <em>Set-level</em>: <strong>Complementarity</strong> (documents collectively cover all key elements), <strong>Redundancy</strong> (repeated information without incremental value), <strong>Conflict</strong> (contradictory statements about the same fact). <em>Global-level</em>: <strong>Completeness</strong> (all query key elements present), <strong>Density</strong> (useful content dominates each document), <strong>Reachability</strong> (a no-external-knowledge model can complete the reasoning chain from this set alone). <em>Why.</em> Doc-level captures independent attributes; set-level captures pairwise / inter-document interactions; global-level captures whole-set utility as an LLM context. Because rubrics are generated per <code>(q, a)</code>, the taxonomy is instantiated with concrete query-specific criteria (e.g., &ldquo;does at least one document state the crowning date?&rdquo;) rather than abstract adjectives, so the LLM-judge&rsquo;s scores become discriminative and reproducible.</li>
+      <li><strong>Hybrid multi-model rubric generation.</strong> Two frontier LLMs (<code>GPT-5.1</code> and <code>Gemini 3.1-Pro-Preview</code>) independently generate candidate rubrics for each <code>(q, a)</code>. Each rubric must be an evaluation question that explicitly references the specific entities, facts, or numerical values in the query and answer; vague phrasing (&ldquo;relevant content&rdquo;) is prohibited. <code>DeepSeek-V4 Pro</code> then aggregates and filters candidates from both sources, removing duplicates and low-quality items. Yields <code>~24K</code> rubrics for short-form and <code>~4K</code> for long-form (~<code>28K</code> total). Human study (50 samples per scenario, Ph.D. annotators): after aggregation, <code>~70%</code> of rubrics are judged Highly or Critically discriminative (vs <code>37%</code> for GPT-5.1 alone and <code>43%</code> for Gemini 3.1-Pro-Preview alone), with <code>~8%</code> waste; <code>~77%</code> of aggregated rubrics cause Moderate or Significant ranking changes when removed (vs <code>45%</code> and <code>53%</code> for the two individual generators). Cross-generator aggregation carries the discriminativeness gain.</li>
+      <li><strong>Rubric4Setwise reranker (named contribution).</strong> <em>Problem.</em> A benchmark alone diagnoses failure but does not fix it. Distilling rubric preferences into a trainable reward is expensive and requires held-out reference answers per query. <em>Mechanism.</em> Training-free: given query <code>q</code>, query-specific rubrics <code>R</code>, and candidate pool <code>C</code>, a <code>Qwen3-8B</code> backbone with chain-of-thought prompting implicitly models the set-utility function <code>f(S; q, R)</code> and returns <code>S* = argmax<sub>S &sube; C</sub> f(S; q, R)</code>. The selected subset&rsquo;s cardinality is adaptively determined by rubric satisfaction rather than a fixed top-k, so redundant candidates that don&rsquo;t improve any rubric are simply dropped. <em>Why.</em> The same rubric structure that drives the benchmark drives selection, so evaluation and optimization share a signal. Compared to SetR (implicit set utility) and Rank4Gen (RAG-preference-aligned scoring), Rubric4Setwise makes the criterion multi-dimensional, query-specific, and inspectable &mdash; you can see which rubric each selected doc satisfies. The oracle assumption (rubrics generated with reference answers) makes it an empirical upper bound; the paper frames a trainable rubric-reward distillation as the natural next step.</li>
+      <li><strong>Data pipelines.</strong> Short-form: <code>HotpotQA</code>, <code>2WikiMultihopQA</code>, <code>MuSiQue</code> (2,000 sampled each), plus all 125 <code>Bamboogle</code>; BM25 retrieves top-20 Wikipedia candidates per query; after filtering queries where BM25 fails to recall sufficiently relevant docs, <code>2,061</code> high-quality samples remain. Long-form: 200 <code>ResearchQA</code> instances driven by the open-source <code>DR.Tulu-8B</code> deep-research agent, which calls Google Search each turn; each candidate reranker is wrapped as an MCP tool and invoked after each retrieval round.</li>
+      <li><strong>Evaluation protocol.</strong> LLM-as-Judge with <code>DeepSeek-V4 Pro</code> scoring each <code>(q, S<sub>m</sub>)</code> pair on all rubrics in a single pass, 0&ndash;4 scale. Coverage <code>Cov<sub>d</sub> = (1/|R<sub>d</sub>|) &sum;<sub>r &isin; R<sub>d</sub></sub> score(r)/4 &times; 100%</code>. Relevance-gating: if every document in <code>S<sub>m</sub></code> gets relevance 0, only the Relevance score is reported and the remaining eight dimensions are excluded &mdash; prevents noise from evaluating set-level and global-level properties on entirely irrelevant sets. Two independent scoring passes; mean and standard deviation reported. Adhoc and reasoning-enhanced rerankers use fixed <em>top-5</em>; setwise rerankers adaptively pick cardinality.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.19747v1/figures/setwiseevalkit.png" alt="SetwiseEvalKit pipeline: three-level nine-dimension rubric taxonomy on the left; on the right, reranker selects documents from candidate pool, judge scores against query-specific rubrics on a 0-4 scale." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). SetwiseEvalKit&rsquo;s evaluation pipeline. Left: three-level, nine-dimension rubric taxonomy (doc-level: Rel./Aut./Qua.; set-level: Cmp./Red./Con.; global-level: Cov./Den./Rea.). Right: reranker selects documents from the candidate pool; judge scores the selected set against query-specific rubrics on a 0&ndash;4 scale.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Benchmark credibility.</strong> Across 12 rerankers, SetwiseEvalKit overall coverage vs downstream generation performance correlates at Pearson <code>r = 0.92</code>, <code>p = 0.0013</code>. Rubric coverage is a valid proxy for downstream RAG generation quality &mdash; the prerequisite that the rest of the analysis rests on.</li>
+      <li><strong>Short-form scenario dominance patterns.</strong> Setwise rerankers (SetR, Rank4Gen) dominate every level. Best overall: <code>SetR (8B) = 45.85%</code>, next Rank4Gen (8B) = <code>43.87%</code>. Reasoning-enhanced rerankers narrow the gap at global level (ReasonRank overall <code>41.01%</code>) but never lead. Adhoc rerankers cluster in a tight band (BGE-Reranker <code>40.57</code>, MonoT5 <code>40.28</code>, RankT5 <code>40.32</code>, RankLlama <code>40.03</code>). Conflict scores stay uniformly high (<code>92&ndash;94%</code>) across every method &mdash; factual contradiction is not a primary bottleneck in short-form multi-hop QA, so the discriminative signal comes from complementarity, completeness, and reachability.</li>
+      <li><strong>Long-form scenario role reversal.</strong> Reasoning-enhanced rerankers surpass setwise rerankers as the leading paradigm. ReasonRank tops at <code>33.05</code> overall, Rearank second at <code>32.78</code>; SetR drops to <code>31.83</code> and Rank4Gen to <code>31.97</code>. The Overall-score range compresses to <code>~3</code> percentage points (vs <code>~9</code> in short-form). Interpretation: multi-turn cumulative scenarios depend more on reasoning capabilities to assess the marginal value of newly retrieved documents; ranker and agent operating in isolation is a bottleneck. Per-round scores decrease monotonically across search turns for every reranker, so the paper adopts union-after-deduplication scoring across turns.</li>
+      <li><strong>Universal cross-document-coordination weakness.</strong> All rerankers underperform on Complementarity, Completeness, and Reachability in both scenarios. Even the best method achieves no more than <code>45%</code> overall coverage. This is the empirical support for the paper&rsquo;s central diagnosis: current rerankers lack effective modeling of set-level quality characteristics.</li>
+    </ul>
+
+    <p><em>Table 2 (from the paper). Short-form Scenario Overall Performance on SetwiseEvalKit. Coverage %, higher is better. Adhoc / reasoning-enhanced rerankers use fixed top-5; setwise rerankers adaptively pick cardinality.</em></p>
+    <table>
+      <thead>
+        <tr><th>Ranker</th><th>Doc-Level Avg</th><th>Set-Level Avg</th><th>Global-Level Avg</th><th>Overall</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Only Retrieval (BM25)</td><td>16.30</td><td>60.91</td><td>32.08</td><td>36.43 &plusmn; 0.84</td></tr>
+        <tr><td>BGE-Reranker-Large</td><td>20.30</td><td>63.05</td><td>38.34</td><td>40.57 &plusmn; 0.96</td></tr>
+        <tr><td>MonoT5 (3B)</td><td>19.90</td><td>62.76</td><td>38.17</td><td>40.28 &plusmn; 0.95</td></tr>
+        <tr><td>RankT5 (3B)</td><td>20.12</td><td>62.86</td><td>37.97</td><td>40.32 &plusmn; 0.95</td></tr>
+        <tr><td>RankLlama (7B)</td><td>19.63</td><td>63.08</td><td>37.38</td><td>40.03 &plusmn; 0.94</td></tr>
+        <tr><td>RankVicuna (7B)</td><td>18.59</td><td>62.42</td><td>35.66</td><td>38.89 &plusmn; 0.91</td></tr>
+        <tr><td>RankZephyr (7B)</td><td>18.93</td><td>61.45</td><td>35.35</td><td>38.58 &plusmn; 0.90</td></tr>
+        <tr><td>Setwise (7B)</td><td>19.52</td><td>63.17</td><td>37.51</td><td>40.07 &plusmn; 0.95</td></tr>
+        <tr><td>Rank1 (7B)</td><td>19.86</td><td>62.93</td><td>37.75</td><td>40.18 &plusmn; 0.95</td></tr>
+        <tr><td>Rearank (7B)</td><td>19.28</td><td>63.34</td><td>38.00</td><td>40.21 &plusmn; 0.95</td></tr>
+        <tr><td>ReasonRank (7B)</td><td>19.23</td><td>64.99</td><td>38.82</td><td>41.01 &plusmn; 0.96</td></tr>
+        <tr><td><strong>SetR (8B)</strong></td><td><strong>33.44</strong></td><td>64.04</td><td><strong>40.08</strong></td><td><strong>45.85 &plusmn; 1.12</strong></td></tr>
+        <tr><td>Rank4Gen (8B)</td><td>25.85</td><td><strong>67.65</strong></td><td>38.12</td><td>43.87 &plusmn; 1.05</td></tr>
+      </tbody>
+    </table>
+
+    <p><em>Table 3 (from the paper). Long-form Scenario Overall Performance on SetwiseEvalKit. Reasoning-enhanced rerankers lead; setwise rerankers drop to mid-tier.</em></p>
+    <table>
+      <thead>
+        <tr><th>Ranker</th><th>Doc-Level Avg</th><th>Set-Level Avg</th><th>Global-Level Avg</th><th>Overall</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Only Search (Google)</td><td>19.20</td><td>60.02</td><td>23.41</td><td>30.20 &plusmn; 0.31</td></tr>
+        <tr><td>BGE-Reranker-Large</td><td>21.07</td><td>57.71</td><td>25.20</td><td>32.26 &plusmn; 0.40</td></tr>
+        <tr><td>MonoT5 (3B)</td><td>21.12</td><td>59.89</td><td>25.08</td><td>32.59 &plusmn; 0.50</td></tr>
+        <tr><td>RankT5 (3B)</td><td>19.46</td><td>57.98</td><td>23.51</td><td>31.03 &plusmn; 0.30</td></tr>
+        <tr><td>RankLlama (7B)</td><td>20.30</td><td>58.55</td><td>23.84</td><td>31.50 &plusmn; 0.34</td></tr>
+        <tr><td>Setwise (7B)</td><td>20.93</td><td>58.39</td><td>23.66</td><td>31.31 &plusmn; 0.85</td></tr>
+        <tr><td>Rank1 (7B)</td><td>21.99</td><td>58.48</td><td>26.02</td><td>32.04 &plusmn; 0.61</td></tr>
+        <tr><td>Rearank (7B)</td><td>21.77</td><td>59.96</td><td>25.36</td><td>32.78 &plusmn; 0.40</td></tr>
+        <tr><td><strong>ReasonRank (7B)</strong></td><td><strong>22.01</strong></td><td><strong>60.77</strong></td><td><strong>26.83</strong></td><td><strong>33.05 &plusmn; 0.03</strong></td></tr>
+        <tr><td>SetR (8B)</td><td>20.58</td><td>59.04</td><td>24.06</td><td>31.83 &plusmn; 0.52</td></tr>
+        <tr><td>Rank4Gen (8B)</td><td>23.05</td><td>57.60</td><td>23.41</td><td>31.97 &plusmn; 0.21</td></tr>
+      </tbody>
+    </table>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.19747v1/figures/coverage_vs_answer_consistency.png" alt="Scatter of SetwiseEvalKit rubric coverage vs downstream answer consistency across 12 rerankers, showing a strong positive linear relationship with Pearson r = 0.92 and p = 0.0013." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 4 (from the paper). Correlation between rubric coverage score and downstream generation performance. Each point is one reranker method. Pearson <code>r = 0.92</code>, <code>p = 0.0013</code>: SetwiseEvalKit&rsquo;s evaluation scores are highly predictive of actual generation quality.</figcaption>
+    </figure>
+
+    <h3>Downstream generation results</h3>
+    <ul>
+      <li><strong>Short-form.</strong> Rubric4Setwise reaches EM <code>26.10</code> / F1 <code>29.32</code> (average <code>27.71</code>) using <code>2.66</code> documents on average &mdash; the fewest of any method &mdash; against vanilla no-reranking (<code>18.63</code> EM / <code>21.10</code> F1 / <code>19.87</code> avg at 5 docs). Beats the second-best SetR by <code>+0.97</code> EM and <code>+0.62</code> F1 while using fewer docs.</li>
+      <li><strong>Long-form.</strong> Rubric4Setwise reaches an LLM-judge score of <code>70.57</code>, edging out SetR at <code>70.54</code> while using <code>20.52</code> unique docs vs SetR&rsquo;s <code>29.23</code> (a <code>30%</code> reduction) and <code>4.52</code> vs <code>4.73</code> average search rounds. Beats ReasonRank (<code>68.36</code>) by <code>+2.21</code> and Rearank (<code>68.43</code>) by <code>+2.14</code>.</li>
+      <li><strong>Only method holding SOTA on both.</strong> No existing reranker consistently achieves the best performance across both settings &mdash; setwise leads short-form, reasoning-enhanced leads long-form &mdash; but Rubric4Setwise does both. The paper reads this as evidence that a unified multi-dimensional criterion generalizes across query complexities and document-interaction patterns.</li>
+      <li><strong>Compact-set effect.</strong> Rubric-guided selection systematically picks fewer documents than fixed top-k baselines while achieving higher downstream quality; the adaptive cardinality is not a constraint but a byproduct of the utility function.</li>
+    </ul>
+
+    <p><em>Table 4 (from the paper). Downstream Answer Performance across rerankers. Rubric4Setwise leads both scenarios; short-form uses 2.66 docs vs top-5, long-form uses 20.52 unique docs vs 29.23 for SetR.</em></p>
+    <table>
+      <thead>
+        <tr><th>Method</th><th>Short-form # docs</th><th>Short-form EM &uarr;</th><th>Short-form F1 &uarr;</th><th>Long-form # docs</th><th>Long-form rounds</th><th>Long-form LLM-judge &uarr;</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Rubric4Setwise (8B, ours)</strong></td><td><strong>2.66</strong></td><td><strong>26.10</strong></td><td><strong>29.32</strong></td><td><strong>20.52</strong></td><td><strong>4.52</strong></td><td><strong>70.57</strong></td></tr>
+        <tr><td>SetR (8B)</td><td>2.75</td><td>25.13</td><td>28.70</td><td>29.23</td><td>4.73</td><td>70.54</td></tr>
+        <tr><td>Rank4Gen (8B)</td><td>3.05</td><td>25.08</td><td>28.65</td><td>12.13</td><td>5.01</td><td>68.32</td></tr>
+        <tr><td>ReasonRank (7B)</td><td>5</td><td>20.14</td><td>22.75</td><td>20.30</td><td>4.30</td><td>68.36</td></tr>
+        <tr><td>Rearank (7B)</td><td>5</td><td>21.11</td><td>24.25</td><td>21.39</td><td>4.63</td><td>68.43</td></tr>
+        <tr><td>RankLlama (7B)</td><td>5</td><td>20.28</td><td>23.00</td><td>22.24</td><td>4.78</td><td>69.10</td></tr>
+        <tr><td>MonoT5 (3B)</td><td>5</td><td>20.23</td><td>23.20</td><td>20.42</td><td>4.31</td><td>70.33</td></tr>
+        <tr><td>BGE-Reranker-Large</td><td>5</td><td>19.94</td><td>22.27</td><td>20.84</td><td>4.50</td><td>69.48</td></tr>
+        <tr><td>Vanilla (no reranking)</td><td>5</td><td>18.63</td><td>21.10</td><td>20.94</td><td>4.49</td><td>67.08</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Rubric aggregation vs single generator.</strong> Hybrid aggregation (GPT-5.1 + Gemini 3.1-Pro-Preview candidates, DeepSeek-V4 Pro aggregator) yields <code>~70%</code> Highly/Critically discriminative rubrics vs <code>37%</code> for GPT-5.1 alone and <code>43%</code> for Gemini 3.1-Pro-Preview alone; ranking-change sensitivity when a rubric is removed rises from <code>45%</code> / <code>53%</code> to <code>~77%</code>. The aggregation step is not a nice-to-have &mdash; it&rsquo;s where the discriminative signal comes from.</li>
+      <li><strong>Judge stability.</strong> Two independent scoring passes per sample. Standard deviations on Overall coverage stay within <code>0.03&ndash;1.12</code> percentage points across every reranker in both scenarios, small relative to the inter-method gaps that drive the leaderboard conclusions.</li>
+      <li><strong>Per-round degradation vs cumulative scoring.</strong> All rerankers show monotonically decreasing per-round rubric scores. The paper attributes this not to reranker degradation but to a shift from broad information acquisition in early turns to targeted gap-filling in later turns (candidate pools narrow, so scores compress). Cross-turn union-after-deduplication scoring restores a meaningful measurement of cumulative context quality.</li>
+      <li><strong>Cardinality analysis.</strong> Adaptive-cardinality methods (Rubric4Setwise, SetR, Rank4Gen) use <code>2.66&ndash;3.05</code> docs in short-form vs the fixed <code>5</code> of every non-setwise baseline while beating them on EM and F1 &mdash; fixed top-5 wastes context budget on redundant documents in multi-hop QA.</li>
+    </ul>
+
+    <h3>Limitations</h3>
+    <ul>
+      <li><strong>Oracle setting.</strong> Rubric4Setwise generates rubrics conditioned on the reference answer <code>a</code>, so it is an empirical upper bound rather than a deployable production reranker. The authors flag this explicitly and propose distilling rubric preferences into a trainable reward as the next step. Reproducibility of the reported gains under an answer-free rubric-generation pipeline is not established here.</li>
+      <li><strong>Backbone dependency.</strong> Rubric4Setwise&rsquo;s selection utility <code>f(S; q, R)</code> is implicit in <code>Qwen3-8B</code>&rsquo;s chain-of-thought; changing the backbone changes <code>f</code>. The evaluation judge is <code>DeepSeek-V4 Pro</code>. Cross-judge / cross-backbone consistency is not systematically studied.</li>
+      <li><strong>Conflict dimension has weak variance in short-form.</strong> Every reranker scores <code>92&ndash;94%</code> on Conflict in the short-form scenario; the dimension does not discriminate, so any short-form gains attributable to conflict identification are speculative under this benchmark.</li>
+      <li><strong>Long-form scenario reveals ranker&ndash;agent isolation.</strong> The <code>~3</code>-point overall-score compression across methods in long-form suggests that when the ranker and search agent operate independently, information flow between accumulated context and document selection is blocked. This is a bound on the paradigm, not on Rubric4Setwise specifically.</li>
+    </ul>
+
+    <h1 id="anthropic">Anthropic</h1>
+
+    <h2 id="economic-futures-fund"><a href="https://www.anthropic.com/news/economic-futures-research-fund-agenda">A research agenda for the Economic Futures Research Fund</a></h2>
+    <div class="paper-meta">
+      <span>Tier 3 &middot; Blog Post</span>
+      <span>anthropic.com</span>
+      <span>2026-07-22</span>
+      <span>Policy &middot; Economic research &middot; External grants</span>
+    </div>
+
+    <ul>
+      <li>Anthropic publishes the research agenda for the <strong>Economic Futures Research Fund</strong>, a <code>$200M</code> commitment to external empirical research on interventions that prepare society for AI&rsquo;s economic impact. Not a technical AI paper; positioned as an evolution of the year-old Economic Futures program and follow-on to the June 2026 Economic Policy Framework (EPF).</li>
+      <li>Five research priorities: (1) shaping AI&rsquo;s impact on workers at the firm and workplace level (RCTs randomizing AI systems and integration designs at team/firm level; retention tax credits; employer co-investment); (2) equipping people to navigate AI-driven transitions (retraining, job placement, licensing reform, sectoral transition packages; AI-enabled matching and credentialing; K&ndash;12 and higher-ed curriculum); (3) modernizing income support for AI-driven displacement (UI reforms with automatic-extension triggers, wage insurance integration, basic-needs relief, longer-duration unconditional income pilots at livable levels); (4) building worker stakes in AI-driven growth before disruption arrives (pre-distributive capital accounts at scale, equity-sharing and dividend-style mechanisms, revenue instruments including corporate/capital-gains/compute/automation taxes); (5) generating new evidence on public investments (large-scale pilots funding human- and community-facing service positions, AI-enabled public services access, guaranteed-jobs pilots, place-based interventions in AI-exposed communities).</li>
+      <li>Grant structure: <code>$5&ndash;30M</code> range typical, flexible upward; no funding below <code>$1M</code>. Accepted from accredited universities, degree-granting institutions, independent research institutes, policy research organizations, and nonprofits with a track record of running field experiments at scale. Individual researchers may serve as PIs on institutional proposals but cannot apply personally. Global fund, US-centric priorities driven by Anthropic&rsquo;s SF headquarters and US-heavy Claude usage.</li>
+      <li>Positioning against prior Economic Futures program: shift from many small grants to a smaller number of ambitious, large-scale RCTs and pilots. The public rationale is capacity-scaling and marginal-evidence value; the operational shift is toward funding pilots &ldquo;that can be scaled up dramatically if they show promise.&rdquo; The post explicitly requests that funded organizations share learnings publicly at key milestones because &ldquo;a signal that arrives early enough to act on can be worth more than an answer that arrives too late.&rdquo;</li>
+      <li>Coincides with (but is not the same as) the Anthropic Economic Index connector launch: the Index is now queryable through the Claude connector interface, which the fund cross-links from its landing page.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
