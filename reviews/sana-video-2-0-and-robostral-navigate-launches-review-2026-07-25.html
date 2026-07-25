@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SANA-Video 2.0 and Robostral Navigate Launches Review &mdash; July 25, 2026 | Auto Lit Review</title>
+<meta name="description" content="NVIDIA ships SANA-Video 2.0, a 5B/14B hybrid linear-softmax video diffusion transformer that reaches VBench Total 84.30 at 13.2s per 480p clip on one H100 (120x faster than Wan 2.2-A14B at 720p/5s) via a 3:1 linear-to-softmax anchor ratio plus Block Attention Residuals routing completed block summaries across depth. Mistral AI ships Robostral Navigate, an 8B monocular-RGB vision-language navigation policy trained on 2.4M simulated trajectories across 350k scenes with a 22x prefix-tree training compression, reaching 77.4% success on R2R-CE Val-Unseen and 75.1% on RxR-CE Val-Unseen using a single RGB camera, beating the best depth/multi-camera prior by 5.3 points. Tier 2 companions: Microsoft's OpenForgeRL trains harness-native agents end-to-end via a lightweight harness proxy plus a Kubernetes rollout orchestrator, reaching 37.7 OSWorld-Verified / 63.0 Online-Mind2Web / 72.3 WebVoyager on OpenForgeGUI with only a few thousand tasks; Tencent's WorkBuddy Bench introduces a four-domain (Code / Web / Office / Security) coding-agent benchmark with reverse-engineered contamination-resistant tasks and a shared harness-native evaluation protocol." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 25, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#mistral" class="toc-h1">Mistral AI</a>
+          <ul>
+            <li><a href="#robostral-navigate" class="toc-h2">Robostral Navigate</a></li>
+          </ul>
+        </li>
+        <li><a href="#nvidia" class="toc-h1">NVIDIA</a>
+          <ul>
+            <li><a href="#sana-video-2-0" class="toc-h2">SANA-Video 2.0</a></li>
+          </ul>
+        </li>
+        <li><a href="#microsoft" class="toc-h1">Microsoft</a>
+          <ul>
+            <li><a href="#openforgerl" class="toc-h2">OpenForgeRL</a></li>
+          </ul>
+        </li>
+        <li><a href="#tencent" class="toc-h1">Tencent</a>
+          <ul>
+            <li><a href="#workbuddy-bench" class="toc-h2">WorkBuddy Bench</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 25, 2026</div>
+    <h1 class="page-title">SANA-Video 2.0 and Robostral Navigate Launches</h1>
+    <div class="page-meta">4 papers &middot; 4 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>Two Tier 1 launches land inside the window. NVIDIA ships <strong>SANA-Video 2.0</strong>, a hybrid video diffusion transformer at <code>5B</code> and <code>14B</code> scales that answers a specific architectural question &mdash; whether a mostly-linear-attention backbone can recover softmax-level expressiveness while keeping <code>O(N)</code> scaling for long, high-resolution video &mdash; with a concrete recipe: a 3:1 <em>Hybrid Linear-Softmax Attention</em> layout (75% gated linear layers, 25% gated softmax anchors placed every fourth layer), <em>Block Attention Residuals</em> that route completed block summaries across depth (raising deep-layer state effective rank by <code>~12%</code>), and from-scratch training rather than post-hoc linearization. The 5B checkpoint reaches VBench Total <code>84.30</code> in <code>13.2</code>s at <code>480&times;832&times;81</code> on a single H100 (40-step sampling), the compiled DiT forward pass is <code>3.2&times;</code> faster than a matched full-softmax baseline at <code>720p/60s</code>, and full-stack Sol-Engine kernel fusion, caching, and sparse attention deliver another <code>3.58&times;</code> end-to-end &mdash; making the 5B pipeline <code>13.06</code>s at <code>720p/5s</code> and <code>120&times;</code> faster than Wan 2.2-A14B on one H100. Mistral AI ships <strong>Robostral Navigate</strong>, an <code>8B</code> monocular-RGB vision-language navigation policy that predicts waypoints by pointing to pixel coordinates in the current camera view. The recipe combines <code>2.4M</code> simulated trajectories over <code>350k</code> scenes with a <em>prefix-tree training</em> compression that packs entire episodes into single sequences (<code>22&times;</code> fewer training tokens; training time compressed from months to days), a tree-based attention mask that blocks ground-truth-action conditioning, and online RL via CISPO on top of SFT. On R2R-CE Val-Unseen it reaches <code>77.4%</code> SR and <code>74.2%</code> SPL (SOTA across all metrics, <code>+10.5</code> points over the best monocular prior and <code>+5.3</code> points over the strongest depth/multi-camera system); on RxR-CE Val-Unseen it reaches <code>75.1%</code> SR (best across monocular baselines). Two Tier 2 companions: Microsoft&rsquo;s <strong>OpenForgeRL</strong> exposes an open framework that trains agents inside their real harnesses (Claude Code, Codex, OpenClaw) end-to-end by proxying the harness&rsquo;s model calls to a standard RL codebase and orchestrating each rollout in its own Kubernetes container; Tencent&rsquo;s <strong>WorkBuddy Bench</strong> is a four-domain (Code / Web / Office / Security) coding-agent benchmark whose contamination resistance rests on reverse-engineering every task from a real commit / PR / business scenario and rewriting it as a colloquial role-played request that is not recoverable by web-searching the underlying issue thread.</p>
+
+      <h3>Competitiveness</h3>
+      <p>NVIDIA&rsquo;s SANA-Video 2.0 is a direct efficiency challenge to the leading open Video DiT stack. Against <code>Wan 2.2-A14B</code>, the reference open-video generator through mid-2026, the 5B Sol-Engine pipeline reaches <code>720p/5s</code> generation <code>120&times;</code> faster on a single H100; against <code>Wan 2.1</code> (14B), <code>HunyuanVideo</code> (13B), and <code>Seedance 2.0</code>, its <code>13.2</code>s at <code>480&times;832&times;81</code> matches VBench Total quality at a fraction of the latency, and the DiT forward-pass gap widens with duration &mdash; the <code>3.2&times;</code> compiled speedup at <code>720p/60s</code> is a duration-scaling advantage, not a fixed one. The architectural inheritance is explicit: the 3:1 linear-softmax ratio matches Qwen3-Next and Kimi-Linear; the Block Attention Residuals design is Kimi&rsquo;s AttnRes construction ported from text (where Kimi K3 pairs it with hybrid linear attention at trillion-parameter scale) to bidirectional video diffusion. The novel piece is that the paper trains the hybrid from scratch and demonstrates the same 25% softmax anchor ratio is the quality-efficiency knee in the video regime by sweeping it rather than assuming the LM value. Mistral&rsquo;s Robostral Navigate positions against the current single-camera SOTA <code>Qwen-RobotNav-4B</code> (<code>66.9%</code> R2R-CE SR) and the depth/multi-camera SOTA <code>Qwen-RobotNav-8B</code> (<code>72.1%</code> R2R-CE SR): Robostral hits <code>77.4%</code> R2R-CE SR from RGB alone, beating both, and reaches <code>75.1%</code> on RxR-CE (long-horizon instruction-following) from RGB alone. Two things are notable. First, the model works purely in image-space pixel coordinates rather than in robot-specific metric commands, which the paper demonstrates enables the same weights to run on a wheeled robot (Galaxea R1) and a small tracked robot (Hiwonder JetAuto) with only the low-level controller differing. Second, RL provides <code>+3.9</code> points on RxR-CE over the SFT baseline, evidence that on-policy RL is fixing the covariate-shift failure mode that behavioral cloning has historically hit on long-horizon navigation. On the methodology side, Microsoft&rsquo;s <code>OpenForgeRL</code> is the first open framework to reach frontier-competitive numbers when training agents inside real production harnesses: <code>OpenForgeGUI</code> reaches <code>37.7</code> on OSWorld-Verified, <code>63.0</code> on Online-Mind2Web, and <code>72.3</code> on WebVoyager &mdash; the WebVoyager number matches or surpasses models several times larger. The framework itself is the contribution: prior open RL stacks couldn&rsquo;t train against Claude Code / Codex-shaped harnesses at all because those harnesses drive stateful multi-process inference that veRL and similar frameworks don&rsquo;t natively express, and OpenForgeRL&rsquo;s harness-proxy + Kubernetes-per-rollout architecture is the specific missing infrastructure piece. Tencent&rsquo;s <code>WorkBuddy Bench</code> is a direct response to the contamination problem that has plagued SWE-Bench and its variants: every task is reverse-engineered from a real commit / PR / business scenario and rewritten as a short colloquial role-played request, so the prompt is not web-searchable even though the source data is public and the benchmark is fully open-released (dataset, harness, tests, reference solutions). The four subsets probe complementary work: repository-level engineering, front-end development, office/business workflows, red-/blue-team security &mdash; each with its own scoring instrument, so scores are not comparable across subsets and the suite deliberately reports no suite-wide average.</p>
+
+      <h3>New frontier releases</h3>
+      <p>Two Tier 1 launches in the July 22 evening &mdash; July 25 window. NVIDIA&rsquo;s <strong>SANA-Video 2.0</strong> arXiv Technical Report (<a href="https://arxiv.org/abs/2607.21553">arXiv 2607.21553</a>, published July 23) with the <code>5B</code> and <code>14B</code> checkpoints; <a href="https://nvlabs.github.io/Sana/Video2">project page</a>, <a href="https://github.com/NVlabs/Sana">code</a>. Mistral AI&rsquo;s <strong>Robostral Navigate</strong> arXiv Technical Report (<a href="https://arxiv.org/abs/2607.20785">arXiv 2607.20785</a>, submitted July 22). Two Tier 2 papers: Microsoft&rsquo;s <strong>OpenForgeRL</strong> (<a href="https://arxiv.org/abs/2607.21557">arXiv 2607.21557</a>, submitted July 23); Tencent&rsquo;s <strong>WorkBuddy Bench</strong> (<a href="https://arxiv.org/abs/2607.20911">arXiv 2607.20911</a>, submitted July 23) with <a href="https://workbuddybench.com/">project page</a>, <a href="https://github.com/Tencent/workbuddy-bench">code</a>, and <a href="https://huggingface.co/datasets/tencent/workbuddy-bench">dataset</a>.</p>
+    </section>
+
+    <h1 id="mistral">Mistral AI</h1>
+
+    <h2 id="robostral-navigate"><a href="https://arxiv.org/abs/2607.20785">Robostral Navigate</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-07-22</span>
+      <span>VLA &middot; Navigation &middot; Vision-language model &middot; RL &middot; Prefix caching &middot; Simulation-to-real</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Arjun Majumdar, Avinash Sooriyarachchi, Benjamin Tibi, Chris Bamford, Elliot Chane-Sane, Guillaume Lample, Khyathi Raghavi Chandu, Ludovic Ho Fuh, Mathieu Poiree, Olivier Duchenne, Rosalie Millner, Srijan Mishra, Theo Cachet, Thomas Chabal. Affiliation: <strong>Mistral AI</strong> (Bamford, Lample, and Duchenne are Mistral cofounders / research leadership). The launch name &mdash; <em>Robo</em> + <em>Mistral</em> &mdash; is a direct signal that this is Mistral&rsquo;s first-party entry into embodied vision-language-action foundation models. arXiv 2607.20785v1, 22 July 2026, 9.6 MB PDF.</li>
+      <li>Central claim: a scalable navigation policy should minimize sensor assumptions (monocular RGB only), operate in an embodiment-agnostic action space (image-space pointing), and train efficiently at scale. The paper packages three components that jointly deliver those properties &mdash; an 8B dense VLM initialized from a spatial-grounding pre-training checkpoint, a large simulation-generated trajectory corpus with an infrastructure recipe that compresses training tokens by <code>22&times;</code>, and online RL on top of SFT with a clipped-distance reward &mdash; and shows they compose into SOTA on R2R-CE and RxR-CE.</li>
+      <li>Positioning: extends the Continuous-Environment VLN line (NaVid, NaVILA, ETPNav, StreamVLN, Uni-NaVid, Nav-R1, MTU3D) and the more recent scalable VLM-navigator line (ABot-N0, Qwen-RobotNav-4B / 8B), while removing the depth / multi-camera / LiDAR sensing that the strongest prior systems relied on. Robostral is the first single-RGB navigator to also beat the strongest depth/multi-camera SOTA.</li>
+      <li>Headline result: <code>77.4%</code> SR and <code>74.2%</code> SPL on R2R-CE Val-Unseen, <code>+10.5</code> points over the best monocular method (<code>Qwen-RobotNav-4B</code> at <code>66.9%</code>) and <code>+5.3</code> points over the best depth/multi-camera method (<code>Qwen-RobotNav-8B</code> at <code>72.1%</code>). On R2R-CE Val-Seen: <code>79.4%</code> SR. On the longer, more complex RxR-CE Val-Unseen: <code>75.1%</code> SR, up <code>+3.9</code> from the SFT baseline after online RL.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.20785v1/images/prefix_cache.png" alt="Prefix-tree training compression: entire episodes packed into single training sequences with a tree-structured attention mask that shares prefix computation across time steps while preventing ground-truth-action conditioning." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure (from the paper). Prefix-tree training compression. Vanilla per-time-step training encodes each history redundantly; Robostral packs the entire episode into one training sequence with a prefix-tree attention mask, cutting training tokens by <code>22&times;</code> and training time from months to days.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>8B dense VLM navigator (backbone).</strong> Robostral is initialized from an <code>8B</code>-parameter dense vision-language model designed for spatial grounding &mdash; pointing, counting, object localization &mdash; so that navigation training is a downstream specialization of already-learned image-space grounding rather than de-novo policy learning. The frames are encoded by the VLM&rsquo;s vision encoder into visual tokens, appended to the tokenized instruction, and the concatenation is fed to the VLM as the input sequence. Frame history is kept in the sequence so the model can reason about previously visited locations and track progress.</li>
+      <li><strong>Pointing with displacement fallback (action head, named contribution).</strong> <em>Problem.</em> Prior VLA navigators either emit low-level actions in a robot-specific metric frame (which does not generalize across embodiments) or a fixed action vocabulary (which throws away the pretrained model&rsquo;s spatial grounding). Neither preserves the pointing / localization capabilities the base VLM already has. <em>Mechanism.</em> Robostral predicts the next destination in two modes: a <em>preferred visual pointing mode</em> that emits the <code>(x, y)</code> pixel coordinate of the next waypoint in the current camera view; and a <em>metric displacement fallback</em> that emits an <code>(x, y, z)</code> displacement (in meters, in the robot base frame) for the case where the destination is not currently visible in the frame. Training is formulated as joint prediction: when the destination is visible, the model predicts all five quantities (pointing coordinates + metric displacement); only <code>~10%</code> of training data features invisible destinations, so metric displacement is effectively a co-training auxiliary. <em>Why.</em> Operating in image space rather than robot-specific coordinates makes the policy naturally robust to changes in camera intrinsics and scene scale &mdash; the same weights transfer to wheeled, legged, and aerial robots without recalibration. Pointing also inherits from the VLM&rsquo;s pretraining rather than fighting it, so early SFT converges faster than an equivalent metric-only head.</li>
+      <li><strong>Cross-robot generalization.</strong> The same Robostral Navigate weights (VLM + diffusion policy) run on the wheeled Galaxea R1 and the small tracked Hiwonder JetAuto with only the low-level platform controller differing between robots. Camera height, camera configuration, and base geometry differ substantially between the two platforms; image-space pointing means the model doesn&rsquo;t need to know any of that.</li>
+    </ul>
+
+    <h3>Training recipe</h3>
+    <ul>
+      <li><strong>Large-scale simulated trajectory generation.</strong> <code>2.4M</code> expert navigation trajectories across <code>350k</code> simulated indoor and outdoor scenes. Each sample is a natural-language instruction paired with a sequence of RGB observations and corresponding navigation actions. Simulation is used to escape the real-world data-collection bottleneck; the visual-domain gap is handled downstream via RL.</li>
+      <li><strong>Prefix-tree training with tree-based attention masks (named contribution).</strong> <em>Problem.</em> Standard behavior-cloning training treats each time step as an independent sample. For an episode of length <code>T</code>, this encodes prefix observations <code>T</code> times &mdash; a wasteful redundancy that grows with episode length and limits how large a corpus can be trained through in wall-clock time. Directly packing the whole episode into one causal sequence would let the model attend to previous ground-truth actions during training, so it would learn to condition on ground-truth actions rather than on visual observations. <em>Mechanism.</em> Encode entire episodes as single training sequences: instruction, then observations interleaved with actions. Apply a prefix-tree attention mask: the tree structure keeps a shared trunk for the prefix that all time steps share and separate branches for each time step&rsquo;s specific suffix, blocking any per-time-step action prediction from attending to previous ground-truth actions. The paper proves this construction yields identical training signal to per-time-step samples while avoiding redundant prefix encoding. Net effect: training tokens compressed by <code>22&times;</code>, wall-clock training time compressed from months to days. <em>Why.</em> This is the specific systems piece that makes 8B-scale RL-fine-tuned navigation over <code>2.4M</code> episodes practical. Prior work (StreamVLN, Uni-NaVid) shared prefix computation at inference time but re-encoded during training; Robostral eliminates the training redundancy without changing the loss surface.</li>
+      <li><strong>Online RL via CISPO on top of SFT (post-training).</strong> <em>Problem.</em> Behavior-cloning suffers exposure bias and covariate shift: shortest-path expert trajectories do not demonstrate information-seeking and recovery behaviors, so a purely SFT-trained agent hits out-of-distribution states at test time and fails to recover. <em>Mechanism.</em> Apply on-policy RL after SFT using CISPO (MiniMax-M1&rsquo;s trust-region objective). Reward is a clipped distance penalty: negative distance to goal, clipped at <code>2</code> meters so the reward flatlines once the agent is near the goal &mdash; this prevents pointless local maneuvering to accumulate reward and incentivizes the agent to emit an explicit <code>STOP</code> action to end the episode. Scaling this pipeline requires concurrent orchestration of three GPU-bound workloads: a physics-and-rendering engine simulating hundreds of parallel environments, a distributed vLLM inference engine generating autoregressive actions, and training nodes doing distributed weight updates. The system is engineered so vLLM generators and training ranks do not stall on simulator rendering. <em>Why.</em> The <code>+3.9</code> points on RxR-CE (SFT to RL) is the specific evidence: on the longer, more complex RxR instruction-following distribution, RL fixes precisely the failure mode &mdash; recovery from off-path states &mdash; that behavior-cloning cannot cover from expert-only data.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Metrics: Trajectory Length (TL, meters); Navigation Error (NE, meters, distance to goal at stop); Oracle Success (OS %, ever within 3 m of goal); Success Rate (SR %, stopped within 3 m of goal); Success weighted by inverse Path Length (SPL %). Val-Unseen split of R2R-CE and RxR-CE.</li>
+      <li>R2R-CE Val-Unseen: <code>77.4%</code> SR, <code>74.2%</code> SPL, <code>81.3%</code> OS, <code>3.20</code> m NE. R2R-CE Val-Seen: <code>79.4%</code> SR. RxR-CE Val-Unseen: <code>75.1%</code> SR, <code>68.7%</code> SPL, <code>3.47</code> m NE.</li>
+      <li>Single-camera advantage: RGB-only Robostral beats every depth / multi-camera prior on both benchmarks. Against depth/multi-camera <code>Qwen-RobotNav-8B</code>: <code>+5.3</code> points R2R-CE SR (<code>77.4%</code> vs <code>72.1%</code>). Against monocular <code>Qwen-RobotNav-4B</code>: <code>+10.5</code> points R2R-CE SR.</li>
+      <li>RL contribution: online CISPO RL adds <code>+3.9</code> points RxR-CE SR over the SFT baseline (SFT <code>71.2%</code> to RL-finetuned <code>75.1%</code>) &mdash; the RxR-CE gap is the intended payoff, because RxR-CE is the long-horizon complex-instruction distribution where covariate shift is worst.</li>
+    </ul>
+
+    <p><em>Table 1 (from the paper). Comparison on R2R-CE and RxR-CE validation unseen. Single Camera column: &#10003; means single-camera RGB-only; &#10007; means uses depth, LiDAR, or multiple cameras. Robostral achieves SOTA across all metrics using only a single RGB camera.</em></p>
+    <table>
+      <thead>
+        <tr><th>Model</th><th>Single Cam</th><th>R2R-CE NE</th><th>R2R-CE OS</th><th>R2R-CE SR</th><th>R2R-CE SPL</th><th>RxR-CE NE</th><th>RxR-CE OS</th><th>RxR-CE SR</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>NaVid</td><td>&#10003;</td><td>5.47</td><td>0.490</td><td>0.370</td><td>0.350</td><td>5.72</td><td>0.457</td><td>0.382</td></tr>
+        <tr><td>Qwen-RobotNav-4B</td><td>&#10003;</td><td>&mdash;</td><td>&mdash;</td><td>0.669</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>Qwen-RobotNav-8B</td><td>&#10003;</td><td>4.36</td><td>0.727</td><td>0.657</td><td>0.596</td><td>4.16</td><td>0.734</td><td>0.635</td></tr>
+        <tr><td>Qwen-RobotNav-8B (depth/multi-cam)</td><td>&#10007;</td><td>3.73</td><td>0.727</td><td>0.721</td><td>0.666</td><td>3.58</td><td>0.765</td><td>0.657</td></tr>
+        <tr><td><strong>Robostral Navigate (ours)</strong></td><td>&#10003;</td><td><strong>3.20</strong></td><td><strong>0.813</strong></td><td><strong>0.774</strong></td><td><strong>0.742</strong></td><td>3.47</td><td>0.751</td><td><strong>0.687</strong></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Prefix-tree training vs. per-time-step: identical training signal (proved constructively), <code>22&times;</code> fewer training tokens, months-to-days wall-clock reduction. This is the enabling systems ablation &mdash; without it the <code>2.4M</code>-trajectory SFT corpus at 8B scale is not tractable in reasonable wall-clock time.</li>
+      <li>SFT-only vs. SFT + online RL: RxR-CE SR <code>71.2% &rarr; 75.1%</code> (<code>+3.9</code>). The lift is concentrated on the long-horizon instruction-following distribution, consistent with the covariate-shift diagnosis: shortest-path expert data lacks information-seeking / recovery behaviors that only on-policy exploration produces.</li>
+      <li>Displacement co-training: only <code>~10%</code> of training data has invisible destinations, but predicting metric displacement alongside pointing still functions as an effective auxiliary. The paper positions this as regularization on the small subset where pointing alone is under-defined rather than a separate action head.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>Domain: indoor + outdoor visual navigation from monocular RGB. The paper does not claim results on manipulation, object interaction, or human-in-the-loop safety.</li>
+      <li>Cross-robot deployment is demonstrated on two platforms (Galaxea R1, Hiwonder JetAuto) with the same weights + a platform-specific low-level controller. No claim about legged or aerial deployment beyond the abstract; the paper says the design should extend to legged and aerial because pointing is intrinsic-invariant, but only the two wheeled/tracked deployments are shown.</li>
+      <li>Simulation-to-real: the training corpus is <code>2.4M</code> simulated trajectories over <code>350k</code> scenes. The RL phase is also in simulation. Real-robot deployment relies on the visual-grounding pre-training of the base 8B VLM plus in-simulation RL, not on any real-world fine-tuning.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>arXiv preprint: <a href="https://arxiv.org/abs/2607.20785">2607.20785</a>. HTML: <a href="https://arxiv.org/html/2607.20785v1">2607.20785v1</a>. No public model weights or code release announced in the arXiv metadata at time of writing. Cross-robot demos on Galaxea R1 and Hiwonder JetAuto are shown in the paper&rsquo;s figure set.</li>
+    </ul>
+
+    <h1 id="nvidia">NVIDIA</h1>
+
+    <h2 id="sana-video-2-0"><a href="https://arxiv.org/abs/2607.21553">SANA-Video 2.0: Hybrid Linear Attention with Attention Residuals for Efficient Video Generation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-07-23</span>
+      <span>Video diffusion &middot; Hybrid attention &middot; Linear attention &middot; Attention residuals &middot; Efficient inference</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Junsong Chen, Jincheng Yu, Yitong Li, Shuchen Xue, Haozhe Liu, Jingyu Xin, Yuyang Zhao, Tian Ye, Zhangjie Wu, Zian Wang, Daquan Zhou, Ping Luo, Song Han, Enze Xie. Affiliation: <strong>NVIDIA</strong>. <a href="https://nvlabs.github.io/Sana/Video2">Project page</a>; <a href="https://github.com/NVlabs/Sana">GitHub</a>. Published July 23, 2026 on arXiv as 2607.21553v1.</li>
+      <li>Central claim: a mostly-linear-attention backbone can recover the expressiveness of full softmax attention while keeping <code>O(N)</code> sequence scaling for long, high-resolution video &mdash; if the linear stack is punctuated by softmax anchors at a 25% ratio and paired with block-level Attention Residuals that route completed block summaries across depth. The paper defends the claim jointly with a <code>5B</code> production checkpoint that matches full-softmax quality on VBench and a <code>14B</code> checkpoint (40 layers, width 4,096, 14.25B parameters) trained at <code>384 &times; B200</code> scale.</li>
+      <li>Positioning: builds on the pure-linear <code>SANA-Video</code> line and imports the hybrid-attention layout from Qwen3-Next and Kimi-Linear (LM regime) plus the Block Attention Residuals construction from Kimi K3 (which pairs AttnRes with hybrid linear attention at trillion-parameter scale). The novel piece is adapting both to bidirectional video diffusion &mdash; sharing routing queries across depth, removing explicit diffusion-timestep conditioning (redundant with AdaLN), and training the hybrid from scratch rather than linearizing a pretrained softmax model.</li>
+      <li>Headline results: VBench Total <code>84.30</code> in <code>13.2</code>s at <code>480&times;832&times;81</code> on one H100 (40-step sampling). Compiled DiT forward pass <code>3.2&times;</code> faster than a matched full-softmax baseline at <code>720p/60s</code>, a gap that widens with duration. Sol-Engine full-stack optimization (kernel fusion, caching, sparse attention) adds another <code>3.58&times;</code>, delivering <code>13.06</code>s at <code>720p/5s</code> and <code>120&times;</code> faster than <code>Wan 2.2-A14B</code> on one H100.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.21553v1/x2.png" alt="SANA-Video 2.0 at a glance: text-to-video examples (a); one-H100 720p/5s latency for 5B Sol-Engine and 14B (b); 5B DiT-forward speedup over video duration (c)." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). SANA-Video 2.0 at a glance. (a) Text-to-video examples including embodied and physics-following scenarios. (b) One-H100 <code>720p/5s</code> latency; final Sol-Engine 5B and 40-layer 14B results; VBench marks the 5B and Wan 2.2 quality points. (c) 5B DiT-forward speedup over duration.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Hybrid Linear-Softmax Attention (named contribution).</strong> <em>Problem.</em> Full <code>3D</code> softmax attention costs <code>O(N&sup2;)</code>: after VAE compression a single 1080p clip already spans tens of thousands of latent tokens, and long video (<code>&gt;10</code>s) pushes both the attention matrix and the activation workspace over reasonable memory. Pure linear attention scales at <code>O(N)</code> but pays for it in expressiveness &mdash; its fixed-size state matrix <code>S &isin; &Ropf;^{d&times;d}</code> cannot represent every token-token interaction, so precise spatiotemporal correspondence and fine detail weaken. <em>Mechanism.</em> Interleave bidirectional gated linear attention layers with gated softmax anchors at a 3:1 ratio (25% softmax), placing a softmax anchor at every fourth layer. Gated linear attention keeps <code>O(N)</code> token mixing as the dominant cost. Softmax anchors periodically restore the less rank-constrained interactions that the compressed linear state cannot represent. Linear and softmax heads use different head dimensions to trade efficiency against per-head capacity. Text enters through cross-attention at every layer; a convolution-free SwiGLU FFN replaces SANA-Video 1&rsquo;s temporal-convolution FFN whose overhead grows with duration. <em>Why.</em> The regular layout follows Qwen3-Next / Kimi-Linear (and Kimi K3 at trillion-parameter scale), maps cleanly onto fused linear-attention kernels, and the paper confirms 25% as the video-regime quality-efficiency knee via a from-scratch reduced-resolution proxy sweep rather than assuming the LM value. In a matched production-scale profiling sweep at <code>1080p/121f</code>, the full-softmax backbone is <code>2.01&times;</code> slower than the 25% hybrid, with both compiled on their best kernels.</li>
+      <li><strong>Block Attention Residuals / AttnRes (named contribution).</strong> <em>Problem.</em> Additive residuals <code>h_l = h_{l-1} + f_l(h_{l-1})</code> force every later layer to re-derive information already computed upstream; when only sparse softmax anchors carry the less rank-constrained interactions, the linear layers after each anchor cannot reuse the anchor&rsquo;s rank-refreshed updates efficiently. <em>Mechanism.</em> AttnRes routes completed block-feature summaries across depth via learned depth-wise aggregation <code>h_l = &sum;_i &alpha;_{i&rarr;l} v_i</code> rather than only propagating through the immediate previous layer. Layers are grouped into consecutive blocks; each finished block leaves a single feature summary, and the in-progress block carries a running partial sum. The router at layer <code>l</code> draws from a source set <code>{b_0, b_1, &hellip;, p_l}</code> made of the initial token embedding, completed block summaries (which now include softmax-anchor updates), and the current within-block partial sum. Video adaptations: <em>shared routing queries across depth</em> (rather than per-sublayer) and <em>no diffusion-timestep conditioning</em> on the router (the paper tests it and finds it redundant with AdaLN; the learned offset is nearly constant and shuffling it has negligible validation effect). <em>Why.</em> In a controlled same-checkpoint on/off probe, enabling AttnRes raises deep-layer state effective rank by <code>~12%</code>. Concretely: the linear layers after a softmax anchor no longer have to re-derive the anchor&rsquo;s output through the immediate residual path &mdash; they see it directly as a completed block summary. This closes the specific bottleneck that made pure-hybrid stacks under-perform full softmax without post-hoc fixes.</li>
+      <li><strong>From-scratch hybrid training (design choice, not linearization).</strong> Unlike post-hoc linearization of a pretrained softmax model, the hybrid backbone is trained directly. The paper reports the training and inference-optimization pipeline in full as a central, reproducible contribution: data curation and filtering, low-to-high resolution / duration curriculum, structured captioning, self-distillation, and preference-based post-training (Diffusion-DPO plus ReFL with a joint reward). The 5B configuration is 32 layers at width 2,560; the 14B is 40 layers at width 4,096 (<code>14.25B</code> parameters) trained on <code>384 &times; B200</code>. Both use <code>LTX-VAE 2.3</code> latents and Gemma-2-2B-IT text features via cross-attention at every layer.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.21553v1/x3.png" alt="SANA-Video 2.0 overview: hybrid DiT layer with linear attention as the majority operation and periodic softmax anchors, block-level AttnRes routing completed block summaries, and a shared-query router aggregating input and completed block features." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). SANA-Video 2.0 overview. (a) Hybrid DiT layer. (b) Eight-layer blocks expose completed features across depth. (c) A shared-query AttnRes router aggregates the input and completed block features.</figcaption>
+    </figure>
+
+    <h3>Pre-training and Curriculum</h3>
+    <ul>
+      <li><strong>Data curation and quality/motion funnel.</strong> Raw video corpus &rarr; shot segmentation, black-bar / subtitle cleanup, removal of low-resolution / blurry / static / exposure-defective clips, multi-axis (rather than single-score) filtering to prevent selection collapse to visually clean but static clips. Progressive quality/motion funnel across stages: pre-training uses a broad pool under permissive thresholds; continual training raises quality and motion floors; SFT concentrates on a small trusted subset. Captions progress from mixed short/long to dense structured; quantized motion descriptors are appended when available and turn the selection signal into a conditioning cue.</li>
+      <li><strong>Training curriculum (5B production).</strong> Pre-train: <code>~30M</code> clips, 480p, 16/24 FPS, 5s, flow-shift <code>1 (+TQD)</code>, LR <code>10&minus;4</code>, TQD + Self-Flow. Continual: <code>~10M</code> clips, 480 &rarr; 720p, 5s &rarr; 8s, token-count-aware flow-shift <code>3&ndash;6</code>, LR <code>10&minus;4</code>, Self-Flow only. SFT: <code>~10&#8309;</code> clips (curated), 720p, 8s, flow-shift <code>3&ndash;6</code>, LR <code>5&times;10&minus;5</code>, standard flow matching.</li>
+      <li><strong>Content-aware flow-shift (TQD).</strong> Pre-training routes each clip to the noise regime where its content matters and its weaknesses do not: high-motion clips (which often carry per-frame artifacts) get a <code>+1.1</code> logit offset toward high noise, aesthetically clean low-motion clips get <code>&minus;1.1</code>, clips passing both or neither keep the base density. Continual training onward replaces TQD with token-count-aware flow-shift.</li>
+      <li><strong>Token-count-aware flow-shift.</strong> Anchor the shift at two endpoints and interpolate in log-shift space by latent token count: log-linearly from <code>3</code> at <code>4,290</code> latent tokens (<code>480p, 81f</code>) to <code>6</code> at <code>23,000</code> tokens (<code>720p, 193f</code>). Every intermediate resolution&times;duration lands on a principled shift; each rank computes its shift from local latent shape (production uses batch size 1 per rank).</li>
+      <li><strong>Weight EMA and Self-Flow.</strong> EMA of model weights active throughout training including SFT. Pre-training and continual training additionally carry <em>Self-Flow</em>, an auxiliary feature-distillation objective with within-clip dual-timestep conditioning as a training aid. Self-Flow is turned off for SFT; EMA stays on.</li>
+      <li><strong>Timestep-stratified validation.</strong> Rather than a single random-<code>t</code> mean loss, validation is stratified into ten equal 100-step noise buckets. This exposes structure the mean hides (across four paired checkpoints a <code>6.42%</code> bucket-macro drop resolves into a <code>11.44%</code> low-noise improvement offset by a <code>1.16%</code> high-noise regression) and cuts the standard deviation of the early-to-final estimate by <code>2.27&times;</code> vs IID timestep draws.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li><strong>Diffusion-DPO.</strong> For each prompt, Gemini ranks videos sampled with different random seeds by visual fidelity, prompt alignment, motion quality, and temporal coherence (offline; Gemini is not in the training loop). Best- and worst-ranked form a preferred-rejected pair <code>(x&#8314;, x&#8315;, c)</code>. Both trainable policy and frozen reference model init from the SFT checkpoint; the two videos in a pair share the same timestep <code>t</code> and Gaussian noise <code>&epsilon;</code> so pairwise differences reflect videos rather than mismatched corruption. Loss combines a Diffusion-DPO term (pair weight from judge score gap, preference strength <code>&beta;</code>) with a preferred-sample flow-matching regularizer.</li>
+      <li><strong>Online RL via ReFL.</strong> For each prompt, ReFL rolls out the denoising trajectory without gradients to a randomly sampled update step, predicts the clean latent <code>x&#770;_0</code>, decodes into a video, and evaluates first/middle/last frames with frozen image reward models. Gradients propagate through the decoder and model evaluation, avoiding full sampling-trajectory backprop. Joint reward: <code>HPSv3++</code> : <code>DeQA-Score</code> : <code>UniPercept</code> at ratio <code>4:4:1</code>, plus a velocity-space MSE regularizer against the frozen base model to preserve the generative prior.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.21553v1/x4.png" alt="Training and data pipeline for the 5B checkpoint: pre-training, continual training, SFT, and preference-based post-training (DPO + ReFL) with stage-specific data selection, video shapes, and training objectives." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 3 (from the paper). Training and data pipeline for the 5B checkpoint. Curated in-house clips feed pre-training, continual training, SFT, and preference-based post-training (DPO + ReFL), with stage-specific data selection, video shapes, and training objectives per stage.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Quality.</strong> VBench Total <code>84.30</code> with 40-step sampling at <code>480&times;832&times;81</code>, competitive with far larger softmax Video DiTs. Timestep-stratified checkpoint monitoring tracks VBench Total <code>82.68 &rarr; 83.29</code> across the four paired checkpoints used to validate the stratification protocol; final production checkpoint reaches <code>84.30</code>.</li>
+      <li><strong>Efficiency, DiT forward pass.</strong> At <code>720p/60s</code>, the compiled DiT forward pass is <code>3.2&times;</code> faster than a matched full-softmax baseline; both compiled on their best kernels. Gap widens with duration. In a matched production-scale profiling sweep at <code>1080p/121f</code>, full-softmax is <code>2.01&times;</code> slower than the 25% hybrid.</li>
+      <li><strong>Efficiency, end-to-end deployment.</strong> Sol-Engine (kernel fusion, caching, sparse attention) adds <code>3.58&times;</code> end-to-end speedup on B200 in a 50-step deployment; 5B pipeline reaches <code>13.06</code>s at <code>720p/5s</code>. On one H100 this makes the 5B pipeline <code>120&times;</code> faster than Wan 2.2-A14B.</li>
+      <li><strong>Quantization.</strong> Quantization-aware training matches BF16 quality at <code>MXFP4</code> weights and <code>MXFP8</code> activations. Weight-only quantization at <code>MXFP4</code> plus activations at <code>MXFP8</code> is the tier used for the Sol-Engine 5B pipeline.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Softmax anchor ratio sweep.</strong> Reduced-resolution proxy studies sweep the anchor ratio from scratch rather than assuming the LM value; 25% softmax is confirmed as the video-regime quality-efficiency knee. Lower ratios lose exact token-token interactions and hurt fine detail; higher ratios lose the <code>O(N)</code> scaling that motivated the hybrid.</li>
+      <li><strong>AttnRes on/off.</strong> Controlled same-checkpoint on/off probe: enabling AttnRes raises deep-layer state effective rank by <code>~12%</code>. Same-checkpoint isolation attributes the rank gain to the routing mechanism rather than to any training-side confound.</li>
+      <li><strong>Diffusion-timestep conditioning on the router.</strong> Tested and disabled: the learned offset is nearly constant, shuffling or changing it has negligible validation effect, and the final model uses <code>&phi;_&tau; &equiv; 0</code> while retaining timestep modulation inside the DiT blocks via AdaLN.</li>
+      <li><strong>Temporal-convolution FFN removal.</strong> SANA-Video 1&rsquo;s temporal-convolution FFN carries measurable overhead that grows with clip duration. Replacing it with a convolution-free SwiGLU FFN keeps the backbone easy to profile and fuse with off-the-shelf kernels while giving up no measurable quality.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>arXiv Technical Report: <a href="https://arxiv.org/abs/2607.21553">2607.21553</a>. HTML: <a href="https://arxiv.org/html/2607.21553v1">2607.21553v1</a>. Project page: <a href="https://nvlabs.github.io/Sana/Video2">nvlabs.github.io/Sana/Video2</a>. Code: <a href="https://github.com/NVlabs/Sana">github.com/NVlabs/Sana</a>. Weights and Sol-Engine kernels not yet linked from the project page at the time of writing; the arXiv release documents both the 5B and 14B configurations.</li>
+    </ul>
+
+    <h1 id="microsoft">Microsoft</h1>
+
+    <h2 id="openforgerl"><a href="https://arxiv.org/abs/2607.21557">OpenForgeRL: Train Harness-native Agents in Any Environment</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-23</span>
+      <span>Agent RL &middot; Training infrastructure &middot; Coding agents &middot; GUI agents &middot; Kubernetes rollouts</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Xiao Yu, Baolin Peng, Ruize Xu, Hao Zou, Qianhui Wu, Hao Cheng, Wenlin Yao, Nikhil Singh, Zhou Yu, Jianfeng Gao. Affiliation: <strong>Microsoft</strong> (Baolin Peng and Jianfeng Gao at Microsoft Research). arXiv 2607.21557v1, submitted July 23, 2026 to <code>cs.AI</code>. Corresponding submitter: Xiao Yu.</li>
+      <li>Central claim: modern AI agents run inside elaborate inference harnesses &mdash; Claude Code, Codex, OpenClaw &mdash; that drive stateful multi-turn reasoning, tool use, and external-system access. These harnesses are hard to train end-to-end with open infrastructure because open SFT/RL stacks (veRL and similar) cannot natively express the stateful, multi-process harness inference the harnesses run. OpenForgeRL closes this gap by decoupling training from inference: a lightweight proxy serves the harness&rsquo;s model calls and records them as training data for a standard RL codebase, while a Kubernetes orchestrator runs each rollout in its own remote container. Together they enable training on any harness in any environment at scale.</li>
+      <li>Validation: OpenForgeClaw reaches <code>31.7</code> pass&sup3; and <code>55.9</code> pass@3 on ClawEval, and <code>33.7</code> on QwenClawBench. OpenForgeGUI reaches <code>37.7</code> on OSWorld-Verified, <code>63.0</code> on Online-Mind2Web, and <code>72.3</code> on WebVoyager. Both outperform open baselines of similar size on nearly all benchmarks, and in the GUI setting match or surpass models several times larger, using only hundreds to a few thousand training tasks.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Harness-proxy training architecture (named contribution).</strong> <em>Problem.</em> Frontier coding-agent and GUI-agent training runs happen inside proprietary harnesses that own the multi-turn control loop, do stateful tool routing, and interleave multiple model calls with external-system side effects (file writes, browser actions, tool responses). Open RL stacks like veRL expose a &ldquo;model.generate() &rarr; reward &rarr; update&rdquo; interface that does not natively accommodate this pattern: the training loop can neither observe the harness&rsquo;s intermediate state nor script the harness&rsquo;s calls to the model without a wrapper. Without such a wrapper, open RL cannot train agents inside the actual harnesses they will be deployed with, so open training runs use simplified environments and the resulting policies underperform when moved back into production harnesses. <em>Mechanism.</em> OpenForgeRL runs each harness end-to-end but intercepts the harness&rsquo;s model calls via a <em>lightweight proxy</em>. The proxy serves the calls (routing them to the current policy checkpoint) while recording the full request-response history as training data in a format the standard RL codebase (veRL) already consumes. The harness&rsquo;s stateful multi-process control flow is preserved untouched; the RL codebase sees a stream of clean prompt-response-reward tuples. <em>Why.</em> Preserves the exact multi-turn semantics the deployed harness will use at inference time (no simulator-to-production gap), while keeping the RL stack unchanged (no need to rewrite veRL to understand harness state). The proxy is thin because it only needs to translate model-call semantics, not simulate the harness.</li>
+      <li><strong>Kubernetes-per-rollout orchestrator (named contribution).</strong> <em>Problem.</em> Coding and GUI harnesses need per-rollout side effects &mdash; writing files, spawning browsers, running tests &mdash; that cannot share a single filesystem or process without cross-rollout contamination. Standard RL rollout workers assume shared-process step-based environments; running Claude Code or OpenClaw in a shared process would let one rollout&rsquo;s file writes leak into another&rsquo;s tests. <em>Mechanism.</em> Each rollout runs inside its own remote container via Kubernetes; the orchestrator schedules containers, tears them down after the rollout completes, and streams the proxy&rsquo;s recorded traces back to the training loop. Containers are the isolation unit for both filesystem and process state. <em>Why.</em> Enables training against harnesses that require real subprocess execution, real file-system side effects, and real network access &mdash; the actual production configuration &mdash; without cross-rollout contamination. Also scales trivially: adding rollouts means adding containers, not sharing more processes.</li>
+      <li><strong>Harness / environment coverage.</strong> Validated across (a) tool/claw-based agents inside OpenClaw and related harnesses, and (b) multimodal GUI browser- and computer-use agents (OSWorld, Mind2Web, WebVoyager). The training corpus per experiment is hundreds to a few thousand tasks &mdash; substantially smaller than typical closed frontier-agent training runs.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>OpenForgeClaw (tool/claw agent).</strong> ClawEval <code>31.7</code> pass&sup3;, <code>55.9</code> pass@3. QwenClawBench <code>33.7</code>. Outperforms open baselines of similar size on nearly all benchmarks.</li>
+      <li><strong>OpenForgeGUI (GUI browser and computer-use agent).</strong> OSWorld-Verified <code>37.7</code>. Online-Mind2Web <code>63.0</code>. WebVoyager <code>72.3</code>. In the GUI setting matches or surpasses models several times larger.</li>
+      <li><strong>Efficiency of the training regime.</strong> Only hundreds to a few thousand tasks used per experiment. This is the sample-efficiency claim that follows from being able to train in the real harness: the RL signal is dense (real tool feedback rather than simulated) and the covariate shift between training and deployment is zero (same harness).</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Harness choice.</strong> Comparing <code>ZeroClaw</code>, <code>OpenClaw</code>, and <code>Codex</code> harnesses under otherwise-identical training, some harnesses are substantially harder to learn than others &mdash; suggesting the harness itself, not just the model, determines training difficulty and final policy behavior. The paper frames this as evidence that harness design is a first-class RL-training variable.</li>
+      <li><strong>RL contribution to agentic reliability.</strong> RL improves self-verification, tool coverage, and multi-step-plan completion. Error recovery remains weak &mdash; the model still fails to recover from off-policy trajectories in a substantial fraction of failures. The paper positions error recovery as the next open problem the harness-native training paradigm has not solved.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning against prior open frameworks: OpenForgeRL is the first open framework that trains inside Claude Code / Codex / OpenClaw as-is, rather than approximating them with a simplified environment. The comparable prior open stacks (veRL alone; agent training in RL-Gym-style simulators) either do not support stateful harness inference or approximate the harness with a simpler action loop, losing production-relevant behavior.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="workbuddy-bench"><a href="https://arxiv.org/abs/2607.20911">Tencent WorkBuddy Bench: A Multi-Domain Coding-Agent Benchmark with Contamination-Resistant Task Construction</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-23</span>
+      <span>Coding agents &middot; Benchmark &middot; Contamination resistance &middot; Multi-domain evaluation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Tencent WorkBuddy Bench Team &mdash; Siqi Cai, Shaopeng Chen, Xiang Fei, Yong Mao, Zihan Xu, Zhiheng Lyu, Zhijian Shao, Yuchen Shi, Shuwen Zhang, Chaofan Qiu, Linjie Che, Xiaoxi Zhao, Feng Wu, Kai Zhang, Chaofan Zhu, Yubin Qi, Xiaoyun Liang, Peijie Dong, Yunhao Zhang, Yuanjie Zhu, Ling Jiang, Xianjun Zhang, Zhehang Chu, Anyuan Sang, Zhen Feng, Sen Nie, Shi Wu, Yuanzhen Xu, Xin Li, Ning Yang, Zhiqiang Dong, Hande Dong, Qiang Lin, Yi Liu, Yunsheng Wu, Ke Li, Xing Sun. Affiliation: <strong>Tencent</strong>. Project page: <a href="https://workbuddybench.com/">workbuddybench.com</a>; code: <a href="https://github.com/Tencent/workbuddy-bench">github.com/Tencent/workbuddy-bench</a>; dataset: <a href="https://huggingface.co/datasets/tencent/workbuddy-bench">huggingface.co/datasets/tencent/workbuddy-bench</a>. arXiv 2607.20911v1, 30 pages, 9 figures.</li>
+      <li>Central claim: coding-agent benchmarks should span the four work domains real developers actually operate in &mdash; repository engineering, front-end development, office and business workflows, red-/blue-team security &mdash; and their contamination resistance should come from task <em>construction</em> (reverse-engineered, rewritten as colloquial role-played requests) plus dataset versioning, not from secrecy. The full open release &mdash; task directories, environment images, evaluation harness, tests, reference solutions &mdash; is the safety story: any third party can audit and re-run any task.</li>
+      <li>Positioning: extends the SWE-Bench / SWE-Bench-Verified line into four domains, and departs from the SWE-Bench-family design where prompts are drawn from GitHub issue text (which is web-searchable and thus contamination-prone). WorkBuddy Bench rewrites the prompt so the underlying commit/PR/business scenario is not recoverable by web search, while the source itself is public.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Reverse-engineered task construction (named contribution).</strong> <em>Problem.</em> The dominant construction path for coding-agent benchmarks (SWE-Bench, SWE-Bench Live) reuses the GitHub issue text as the model&rsquo;s prompt. Because the underlying issue, PR, or commit thread is publicly searchable, model providers can and do include this text in pretraining data, and the benchmark leaks into training. Response strategies &mdash; hidden test sets, private held-out splits &mdash; either hurt reproducibility or postpone the problem rather than solving it. <em>Mechanism.</em> Every task is reverse-engineered from a real commit, pull request, or business scenario, then <em>rewritten</em> as a short, colloquial, role-played request. The rewriting deliberately obscures the surface text so that web-searching the prompt does not recover the underlying issue thread; the reference solution, tests, environment image, and task directory are then packaged around the rewritten prompt. <em>Why.</em> Contamination resistance now rests on the construction step rather than on secrecy. The full dataset can be released openly (dataset, harness, tests, reference solutions) &mdash; and it is &mdash; while the specific prompt-to-source mapping is not recoverable from the web. Dataset versioning is the second line of defense: subsequent versions can retire tasks whose prompts have been reverse-engineered by third parties, without depending on any single test set staying private.</li>
+      <li><strong>Four-domain design.</strong> The four subsets probe complementary facets of real work with subset-specific verification instruments: <em>Code</em> (repository-level engineering, unit-test verification), <em>Web</em> (front-end development, headless-browser rendering / visual regression verification), <em>Office</em> (office and business workflows, structured-artifact verification), <em>Security</em> (red-/blue-team, capture-the-flag / vulnerability-exploit verification). Every subset uses a different scoring instrument, so scores are not comparable across subsets and the suite deliberately reports no suite-wide average.</li>
+      <li><strong>Uniform task-directory format and shared harness protocol.</strong> All four subsets are packaged in a uniform task-directory layout, and all tasks run under a uniform reproducible protocol on two agent harnesses: Tencent&rsquo;s in-house <code>CodeBuddy Code</code> and Anthropic&rsquo;s <code>Claude Code</code>. This is a specific design choice against the alternative of custom per-task orchestration: it enables direct model-family comparability under the same harness, at the cost of restricting the benchmark to models that can run through those two harnesses.</li>
+      <li><strong>Open release as auditability.</strong> Task directories, environment images (Docker), the evaluation harness, tests, and reference solutions are all released. The paper positions this as the reproducibility and audit story: any third party can rerun each task and inspect its content, and the community rather than the benchmark authors becomes the source of trust in the scores.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Cross-model leaderboard reported across several model families under both <code>CodeBuddy Code</code> and <code>Claude Code</code> harnesses. The paper does not report a suite-wide aggregate; each of Code / Web / Office / Security is scored separately with its own instrument. Detailed per-subset scores are in the paper&rsquo;s tables (see arXiv 2607.20911 for the full leaderboard).</li>
+      <li>Because verification instruments differ across subsets (unit tests vs. visual regression vs. structured-artifact match vs. exploit success), the benchmark is intended as a per-domain measurement rather than a single scalar &mdash; the reported cross-model leaderboard is per-subset only.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Contrast with the concurrent <code>Rubric4Setwise</code> paper (Tencent Yuanbao, arXiv 2607.19747, published July 22): where Rubric4Setwise makes RAG reranker evaluation set-oriented and rubric-driven, WorkBuddy Bench makes coding-agent evaluation multi-domain and contamination-resistant. Both are Tencent-authored 2026 evaluation contributions that reject a single scalar metric in favor of a structured decomposition (nine rubric dimensions for RAG; four work domains for coding agents).</li>
+      <li>Positioning against SWE-Bench Live and SWE-Bench Pro: WorkBuddy retains the &ldquo;real-world commit / PR&rdquo; grounding those benchmarks share, but drops both the fixed GitHub-issue prompt shape and the &ldquo;expand into new issues each month&rdquo; freshness treadmill in favor of an open-release + rewrite + versioning design.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
