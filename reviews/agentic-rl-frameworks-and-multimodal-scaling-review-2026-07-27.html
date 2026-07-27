@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agentic RL Frameworks and Native Multimodal Scaling Review &mdash; July 27, 2026 | Auto Lit Review</title>
+<meta name="description" content="NVIDIA ships Molt, an 8.6K-line PyTorch-native agentic RL framework that composes Ray, vLLM, and NeMo AutoModel around one FSDP2 asynchronous loop, runs the same recipe from 4B dense up to 700B MoE at expert parallelism 256, and reaches statistical throughput parity with a Megatron/SGLang stack on Qwen3-30B-A3B. Alibaba Qwen releases Skill Self-Play (Skill-SP), a proposer/solver/skill-controller co-evolutionary RL loop that reconciles open-ended task diversity with per-skill verification. Tencent Hunyuan derives compute laws for native-multimodal pre-training from scratch, showing language allocation is invariant to modality mix while multimodal allocation exponents shift toward larger models as text-heavy mixtures dominate, and that native training induces positive cross-modal transfer that raises pure-text spatial reasoning." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 27, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#alibaba" class="toc-h1">Alibaba (Qwen)</a>
+          <ul>
+            <li><a href="#skill-self-play" class="toc-h2">Skill Self-Play</a></li>
+          </ul>
+        </li>
+        <li><a href="#nvidia" class="toc-h1">NVIDIA</a>
+          <ul>
+            <li><a href="#molt" class="toc-h2">Molt</a></li>
+          </ul>
+        </li>
+        <li><a href="#tencent" class="toc-h1">Tencent</a>
+          <ul>
+            <li><a href="#native-multimodal-scaling" class="toc-h2">Scaling Native Multimodal Pre-Training</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 27, 2026</div>
+    <h1 class="page-title">Agentic RL Frameworks and Native Multimodal Scaling</h1>
+    <div class="page-meta">3 papers &middot; 3 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>No flagship model launches inside the window; three Tier 2 research contributions from frontier labs. NVIDIA&rsquo;s <strong>Molt</strong> is a PyTorch-native agentic-RL training framework built around an explicit readability constraint (<code>~8.6K</code> Python lines vs <code>~62K</code> for verl and <code>~25K</code> for slime) that composes Ray, vLLM, and NeMo AutoModel with FSDP2 around <em>one</em> asynchronous loop, and hits statistical throughput parity with a Megatron/SGLang stack on Qwen3-30B-A3B under a strictly matched protocol; the same lean loop runs end-to-end on a 700B MoE at expert parallelism <code>256</code> without a design change. Alibaba (Qwen Applications) ships <strong>Skill Self-Play (Skill-SP)</strong>, a co-evolutionary RL loop with three participants &mdash; a proposer, a solver, and a dynamic skill controller &mdash; that resolves the diversity/verification dilemma of open-ended self-evolution by grounding each generated task in a specific skill whose execution is verifiable while dynamic routing across the skill library preserves task variety. Tencent Hunyuan&rsquo;s <strong>Scaling Native Multimodal Pre-Training From Scratch</strong> is the first Chinchilla-style compute-law study for VLMs trained natively (rather than via late-fusion adapters on top of a pretrained LLM), and derives distinct allocation power laws for language and multimodal objectives, with multimodal allocation exponents that are highly sensitive to the text/image data mix &mdash; text-heavy mixtures push the compute-optimal frontier toward larger models and fewer tokens.</p>
+
+      <h3>Competitiveness</h3>
+      <p>Molt is positioned against the two dominant open agentic-RL stacks: verl (production breadth, <code>~62K</code> Python LOC on the RL entry path) and slime (Megatron-Core throughput, <code>~25K</code> LOC). Molt&rsquo;s claim is that a single-backend PyTorch design with one asynchronous loop can match slime&rsquo;s throughput on Qwen3-30B-A3B (2 nodes &times; 8 H100, 8 training + 8 rollout GPUs, DAPO-Math prompts, 16K context / 8K response cap, global batch 128, Adam identical, no reference model) at <code>~1/3</code> the code footprint, and inherits engine features (prefix caching yielding <code>0.05</code>s re-prefill; MTP speculative decoding cutting per-step generation from <code>329</code>s to <code>64</code>s, a <code>5&times;</code> speedup; optimizer CPU offload trading <code>+18%</code> policy_train time for <code>-18.3</code>GB peak actor memory) as configuration rather than integration. The MoE-consistency piece (rollout routing replay) and the token-first agent boundary (which trains stock OpenAI/Anthropic SDK harnesses as-is, no integration code) are the specific differentiators against slime and verl respectively. Skill-SP addresses the frontier of interaction-driven LLM self-evolution &mdash; the same regime as recent <code>R-Zero</code>, <code>AZR</code>, and <code>SPIRAL</code>-style self-play systems &mdash; but reconciles the two branches of that literature (environment-bound methods with precise but narrow rewards vs open-ended self-generation with wide but unreliable rewards) by making the skill the routing unit rather than the task or the domain. Reported empirical evidence: consistent gains on tool-use and reasoning benchmarks over already-competent backbones, plus &ldquo;striking turnarounds for initially misaligned models,&rdquo; suggesting the co-evolutionary loop repairs bad initialization rather than just extending competent ones. Tencent Hunyuan&rsquo;s native-multimodal scaling study is the first to characterize compute-optimal allocation for VLMs trained from scratch rather than by grafting a vision encoder onto a pretrained LLM, and its practical output is an efficiency frontier that gives model size, token count, and mixture ratio jointly for any target loss and compute budget &mdash; the same role Chinchilla played for text-only scaling. Two positioning claims land alongside: native pre-training produces positive cross-modal transfer that lifts pure-text spatial reasoning above a matched text-only baseline, and downstream multimodal in-context learning is more robust than late-fusion adapters at equal training compute.</p>
+
+      <h3>New frontier releases</h3>
+      <p>No Tier 1 flagship launches in the July 25 &mdash; July 27 window. Three Tier 2 research papers: NVIDIA&rsquo;s <strong>Molt</strong> tech report (<a href="https://arxiv.org/abs/2607.21653">arXiv 2607.21653</a>, submitted July 22, surfaced today on HF Daily Papers; <a href="https://github.com/NVIDIA-NeMo/labs-molt">GitHub 605</a>); Alibaba Qwen Applications&rsquo; <strong>Skill Self-Play</strong> (<a href="https://arxiv.org/abs/2607.22529">arXiv 2607.22529</a>, submitted July 24; <a href="https://github.com/Qwen-Applications/skill-self-play">GitHub</a>, currently empty); Tencent Hunyuan&rsquo;s <strong>Scaling Native Multimodal Pre-Training From Scratch</strong> (<a href="https://arxiv.org/abs/2607.22043">arXiv 2607.22043</a>, submitted July 24).</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba (Qwen)</h1>
+
+    <h2 id="skill-self-play"><a href="https://arxiv.org/abs/2607.22529">Skill Self-Play: Pushing the Frontier of LLM Capability with Co-Evolving Skills</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-24</span>
+      <span>RL &middot; Self-play &middot; Skill library &middot; Tool use &middot; Reasoning</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Siyuan Huang, Pengyu Cheng, Haotian Liu, Tao Chen, Yihao Liu, Jingwei Ni, Shijie Zhou, Ziyi Yang, Gangwei Jiang, Mengyu Zhou, Yu Cheng, Xiaoxi Jiang, Guanjun Jiang. Affiliation: <strong>Alibaba Qwen Applications</strong> (HuggingFace organization <code>QwenBusinessUnit-Edu</code>; code hosted at <code>github.com/Qwen-Applications/skill-self-play</code>). arXiv 2607.22529v1, 24 July 2026, 6.99 MB PDF.</li>
+      <li>Central claim: existing interaction-driven LLM self-evolution methods sit on a fundamental dilemma &mdash; environment-bound methods obtain precise reward feedback but confine learning to narrow domains, while open-ended self-generation broadens the task space but lacks reliable verification, allowing misleading rewards to pollute the training loop. The paper identifies <em>agent skills</em> as a middle ground: each skill guarantees deep, verifiable execution in one specific scenario, while dynamic routing across a growing skill library maintains open-ended task variety. The system that operationalizes this insight is <strong>Skill Self-Play (Skill-SP)</strong>, a three-participant co-evolutionary RL loop.</li>
+      <li>Positioning: sits in the self-evolution / self-play line that emerged in 2025-2026 (R-Zero, AZR, SPIRAL, DebateAI) but changes the coordination unit. Prior open-ended self-play used the <em>task</em> or the <em>domain</em> as the routing key and paid a verification tax; Skill-SP makes the <em>skill</em> the unit so proposer creativity is bounded by the current skill&rsquo;s verifier rather than by an unreliable outer judge.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Three co-evolving participants (named contribution).</strong> <em>Problem.</em> Open-ended self-generation of training tasks by a single model produces two failure modes at once: task drift (the proposer trends to easy or repetitive scenarios) and reward pollution (there is no verifier for arbitrary generated tasks, so RL trains on noisy signal). Simply capping the task space to a fixed environment kills diversity. <em>Mechanism.</em> Skill-SP factors the loop into three roles, each trained by the same RL objective but with distinct inputs and outputs. A <em>proposer</em> generates a challenging task conditioned on a dynamically sampled skill from the library. A <em>solver</em> explores candidate solutions for the proposed task, pushing at its current capability boundary. A <em>dynamic skill controller</em> observes execution feedback from the solver&rsquo;s attempts, updates skill weights (which skills get sampled how often), and expands the library when the solver&rsquo;s successes reveal a skill decomposition that was previously implicit. All three co-evolve inside one continuous self-play loop: the proposer&rsquo;s next batch of tasks is drawn from the updated skill distribution, and the solver&rsquo;s next round of exploration is conditioned on the new proposer&rsquo;s tasks. <em>Why.</em> Making the skill the routing key gives each generated task a corresponding verifier (the skill&rsquo;s execution check), so reward is trustworthy per-skill even when the outer generative distribution is unconstrained. The controller replaces a fixed curriculum with a data-driven one that grows the skill library from execution outcomes rather than from an author-specified schedule. And the loop is symmetric &mdash; proposer and solver are the same base model with different roles &mdash; so improvements in either half raise the ceiling on the other.</li>
+      <li><strong>RL orchestration.</strong> The three participants are trained together in a reinforcement learning loop that resembles multi-agent self-play but with an explicit third participant (the skill controller) rather than an implicit environment. Proposer reward tracks task difficulty and solver-improvement signal; solver reward is the per-skill verifier output; skill controller reward tracks whether adjusting the sampling distribution improved aggregate solver progress. The three reward channels are shaped so that proposer creativity, solver capability, and skill library coverage all improve jointly rather than any one being optimized in isolation.</li>
+      <li><strong>Skill library dynamics.</strong> The library begins with a seed set of skills and grows via the controller&rsquo;s feedback. Skills whose verifier consistently fires provide the reliable-reward backbone; new skills are added when the controller observes that the solver has systematically discovered a decomposition of an existing skill or a class of tasks the proposer keeps generating that don&rsquo;t map onto any current skill. Skills whose verifier stops firing usefully (either because the solver has saturated or because they were poorly specified) are downweighted in the sampling distribution.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Empirical evaluation covers tool-use and reasoning benchmarks; the paper reports two headline findings from the shipped abstract. First, Skill-SP consistently pushes the performance ceiling of competent backbones &mdash; the improvement is monotone rather than plateau-then-fall, evidence that the skill-controller&rsquo;s coverage expansion keeps supplying gradient after simple self-play would have saturated. Second, initially misaligned models exhibit &ldquo;striking turnarounds&rdquo; under Skill-SP, suggesting the co-evolutionary loop functions as an alignment repair mechanism, not merely an incremental capability booster.</li>
+      <li>Per-benchmark numbers are not exposed in the abstract-level summary available at review time; full tables live in the PDF (<a href="https://arxiv.org/pdf/2607.22529">arXiv PDF</a>). This entry will be updated if the paper text becomes accessible before the next review cycle.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Code release: <code>github.com/Qwen-Applications/skill-self-play</code>. The repository was public but empty at review time (surface metadata only); the paper commits to open-sourcing the training loop.</li>
+      <li>Author list overlaps with prior Qwen tool-use and reasoning work (Yu Cheng, Mengyu Zhou); the &ldquo;Qwen Applications&rdquo; org signals this is an applied-side release rather than a base-model release.</li>
+    </ul>
+
+    <h1 id="nvidia">NVIDIA</h1>
+
+    <h2 id="molt"><a href="https://arxiv.org/abs/2607.21653">Molt: A Scalable PyTorch-Native Training Framework for Agentic Reinforcement Learning</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-22</span>
+      <span>RL infrastructure &middot; Agentic RL &middot; FSDP2 &middot; vLLM &middot; MoE &middot; Multimodal</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Jian Hu, Huiying Li, Hao Zhang, Binfeng Xu, Yifan Zhang, Shaokun Zhang, Hemil Desai, Michael Demoret, Pavlo Molchanov, Jan Kautz, Yi Dong. Affiliation: <strong>NVIDIA</strong> (correspondence <code>jianh@nvidia.com</code>, <code>yidong@nvidia.com</code>). Molchanov and Kautz are NVIDIA Research; the Molt code lives inside the NVIDIA-NeMo org (<code>github.com/NVIDIA-NeMo/labs-molt</code>). arXiv 2607.21653v1, 22 July 2026, 2.14 MB PDF, tech report.</li>
+      <li>Central thesis: complexity in agentic-RL training frameworks is not the price of scale, it is inherited from hyperscale-optimized architectures &mdash; and a lean, single-backend PyTorch stack whose entire RL path fits in <code>~8.6K</code> lines can match a state-of-the-art Megatron/SGLang stack on throughput while remaining readable end-to-end by a researcher and navigable by an AI coding assistant. The paper codifies five design principles, realizes them as one Ray-plus-vLLM-plus-FSDP2 asynchronous loop, and evaluates whether the resulting leanness costs performance (answer: no, statistically).</li>
+      <li>Positioning: Molt&rsquo;s claim against verl (<code>~62K</code> LOC, Hydra+YAML, actor+critic+RM topology, TP/PP/EP/SP parallelism), slime (<code>~25K</code> LOC, Megatron backend, SGLang serving), and OpenRLHF (<code>~7.2K</code> LOC, DeepSpeed ZeRO-3, actor+critic+RM) is not that any single mechanism is novel &mdash; it&rsquo;s that the <em>combination</em> of single-backend AutoModel/vLLM composition, token-first agent boundary, and estimators-as-pure-functions collapses the surface area a researcher must trace to make one algorithmic edit. The comparison isn&rsquo;t &ldquo;we&rsquo;re smaller&rdquo; but &ldquo;we match throughput at <code>~1/3</code> the code and one backend&rdquo;.</li>
+      <li>Headline results: Under a matched fully-asynchronous protocol on Qwen3-30B-A3B (2 nodes &times; 8 H100, 8 training + 8 rollout GPUs), Molt is statistically comparable to slime; the same asynchronous training loop runs end-to-end on a 700B MoE at expert parallelism 256 with no design change; MTP speculative decoding cuts per-step generation from <code>329</code>s to <code>64</code>s (<code>5&times;</code>) via one engine flag; optimizer CPU offload reduces peak GPU memory from <code>64.7</code>GB to <code>46.4</code>GB (the difference between fitting and OOM at that layout) for <code>+18%</code> policy_train time.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.21653v1/assets/molt.png" alt="Molt architecture: three components (user agents in plain Python, vLLM rollout engines behind a request router, and a single FSDP2 policy actor on NeMo AutoModel) composed around one Ray asynchronous queue implementing the streaming pool and partial rollout. Trajectories flow token-exactly from engines through the queue into training; weight refit returns over NCCL directly to engines, bypassing the request router." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). The whole system: three components and one loop. Molt composes user agents in plain Python, vLLM rollout engines behind a request router, and a single FSDP2 policy actor on NeMo AutoModel around one Ray asynchronous queue that implements the streaming pool and partial rollout.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Five design principles (framing).</strong> P1: readable by humans and by AI coding assistants (code that needs a second pass is treated as a defect). P2: minimal code, deliberately one training backend (AutoModel) and one serving engine (vLLM), neither forked. P3: performance parity with SOTA as a constraint, not a goal. P4: modularity follows the RL algorithm (agent/environment/rollout/estimator/loss), not the infrastructure. P5: correctness in the details (token identity, policy-version semantics, forward consistency). The principles are not aspirational &mdash; each is stated with what it forbids in the codebase, and each has a delivery section in Sec 3.</li>
+      <li><strong>One asynchronous loop, four concepts (named contribution).</strong> <em>Problem.</em> Mainstream stacks separate trainer, distributed backend, rollout glue, and configuration into layered abstractions, so a single algorithmic edit (new advantage estimator, new pipeline stage) threads through several layers of indirection &mdash; the researcher pays this cost every iteration. <em>Mechanism.</em> Molt has four load-bearing concepts, each mapping one-to-one onto code. An <em>agent</em> is plain Python that produces actions and rewards. A <em>generator</em> does token-exact capture against the serving engines. A <em>trainer</em> is one visible training loop over a single FSDP2 policy actor. <em>Estimators and losses</em> are pure functions of rewards, groups, and the token trace. Ray provides placement and the asynchronous queue connecting an agent pool, vLLM rollout engines, and one trainable policy actor on NeMo AutoModel with FSDP2/EP/CP; there is no hybrid controller, no per-backend adapter, and no separate parameter server. <em>Why.</em> Aligning modularity with the RL algorithm rather than with infrastructure layers means an algorithmic edit touches exactly one component, and the trace from CLI flag to executed branch to tensor to logged metric to unit test never leaves code a human can read in one pass &mdash; the property an AI coding assistant needs to make the same edit unassisted.</li>
+      <li><strong>Streaming pool + partial rollout (named contribution).</strong> <em>Problem.</em> Naive synchronous rollout stalls the training actor between weight updates; naive asynchronous rollout either discards in-flight requests on refit (wasting long generations) or trains on off-policy tokens with no correction (biased gradient). <em>Mechanism.</em> The streaming pool keeps prompt-groups in flight at all times and emits a training batch as soon as enough groups complete, so the rollout engines never drain while the actor trains; queue depth decouples training throughput from generation latency (heavy-tailed in agentic workloads). Partial rollout does not discard on refit &mdash; Molt pauses the engines, broadcasts actor shards over NCCL, and resumes the retained requests; because a resumed request can mix policy versions, every action token keeps the log-probability returned at sample time and the loss applies a per-token importance correction with a sequence-level gate. Molt <em>refuses</em> to run partial rollout without the correction enabled. <em>Why.</em> Together these decouple generation latency from training throughput (streaming pool) without sacrificing on-policy semantics or wasting long generations (partial rollout + per-token correction). The correction path is the specific mechanism that turns asynchronous rollout from an unsafe throughput optimization into an accounted one.</li>
+      <li><strong>Token-first agent boundary and ChatAgent (named contribution).</strong> <em>Problem.</em> Existing trainers expect framework-specific environments, so training an agent that already runs against a stock OpenAI or Anthropic SDK requires rewriting it &mdash; and text-round-tripping (detokenize on serve, retokenize on train) produces silent drift where the training tokens diverge from the sampled tokens. <em>Mechanism.</em> Molt&rsquo;s agent contract imposes one obligation: name a Python module that exports an <code>AgentRunner</code>; reward is arbitrary Python (graders, sandboxed tools, LLM-as-judge, full VLM environments). Two agent forms sit on one data path. In <em>Env</em>, the framework drives generation, tokenization, multimodal accounting, and per-turn budgets, calling the user&rsquo;s <code>step()</code>; in <em>ChatAgent</em>, existing agent code runs against a stock OpenAI/Anthropic SDK unchanged &mdash; Molt launches a loopback chat server in front of the vLLM engines, and each request decodes server-side into a token-exact accumulation (TITO capture). Retokenization is eliminated because token space is never exited. Context compaction is handled as segmentation: when a compaction rewrites the prompt prefix, the chat server seals the current segment and opens a fresh token-exact one, so group baselines still see one reward per rollout. <em>Why.</em> This makes third-party harnesses (OSWorld-style browser agents, Claude Code, arbitrary Anthropic-SDK agents) trainable without integration code, and the token-identity invariant means every trained token is exactly the token that was generated &mdash; the class of silent bias caused by tokenizer drift is closed by construction rather than by testing.</li>
+      <li><strong>Token-exact transport with no engine forks (named contribution).</strong> <em>Problem.</em> Training-inference mismatch in agentic RL has quiet failure modes &mdash; small differences in tokenization, sampling transforms, multimodal rendering, weight versions, or MoE routing all silently bias the gradient without raising an error. Traditional fixes fork the serving engine to inject correctness hooks, which shackles the framework to old engine versions. <em>Mechanism.</em> Molt carries no vLLM patches; every transport requirement is met client-side against documented endpoints (token-id in / token-id out, per-token log-probs, request-router pinning to the engine holding the prefix cache, server-side vision-language rendering aligned once). Weight refit is an NCCL broadcast from the actor directly to every rollout engine (each loads only the shards it owns), bypassing the request router entirely. <em>Why.</em> An engine upgrade is a container pin, not a rebase &mdash; upstream serving improvements arrive the day they ship. The constraint doubles as a design forcing function: whenever token-exactness looks like it requires engine internals, the requirement is relocated to a stable interface instead.</li>
+      <li><strong>MoE consistency via rollout routing replay (named contribution).</strong> <em>Problem.</em> Mixture-of-experts RL has a failure mode dense models lack: the rollout and training routers select experts independently, and small numerical differences make the two sides evaluate different sparse computation graphs &mdash; the sampled trajectory is not the trajectory the training path recomputes. <em>Mechanism.</em> Molt uses rollout routing replay: the vLLM engine returns its per-token expert choices alongside the sampled tokens; the actor replays those exact expert selections during the training forward. No other component of the loop changes. <em>Why.</em> This is the local fix for the specific MoE-only quiet failure; it costs no serving throughput because the engine is already computing the routing decisions, and it closes the last correctness gap standing between dense-model RL and 1T-class MoE RL.</li>
+      <li><strong>Estimators as functions.</strong> Advantage estimators are plain functions of rewards and groups, selected by <code>--algo.advantage.estimator</code>; supported: REINFORCE++, REINFORCE with group-mean baseline, RLOO, GRPO, Dr. GRPO, GAE + PPO critic, on-policy distillation. A new estimator is one function plus one flag plus one metric plus one test &mdash; no subclass hierarchy, no strategy pattern. Loss normalization is a single global whole-batch token mean shared by policy-gradient, KL, and entropy terms, making the update invariant to data-parallel size and gradient-accumulation depth (changing cluster layout does not silently change the objective). Dynamic filtering in the DAPO style removes degenerate groups and backfills; a force-on-policy option maps one complete multi-turn rollout to exactly one optimizer step when strict on-policy training beats utilization.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Footprint (Table 1).</strong> Molt&rsquo;s RL entry-path code is <code>~8.6K</code> Python lines (import-graph counting from each RL entry point, excluding SFT/DPO trainers, RM training, vendored code, tests, examples, docs). Comparison at commits verl 86e8123, slime 243773c, OpenRLHF b3d2927 (2026-06-16); Molt at 2026-07-07:</li>
+    </ul>
+
+    <table>
+      <thead>
+        <tr><th>&nbsp;</th><th>Molt</th><th>OpenRLHF</th><th>verl</th><th>slime</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Training backend</td><td>AutoModel</td><td>DeepSpeed ZeRO-3</td><td>FSDP(2)/Megatron</td><td>Megatron</td></tr>
+        <tr><td>Rollout engine</td><td>vLLM</td><td>vLLM</td><td>vLLM/SGLang/TRT</td><td>SGLang</td></tr>
+        <tr><td>RL topology</td><td>actor (+critic)</td><td>actor+critic+RM</td><td>actor+critic+RM</td><td>actor+critic+RM</td></tr>
+        <tr><td>Reward source</td><td>agent Python</td><td>agent / endpoint / RM</td><td>agent / RM / endpoint</td><td>rollout fn / RM</td></tr>
+        <tr><td>Parallelism</td><td>TP/EP/CP, MoE-native</td><td>ZeRO-3 / FSDP</td><td>TP/PP/EP/SP</td><td>TP/PP/DP/CP/EP</td></tr>
+        <tr><td>Multimodal</td><td>VLM, multi-turn tools</td><td>VLM RL</td><td>Qwen2.5-VL, Kimi-VL</td><td>geo3k VLM</td></tr>
+        <tr><td>Config surface</td><td>CLI flags</td><td>CLI + scripts</td><td>Hydra + YAML</td><td>CLI + YAML</td></tr>
+        <tr><td>RL code (LOC)</td><td><strong>~8.6K</strong></td><td>~7.2K</td><td>~62K</td><td>~25K</td></tr>
+        <tr><td>Design center</td><td>readable agentic research</td><td>RLHF coverage</td><td>production breadth</td><td>Megatron throughput</td></tr>
+      </tbody>
+    </table>
+
+    <ul>
+      <li><strong>Engine features arrive as flags (Sec 4.2, Qwen3.6-35B-A3B recipe, multimodal MoE policy on a 32K multi-turn tool-use task, 2 nodes with 8 training + 8 rollout GPUs).</strong> Prefix caching plus session-consistent routing: re-prefill measured at <code>0.05</code>s on a cache hit (demonstrates the working path; no cache-miss baseline is reported so this is not an end-to-end speedup). MTP speculative decoding: per-step generation time drops from <code>329</code>s to <code>64</code>s (<code>5&times;</code>) by enabling the checkpoint&rsquo;s MTP head via one flag &mdash; moving the recipe from generation-bound to training-bound. Optimizer CPU offload (<code>--fsdp.offload optimizer</code>): actor peak GPU memory from <code>64.7</code>GB to <code>46.4</code>GB (<code>-18.3</code>GB, the difference between fitting and not fitting the 8-GPU training partition) at the cost of <code>policy_train</code> time rising from <code>213</code>s to <code>251</code>s (<code>+18%</code>).</li>
+      <li><strong>Head-to-head parity (Sec 4.3): Qwen3-30B-A3B, 2 nodes &times; 8 H100, 8 training + 8 rollout GPUs, fully asynchronous, disaggregated.</strong> Matched-protocol comparison against slime (Megatron-Core + SGLang) &mdash; Molt uses AutoModel + vLLM. Both stacks run asynchronously (Molt via its streaming pool, slime via one-step-asynchronous <code>train_async.py</code>). Neither loads a reference model (KL coefficient 0; slime without <code>--use-kl-loss</code>). Each stack uses its recommended parallel layout for the model and context: slime TP4+SP, CP1, EP8 (Megatron-native); Molt TP1, EP8, DP8 (FSDP2 data-parallel-native). Micro-batch fixed to 1 with packing and dynamic batching disabled. DAPO-Math prompts (dedup 2K rows), 16K context / 8K response cap, global batch 128 (32 prompts &times; 4 samples), temperature 1.0, top-p 1.0, top-k -1, Adam identical, CPU optimizer offload on both sides. Result: statistically comparable throughput.</li>
+      <li><strong>Scale (Sec 3.5).</strong> The same launch script that trains a dense 4B model expresses a DeepSeek-V3-class configuration via <code>--fsdp.ep_size 256</code> &mdash; not a backend migration. The paper reports having run the full asynchronous loop (rollout, weight refit, optimizer step) end-to-end on a 700B MoE at expert parallelism 256; unsupported combinations (packed batches under CP among them) are rejected at configuration time by a conservative Molt-side guard.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The engine-features table (prefix cache / MTP speculative decoding / CPU offload) is effectively an ablation across the three optimization axes that a lean composition risks losing. All three keep arriving through the composed path as configuration &mdash; the fork-avoidance principle isn&rsquo;t asserted, it&rsquo;s verified.</li>
+      <li>Estimator selection is a <code>--algo.advantage.estimator</code> flag; the paper flags this specifically as the case study for &ldquo;one modification, end to end&rdquo; &mdash; the artifact count for a new estimator is exactly four (function, flag, metric, test) with no layer crossed.</li>
+      <li>Partial rollout requires the per-token importance correction; Molt refuses to run without it, so the ablation &ldquo;partial rollout without correction&rdquo; is forbidden by the framework rather than reported as a losing bar in a chart.</li>
+    </ul>
+
+    <h3>Safety &amp; limitations</h3>
+    <ul>
+      <li>Fairness notes on the head-to-head are explicit: the two stacks use different recommended parallel layouts, the two asynchrony modes are not identical (streaming pool vs one-step-asynchronous), and packing/dynamic batching are disabled on both sides to hold the parallel layout constant &mdash; both stacks ship packing paths that would change the layout and are out of scope for a matched-backend comparison. The paper reports parity as a statistical comparison, not as a headline speedup number.</li>
+      <li>Deliberately narrow deployment surface: exactly one training backend and one serving engine. This is the direct trade for the small codebase; extending Molt to a different backend is out of scope by design.</li>
+      <li>The 700B MoE run is reported as end-to-end (rollout, refit, optimizer step), not as a full training convergence curve; the claim is that scale is configuration, not that a specific 700B checkpoint was trained through in this paper.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Open source with recipes and containers at <code>github.com/NVIDIA-NeMo/labs-molt</code> (605 stars at review time). License: CC BY 4.0 on the tech report; code license per the repository. DOI: <code>10.48550/arXiv.2607.21653</code>; related DOI <code>10.13140/RG.2.2.23375.65447</code>.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="native-multimodal-scaling"><a href="https://arxiv.org/abs/2607.22043">Scaling Native Multimodal Pre-Training From Scratch</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-24</span>
+      <span>Multimodal &middot; Pre-training &middot; Scaling laws &middot; Compute-optimal &middot; Cross-modal transfer</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Haoyuan Wu, Aoqi Wu, Hai Wang, Jiajia Wu, Jinxiang Ou, Bei Yu. Affiliation: <strong>Tencent Hunyuan</strong> (HuggingFace organization <code>Tencent-Hunyuan</code>). arXiv 2607.22043v1, 24 July 2026, 486 KB PDF.</li>
+      <li>Central claim: prior VLM scaling work has largely characterized <em>late-fusion</em> architectures &mdash; a pretrained LLM plus a vision encoder connected by a projector &mdash; and has left <em>native</em> multimodal pretraining (training a transformer from scratch on interleaved text and image tokens) systematically uncharacterized. The paper fills that gap for the transformer-based VLM regime under a fixed compute budget, and derives distinct compute laws for the language and multimodal objectives. Two headline properties emerge: the language allocation law is largely invariant to the composition of the multimodal data (language learning proceeds at a stable Chinchilla-like rate regardless of image ratio), but the multimodal allocation law is highly sensitive to composition &mdash; text-heavy mixtures shift the compute-optimal frontier toward larger models and (relatively) fewer tokens.</li>
+      <li>Positioning: the paper is the multimodal analogue of Chinchilla (text-only) for native-from-scratch VLMs. Its practical deliverable is an efficiency frontier: for a target compute budget C and a target data mix (image-to-text ratio), the frontier specifies compute-optimal model parameter count N* and token count D*. Downstream evaluations argue that native training also induces <em>positive cross-modal transfer</em> &mdash; the multimodal objective raises pure-text spatial reasoning above a matched text-only baseline &mdash; and that native VLMs exhibit more robust multimodal in-context learning than late-fusion adapters at equal training compute.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Native multimodal transformer (setup).</strong> A single transformer trained from scratch on multimodal inputs (interleaved text and image tokens) with a single next-token objective. The paper contrasts this to late-fusion designs (pretrained LLM + frozen or lightly-tuned vision encoder + projector) and to sequential-fusion designs (LLM first, then continued pre-training on multimodal data). Native training is what the study characterizes; the two alternatives serve as reference baselines.</li>
+      <li><strong>Compute-law derivation (named contribution).</strong> <em>Problem.</em> Chinchilla-style scaling laws for text-only LMs give a rule for allocating a compute budget between model size and token count, but the equivalent rule for native VLMs is unknown &mdash; and the presence of two objectives (language and multimodal) with different learning rates means the single-objective Chinchilla answer cannot be directly transplanted. Without a compute law, VLM pretraining runs are either over-parameterized (data-starved) or over-tokenized (capacity-starved), and neither failure mode is diagnosable from the loss curve alone. <em>Mechanism.</em> The paper runs a grid of native VLM pretraining runs varying (a) model parameter count N, (b) training token count D (with N&times;D held to a set of fixed compute budgets), and (c) data composition (image-to-text mixture ratio). For each configuration it records the minimum objective loss achieved. It then fits (i) a Chinchilla-style compute law relating minimum loss to compute, (ii) allocation power laws for the compute-optimal N and D as functions of C, and (iii) allocation-exponent shifts as a function of the mixture ratio. The result is a closed-form efficiency frontier for (N*, D*) given (C, mix). <em>Why.</em> This is the missing predictive infrastructure for native VLM pretraining. Once the frontier is known, a lab targeting a fixed cluster budget C can pick (N*, D*) directly rather than sweeping; and the mixture-ratio dependence identifies the regime where scaling model capacity is the compute-efficient move (text-heavy mixtures at larger N) vs where scaling tokens is (image-heavy mixtures at smaller N).</li>
+      <li><strong>Distinct language and multimodal scaling behaviors (named contribution).</strong> <em>Problem.</em> A single native transformer trains against a combined loss; naively one might expect language and multimodal objectives to scale together. If they don&rsquo;t, treating them as one objective mis-allocates compute. <em>Mechanism.</em> The paper decomposes the observed minimum loss into a language component and a multimodal component and fits allocation laws for each. The language allocation law is largely invariant to the mixture ratio (language learning proceeds at the same compute-optimal N/D allocation regardless of how much image data is present). The multimodal allocation law is highly sensitive to the mixture: as text mass rises, the multimodal-optimal N* rises (larger model) and D* falls (fewer tokens) at fixed compute. <em>Why.</em> Language and multimodal objectives learn from different signal structures &mdash; language is broadly available in the mixture at any composition; multimodal grounding is denser in image-heavy mixtures and sparser in text-heavy ones. When the multimodal signal is sparse (text-heavy mix), the compute-efficient response is to invest in capacity so the model can extract more signal per token; when the multimodal signal is dense (image-heavy mix), the compute-efficient response is to invest in tokens.</li>
+      <li><strong>Efficiency frontier (named contribution).</strong> The paper closes the loop by modeling the joint influence of data composition on the compute law and on the allocation exponents, producing an efficiency frontier that specifies (N*, D*, mixture-ratio) as a function of the compute budget for any target loss. This is the practical output of the paper &mdash; the frontier can be read off directly to configure a native-VLM pretraining run.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Downstream evaluation is reported at the direction level in the abstract-level view; the full paper reports per-benchmark numbers. Two direction-level findings are called out:</li>
+      <li><strong>Positive cross-modal transfer.</strong> Native multimodal pre-training raises pure-text spatial reasoning above a matched text-only baseline &mdash; evidence that co-training with the multimodal objective supplies gradient the language head can use for text-only tasks with a spatial character, not just for multimodal tasks. This is the strongest argument in the paper for native-from-scratch over late-fusion at equal compute.</li>
+      <li><strong>Robust multimodal in-context learning.</strong> Native VLMs exhibit more robust multimodal in-context learning than late-fusion baselines at equal training compute. The specific measurement axis and numbers are in the PDF; the direction is that ICL with interleaved image-and-text demonstrations degrades more gracefully as demonstrations become out-of-distribution.</li>
+      <li>Per-benchmark tables not extracted in this review due to source-fetch rate limits; the compute-law fits, allocation power-law exponents, and downstream numbers live in the full PDF (<a href="https://arxiv.org/pdf/2607.22043">arXiv PDF</a>).</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The mixture-ratio sweep is itself the primary ablation: as image-to-text ratio moves, the multimodal allocation-law exponents shift while the language allocation-law exponents stay put &mdash; this is the empirical evidence that motivates the two-objective factorization.</li>
+      <li>Late-fusion and sequential-fusion are compared against native-from-scratch as architecture baselines; direction of the comparison favors native pre-training, quantitative gaps are in the PDF.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>The Tencent-Hunyuan release is a pure empirical scaling study rather than a model release: the deliverable is the frontier, not a checkpoint. This distinguishes it from Hunyuan&rsquo;s previous model launches (Hunyuan-TurboS, Hunyuan-Vision) and puts it alongside Chinchilla, MosaicML&rsquo;s scaling replication, and DeepMind&rsquo;s subsequent multi-objective scaling work as reference infrastructure the rest of the field will build against.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
