@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kimi K3 Open Frontier Launch Review &mdash; July 28, 2026 | Auto Lit Review</title>
+<meta name="description" content="Moonshot AI opens the weights and technical report for Kimi K3, a 2.8T-parameter native-multimodal MoE with Kimi Delta Attention, Attention Residuals, Stable LatentMoE, and a MoonViT-V2 vision encoder trained from scratch; Anthropic&rsquo;s Dario Amodei publishes Anthropic&rsquo;s open-weights position paper the same day, disavowing a ban and proposing chip controls, anti-distillation policy, and mandatory pre-release safety testing." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 28, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#moonshot" class="toc-h1">Moonshot AI</a>
+          <ul>
+            <li><a href="#kimi-k3" class="toc-h2">Kimi K3: Open Frontier Intelligence</a></li>
+          </ul>
+        </li>
+        <li><a href="#anthropic" class="toc-h1">Anthropic</a>
+          <ul>
+            <li><a href="#open-weights-position" class="toc-h2">Our position on open-weights models</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 28, 2026</div>
+    <h1 class="page-title">Kimi K3 Open Frontier Launch</h1>
+    <div class="page-meta">2 papers &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>The day is dominated by one launch: Moonshot AI publishes the <strong>Kimi K3</strong> technical report and drops full open weights on Hugging Face. K3 is a <code>2.8T</code>-total / <code>104B</code>-activated MoE with native multimodal input, a <code>1M</code>-token context, and three architectural bets that co-design the algorithm with the training-and-serving system: <strong>Kimi Delta Attention (KDA)</strong>, a delta-rule linear-attention recurrence with a per-channel forget gate, interleaved at a KDA&times;3 &rarr; MLA&times;1 ratio over 93 text layers so most layers avoid a sequence-length KV cache while global retrieval is preserved every fourth layer; <strong>Attention Residuals (AttnRes)</strong>, cross-layer information flow around the attention stack; and <strong>Stable LatentMoE</strong>, an activated-16-of-<code>896</code>-experts sparsity ratio (56&times;) held stable by Quantile Balancing, SiTU-GLU, and normalization, with a router that projects each token to a <code>3,584</code>-dim latent (half the <code>7,168</code> hidden size) before dispatch to cut expert-parallel traffic. Vision is native: <strong>MoonViT-V2</strong> is a <code>401M</code>, 27-layer ViT trained from scratch by next-token prediction alongside the language model, so text and images share the same optimization trajectory rather than being grafted together late. Post-training is RL across general, agentic, and coding domains at three explicit reasoning-effort levels (low / high / max), with a token-budget reward shaper (over-budget responses receive reward <code>-1</code>) and nine specialist experts merged back into one model via <strong>Multi-Teacher On-Policy Distillation (MOPD)</strong>. Anthropic pairs the launch with a same-day policy post from Dario Amodei clarifying that the company has <em>not</em> advocated for banning open-weights models and proposing three alternative measures: chip export controls, an anti-distillation regime, and mandatory pre-release safety testing for all sufficiently capable models regardless of open/closed status.</p>
+
+      <h3>Competitiveness</h3>
+      <p>Kimi K3 is the first open-weights model to reach frontier scale as measured by the tech report&rsquo;s own comparison suite: it trails only <code>Claude Fable 5</code> and <code>GPT-5.6 Sol</code> across long-horizon coding, agentic execution, knowledge, reasoning, and vision, and consistently outperforms every other open and proprietary model Moonshot benchmarked &mdash; including the July-window flagships from Chinese peers (<code>Qwen3.8-Max-Preview</code>, Ring-2.5-1T-Zero) and the July 24 <code>Claude Opus 5</code>. Reported headline numbers (harness-dependent): <code>76.8%</code> on SWE-Bench Verified, <code>68%</code> on LiveCodeBench, <code>78.5%</code> on MMLU-Pro. Moonshot is explicit that the coding table mixes KimiCode, Claude Code, Codex, and mini-SWE-agent harnesses and that a different harness swings scores by <code>10-26</code> points, so the SWE-Bench number in particular should be read against the harness a downstream user actually runs. The <code>2.5&times;</code> scaling-efficiency gain over Kimi K2 is the report&rsquo;s central claim about &ldquo;what changed&rdquo;: it attributes roughly a factor of two to the KDA + AttnRes + LatentMoE architecture triple and roughly another 25% to refined data and training-recipe changes. Positioning against DeepSeek-V3.2 / R2-style dense-attention MoEs (K3&rsquo;s most direct architectural rivals): the hybrid KDA/MLA stack claims parity on retrieval-sensitive tasks with a fixed-size recurrent state on 3-out-of-4 layers, which is the mechanism that makes the 1M-context inference cost tractable at 2.8T scale. On price, self-hosting is now viable for well-funded labs: the released MXFP4 checkpoint weighs in around 1.4TB, and day-0 hosting is live on Together AI, Modal, vLLM (preview support landed July 22), and AMD Instinct MI355X. Anthropic&rsquo;s post is not a benchmark story but a positioning one: it defines the policy frame the market will now hear the K3 release in, and rejects both the letter Nvidia/Microsoft/Meta/OpenAI/Google signed <em>and</em> the ban some US officials are considering &mdash; a middle path around chip controls, distillation policy, and testing.</p>
+
+      <h3>New frontier releases</h3>
+      <p>One Tier 1 launch: Moonshot AI&rsquo;s <strong>Kimi K3</strong> (<a href="https://arxiv.org/abs/2607.24653">arXiv 2607.24653</a>, submitted 2026-07-27; weights at <a href="https://huggingface.co/moonshotai/Kimi-K3">moonshotai/Kimi-K3</a>; blog at <a href="https://www.kimi.com/blog/kimi-k3">kimi.com/blog/kimi-k3</a>). One Tier 3 companion: Anthropic&rsquo;s <strong>Our position on open-weights models</strong> (<a href="https://www.anthropic.com/news/position-open-weights-models">anthropic.com/news</a>, 2026-07-27) by Dario Amodei.</p>
+    </section>
+
+    <h1 id="moonshot">Moonshot AI</h1>
+
+    <h2 id="kimi-k3"><a href="https://arxiv.org/abs/2607.24653">Kimi K3: Open Frontier Intelligence</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-07-27</span>
+      <span>Flagship launch &middot; MoE &middot; Linear attention &middot; Native multimodal &middot; 1M context &middot; Agentic RL</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: <em>Kimi Team</em> (302+ named authors, corresponding email chain lists Yulun Du et al.). Affiliation: <strong>Moonshot AI</strong>. arXiv 2607.24653v1, submitted 2026-07-27 16:49:54 UTC; 1,724 KB PDF; license CC-BY-NC-ND-4.0. Open weights released same day at <a href="https://huggingface.co/moonshotai/Kimi-K3"><code>moonshotai/Kimi-K3</code></a> under a Modified MIT license (per Together AI hosting terms). Day-0 support: vLLM (preview merged 2026-07-22), Together AI, Modal, AMD Instinct MI355X. Released MXFP4 checkpoint size <code>~1.4TB</code>.</li>
+      <li>Central artifact: a <code>2.8T</code>-parameter Mixture-of-Experts model with <code>104B</code> activated parameters per token, native vision, and a <code>1M</code>-token context window. Framed by the report as the first open-weights model to reach frontier scale under the report&rsquo;s comparison suite &mdash; trailing only <code>Claude Fable 5</code> and <code>GPT-5.6 Sol</code> and outperforming every other open and proprietary model in Moonshot&rsquo;s evaluation.</li>
+      <li>Central technical claim: <code>2.5&times;</code> overall scaling efficiency vs Kimi K2. The report attributes this to three joint mechanisms &mdash; Kimi Delta Attention, Attention Residuals, and Stable LatentMoE &mdash; plus refined training and data recipes, and treats algorithm-system co-design as the load-bearing principle: architecture choices (KDA&rsquo;s fixed-size recurrent state, LatentMoE&rsquo;s router latent dimension, expert-parallel balance) are made together with the inference-serving path (MXFP4 quantization, sandboxed agentic-RL rollouts with persistent state) rather than in sequence.</li>
+      <li>Positioning: K3 slots into the same design regime as the day&rsquo;s other Chinese open-weight flagships (DeepSeek-V3.2 / R2 dense-attention MoEs, Ring-2.5-1T-Zero, Qwen3.8-Max-Preview), but replaces full softmax attention on 3 out of 4 layers with a linear delta-rule recurrence. Against DeepSeek-V3&rsquo;s pure MLA stack, K3&rsquo;s hybrid KDA/MLA claims the same retrieval fidelity every fourth layer while cutting per-token attention cost on the other three; against Kimi K2&rsquo;s <code>1T</code>/32B-activated MoE, K3 nearly triples total parameters, more than triples activated parameters, and expands routed experts from a smaller set to <code>896</code>.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Text backbone shape.</strong> 93 layers total. 69 <code>KDA</code> (Kimi Delta Attention) layers and 24 gated <code>MLA</code> (Multi-head Latent Attention) layers, arranged as an interleaved <code>KDA&times;3 &rarr; MLA&times;1</code> repeating block with one additional MLA layer at the top of the stack. Hidden dim <code>7,168</code>. This asymmetric ratio &mdash; 3/4 of layers are linear-attention &mdash; is what makes the <code>1M</code>-context inference cost tractable at <code>2.8T</code> parameters.</li>
+      <li><strong>Kimi Delta Attention (KDA) &mdash; named contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> Full softmax MHA is <code>O(n&sup2;)</code> in context length and, for a <code>1M</code>-token agentic workload, dominates both compute and KV-cache memory. Pure linear attention loses the sharp retrieval property that MHA gives you, which is exactly what long-horizon tool use needs. Hybrid architectures that swap attention layers 1:1 for linear layers (Jamba-style) either underweight linear (still expensive) or overweight linear (retrieval collapses).</li>
+          <li><em>Mechanism.</em> KDA is a delta-rule linear-attention recurrence: it maintains a fixed-size recurrent state that is updated per token by a delta rule (write the new content, decay the old), with a <em>per-channel forget gate</em> so decay is fine-grained across the hidden dimension rather than a scalar. The delta rule is the mechanism that keeps writes sharp (they overwrite rather than blend); the per-channel gate is the mechanism that lets different feature channels retain information at different rates (a channel encoding a variable name can persist across thousands of tokens while a channel encoding surface phrasing decays quickly). Every fourth layer is a global gated MLA layer &mdash; a softmax attention over a compressed KV latent &mdash; that provides an explicit global retrieval hop through the whole context.</li>
+          <li><em>Why.</em> The 3:1 ratio makes 3/4 of the model see a fixed-size state (bounded by hidden dim, not sequence length) so per-token attention memory does not grow with context. The 1-in-4 MLA layer re-injects the global-retrieval capability the linear layers can&rsquo;t provide on their own. Against Jamba&rsquo;s alternating Mamba+attention: KDA&rsquo;s per-channel forget gate is finer-grained than Mamba&rsquo;s selective SSM at the same recurrent size, and interleaving at 3:1 rather than 1:1 is a compute bet that a smaller fraction of MLA is enough for the retrieval side.</li>
+        </ul>
+      </li>
+      <li><strong>Attention Residuals (AttnRes) &mdash; named contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> Deep transformers with post-attention normalization and residual streams &ldquo;forget&rdquo; the attention output several layers down: after enough LayerNorm and MLP mixing, the direct contribution of a specific attention head to the residual is small, which hurts training stability at the <code>2.8T</code> scale and blunts the effect of the KDA linear-attention state on later reasoning.</li>
+          <li><em>Mechanism.</em> AttnRes adds an explicit residual connection <em>around the attention block</em> that carries the attention output forward across layers, not just around the immediate sub-layer. This puts the attention signal on a longer residual path so its influence on the model&rsquo;s prediction persists over deeper transformer stacks, complementing the standard MLP residual.</li>
+          <li><em>Why.</em> AttnRes improves information flow across model depth. At K3&rsquo;s depth (93 layers) and width (<code>7,168</code>), routing the attention outputs through a dedicated cross-layer residual is what preserves KDA&rsquo;s per-channel state contribution far enough down the stack to matter for the token being predicted. The report ties this directly to training stability at 2.8T scale.</li>
+        </ul>
+      </li>
+      <li><strong>Stable LatentMoE &mdash; named contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> Pushing sparsity ratios beyond 32:1 (activate 16 of 512, 8 of 256, etc.) usually destabilizes MoE training: routing collapse (a few experts get all the traffic), gradient variance blowup (rarely-activated experts get bad gradients), and expert-parallel communication cost explodes as routing multiplicity grows with expert count. K2&rsquo;s 384-expert / 8-active layout already sat near that stability boundary.</li>
+          <li><em>Mechanism.</em> LatentMoE holds a 56:1 sparsity ratio &mdash; <code>16</code> active out of <code>896</code> routed experts per token &mdash; stable via three engineering pieces working together. <em>Quantile Balancing</em> shapes the router loss so expert-utilization distributions are pulled toward a target quantile rather than a mean, preventing the long-tail experts from dying while the head-of-distribution experts saturate. <em>SiTU-GLU</em> is the expert-internal activation choice (a gated SiLU variant) that keeps expert-output magnitudes matched across the sparser expert set. <em>Normalization</em> at the router and expert outputs contains the extra variance the wider expert set introduces. Structurally, the router first projects each token to a latent dimension of <code>3,584</code> &mdash; exactly half the <code>7,168</code> hidden size &mdash; before computing routing scores over 896 experts. Expert-weight and communication traffic in expert-parallel training scales with that latent width, not the full hidden width, so doubling the routed-expert count without doubling the communication cost falls out of this projection.</li>
+          <li><em>Why.</em> The 56&times; sparsity ratio is the mechanism that gets 2.8T total to 104B activated (rather than something like 200B+ activated at K2&rsquo;s ratio), which is what makes serving economical at frontier scale. The router latent projection is the mechanism that keeps this ratio from being a communication-bound design at the training scale K3 targets. Together these are the reason the report says the architecture &ldquo;scales sparsity without paying communication tax&rdquo;.</li>
+        </ul>
+      </li>
+      <li><strong>MoonViT-V2 vision encoder &mdash; named contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> Grafting a contrastively pre-trained vision encoder (SigLIP, EVA-CLIP, etc.) onto a pre-trained LLM couples the visual representation to a text-image alignment objective that was optimized independently &mdash; downstream multimodal fine-tuning has to fight this misalignment. K2&rsquo;s vision path used exactly this pattern.</li>
+          <li><em>Mechanism.</em> MoonViT-V2 is a <code>401M</code>-parameter, 27-layer ViT with patch size 14, trained <em>from scratch by next-token prediction</em> jointly with the language model &mdash; not by contrastive pretraining, not by CLIP-style objective. Text tokens and image patch tokens share the same NTP loss from step zero of pre-training. The optimization pressure that shapes MoonViT-V2&rsquo;s features is exactly the pressure that shapes the language model&rsquo;s features.</li>
+          <li><em>Why.</em> Native co-training means the visual encoder learns representations that are already tuned for the language model&rsquo;s downstream token-prediction objective, rather than being adapted post-hoc. Report positions this against grafted encoders as the mechanism behind K3&rsquo;s multimodal in-context-learning robustness (referenced but not fully quantified in the abstract-level material available at review time).</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li>Pre-training is native multimodal from step zero: text tokens and image-patch tokens are optimized under the same NTP objective and the same optimizer state, rather than pre-training a text-only model first and adapting to images afterward. This is the same design choice Tencent Hunyuan validated with its Chinchilla-style multimodal scaling study earlier this month, applied here at frontier scale.</li>
+      <li>Data + training-recipe refinements over Kimi K2 contribute the roughly-25% portion of the <code>2.5&times;</code> scaling-efficiency gain that the architecture triple does not explain. Specific token counts and mixture ratios sit in the full PDF; the abstract-level material available at review time does not expose them.</li>
+      <li>Infrastructure calls out four pieces: (1) algorithm-system co-design for KDA, (2) &ldquo;perfectly balanced&rdquo; expert-parallel training with efficient memory management (which is what the LatentMoE router-projection dimension is engineered around), (3) million-token agentic-RL rollouts with persistent rollout and sandbox state (the mechanism that lets on-policy RL run across the 1M-context regime rather than being capped at short-horizon episodes), and (4) deployment innovations that let the same asynchronous training loop generalize to inference-time serving (this is where the MXFP4 quantization path gets designed together with training).</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li><strong>Multi-effort reasoning &mdash; named contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> A single reasoning model that always emits long chains of thought is compute-wasteful for easy queries and under-thinks on hard ones. Prior &ldquo;auto&rdquo; approaches let the model decide, but training signal for &ldquo;how much thinking&rdquo; is weak &mdash; there is no ground-truth token budget per problem.</li>
+          <li><em>Mechanism.</em> K3 is trained with three explicit reasoning-effort levels &mdash; <em>low</em>, <em>high</em>, and <em>max</em>. For each training problem, an initial token budget is estimated. Correct responses within the budget get reward <code>+1</code>; responses that exceed the budget get reward <code>-1</code> regardless of whether the final answer is correct. Moonshot trains a max-effort specialist first with a generous budget, then lowers the budget to train high- and low-effort variants.</li>
+          <li><em>Why.</em> Making the budget a hard constraint in the reward, rather than a soft length penalty, gives the model a direct gradient toward &ldquo;stop when the budget is up.&rdquo; Three explicit modes are what lets the same weights ship as an economically deployable low-effort default and an on-demand max-effort mode without needing separate checkpoints.</li>
+        </ul>
+      </li>
+      <li><strong>Multi-Teacher On-Policy Distillation (MOPD) &mdash; named contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> Domain-specialist RL fine-tuning &mdash; separately training expert models for coding, general, agentic, tool use, and reasoning at multiple effort levels &mdash; produces nine capable specialists, but the deployed product needs to be one model, and averaging weights across nine RL-trained specialists loses the sharpness of each specialist&rsquo;s post-RL policy.</li>
+          <li><em>Mechanism.</em> MOPD merges the nine expert models back into a single unified model via on-policy distillation from all nine teachers simultaneously. The unified student generates on-policy rollouts under each teacher&rsquo;s objective, and matches the teacher&rsquo;s output distribution on those rollouts. Because distillation is on-policy, the student learns behavior that is actually reachable from its own generation trajectories &mdash; not off-policy behavior clones that get out-of-distribution at inference.</li>
+          <li><em>Why.</em> This is how nine specialists compose into one model without the compositional-generalization loss that separately-trained specialists usually show. It is also what the abstract calls &ldquo;compositional generalization and robust long-horizon execution&rdquo;: the merged model has to handle a coding-plus-agentic task even though it saw those objectives during separate specialist phases.</li>
+        </ul>
+      </li>
+      <li><strong>Agentic RL loop details.</strong> RL runs across general, agentic, and coding domains at all three effort levels. The infrastructure&rsquo;s &ldquo;million-token agentic RL with persistent rollout and sandbox states&rdquo; is the load-bearing piece here: rollout persistence across the 1M-context regime, sandbox states that survive weight refits so long tool-use trajectories don&rsquo;t get discarded on RL updates, and per-token importance corrections when policy versions mix within a rollout. These correspond, at the frontier scale, to the same class of primitives NVIDIA&rsquo;s Molt released last week for the community.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Report-level claim: K3 achieves frontier-level performance across long-horizon coding, agentic execution, knowledge, reasoning, and vision. Its overall performance still trails <strong>Claude Fable 5</strong> and <strong>GPT-5.6 Sol</strong>; it consistently outperforms every other open and proprietary model in Moonshot&rsquo;s evaluation suite.</li>
+      <li>Headline benchmark numbers surfaced with the release (harness-dependent, see below):
+        <table>
+          <thead>
+            <tr><th>Benchmark</th><th>Kimi K3 score</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>SWE-Bench Verified</td><td><code>76.8%</code></td><td>Score swings <code>10-26</code> points across KimiCode / Claude Code / Codex / mini-SWE-agent harnesses per Moonshot&rsquo;s own table.</td></tr>
+            <tr><td>LiveCodeBench</td><td><code>68%</code></td><td>Coding-agent benchmark, near-frontier for open weights.</td></tr>
+            <tr><td>MMLU-Pro</td><td><code>78.5%</code></td><td>Knowledge / reasoning; below Fable 5 and GPT-5.6 Sol, above other open models.</td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>Full per-benchmark tables (including AgentHarm, GPQA, vision benchmarks, and long-context needle tests) live in the PDF; the abstract-level release material at review time does not expose the full grid. This entry will be updated when the full paper text is machine-readable.</li>
+      <li>The report is explicit that the coding row is not a single-harness comparison &mdash; different agent harnesses can shift the same model by 10-26 points on SWE-Bench-class tasks. Downstream users should read K3&rsquo;s coding claim against the harness they actually deploy, not the headline number.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>Full open-weights release under a Modified MIT license, distributed through Hugging Face and mirrored at Together AI, Modal, and other day-0 hosts. This is the frontier data point Anthropic&rsquo;s same-day policy post is written against.</li>
+      <li>Reported hallucination risk on K3 is not directly quantified in the abstract-level material; independent third-party evaluations (Kili Technology, Artificial Analysis) have surfaced hallucination behavior on some knowledge tasks that lags the closed frontier by a wider margin than the coding gap does.</li>
+      <li>K3 explicitly trails Claude Fable 5 and GPT-5.6 Sol on overall capability; Moonshot does not claim frontier <em>parity</em>, it claims frontier-<em>level</em> performance.</li>
+      <li>The 2.5&times; scaling-efficiency claim is measured against Kimi K2 as the reference point &mdash; it is not a claim of 2.5&times; compute efficiency against DeepSeek-V3.2 or Qwen3.8-Max-Preview, which use different architectural stacks.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Weights: <a href="https://huggingface.co/moonshotai/Kimi-K3"><code>moonshotai/Kimi-K3</code></a>, Modified MIT license, MXFP4 quantized checkpoint <code>~1.4TB</code>.</li>
+      <li>API: <a href="https://platform.kimi.ai/docs/guide/kimi-k3-quickstart">Kimi API Platform</a>, <a href="https://www.together.ai/models/kimi-k3">Together AI</a>, Modal.</li>
+      <li>Inference support: vLLM preview (merged 2026-07-22, <a href="https://vllm.ai/blog/2026-07-22-kimi-k3-preview">vLLM blog</a>), AMD Instinct MI355X day-0 (<a href="https://www.amd.com/en/developer/resources/technical-articles/2026/kimi-k3-on-amd-instinct-gpus.html">AMD article</a>).</li>
+      <li>Blog: <a href="https://www.kimi.com/blog/kimi-k3">kimi.com/blog/kimi-k3</a>. Technical report: <a href="https://arxiv.org/pdf/2607.24653">arXiv PDF</a>.</li>
+    </ul>
+
+    <h1 id="anthropic">Anthropic</h1>
+
+    <h2 id="open-weights-position"><a href="https://www.anthropic.com/news/position-open-weights-models">Our position on open-weights models</a></h2>
+    <div class="paper-meta">
+      <span>Tier 3 &middot; Blog Post</span>
+      <span>anthropic.com/news</span>
+      <span>2026-07-27</span>
+      <span>Policy &middot; Open weights &middot; Safety testing &middot; Chip export controls &middot; Distillation</span>
+    </div>
+
+    <ul>
+      <li>Author: Dario Amodei (Anthropic CEO). Published on <code>anthropic.com/news</code> the same day the Kimi K3 weights and report drop &mdash; the launch this post is implicitly framed against, though it also references the earlier open letter Nvidia, Microsoft, Meta, OpenAI, and Google signed and the ban some US officials are reportedly considering on Chinese open-weights models.</li>
+      <li>Central claim: <strong>Anthropic has never advocated for a ban on open-weights models.</strong> Amodei calls open-weights models without dangerous capabilities &ldquo;a public good&rdquo; and rejects the accusation that Anthropic&rsquo;s regulatory posture is protectionist. This directly disavows the framing some readers of Anthropic&rsquo;s prior policy work had adopted after the July open letter.</li>
+      <li>Threat frame: two concerns, in order. (1) Authoritarian governments &mdash; primarily but not solely the CCP &mdash; building AI models more powerful than the US frontier and using them for permanent military superiority or population-scale repression. Amodei argues this concern is independent of whether models are open- or closed-weight: the most dangerous case is a secret model handed to a state security service. (2) Powerful models being misused for cyber or biological attacks, or having alignment problems. Open weights raise this second risk because guardrails cannot be re-applied post-release and copies can be redistributed beyond monitoring &mdash; but banning US business use of open weights doesn&rsquo;t address it, because &ldquo;bad actors are unlikely to be legitimate US businesses.&rdquo;</li>
+      <li>Three proposed measures:
+        <ul>
+          <li><strong>Chip export controls plus anti-smuggling enforcement.</strong> Under scaling laws, capping frontier-chip flow into authoritarian jurisdictions caps the model capability those jurisdictions can build domestically. This is framed as the most direct block on threat (1) and an indirect block on (2).</li>
+          <li><strong>Anti-distillation regime.</strong> Distillation is compute-efficient enough to partly evade chip bans and to bring the Chinese frontier within a few months of the US frontier. The remedy is targeted legal and commercial frameworks against industrial-scale distillation operations, not a blanket open-weights ban. Anthropic&rsquo;s own account-banning practices are called out as best-effort but insufficient at policy scale.</li>
+          <li><strong>Mandatory pre-release safety testing for all sufficiently capable models, open and closed, regardless of country of origin.</strong> Whether open models raise net risk should be an empirical outcome of testing, not a prior assumption; startups and academic models get an explicit exemption; global buy-in (including CCP) is described as difficult but possibly tractable specifically around biosecurity.</li>
+        </ul>
+      </li>
+      <li>Rejects two claims from the industry open letter: that open weights necessarily make it easier to develop safeguards, and that broad capability access necessarily helps defenders more than attackers. Amodei specifically flags biology as a domain with a plausible attacker-defender asymmetry &mdash; a sufficiently capable model could enable pandemic-class weaponization on a timescale much shorter than defensive countermeasures (Operation Warp Speed as reference point).</li>
+      <li>Reads as the day&rsquo;s policy pairing to the Kimi K3 launch: the model is the frontier data point (open, Chinese, near-parity with US closed frontier at the top harness setting); the post is the frame Anthropic wants the market and policymakers to read that data point through.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
