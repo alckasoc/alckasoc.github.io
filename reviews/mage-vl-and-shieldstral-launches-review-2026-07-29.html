@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mage-VL and Shieldstral Launches Review &mdash; July 29, 2026 | Auto Lit Review</title>
+<meta name="description" content="Microsoft releases Mage-VL, a codec-native 4B streaming multimodal foundation model with Mage-ViT trained from scratch; Mistral AI releases Shieldstral, a 3B policy-adaptive multimodal safety classifier. Four Tier 2 papers land the same window from Google DeepMind (VIPE), Moonshot AI (PerceptionBench), NVIDIA (PDD), and Tencent (RARG)." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 29, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#microsoft" class="toc-h1">Microsoft</a>
+          <ul>
+            <li><a href="#mage-vl" class="toc-h2">Mage-VL: Codec-Native Streaming Multimodal Foundation Model</a></li>
+          </ul>
+        </li>
+        <li><a href="#mistral" class="toc-h1">Mistral AI</a>
+          <ul>
+            <li><a href="#shieldstral" class="toc-h2">Shieldstral: Policy-Adaptive Multimodal Safety Classifier</a></li>
+          </ul>
+        </li>
+        <li><a href="#google-deepmind" class="toc-h1">Google DeepMind</a>
+          <ul>
+            <li><a href="#vipe" class="toc-h2">Visual Prompt Engineering for Video Models</a></li>
+          </ul>
+        </li>
+        <li><a href="#moonshot" class="toc-h1">Moonshot AI</a>
+          <ul>
+            <li><a href="#perceptionbench" class="toc-h2">PerceptionBench: Atomic Visual Perception in MLLMs</a></li>
+          </ul>
+        </li>
+        <li><a href="#nvidia" class="toc-h1">NVIDIA</a>
+          <ul>
+            <li><a href="#pdd" class="toc-h2">Parallel Decoding Distillation</a></li>
+          </ul>
+        </li>
+        <li><a href="#tencent" class="toc-h1">Tencent</a>
+          <ul>
+            <li><a href="#rarg" class="toc-h2">RARG: Relevance-Aware RipGrep Search Agent</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 29, 2026</div>
+    <h1 class="page-title">Mage-VL and Shieldstral Launches</h1>
+    <div class="page-meta">6 papers &middot; 6 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+
+      <h3>Focus</h3>
+      <p>Two Tier 1 launches lead the 36-hour window. Microsoft publishes the <strong>Mage-VL</strong> technical report and drops the <code>4B</code> checkpoint (5B footprint with the vision stack) on Hugging Face: a codec-native streaming multimodal foundation model built around <strong>Mage-ViT</strong>, a Vision Transformer that replaces uniform frame sampling with codec-guided sparse patch selection over anchor (I) and predicted (P) frames, cutting visual token consumption by ~<code>75%</code> at a fixed <code>4,096</code>-token budget for a 64-frame clip while preserving spatio-temporal context. Mage-ViT is a <code>24</code>-layer / <code>1024</code>-dim / <code>16</code>-head ViT trained from scratch on <code>560M</code> unlabeled images and <code>100M</code> unlabeled video frames &mdash; the report&rsquo;s central data-efficiency claim is that this matches or beats encoders like SigLIP2 and MoonViT trained on billions of image-text pairs. On top, a bio-inspired dual-system stack pairs a lightweight <strong>System 1 cognition gate</strong> that decides <em>when</em> to respond over rolling codec windows with a frozen <strong>System 2 causal decoder</strong> (Qwen3-4B-Instruct-2507) that generates the response, trained via a five-stage progressive curriculum ending in Stage 5 gate-only fine-tuning on <code>3.35M</code> streaming samples. Mistral AI publishes <strong>Shieldstral</strong>, a <code>3B</code> policy-adaptive multimodal safety classifier that formulates content moderation as a single binary yes/no question-answering task; this unification is the mechanism that lets Mistral fold heterogeneous safety datasets with divergent taxonomies into one <code>54.1M</code>-sample training corpus and get a small adaptive model to match or outperform classifiers <code>~7&times;</code> larger. Four Tier 2 papers land in the same window: Google DeepMind&rsquo;s <strong>VIPE</strong> (visual prompt engineering for video models), Moonshot AI&rsquo;s <strong>PerceptionBench</strong> (bottom-up atomic-perception taxonomy across sixteen frontier MLLMs), NVIDIA&rsquo;s <strong>Parallel Decoding Distillation (PDD)</strong> (a VSD/adversarial-free trajectory-based diffusion accelerator hitting SOTA at 4-8 NFE on LTX-2.3, Wan 14B, and Qwen-Image), and Tencent&rsquo;s <strong>RARG</strong> (a relevance-aware ripgrep agent, <em>#1 paper of the day</em> on Hugging Face, that promotes relevance from a retrieval filter to an execution prior over corpus interaction).</p>
+
+      <h3>Competitiveness</h3>
+      <p>Mage-VL positions the <code>4B</code> class against Qwen3-VL-4B and Phi-4-family baselines: the report claims parity with Qwen3-VL-4B on static image benchmarks, gains on video understanding and 2D/3D spatial reasoning, up to <code>3.5&times;</code> wall-clock inference speedup from codec-native tokenization, and comprehensive outperformance of the <code>15B</code> Phi-4-reasoning-vision at <code>~1/4</code> the parameter budget. The load-bearing bet is data-efficiency of the vision stack: Mage-ViT&rsquo;s <code>560M</code>+<code>100M</code> training set is roughly <code>18&times;</code> smaller than SigLIP2&rsquo;s <code>10B</code> image-text corpus that Kimi-VL initializes from, and it still tops SigLIP2 and MoonViT on the report&rsquo;s image and video representation benchmarks &mdash; framed by the authors as a rebuttal to the &ldquo;scale is all that matters&rdquo; encoder assumption. Against the day&rsquo;s frontier context, Mage-VL slots between the July 27 Kimi K3 (<code>2.8T</code>-total open-weights native-multimodal MoE, trailing <code>Claude Fable 5</code> and <code>GPT-5.6 Sol</code>) and the July 22 Gemini 3.6 Flash: a small, efficient, streaming-native model rather than a compressed generalist. Shieldstral is a distinct competitive frame &mdash; it targets safety classifier deployments where a <code>3B</code> model is the maximum practical size and where the alternative is Llama Guard 3 (<code>8B</code>), ShieldGemma (<code>9B</code>/<code>27B</code>), and OpenAI&rsquo;s Moderation API: matching or beating models nearly <code>7&times;</code> its size on text safety plus setting the multimodal safety SOTA is the report&rsquo;s market opening, and the binary-QA formulation is the design choice that makes policy adaptation feasible at deployment time rather than requiring a full retrain per policy taxonomy. NVIDIA&rsquo;s PDD undercuts the currently dominant VSD+adversarial distillation stack (used across Wan, LTX, and prior SANA-Video releases including this month&rsquo;s SANA-Video 2.0) with a trajectory-based method that reports SOTA at 4-8 NFE on LTX-2.3 T2V/A, Wan 14B T2V, and Qwen-Image, plus meaningfully improved motion diversity &mdash; a direct answer to the mode-collapse failure mode of VSD-based few-step generators. Tencent&rsquo;s RARG is currently #1 upvoted paper of the day on Hugging Face Daily Papers.</p>
+
+      <h3>New frontier releases</h3>
+      <p>Two Tier 1 launches: Microsoft&rsquo;s <strong>Mage-VL</strong> (<a href="https://arxiv.org/abs/2607.24904">arXiv 2607.24904</a>, submitted 2026-07-27; weights at <a href="https://huggingface.co/microsoft/Mage-VL">microsoft/Mage-VL</a>; code at <a href="https://github.com/microsoft/Mage">github.com/microsoft/Mage</a>; project page <a href="https://microsoft.github.io/Mage">microsoft.github.io/Mage</a>) and Mistral AI&rsquo;s <strong>Shieldstral</strong> (<a href="https://arxiv.org/abs/2607.25857">arXiv 2607.25857</a>, submitted 2026-07-28).</p>
+    </section>
+
+    <h1 id="microsoft">Microsoft</h1>
+
+    <h2 id="mage-vl"><a href="https://arxiv.org/abs/2607.24904">Mage-VL: An Efficient Codec-Native Streaming Multimodal Foundation Model</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-07-27</span>
+      <span>Flagship launch &middot; Streaming VLM &middot; Codec-native tokenization &middot; Dual-system architecture &middot; Native multimodal</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: <em>Microsoft Mage Team</em> (Senqiao Yang, Kaichen Zhang, Zhaoyang Jia, Jinghao Guo, Yifei Shen, Xinjie Zhang, Xiaoyi Zhang, Haoqing Wang, Xiao Li, Peng Zhang, Xiang An, Yin Xie, Zhening Liu, Xun Guo, Jiahao Li, Shicheng Zheng, Jinglu Wang, Zongyu Guo, Wenxuan Xie, Zihan Zheng, Yuxuan Luo, Bin Li, +1 more). Affiliation: <strong>Microsoft</strong>. arXiv 2607.24904v1 (submitted 2026-07-27, [cs.CV], CC BY 4.0). Companion artifacts: <a href="https://microsoft.github.io/Mage">project page</a>, <a href="https://github.com/microsoft/Mage">github.com/microsoft/Mage</a> (776 stars at release), and open weights at <a href="https://huggingface.co/microsoft/Mage-VL"><code>microsoft/Mage-VL</code></a> (Image-Text-to-Text, 5B, ~702 downloads / 60 likes within the first day; live demo at <code>hugging-apps/mage-vl-demo</code>).</li>
+      <li>Central artifact: a <code>4B</code>-parameter unified multimodal foundation model that supports still images, offline video reasoning, and proactive interaction over continuous video streams within a single model, plus <strong>Mage-ViT</strong>, its custom codec-native vision encoder, released alongside. The report&rsquo;s framing: standard VLMs suffer a modern Moravec&rsquo;s paradox &mdash; strong offline reasoning but slow, computationally heavy responses to dynamic visual events &mdash; and the fix is codec-native tokenization plus a dual-system architecture that decouples <em>when to speak</em> from <em>what to say</em>.</li>
+      <li>Central technical claim: matches Qwen3-VL-4B on static image benchmarks; wins on video understanding and 2D/3D spatial reasoning; delivers up to <code>3.5&times;</code> wall-clock inference speedup vs uniform frame sampling under a matched visual-token budget; comprehensively surpasses the <code>15B</code> Phi-4-reasoning-vision baseline despite having roughly <code>1/4</code> the parameters; and Mage-ViT trained on <code>560M</code> images + <code>100M</code> video frames matches or outperforms flagship encoders (SigLIP2, MoonViT) trained on billions of image-text pairs.</li>
+      <li>Positioning: within the compact multimodal class (Qwen3-VL-4B, Phi-4-Multimodal 5.6B, Kimi-VL, Molmo, Pixtral, Ovis-U1), Mage-VL is the first entrant to make streaming and codec-native tokenization <em>native</em> to the visual front-end rather than bolted onto a frame-sampling encoder. Against Kimi-VL (SigLIP2-initialized) and typical LLaVA-family stacks, Mage-VL replaces the standard uniform frame sampling that repeatedly re-encodes static background regions with codec-guided sparse patch selection, and against streaming methods that add a post-hoc gate to a frame-based encoder, it trains the streaming target end-to-end via a Stage-5 cognition-gate objective on a purpose-built <code>3.35M</code>-sample corpus.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.24904v1/x2.png" alt="Overview of Mage-VL: performance comparison against Qwen3-VL-4B, Phi-4-MM (5.6B), and Phi-4-reasoning-vision (15B) across spatial, video, and visual understanding benchmarks, plus a codec-native video processing workflow showing motion and residual signals selecting dynamic visual patches for real-time online video QA." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). Overview of Mage-VL. Left: performance vs Qwen3-VL-4B, Phi-4-MM (5.6B), and Phi-4-reasoning-vision (15B) on spatial, video, and visual understanding benchmarks. Right: codec-native processing selects motion- and residual-salient patches, reducing visual tokens by ~75% while supporting real-time online video QA.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Two-model stack.</strong> Mage-ViT is the shared visual encoder across image, video, and streaming modes. A vision-language projector (lightweight two-layer MLP) maps Mage-ViT features into the token-embedding space of the causal language decoder, which is initialized from <code>Qwen3-4B-Instruct-2507</code>. For images a single spatial token block precedes the text instruction; for videos, temporally ordered codec-token windows are concatenated. The same interface handles images, short videos, long videos, and ultra-long videos with no modality-specific decoder.</li>
+      <li><strong>Mage-ViT &mdash; named contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> Existing VLM visual encoders inherit the dense patch-grid representation of vision transformers (CLIP, SigLIP2, DINOv2, Qwen-VL vision encoders): every <code>16&times;16</code> patch is tokenized uniformly, and for video, uniform frame sampling at fixed resolution re-encodes static background regions across frames. On continuous streams this scales computation linearly with duration even when almost nothing has changed &mdash; the source of the streaming Moravec&rsquo;s paradox the paper opens on.</li>
+          <li><em>Mechanism.</em> A codec-driven patchifier estimates a per-patch importance tensor <code>S &isin; R^(T&times;H&times;W)</code> that reflects how many bits the codec would spend on each spatio-temporal patch &mdash; for the default HEVC/H.265 codec, <code>S</code> is a weighted combination of motion-vector magnitude and P-frame residual energy; for neural codecs (DCVC-RT), <code>S</code> is read directly from the codec&rsquo;s learned probability model (negative log-likelihood per patch). The patchifier keeps <em>all</em> I-frame patches and selects the top-<code>k</code> P-frame patches by <code>S</code> within a fixed token budget <code>B</code>. For a 64-frame clip at <code>16&times;16</code>-token frames, <code>B = 4,096</code> tokens gives ~<code>75%</code> token reduction. Two alternative modes (chunk-wise: one frame per temporal chunk; collage: sampled frames vertically concatenated) are mixed during training at 40% / 10% shares alongside 50% codec. The ViT trunk is <code>24</code> layers, hidden dim <code>1,024</code>, <code>16</code> heads, GELU MLP <code>4&times;</code> expansion, Flash Attention 2, with shared 3D rotary positional encoding over the <em>un-pruned</em> spatio-temporal grid so retained tokens preserve their original coordinates after sparse selection.</li>
+          <li><em>Why.</em> Codec bit allocation is a well-calibrated, decades-optimized proxy for local spatio-temporal information density: it is exactly where the codec has learned to spend bits because that&rsquo;s where the content is. Selecting tokens by <code>S</code> allocates compute where information lives rather than where the frame grid happens to fall, decoupling per-second compute from frame rate. Against Video-LaVIT and CoViAR (which use codec signals for recognition but stay frame-centric) and OneVision-Encoder (which develops codec-aligned patch sparsity but is not trained from scratch on both images and videos), Mage-ViT is trained end-to-end from scratch on a joint image+video corpus so the encoder learns to interpret the sparse codec-native representation rather than adapting a dense-grid encoder to it. Codec-robustness (H.265 at training, DCVC-RT at inference) shows the sparsity pattern is learned as a general prior on visual change rather than an artifact of the training codec.</li>
+        </ul>
+      </li>
+      <li><strong>Proactive streaming architecture &mdash; named contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> Video VLMs typically process a fixed pre-sampled batch of frames before generating a response &mdash; they don&rsquo;t handle continuous input and can&rsquo;t decide when to react. Prior streaming work (VideoLLM-online, MMDuet, Dispider, StreamMind) adds streaming mechanisms on top of frame-based encoders, but the perception path and the response-timing path share a single model that must both watch and talk at every step, driving up latency and coupling the two decisions.</li>
+          <li><em>Mechanism.</em> A bio-inspired dual-system split. <strong>System 1</strong> is a lightweight cognition gate: given the current streaming representation <code>h_t</code> derived from the event-preserving feature extractor (EPFE) over rolling codec windows, it predicts <code>p_speak = g(h_t)</code> and triggers generation only when <code>p_speak &ge; &tau;</code>. <strong>System 2</strong> is the frozen causal language decoder, invoked only on <code>speak</code>, and it consumes a local sliding window of the most recent <code>N</code> codec-assembled visual segments &mdash; not the full streaming memory. The two paths share Mage-ViT features but use different memory objects: the gate reads a recurrent streaming perception memory <code>M_per</code>; the decoder reads local codec windows for autoregressive generation. Training: the base model is frozen through Stage 5; only the cognition gate is fine-tuned, on <code>3.35M</code> streaming samples (<code>2.8M</code> from Microsoft&rsquo;s 180-second caption corpus plus <code>0.54M</code> from MatchTime, LiveCC, and StreamingVLM) with a class-weighted cross-entropy over <code>{silent, speak}</code> tokens to address the sparsity of speak events. All examples satisfy a strict no-future-frame constraint.</li>
+          <li><em>Why.</em> Splitting <em>when to speak</em> (cheap, high-frequency, always-on gate over accumulated memory) from <em>what to say</em> (expensive, on-demand, local-window generation by the frozen base model) matches the biological division between fast reactive gating and deliberate deep reasoning, and gives back most of the latency budget: the expensive decoder only runs when the gate opens. Because Stage 5 freezes everything but the gate, the model retains its image, video, and offline-reasoning capabilities from Stages 1-4 while gaining proactive interaction &mdash; the alternative (jointly fine-tune everything for streaming) tends to degrade static capabilities in the process. Against StreamMind (event-gated but on a frame-based encoder) and Dispider (perception/decision/reaction decoupled but not codec-native), the combination of codec-native perception and gate-only Stage 5 is what makes streaming inference cost roughly linear in <em>event density</em> rather than in wall-clock duration.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.24904v1/x3.png" alt="Codec-driven patchifier of Mage-ViT: HEVC/H.265 and neural codec DCVC-RT select patches from video frames according to information density; selected patches are composed into a canvas with spatial-temporal positional encoding and fed to Mage-ViT." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). Codec-driven patchifier of Mage-ViT. Both traditional HEVC/H.265 and neural DCVC-RT codecs are used to select patches by information density; selected patches are composed into a canvas with spatial-temporal positional encoding and fed to Mage-ViT.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.24904v1/x4.png" alt="Proactive streaming framework of Mage-VL: Mage-ViT incrementally encodes a continuous video stream into codec-native visual features shared by the event gate and the causal language decoder; the gate evaluates each rolling window and predicts whether the current prefix contains a response-worthy event, silence otherwise; when it opens, the decoder generates an event-conditioned response from the recent visual context and the given text prompt." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 3 (from the paper). Proactive streaming framework. Mage-ViT features are shared by the System 1 event gate and the System 2 causal language decoder; the gate decides <em>when</em> to respond, the decoder produces the response conditioned on the recent local codec window.</figcaption>
+    </figure>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li><strong>Mage-ViT pre-training corpus.</strong> Images: LAION-400M, COYO-700M, OBELICS, Zero250M, ImageNet-21K, filtered per OneVision-Encoder&rsquo;s rules, ~<code>560M</code> unlabeled images retained. Videos: HowTo100M and Panda-70M, ~<code>100M</code> unlabeled frames retained. Objective: <strong>cluster discrimination</strong> over the visual representation space &mdash; MetaCLIP features are extracted for images and short videos, K-means clustering assigns each sample to its nearest cluster prototypes, and Mage-ViT is trained by negative-sampling discrimination against those visual prototypes with negative-sampling ratio <code>r = 0.1</code>. This encourages semantically related content (text regions, human faces, traffic signs) to occupy nearby regions in the learned space without requiring paired captions.</li>
+      <li><strong>Mage-ViT Stage 1 &mdash; variable-resolution image pre-training.</strong> Resolutions <code>224</code>-<code>448</code>, aspect ratios <code>1:2</code>-<code>2:1</code>. Same-resolution packing for efficient token-budget utilization. AdamW, initial LR <code>10^-3</code>, cosine decay with warm-up, gradient clip <code>1.0</code>, bf16 mixed precision, single-image spatial patchification (temporal pathway inactive).</li>
+      <li><strong>Mage-ViT Stage 2 &mdash; joint image and video pre-training.</strong> Starts from Stage-1 checkpoint. Video at resolution <code>256</code>, <code>64</code> frames/clip, token budget <code>4,096</code>. Patchification mode mix: 50% codec, 40% chunk-wise, 10% collage. LR reduced to <code>5&times;10^-5</code>, bf16.</li>
+      <li><strong>Language backbone.</strong> Initialized from <code>Qwen3-4B-Instruct-2507</code>. Projector: two-layer MLP.</li>
+      <li><strong>Mage-VL training corpus.</strong> ~<code>350M</code> image-caption pairs (85M from LLaVA-OneVision-1.5 mid-training + 265M filtered from ~1B public image-text pairs, all re-captioned by frozen Qwen3-VL-32B under an <em>AI4AI</em>-optimized prompt), <code>54M</code> image-instruction samples (LLaVA-OneVision-1.5 + FineVision <code>~44.3M</code>, OpenBee <code>6.0M</code>, LLaVA-OneVision-2 spatial/GUI <code>4.6M</code>), <code>7.95M</code> unique video-caption samples (<code>4.2M</code> &le;30s, <code>2.7M</code> 30-60s, <code>0.7M</code> 60-180s, <code>350K</code> 10-15min, plus LLaVA-Video-178K, TimeLens, VideoChat-Flash training data, Molmo2-VideoTrack, Molmo2-VideoPoint), and <code>3.35M</code> streaming samples (<code>2.8M</code> from the 180s corpus + <code>543,943</code> from MatchTime, LiveCC, and StreamingVLM).</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li><strong>Five-stage progressive curriculum.</strong>
+        <ul>
+          <li><em>Stage 1 &mdash; multimodal alignment via captions.</em> ~<code>350M</code> dense image captions + <code>4.2M</code> short-video captions. Trains the model as a caption-capable multimodal LM from the start, rather than a projector-only alignment stage.</li>
+          <li><em>Stage 2 &mdash; instruction tuning and short temporal grounding.</em> <code>54M</code> image-instruction samples plus <code>3.4M</code> 30-180s video captions. OCR, document QA, chart reasoning, STEM/math, multi-image, spatial, and GUI data are upweighted. Language-only SFT is downweighted to protect visual grounding from Stage 1.</li>
+          <li><em>Stage 3 &mdash; temporal-horizon expansion.</em> Retains <code>20M</code> Stage-2 image-instruction samples; introduces medium- and long-video data (LLaVA-Video, TimeLens, VideoChat-Flash, Molmo2, Microsoft&rsquo;s structured captions). Goal: event ordering, scene transitions, cross-segment dependencies over minutes. AI4AI diagnostics steer resolution and frame-count choices at this stage.</li>
+          <li><em>Stage 4 &mdash; codec-native long-context adaptation.</em> <code>350K</code> long-video captions + <code>4M</code> spatial samples + Molmo2 tracking/pointing + <code>40M</code> retained image-instructions. Video training switches to the codec-native representation used at inference: rolling token windows with dense anchor-frame evidence and sparse predicted-frame updates. This teaches the language model to reason over the irregular token layouts that Mage-ViT produces at inference time, rather than the dense per-frame grid it saw in Stages 1-3.</li>
+          <li><em>Stage 5 &mdash; proactive streaming alignment via cognition-gate fine-tuning.</em> The visual backbone, EPFE, and language model are all frozen; only the cognition gate is trained, on <code>3.35M</code> streaming samples with a class-weighted cross-entropy over <code>{silent, speak}</code>. When the gate fires <code>speak</code>, the frozen VLM regenerates its response using the most recent <code>N</code> codec-assembled visual segments as local context.</li>
+        </ul>
+      </li>
+      <li><strong>AI4AI closed-loop data pipeline &mdash; named contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> Recaptioning quality gates almost every downstream benchmark (OCR, document, chart, perception, general visual reasoning), but recaptioning quality is a strong function of the system prompt given to the captioning model. Manually iterating that prompt is slow and biases toward whichever axes the human happens to check.</li>
+          <li><em>Mechanism.</em> An iterative prompt-optimization loop with three roles: a frozen <code>Qwen3-VL-32B</code> that captions a rollout batch (1,000 images across 10 visual domains, 100 each); a rubric-scoring agent powered by <code>GPT-5</code> that scores each caption on <em>completeness</em>, <em>redundancy</em>, <em>coherence</em>, and <em>OCR fidelity</em>; and a prompt-refinement agent implemented via GitHub Copilot with a full coding-agent toolset that proposes minimal Markdown edits to the current prompt. A validation gate on 200 held-out images plus a human reviewer accepts or rejects each revision; the accepted prompt becomes the baseline for the next iteration. Run for 10 iterations, then used with frozen Qwen3-VL-32B to generate the <code>350M</code>-caption corpus.</li>
+          <li><em>Why.</em> Grounding the loss on a multi-axis rubric (not a single scalar preference score) prevents the classic RLHF/DPO failure mode where the model optimizes one axis at the expense of others. Using an LLM-native code agent (Copilot) as the mutator means the prompt-search space is exactly the space of small edits a good engineer would make, rather than a token-level or embedding-level perturbation that&rsquo;s hard to interpret. The human-in-the-loop validation gate is the mechanism that prevents rubric-goodhart: if the scorer starts liking captions humans dislike, the reviewer catches it before the change propagates.</li>
+        </ul>
+      </li>
+      <li><strong>Zero-Vision SFT &mdash; named contribution.</strong> Post-training finding surfaced in the discussion: bypassing visual SFT in favor of pure-text reasoning SFT unlocks strong multimodal RL capabilities and offers a compute-efficient path to narrow the agentic capability gap. The mechanism claim, from the report&rsquo;s empirical analysis: visual SFT tends to compress reasoning traces into visual-attribute descriptions and short answers, which is exactly the wrong warm-start for downstream RL against non-visual reward signals; text-only reasoning SFT preserves the long-form chain-of-thought behavior that RL then aligns to the multimodal task. This finding is cited as inspiration for SkillOpt-Lite.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.24904v1/x5.png" alt="Iterative prompt-optimization pipeline for image recaptioning: a frozen Qwen3-VL-32B generates captions for a rollout batch, a GPT-5 rubric scorer evaluates completeness, redundancy, coherence, and OCR fidelity, and GitHub Copilot proposes minimal prompt/code revisions accepted only after a validation batch and human review." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 4 (from the paper). AI4AI iterative prompt-optimization pipeline. Frozen Qwen3-VL-32B captions a rollout batch, GPT-5 scores against a four-axis rubric, Copilot proposes minimal prompt/code edits, and a held-out validation batch plus human review gates acceptance.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li><strong>Baselines and protocol.</strong> Baselines include Qwen3-VL-4B, Phi-4-Multimodal-Instruct (5.6B), and Phi-4-reasoning-vision (15B); vision encoders compared against SigLIP2 and MoonViT. Image classification uses linear probes at 256 visual tokens per image; video recognition uses attentive probes at a fixed <code>4,096</code>-token budget per video. Chunk-wise baseline evaluation uniformly samples 16 frames &times; 256 tokens/frame; codec-based evaluation distributes the same budget over 64 frames via sparse patch selection. Video encoder baselines use their 16-frame representations. All values reported as top-1 accuracy.</li>
+      <li><strong>Mage-ViT representation quality.</strong> Under matched token budgets Mage-ViT matches or outperforms SigLIP2 and MoonViT on image and video representation quality, despite the ~<code>18&times;</code> smaller pre-training corpus &mdash; the report&rsquo;s central data-efficiency finding.</li>
+      <li><strong>Mage-VL image and video understanding.</strong> Parity with Qwen3-VL-4B on static image benchmarks; wins on video understanding and 2D/3D spatial reasoning; comprehensive outperformance of the <code>15B</code> Phi-4-reasoning-vision across most evaluated dimensions.</li>
+      <li><strong>Streaming inference.</strong> Response timing and response quality reported on streaming benchmarks derived from the 180s caption corpus, MatchTime, LiveCC, and StreamingVLM.</li>
+      <li><strong>Efficiency.</strong> Up to <code>3.5&times;</code> wall-clock inference speedup over uniform frame sampling under a matched visual-token budget; Pareto-efficient in wall-clock time across the accuracy-budget frontier; monotonic performance scaling with visual token budget without the resolution degradation that fixed-resolution encoders exhibit.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Codec robustness.</strong> Trained under H.265; robust when paired with neural codecs (DCVC-RT) at inference, maintaining comparable performance while further reducing visual-token overhead. The sparsity pattern generalizes across codec families rather than being a training-codec artifact.</li>
+      <li><strong>Variable-resolution scaling.</strong> Variable-resolution pre-training enables continuous, monotonic performance scaling with visual token budgets; fixed-resolution encoders degrade off their training resolution.</li>
+      <li><strong>Long-VideoQA SFT redundancy.</strong> Explicit long-VideoQA SFT is redundant; fine-tuning solely on dense video captions alongside short-video SFT is sufficient for strong zero-shot long-VideoQA capability. Implication: the dense caption corpus is doing the heavy lifting, not the QA supervision.</li>
+      <li><strong>Motion-spatial synergy.</strong> Dynamic video training significantly enhances static 2D/3D spatial reasoning &mdash; motion and spatial structure are inherently synergistic, so training on video improves static-image geometry as a side effect.</li>
+      <li><strong>AI4AI captions vs baseline.</strong> Captions generated with the optimized prompt consistently improve performance across OCR, document, chart, perception, and general visual-reasoning benchmarks over the baseline LLaVA-OneVision-1.5 recaptioning prompt.</li>
+    </ul>
+
+    <h3>Safety &amp; limitations</h3>
+    <ul>
+      <li>Data curation removes corrupted files, unsafe content, low-quality samples, and near-duplicates. Caption filters remove short/inconsistent-timestamp/near-duplicate captions and samples flagged by caption-video consistency checks. Streaming supervision balances the <code>speak</code>/<code>silent</code> labels by subsampling redundant silent timestamps.</li>
+      <li>Discussion section flags future work on end-to-end multimodal RL with the Zero-Vision SFT initialization.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Weights: <a href="https://huggingface.co/microsoft/Mage-VL"><code>microsoft/Mage-VL</code></a> (5B footprint including vision stack; live day-0 with a demo Space at <code>hugging-apps/mage-vl-demo</code>).</li>
+      <li>Code: <a href="https://github.com/microsoft/Mage">github.com/microsoft/Mage</a> (776 stars at release).</li>
+      <li>Project page: <a href="https://microsoft.github.io/Mage">microsoft.github.io/Mage</a>.</li>
+      <li>License: CC BY 4.0 on the arXiv text; model card carries its own license terms.</li>
+    </ul>
+
+    <h1 id="mistral">Mistral AI</h1>
+
+    <h2 id="shieldstral"><a href="https://arxiv.org/abs/2607.25857">Shieldstral</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-07-28</span>
+      <span>Flagship launch &middot; Safety classifier &middot; Multimodal &middot; Policy-adaptive &middot; Binary QA</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Antonia Calvi, Avinash Sooriyarachchi, Giada Pistilli, <strong>Guillaume Lample</strong>, Maarten Buyl, Maximilian Augustin, Maximilian M&uuml;ller, Pierre Stock, Tom Bewley, Wassim Bouaziz, Yimu Pan. Affiliation: <strong>Mistral AI</strong>. arXiv 2607.25857v1 (submitted 2026-07-28 15:27:53 UTC, [cs.CL, cs.CV], CC BY 4.0). Corresponding author: Yimu Pan.</li>
+      <li>Central artifact: <strong>Shieldstral</strong>, a <code>3B</code>-parameter policy-adaptive multimodal safety classifier. Positioned as a small model that matches or outperforms text-safety classifiers nearly <code>7&times;</code> its size and sets a new state of the art on multimodal safety classification.</li>
+      <li>Positioning: the safety-classifier lineage this slots into includes Llama Guard 3 (<code>8B</code>), ShieldGemma (<code>9B</code>/<code>27B</code>), OpenAI Moderation API, and Perspective API-style systems. Shieldstral&rsquo;s pitch is smaller, faster, adaptable to a downstream operator&rsquo;s policy without retraining, and multimodal-native.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Binary QA formulation &mdash; named contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> Content-moderation systems normally output multi-way class labels drawn from a fixed taxonomy (hate/violence/CSAM/self-harm/&hellip;). Every deployment has a slightly different taxonomy, so building a single classifier means either shipping a very large tag space and hoping it covers each downstream policy, or retraining per customer. Consolidating heterogeneous open safety datasets with divergent taxonomies into one training run is nearly impossible under the label-mismatch problem.</li>
+          <li><em>Mechanism.</em> Shieldstral reformulates content moderation as a single binary question-answering task: rather than predicting a class, the model answers <em>yes/no</em> to a policy-conditioned question about a given piece of text or image content. The classifier input therefore carries not just the content, but the policy question that a downstream operator wants answered (e.g., &ldquo;Does this violate the operator&rsquo;s harassment policy as written?&rdquo;). This is the mechanism that unifies datasets across taxonomies: every source dataset is translated into (content, policy question, yes/no) triples, and heterogeneous taxonomies collapse into a single yes/no supervision signal, enabling one training framework across ~<code>54.1M</code> samples covering both text and multimodal content.</li>
+          <li><em>Why.</em> The binary QA framing does two things that class-label heads can&rsquo;t: (i) it makes the policy an <em>input</em> rather than a fixed head, so a deployed classifier can adapt to a new policy question at inference time without retraining; (ii) it removes the label-mismatch bottleneck that stops the field from aggregating open safety data, unlocking a corpus that&rsquo;s big enough for a <code>3B</code> model to match classifiers <code>~7&times;</code> its parameter budget. Against Llama Guard&rsquo;s fixed taxonomy-driven output and ShieldGemma&rsquo;s per-policy classifier, Shieldstral is a single model that answers whichever binary policy question the operator asks &mdash; the exact axis the report calls &ldquo;policy adaptability.&rdquo;</li>
+        </ul>
+      </li>
+      <li><strong>Data.</strong> <code>54.1M</code> samples, curated and generated from a mix of existing safety datasets recast into the binary-QA format plus a fine-grained evaluation set constructed specifically to evaluate policy adaptability &mdash; not just static in-distribution accuracy on a fixed taxonomy but the ability to answer different policy questions on the same content correctly.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Matches or outperforms text-safety classifiers nearly <code>7&times;</code> its parameter count on standard text safety benchmarks &mdash; the report&rsquo;s headline text-side claim. The comparison class is the ~<code>20B</code>-plus safety classifier tier (Llama Guard-family, ShieldGemma-27B, and moderation LLMs of similar scale).</li>
+      <li>New state of the art on multimodal safety classification &mdash; the report&rsquo;s headline multimodal-side claim. Prior SOTA on multimodal safety classification has been held by considerably larger vision-language models operating in zero-shot moderation mode; Shieldstral&rsquo;s claim is that a purpose-built <code>3B</code> policy-adaptive classifier trained on the unified corpus beats them.</li>
+      <li>The fine-grained evaluation set is used to measure policy adaptability: performance when the input policy question shifts between semantically related but distinct definitions of what counts as a violation.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>No model weights or explicit availability terms listed on the arXiv abstract page as of submission; the paper is text-only on arXiv at v1. Watch <a href="https://huggingface.co/mistralai">mistralai on Hugging Face</a> for a Shieldstral checkpoint drop.</li>
+    </ul>
+
+    <h1 id="google-deepmind">Google DeepMind</h1>
+
+    <h2 id="vipe"><a href="https://arxiv.org/abs/2607.25537">Visual prompt engineering for video models</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-28</span>
+      <span>Video models &middot; Prompting &middot; Visual reasoning &middot; Test-time methods</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Robert Geirhos, Yuxuan Li, Thadd&auml;us Wiedemer, Neha Kalibhat, Zi Wang, Mani Malek, Oyvind Tafjord, Kevin Swersky, Been Kim, Priyank Jaini. Affiliation: <strong>Google DeepMind</strong>. Project page: <a href="https://visual-prompt-engineering.github.io/">visual-prompt-engineering.github.io</a>.</li>
+      <li>Framing: video models are becoming the general-purpose vision foundation (extending the &ldquo;video generation models are general-purpose vision learners&rdquo; direction covered in the July 13 review). If that framing is right, then prompt engineering &mdash; the standard test-time lever for language models &mdash; needs a visual analogue. The paper introduces one and shows it works.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>VIPE &mdash; visual prompt engineering &mdash; named contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> Standard prompt engineering modifies text to steer a language or video model. For a video model doing visual reasoning, that&rsquo;s often too indirect: the model&rsquo;s failure mode is a mismatch between the input image&rsquo;s abstraction level and the model&rsquo;s training distribution (e.g., a sketch-like physics scene vs the photorealistic scenes the video prior was trained on). Test-time scaling and text-prompt rephrasing both leave the input image untouched.</li>
+          <li><em>Mechanism.</em> VIPE modifies the <em>image</em> the video model sees. Given a visual reasoning task (e.g., &ldquo;where does the ball land after passing this set of obstacles?&rdquo;), the abstract sketch is converted into a photorealistic version with a single call to an image-editing model, then handed to the video model. This is the visual-side analogue of writing a better text prompt: it changes the input distribution to something the model handles better without touching model weights or adding test-time compute to the video model itself.</li>
+          <li><em>Why.</em> Video foundation models inherit their strongest visual priors from photorealistic video training data. Handing them an input that matches that distribution recovers priors the sketch-like input would suppress. Compared with text-based prompt engineering (which only reaches the model through the caption path) and test-time scaling (which spends compute at inference without changing the input), visual prompt engineering directly repairs the input-distribution mismatch that&rsquo;s the actual bottleneck on visual reasoning tasks &mdash; and can be done with a compute-cheap one-shot image edit rather than an expensive inference-time scaling budget.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>VIPE improves video-reasoning performance across the tasks the paper evaluates.</li>
+      <li>For video models, visual prompt engineering can be more effective than classic text-based prompt engineering or test-time scaling &mdash; the report&rsquo;s headline comparative claim.</li>
+      <li>Example videos on the project page.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>The framing implies a research agenda: as video models take over as the visual foundation, VIPE-style input editing becomes a standard test-time lever, alongside text prompting and test-time scaling.</li>
+    </ul>
+
+    <h1 id="moonshot">Moonshot AI</h1>
+
+    <h2 id="perceptionbench"><a href="https://arxiv.org/abs/2607.24957">PerceptionBench: Evaluating Atomic Visual Perception in Multimodal Large Language Models</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-27</span>
+      <span>Benchmark &middot; MLLMs &middot; Visual perception &middot; Capability taxonomy</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Zichao Lin, Yifeng Xie, Bowen Qu, Haiming Wang, Jia Li, Haoning Wu, Yuhao Dong, Zuhao Yang, Jinguo Zhu, Haoyu Lu, Zijia Zhao, Tongtian Yue, Zhangyang Qi, Junwei Yang, Mengfan Dong, Peizhou Cao, Chenzhuang Du, Zaida Zhou, Haotian Yao, Hao Yang, Hongcheng Gao, Lin Sui, +11 authors. Affiliation: <strong>Moonshot AI</strong>. Companion to K3&rsquo;s vision stack: the same lab that shipped MoonViT-V2 alongside Kimi K3 last week is now shipping the benchmark used to characterize its blind spots.</li>
+      <li>Framing: existing MLLM benchmarks conflate perception with reasoning and domain knowledge, or cover narrow application-driven perception slices &mdash; either way they don&rsquo;t isolate perceptual failure modes.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Bottom-up capability taxonomy &mdash; named contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> Top-down benchmark design starts from what an application needs and produces perception tasks bundled with reasoning and knowledge, so failures can&rsquo;t be attributed cleanly. A model that scores badly might be failing perception, failing to reason over correctly perceived content, or lacking domain knowledge &mdash; the benchmark can&rsquo;t tell you which.</li>
+          <li><em>Mechanism.</em> PerceptionBench inverts the direction. Diagnose the earliest failure points in frontier MLLM responses across <code>42</code> existing benchmarks; extract an error taxonomy; the perception branch of that taxonomy defines <code>10</code> atomic perceptual capabilities. Construct <code>3,000</code> verified questions with short, unambiguous answers, each isolating a single capability, with difficulty stemming from perception rather than reasoning or knowledge.</li>
+          <li><em>Why.</em> Grounding the taxonomy in observed frontier-model failure modes ensures the ten capabilities are the ones that actually matter for current MLLMs, not the ones a taxonomist thinks should matter. Restricting each question to a single capability with an unambiguous short answer decouples perception scores from reasoning ability &mdash; the same axis that Moonshot&rsquo;s own K3 report has been increasingly explicit about needing separated. The result is a diagnostic benchmark rather than a leaderboard: PerceptionBench&rsquo;s output is a per-capability profile, not a single number.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>16 frontier MLLMs evaluated. <em>No model reaches 60% accuracy</em> &mdash; the report&rsquo;s headline result on the state of atomic perception.</li>
+      <li>Perception-related hallucination is the weakest capability on average across the evaluated set.</li>
+      <li>Similar overall scores conceal sharply divergent capability profiles &mdash; two models with the same PerceptionBench average can be strong on entirely different atomic capabilities. This is the primary use case: rank-1 numbers hide model differences that matter for downstream tasks.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Not detailed in the abstract; report available at the arXiv link.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning: complements Kimi K3&rsquo;s vision benchmarks by giving the same lab (and the field) a capability-level standard for measuring perception boundaries rather than end-task scores.</li>
+    </ul>
+
+    <h1 id="nvidia">NVIDIA</h1>
+
+    <h2 id="pdd"><a href="https://arxiv.org/abs/2607.26004">Parallel Decoding Distillation for Fast Image and Video Generation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-28</span>
+      <span>Diffusion &middot; Flow matching &middot; Distillation &middot; Video generation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Neta Shaul, Chao Liu, Arash Vahdat, Julius Berner. Affiliation: <strong>NVIDIA</strong> (Research). Project page: <a href="https://research.nvidia.com/labs/genair/pdd/">research.nvidia.com/labs/genair/pdd</a>. Code: <a href="https://github.com/NVlabs/fastgen">github.com/NVlabs/fastgen</a> (874 stars at release).</li>
+      <li>Framing: video diffusion/flow models are computationally expensive because sampling is iterative. The dominant acceleration path is few-step distillation via variational score distillation (VSD) plus adversarial losses. Those losses are notoriously hard to optimize and drift into mode collapse &mdash; symptoms are loss of diversity, loss of motion, and reduced generation variety. PDD replaces that stack with a trajectory-based objective.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Parallel Decoding Distillation (PDD) &mdash; named contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> VSD-based few-step distillation minimizes a variational bound whose gradient goes through a score-model surrogate; adversarial losses provide additional supervision. Both objectives are optimization-hostile in practice: reward signal is noisy, they push generators toward mode collapse (fewer distinct modes covered, less motion diversity in video), and they require careful adversarial-training discipline. Existing methods that regress the mean velocity along a trajectory typically need either JVPs (Jacobian-vector products) or finite-difference approximations for the derivative &mdash; both are expensive per step or numerically fragile.</li>
+          <li><em>Mechanism.</em> PDD is a trajectory-based distillation objective that predicts <em>multiple denoising steps per network evaluation</em>, and it learns a representation of the mean velocity <em>without regressing its derivative</em> &mdash; no JVPs, no finite differences. Architecture and training procedure are compatible with any pre-trained diffusion or flow model. Supports sampling with a varying number of function evaluations (NFE), so a single distilled model can serve a spectrum of quality/latency operating points at inference time.</li>
+          <li><em>Why.</em> Eliminating the derivative regression removes the two most expensive machinery pieces of prior trajectory-distillation methods, and eliminating VSD+adversarial removes the mode-collapse pressure that&rsquo;s been the practical failure mode of few-step distilled video generators. The variable-NFE inference contract means one training run replaces the &ldquo;retrain per step count&rdquo; overhead of methods with fixed few-step budgets. Against VSD+adversarial: better preserved motion diversity because the trajectory-matching objective doesn&rsquo;t incentivize mode collapse. Against JVP-based trajectory distillation: constant per-step cost.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>SOTA at <code>4-8</code> NFE on:
+        <ul>
+          <li><code>LTX-2.3</code> Text-to-Video / Text-to-Audio.</li>
+          <li><code>Wan 14B</code> Text-to-Video.</li>
+          <li><code>Qwen-Image</code> Text-to-Image.</li>
+        </ul>
+      </li>
+      <li>Significant improvement in generated video diversity vs prior VSD/adversarial few-step distillation &mdash; the report&rsquo;s central quality claim beyond raw SOTA.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Codebase named <em>fastgen</em>; the <em>PDD</em> project page is the entry point for the specific method.</li>
+      <li>Direct competitor to the accelerator stacks used by this month&rsquo;s SANA-Video 2.0 release (NVIDIA&rsquo;s own July 25 hybrid-attention video DiT) and the July 22 Mage-Flow release &mdash; both of which used VSD-family distillation. PDD is the internal follow-up on the &ldquo;how do we make this fast without mode collapse?&rdquo; question.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="rarg"><a href="https://arxiv.org/abs/2607.24223">A New Role for Relevance: Guiding Corpus Interaction in Agentic Search</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-07-27</span>
+      <span>Agentic search &middot; RAG &middot; Retrieval &middot; #1 HF Paper of the day</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Jiangnan Li, Yuqing Li, Mo Yu, Jinchao Zhang, Jie Zhou. Affiliation: <strong>Tencent</strong>. Project page: <a href="https://qdcassie-li.github.io/RARG/">qdcassie-li.github.io/RARG</a>. Code: <a href="https://github.com/LeqsNaN/RARG">github.com/LeqsNaN/RARG</a>. <em>#1 Paper of the day</em> on Hugging Face Daily Papers (43 upvotes at the time of writing).</li>
+      <li>Framing: existing retrieval agents use relevance as a top-<code>k</code> filter and stop there. That&rsquo;s enough for retrieval but not for the fine-grained localize/compose/verify operations complex questions require. Direct Corpus Interaction (DCI) enables those operations via grep-style exploration but throws relevance away during interaction, so useful clues surface late and convergence is slow.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>RARG &mdash; Relevance-Aware RipGrep Search Agent &mdash; named contribution.</strong>
+        <ul>
+          <li><em>Problem.</em> Once you&rsquo;ve narrowed the corpus down to a working set, most agentic-search systems fall back on relevance-agnostic operations: ripgrep-style traversal that doesn&rsquo;t know which documents to search first, entry points chosen arbitrarily, and grep matches presented in document order rather than ranked by informativeness. The result is that globally relevant clues can sit at the end of the traversal, and informative excerpts get buried in a long list of near-identical matches.</li>
+          <li><em>Mechanism.</em> RARG promotes relevance from a retrieval-time filter to an <em>execution prior</em> over corpus interaction, in three coarse-to-fine ways. (1) Documents are ordered for sequential ripgrep traversal so that globally relevant clues are surfaced earlier in the interaction. (2) Promising entry points are initialized with query-relevant paragraphs, so the first thing the agent grep&rsquo;s into is already the most likely region of the corpus. (3) Grep matches are reranked to surface informative excerpts that document-level ranking would otherwise obscure &mdash; the specific failure mode where a highly relevant document has one useful line and 200 near-duplicate ones.</li>
+          <li><em>Why.</em> Retrieval-only pipelines lose too much precision at the excerpt level; DCI-only pipelines waste steps exploring irrelevant paths. Coarse-to-fine relevance guidance takes the two systems&rsquo; strengths without their weaknesses: relevance narrows the corpus (retrieval&rsquo;s strength) and steers where interaction goes first (DCI&rsquo;s weakness). Against pure retrieval-based agents: more precise, because grep-level reranking is finer than document-level ranking. Against pure DCI agents: faster convergence, because entry points are informed rather than arbitrary.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Evaluated on challenging browse question-answering and reasoning-intensive retrieval benchmarks. RARG improves the accuracy-efficiency frontier over both retrieval-based and direct-interaction agents &mdash; the report&rsquo;s headline claim.</li>
+      <li>Ablation-style claim in the paper submitter&rsquo;s note: &ldquo;relevance no longer only decides what enters the context. It guides where interaction begins, which documents are searched first, and which local excerpts remain visible.&rdquo;</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning: follows Tencent&rsquo;s July 23 rubric-oriented document set-selection paper into a broader theme of &ldquo;relevance is under-used in agentic retrieval,&rdquo; and adds interaction-time steering to that theme.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
