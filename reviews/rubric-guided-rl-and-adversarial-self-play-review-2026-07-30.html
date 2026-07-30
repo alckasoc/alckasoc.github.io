@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rubric-Guided RL and Adversarial Self-Play Review — July 30, 2026 | Auto Lit Review</title>
+<meta name="description" content="Rubric-shaped credit assignment, self-play safety training, and embodied VLM evaluation land together in a 36-hour window with no Tier 1 launch." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">2026-07-30</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#alibaba" class="toc-h1">Alibaba</a>
+          <ul>
+            <li><a href="#decoevo" class="toc-h2">DecoEvo</a></li>
+          </ul>
+        </li>
+        <li><a href="#bytedance" class="toc-h1">ByteDance</a>
+          <ul>
+            <li><a href="#cort" class="toc-h2">CoRT</a></li>
+          </ul>
+        </li>
+        <li><a href="#meta-superintelligence-labs" class="toc-h1">Meta Superintelligence Labs</a>
+          <ul>
+            <li><a href="#humanclaw" class="toc-h2">HumanCLAW</a></li>
+            <li><a href="#rl-code-optimization" class="toc-h2">RL for Code Optimization</a></li>
+          </ul>
+        </li>
+        <li><a href="#openai" class="toc-h1">OpenAI</a>
+          <ul>
+            <li><a href="#gpt-red" class="toc-h2">GPT-Red</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review · July 30, 2026</div>
+    <h1 class="page-title">Rubric-Guided RL, Adversarial Self-Play, and Embodied VLMs</h1>
+    <div class="page-meta">5 papers · 4 labs · auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>No Tier 1 launch in the 36-hour window. Five Tier 2 frontier-lab papers converge on two problems that RLHF-era pipelines still handle badly: how to allocate credit inside a response when the reward is either a rubric or an execution-time measurement, and how to keep a fixed-slot verifier from being either gamed or under-specified. Two independent papers &mdash; <strong>CoRT</strong> from ByteDance and <strong>DecoEvo</strong> from Alibaba&rsquo;s Qwen Business Unit &mdash; attack the rubric side. CoRT keeps GRPO&rsquo;s scalar reward and rollouts unchanged but redistributes the response-level advantage across tokens using a policy-internal counterfactual: rescore the same sampled response under a matched criteria-free prompt, and the tokenwise log-probability drop is the rubric-dependence weight. DecoEvo instead evolves the rubric itself, co-evolving a solver skill and a rubric-generator skill under objectives that are decoupled from the solver&rsquo;s aggregate score, so the generator cannot make progress by writing easier criteria. Meta Superintelligence Labs&rsquo; <strong>Reinforcement Learning for Code Optimization</strong> turns execution time into a learnable reward, engineering DMC-Optim, an offline-simulator-guided correctness-plus-speed composition, and a noise-robust GRPO adaptation that push strict top-50% pass@1 from 30.7% to 50.4% on CWM 32B. OpenAI&rsquo;s <strong>GPT-Red</strong> scales automated red-teaming self-play to the size of a frontier post-training run &mdash; the single-largest LLM safety training run documented &mdash; producing an attacker used to adversarially train GPT-5.6 that finds more prompt-injection attacks than human red-teamers and generalizes to held-out environments, defenders, and harnesses. Meta&rsquo;s <strong>HumanCLAW</strong> closes the day with an embodied-VLM benchmark that decouples action decision from motor execution: nine SOTA VLMs cap at 16.8% on 1,218 long-horizon egocentric find-navigate-interact episodes, and the failure mode is embodied self-awareness, not perception.</p>
+      <h3>Competitiveness</h3>
+      <p>The 36-hour window contains no model release; the current frontier ranking is unchanged from the July 29 review. Anthropic&rsquo;s <code>Claude Fable 5</code> and <code>Claude Opus 5</code> lead Artificial Analysis&rsquo;s Intelligence and Agentic indices, with OpenAI&rsquo;s <code>GPT-5.6 Sol</code> and Moonshot&rsquo;s <code>Kimi K3</code> immediately behind. GPT-Red is notable in this context because it is not a capability release &mdash; it is a defense artifact used to adversarially train GPT-5.6&rsquo;s prompt-injection robustness, disclosed after the model shipped, and its scale (matching a frontier post-training run) is itself the news. On the research side, CoRT&rsquo;s +4.4 point average gain over matched response-level GRPO and DecoEvo&rsquo;s 2.8&ndash;5.0% relative gains over SkillOpt on five benchmarks are meaningful because they are drop-in modifications to the reward-to-token pipeline that neither company was locked into &mdash; both are ports back into the shared GRPO / text-space toolkit that Qwen, Kimi, and DeepSeek all now build on. Meta&rsquo;s code-optimization RL is competitive against human submissions for the first time: relative to the fastest correct human on LeetCode / Codeforces per problem, CWM 32B reaches about half the human rate of complexity-class improvements (14% vs. 28%), a level no prior RLVR configuration approached. HumanCLAW&rsquo;s 16.8% ceiling on frontier VLMs (unnamed but the abstract implies GPT-5.x and Gemini-3.x-class) is the sharp signal: recognizing the target is not the bottleneck, tracking the body is.</p>
+      <h3>New frontier releases</h3>
+      <p>No new flagship models in the window. GPT-Red is a safety training artifact, not a released model; it is the training-time counterpart to OpenAI&rsquo;s GPT-5.6 prompt-injection robustness claim.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="decoevo"><a href="https://arxiv.org/abs/2607.25675">DecoEvo: Score-Decoupled Co-Evolution of Solver and Rubric-Generator Skills in Text Space</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv 2607.25675</span>
+      <span>2026-07-28</span>
+      <span>Text-space optimization · Rubrics · Co-evolution</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Text-space optimization adapts LLMs by editing external natural-language artifacts (skills, rubrics, prompts) rather than model weights &mdash; the model stays a black box and the optimized artifacts remain inspectable. The dominant failure mode of prior work is a fixed evaluator: once the solver saturates the criteria the rubric measures, any dimension the rubric omits is invisible to the optimization signal, and open-ended tasks stall at the rubric&rsquo;s ceiling.</li>
+      <li>Simply evolving the rubric with the solver&rsquo;s aggregate score in the loop is unreliable because the generator can raise scores by writing easier criteria. DecoEvo&rsquo;s contribution is a co-evolution that separates the two update signals: the solver optimizes on criterion-level feedback while the rubric-generator is judged by score-independent audits of coverage and discrimination.</li>
+      <li>Under each benchmark&rsquo;s official evaluation, DecoEvo beats every compared method across five benchmarks and three LLM backbones, with 2.8&ndash;5.0% relative gain over SkillOpt in the five-benchmark average. Submitted from the Qwen Business Unit (with Tsinghua co-authors); no gold rubrics are used during optimization.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><em>Problem.</em> Text-space methods that evolve the rubric alongside the solver typically pick rubric updates by the solver&rsquo;s current score. This entangles the two evolutions: an easier rubric raises the score even when the solver has not improved, so the generator&rsquo;s objective is contaminated by the solver&rsquo;s convenience.</li>
+      <li><em>Mechanism.</em> DecoEvo runs two skills in parallel under <em>decoupled</em> objectives. The solver skill is updated using <strong>criterion-level feedback</strong> &mdash; per-criterion pass/fail signals from the current rubric, not the aggregate score &mdash; so improvements are attributed to the specific requirements they satisfy. The rubric-generator skill is revised through two audits: (i) <strong>requirement coverage</strong>, checking whether the current rubric exposes dimensions the solver has not yet satisfied, and (ii) <strong>response discrimination</strong>, checking whether the rubric&rsquo;s criteria separate strong from weak responses in the current rollout population. Both audits are computed independently of the solver&rsquo;s aggregate score. The generator update therefore concentrates on newly exposed solver weaknesses and reduces repeated emphasis on criteria the solver already satisfies.</li>
+      <li><em>Why it works / why it beats prior.</em> Score-coupled co-evolution (the SkillOpt family) rewards generators that make the solver&rsquo;s score go up even when that just means the rubric got easier. DecoEvo&rsquo;s coverage-and-discrimination audits are functions of the population of responses under the current rubric, not of any solver score, so the incentive to lower the bar is removed. Empirically this shows up as sustained non-saturating gains: 2.8&ndash;5.0% relative over the strongest score-coupled baseline across five benchmarks and three backbones.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Five benchmarks &times; three LLM backbones. Under each benchmark&rsquo;s official evaluation (i.e., using the benchmark&rsquo;s own held-out judge or metric, not DecoEvo&rsquo;s evolved rubric), DecoEvo outperforms every compared method across all fifteen (benchmark, backbone) cells.</li>
+      <li>Reported five-benchmark average: 2.8&ndash;5.0% relative gain over SkillOpt (the strongest prior text-space optimizer). No gold rubrics are used during optimization &mdash; the rubric is bootstrapped and refined entirely from audits.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Sits alongside CoRT (same day) as a rubric-side complement: CoRT keeps the rubric fixed and redistributes credit inside a response; DecoEvo keeps the credit path fixed and redistributes what the rubric measures. Both are drop-in for GRPO / text-space stacks.</li>
+    </ul>
+
+    <h1 id="bytedance">ByteDance</h1>
+
+    <h2 id="cort"><a href="https://arxiv.org/abs/2607.25659">CoRT: Counterfactual Replay for Token-Level Rubric-Guided Policy Optimization</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv 2607.25659</span>
+      <span>2026-07-28</span>
+      <span>GRPO · Credit assignment · Rubric RL</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Rubric-based RL enriches supervision by scoring against explicit criteria, but in GRPO-style pipelines the criterion-level judgments collapse to a scalar response-level reward and a response-level advantage that is broadcast uniformly to every generated token. CoRT preserves the reward interface and the group-relative normalization but derives a token-level credit weight from a policy-internal counterfactual: rescore the same sampled response under a matched criteria-free prompt, and the tokenwise log-probability contrast is the rubric-dependence signal.</li>
+      <li>Published from a project where the lead was interning at ByteDance; #2 paper of the day on Hugging Face with 59 upvotes. On a mix of instruction-tuned models and reward granularities, CoRT beats matched response-level GRPO in the vast majority of comparisons, with an average gain of 4.4 percentage points, and remains competitive with learned token-level credit baselines while avoiding a separate relevance-learning stage.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><em>Problem.</em> GRPO converts the scalar reward <code>r_i</code> for response <code>y_i</code> into a group-relative advantage <code>A_i = (r_i − &mu;) / (&sigma; + &epsilon;)</code>, then applies the same <code>A_i</code> to every token in <code>y_i</code>. When the reward is a rubric (formatting, correctness, safety, style), different criteria are grounded in different spans, but the update signal cannot distinguish rubric-critical tokens from filler. Prior fixes (Rubrics-to-Tokens / RTT) train a separate token-relevance discriminator, adding a stage and a data pipeline.</li>
+      <li><em>Mechanism.</em> CoRT&rsquo;s core observation is that if you hold the sampled response tokens fixed and rescore them under a criteria-free prompt <code>x&minus; = x</code> (versus the full rubric prompt <code>x+ = (x, c)</code>), tokens whose likelihood depended on the rubric drop more than generic content tokens. Per-token counterfactual contrast: <code>&Delta;_{i,t} = &ell;+_{i,t} &minus; &ell;&minus;_{i,t}</code>. The contrast is mapped to a bounded <em>replay-margin score</em> <code>s_{i,t}</code>, then passed through <em>scheduled response normalization</em> so the token weights <code>w_{i,t}</code> satisfy <code>(1/T_i) &Sigma;_t w_{i,t} = 1</code>. The shaped advantage <code>&Acirc;_{i,t} = sg(w_{i,t}) &middot; A_i</code> (stop-gradient on the weight) is substituted for <code>A_i</code> inside the standard PPO-clipped GRPO surrogate <code>&Lscr;_{GRPO} = &minus;&Eopf;_{i,t}[min(&rho;_{i,t} A_i, clip(&rho;_{i,t}) A_i)]</code>. The rollout, verifier reward, and response-level sign of the update are all unchanged; only the within-response distribution is redistributed.</li>
+      <li><em>Why it works / why it beats prior.</em> RTT and other learned token-relevance methods need a supervised data-generation pipeline to train a discriminator; CoRT replaces that pipeline with a single extra forward pass under a modified prompt. The normalization constraint guarantees the shaped advantage integrates to the same response-level advantage, so group-relative normalization is undisturbed and training stability is inherited from GRPO. Empirically, CoRT beats matched response-level GRPO by 4.4 points average and stays competitive with learned-relevance methods without their separate stage.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.25659v1/x2.png" alt="CoRT overview diagram: rubric rewards are converted into a scalar GRPO advantage, then redistributed across tokens using counterfactual replay contrasts." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). Overview of CoRT. Response-level rubric rewards are converted into a scalar GRPO advantage; a counterfactual replay under the criteria-free prompt yields tokenwise log-probability contrasts that map to token weights and redistribute the response-level advantage.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Instruction-tuned models with multiple reward granularities. CoRT improves over matched response-level GRPO in the vast majority of comparisons; average gain <strong>+4.4 percentage points</strong>.</li>
+      <li>Competitive with learned token-level credit baselines (RTT-style) without a separate relevance-learning stage.</li>
+      <li>Compatible with alternative policy-optimization objectives (the shaped-advantage substitution is orthogonal to whether the outer loop is GRPO, DAPO, or GSPO).</li>
+      <li>Also tested at Qwen3-14B scale with consistent gains, per the results section.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Fixed-step-500 CoRT checkpoints and post-500 training/validation continuation confirm the gain is not a transient artifact of the schedule.</li>
+      <li>General-capability checks (non-rubric benchmarks) do not regress: the token-level redistribution improves rubric-graded behavior without eroding baseline capability.</li>
+      <li>Case studies of replay contrasts identify rubric-controlled tokens (formatting boundaries, constraint-satisfying phrasing) as the ones receiving concentrated weight; generic content tokens receive weights near 1.</li>
+    </ul>
+
+    <h1 id="meta-superintelligence-labs">Meta Superintelligence Labs</h1>
+
+    <h2 id="humanclaw"><a href="https://arxiv.org/abs/2607.27180">HumanCLAW: Can Vision-Language Models Act Through a Body?</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv 2607.27180</span>
+      <span>2026-07-29</span>
+      <span>Embodied AI · VLM evaluation · Benchmark</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Evaluating whether a VLM can act through a body is fundamentally confounded: when a task fails, the failure could be the model&rsquo;s bad decision, or it could be a low-level motor controller losing balance and falling. HumanCLAW is a framework that decouples the two, so what remains measurable is the model&rsquo;s <em>action intelligence</em> &mdash; its moment-to-moment choice of what the body should execute next.</li>
+      <li>Joint Meta Research submission (authors span Meta Reality Labs and academic partners including Ranjay Krishna, Manling Li, Ziwei Liu, Chuan Guo). #3 paper of the day on Hugging Face. Benchmark is <strong>HumanCLAW-Bench</strong>: 1,218 long-horizon egocentric find-navigate-interact episodes across 41 indoor scenes. Nine SOTA VLMs tested; best reaches <strong>16.8%</strong> success. Recognition is not the bottleneck &mdash; embodied self-awareness is.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><em>Problem.</em> Prior embodied VLM benchmarks bundle high-level decision quality with low-level control quality. A model that picks the right sub-goal but crashes into an obstacle scores the same as a model that picks the wrong sub-goal and executes fluently. Neither the score nor the failure trace tells you whether to fix the VLM or the controller.</li>
+      <li><em>Mechanism.</em> At every step, a harnessed off-the-shelf VLM emits an <strong>atomic skill command</strong> from a fixed skill vocabulary (approach, pick up, sit, etc.), and the harness translates each command into a sub-second chunk of continuous full-body motion executed with full physics (gravity, collisions, contact). Motor errors, balance loss, and execution-side disturbances are absorbed by the harness, not the model &mdash; the body is guaranteed to act freely and safely in the physical world. What the score measures is the sequence of atomic skill choices, not the motor result.</li>
+      <li><em>Why it works / why it beats prior.</em> By fixing the vocabulary and the motion generator, HumanCLAW eliminates the ambiguity that made prior VLM-embodiment scores un-diagnosable. When a HumanCLAW score is low, the failure is attributable to the VLM&rsquo;s decision policy. The paper uses this diagnostic to isolate a specific failure mode: current frontier VLMs recognize the target scene correctly but lose track of their own body &mdash; where it is, whether it has arrived, whether it has collided. This is the <em>action intelligence</em> gap.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>1,218 episodes across 41 indoor scenes. Task family is long-horizon egocentric find-navigate-interact.</li>
+      <li>Nine SOTA VLMs evaluated; <strong>best model: 16.8% success</strong>. None solves the benchmark.</li>
+      <li>Failure attribution: recognition of the target object/scene is not the bottleneck. The dominant errors are (i) not knowing where the body is in the scene, (ii) not knowing whether the goal has been reached, and (iii) not detecting that the body has hit an obstacle. The authors frame this as a lack of <em>embodied self-awareness</em>.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Companion project page and code released (<a href="https://human-claw.github.io/">human-claw.github.io</a>, <a href="https://github.com/Human-CLAW/HumanCLAW">GitHub</a>).</li>
+    </ul>
+
+    <h2 id="rl-code-optimization"><a href="https://arxiv.org/abs/2607.25970">Reinforcement Learning for Code Optimization</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv 2607.25970</span>
+      <span>2026-07-28</span>
+      <span>RL · Code · Timing reward</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>RL for code <em>correctness</em> is settled: generate a program, run hidden tests, reward passes. Extending this to code <em>optimization</em> by adding execution time to the reward sounds trivial and is not: measurement noise, reward sparsity, and GRPO&rsquo;s instability under timed signals overwhelm the gradient, generated solutions are barely faster, and correctness itself starts to fail.</li>
+      <li>Meta (AI at Meta / FAIR &mdash; Chambon, Zheng, Decugis, Sagot, Synnaeve) engineer execution time into a learnable reward across three stages: DMC-Optim (a new benchmark and calibrated sandbox), a composed correctness+speed reward guided by an offline configuration simulator, and a noise-robust adaptation of GRPO. Result: strict top-50% pass@1 on DMC-Optim goes from 18.0% to 31.3% on Qwen 2.5 7B and from 30.7% to 50.4% on CWM 32B, while pure-correctness scores are preserved. 125-page technical report.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><em>Problem.</em> Wall-clock timing is noisy (sandbox jitter, GC, kernel scheduling), sparse (many test cases don&rsquo;t distinguish algorithms), and hostile to advantage-based methods that assume reward variance is dominated by policy variance. Naively rewarding lower runtime collapses the training signal.</li>
+      <li><em>Mechanism &mdash; three stages.</em>
+        <ul>
+          <li><strong>Stage 1: how code is tested.</strong> The paper builds <strong>DMC-Optim</strong>, a benchmark of large optimization tests, and a <em>calibrated sandbox</em> whose timing measurements are stable enough to serve as a reward. Sandbox calibration bounds the variance of the timing signal so that per-sample differences reflect the algorithm, not the machine.</li>
+          <li><strong>Stage 2: how speed becomes reward.</strong> Speed and correctness are composed inside the RL environment, but the composition weights, timing normalizations, and pass/fail thresholds are searched by an <em>offline simulator</em> that predicts which configurations are most likely to yield gains before any RL is run. This avoids sweeping expensive online RL configurations.</li>
+          <li><strong>Stage 3: how the model learns.</strong> GRPO and its evaluation loop are adapted to the sparser, noisier timed-execution setting &mdash; specific modifications include timing-aware advantage estimation and a percentile-based evaluation criterion (strict top-50% and top-30% pass@1) that measures the tail of the runtime distribution rather than the mean.</li>
+        </ul>
+      </li>
+      <li><em>Why it works / why it beats prior.</em> Prior code-RL work optimized correctness against test cases; the reward variance was well-controlled. Adding runtime naively puts a high-noise signal directly into the advantage, and standard RLVR collapses. The three-stage decomposition addresses each failure mode independently &mdash; the sandbox handles noise, the offline simulator handles configuration cost, the adapted GRPO handles the resulting sparse gradient. When the timing sandbox is deliberately degraded, robust optimization RL still reaches 100&ndash;200% improvement over standard RLVR, showing the fix is not just about noise but about the training loop&rsquo;s response to noise.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>DMC-Optim, strict top-50% pass@1: <strong>18.0% &rarr; 31.3%</strong> on Qwen 2.5 7B; <strong>30.7% &rarr; 50.4%</strong> on CWM 32B.</li>
+      <li>At stricter percentiles (top-30%), <strong>+125%</strong> relative improvement on CWM 32B.</li>
+      <li>Pure-correctness scores are preserved &mdash; the model is not trading correctness for speed.</li>
+      <li>With a degraded timing sandbox, robust optimization RL reaches <strong>100&ndash;200%</strong> improvement over standard RLVR depending on evaluation criterion.</li>
+      <li>On LiveCodeBench (LCB), CWM 32B wins up to <strong>83%</strong> of median-sample speed comparisons against standard RLVR.</li>
+      <li>Relative to the fastest correct human submissions per problem: CWM 32B reaches about <strong>half</strong> the human rate of complexity-class improvements (14% vs. 28%).</li>
+    </ul>
+
+    <h1 id="openai">OpenAI</h1>
+
+    <h2 id="gpt-red"><a href="https://arxiv.org/abs/2607.26115">GPT-Red: Automated Red Teaming via Self-Play at Scale</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv 2607.26115</span>
+      <span>2026-07-28</span>
+      <span>Safety · Prompt injection · Self-play RL</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>GPT-Red</strong> is an automated red-teaming agent trained to discover novel prompt-injection attacks against frontier LLMs. It exists to evaluate and improve OpenAI&rsquo;s production robustness; the attacker was used to adversarially train <code>GPT-5.6</code>, OpenAI&rsquo;s most robust production model to date against prompt injection.</li>
+      <li>The training is a scalable <em>self-play</em> algorithm: GPT-Red attacks a diverse population of simultaneously-trained defender agents in realistic red-teaming environments. Compute is on the same scale as OpenAI&rsquo;s largest RL post-training runs &mdash; the paper claims this is the <strong>single-largest LLM safety training run ever documented</strong>. Author list is 18 people including Eric Wallace, Christopher A. Choquette-Choo, Milad Nasr, Kai Xiao.</li>
+      <li>Results: GPT-Red reliably breaks past OpenAI models up to <code>GPT-5.5</code>, finds more successful attacks than human red-teamers, and generalizes to held-out environments, defender models, and harnesses.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><em>Problem.</em> Human red-teaming is bottlenecked by the number of humans and by the difficulty of finding novel attacks that generalize beyond the specific test prompts. Prior automated red-teaming trained an attacker against a single fixed target, which produces attacks that overfit the target and don&rsquo;t transfer to new defenders, environments, or harnesses. If the defender ships and the attacker doesn&rsquo;t generalize, the safety training signal decays after every deployment.</li>
+      <li><em>Mechanism.</em> GPT-Red&rsquo;s core is a population self-play loop. Instead of attacking one fixed defender, the attacker is trained against a <em>diverse population of simultaneously-trained defender agents</em> in realistic prompt-injection environments (tool-use harnesses, agent scaffolds, retrieval-augmented settings). Because the defenders are being updated at the same time as the attacker, the attacker cannot converge on a single defender&rsquo;s idiosyncratic weaknesses; every attack that works has to work across a moving population. The training compute is on the same order of magnitude as OpenAI&rsquo;s largest RL post-training runs &mdash; the scale is deliberate: the paper positions safety training on par with capability training, not below it.</li>
+      <li><em>Why it works / why it beats prior.</em> Attacking a fixed defender produces attacks that are defender-specific. Attacking a moving population where every defender is trying to become more robust to <em>this attacker</em> forces the attacker to find strategies that generalize across defenders, and every defender that survives helps train a stronger next-generation attacker. The empirical evidence is exactly that: GPT-Red generalizes to held-out environments, defender models, and harnesses, and finds more successful attacks than human red-teamers &mdash; both signs the self-play flywheel is producing transferable attack strategies rather than overfitting.</li>
+      <li>Because GPT-Red is stronger than human red-teamers, its output is used to adversarially train <code>GPT-5.6</code>&rsquo;s prompt-injection defenses. The paper argues this bootstraps a self-improvement flywheel: as each new GPT is made more robust, it becomes a stronger training signal for the next red-teamer, which in turn finds the next generation of harder-to-block attacks.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Attacker generalization: GPT-Red reliably breaks all OpenAI models <code>up through GPT-5.5</code>. (<code>GPT-5.6</code> is the one adversarially trained on it.)</li>
+      <li>Vs. human red-teamers: GPT-Red finds <strong>more successful attacks</strong> than human red-teamers on the same test surface.</li>
+      <li>Held-out generalization: transfer to held-out environments, held-out defender models, and held-out harnesses is preserved, ruling out that the attacker is overfitting to the training population.</li>
+      <li>Scale claim: <em>&ldquo;the single-largest LLM safety training run ever documented,&rdquo;</em> at compute on par with OpenAI&rsquo;s largest RL post-training runs.</li>
+    </ul>
+
+    <h3>Safety &amp; limitations</h3>
+    <ul>
+      <li>The paper is up front that the flywheel argument (better defenders &rarr; better attackers &rarr; better defenders) has a floor: at some point either the attack surface is exhausted or the attacker starts finding attacks the defender cannot be trained against without unacceptable capability regressions. The report does not resolve where that floor sits.</li>
+      <li>Publishing an attacker with production-grade transfer is itself a safety hazard, and the paper does not release weights.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
