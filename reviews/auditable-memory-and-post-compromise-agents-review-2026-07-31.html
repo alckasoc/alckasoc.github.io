@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Auditable Memory and Post-Compromise Agents Review &mdash; July 31, 2026 | Auto Lit Review</title>
+<meta name="description" content="No Tier 1 launch in the 36-hour window. Three frontier-lab Tier 2 papers on inspectable text-space memory for ASR correction (NVIDIA), post-compromise incident-response agent evaluation (Alibaba), and an architecture-centric memory taxonomy for LLMs (Tsinghua KEG)." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">July 31, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#alibaba" class="toc-h1">Alibaba</a>
+          <ul>
+            <li><a href="#secrespond" class="toc-h2">SecRespond</a></li>
+          </ul>
+        </li>
+        <li><a href="#nvidia" class="toc-h1">NVIDIA</a>
+          <ul>
+            <li><a href="#voice-memory" class="toc-h2">Voice Memory</a></li>
+          </ul>
+        </li>
+        <li><a href="#tsinghua-keg" class="toc-h1">Tsinghua KEG</a>
+          <ul>
+            <li><a href="#memory-for-llms" class="toc-h2">Memory for Large Language Models</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; July 31, 2026</div>
+    <h1 class="page-title">Auditable Memory and Post-Compromise Agents</h1>
+    <div class="page-meta">3 papers &middot; 3 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>No Tier 1 launch in the 36-hour window. Three frontier-lab Tier 2 papers converge on the same underlying problem &mdash; how a large model should <em>remember</em> what it has learned about a domain when weight updates are off the table &mdash; from three different angles. NVIDIA&rsquo;s <strong>Voice Memory</strong> pushes text-space optimization into agentic speech recognition: a frozen corrector reads a per-domain <code>memory.md</code> and decides <em>per utterance</em> whether to act on the ASR hypothesis or abstain, while an asynchronous score-gated optimizer rewrites that file through bounded edits that must strictly improve a held-out score. The learned skill turns out to be <em>restraint</em>: unconstrained generative error correction breaks correct tokens on up to <code>64%</code> of its edits on financial news, and Voice Memory cuts this to <code>35%</code> while pushing weighted WER across ten HyPoradise domains from <code>8.36% &rarr; 7.52%</code> (<code>7.47%</code> with three in-context examples) without regressing any dataset below its <code>1</code>-best baseline. Alibaba-NLP&rsquo;s <strong>SecRespond</strong> is the first agent benchmark for the <em>post-compromise</em> incident-response workflow: given a forensic disk snapshot and the alerts, vulnerability scans, and baseline checks from a host security product, an agent must produce forensic reports and a remediation plan. Ten cyber ranges, 4 entry-point types, 21 ATT&amp;CK techniques, 5 OSes; 23 frontier LLMs on the OpenCode harness. No model achieves complete detection and remediation on any single range &mdash; the failure mode is not alert-driven analysis but proactive disk investigation for silent intrusions. Tsinghua KEG&rsquo;s <strong>Memory for Large Language Models</strong> is the day&rsquo;s survey Tier 2: an architecture-centric taxonomy that characterizes LLM memory along three orthogonal axes (representation: implicit vs. explicit; update dynamics: offline vs. online; persistence: short-term vs. long-term) and formalizes the granular write / route / transition / consolidation mechanisms &mdash; the framework in which papers like Voice Memory (explicit, online, long-term, text-space) and mainline KV-cache extensions (implicit, offline, short-term) become directly comparable.</p>
+      <h3>Competitiveness</h3>
+      <p>The window contains no model release; the current frontier ranking is unchanged from the July 30 review. Anthropic&rsquo;s <code>Claude Fable 5</code> and <code>Claude Opus 5</code> lead Artificial Analysis&rsquo;s Intelligence and Agentic indices, with OpenAI&rsquo;s <code>GPT-5.6 Sol</code> and Moonshot&rsquo;s <code>Kimi K3</code> immediately behind. Voice Memory&rsquo;s competitive point is <em>artifact size</em>, not model quality: the deployed wsj memory is <code>776</code> bytes and the full artifact sits under <code>10</code> KB, versus the <code>10^6</code>&ndash;<code>10^9</code> parameter delta a LoRA or full fine-tune ships; the corrector at test time is MiniMax-M3 (<code>~428B</code>) frozen, so the reported gains are attributable to the memory alone rather than a weight update. On the recovery ceiling, air-travel commands (atis) fall <code>8.40% &rarr; 3.40%</code> (recoverable information ratio <code>&rho; = 0.96</code>, i.e. Voice Memory closes 96% of the 1-best-to-oracle WER gap using only forward passes), and CHiME-4 noisy far-field speech falls <code>12.69% &rarr; 10.46%</code>, matching training-based robust correction with no fine-tuning. SecRespond is not a model release but a diagnostic: with 23 frontier LLMs run through OpenCode, the ceiling is defined by <em>which</em> parts of an incident-response workflow the current agent generation can execute &mdash; alert-driven analysis is done reliably, disk-proactive silent-intrusion hunting is not, and no model achieves complete detection and remediation on any single range. The Tsinghua KEG memory survey is directly comparable to the <em>Memory Layers</em> and <em>Titan</em>-family memory work: as a taxonomy, its competitive frame is coverage rather than benchmark rank &mdash; it names the axes on which hybrid memory architectures and system-level efficiency trade-offs should be argued.</p>
+      <h3>New frontier releases</h3>
+      <p>No new flagship models in the window. NVIDIA releases the Voice Memory checkpoint and demo (<a href="https://huggingface.co/huckiyang/voice-memory">huckiyang/voice-memory</a>) as an open artifact accompanying the paper; Alibaba-NLP releases the SecRespond benchmark under <a href="https://github.com/Alibaba-NLP/qqr/tree/main/data/secrespond">Alibaba-NLP/qqr</a>.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="secrespond"><a href="https://arxiv.org/abs/2607.26791">SecRespond: Benchmarking AI Agents for Real-World Post-Compromise Incident Response</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Benchmark</span>
+      <span>arXiv 2607.26791</span>
+      <span>2026-07-29</span>
+      <span>Cybersecurity &middot; Agent evaluation &middot; Incident response</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Existing LLM cybersecurity benchmarks are pre-compromise: the agent is placed in a clean environment before the attack, and the task is to detect or exploit. SecRespond flips the setting to post-compromise: the box has already been breached, the disk snapshot is dirty, and the agent&rsquo;s job is to reconstruct what happened and stop it happening again. This is where security operators actually spend their time, and where prior benchmarks provide no signal.</li>
+      <li>Alibaba-NLP submission (Wang, Chen, Ding, Xie, Huang, Liu, Wang, Lei, Ouyang, Li). Benchmark instantiates the task across <strong>10 cyber ranges</strong>, each a distinct compromised cloud host, spanning <strong>4 entry-point types</strong>, <strong>21 ATT&amp;CK techniques</strong>, and <strong>5 operating systems</strong>. <strong>23 frontier LLMs</strong> are evaluated on the <em>OpenCode</em> agent harness. Headline finding: <em>no model achieves complete detection and remediation on any single range</em>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><em>Problem.</em> Post-compromise incident response is a mixed workload: some findings are surfaced by the host security product (alerts, vulnerability scans, baseline checks) and can be triaged from those signals alone; other intrusions are silent, and the agent has to proactively investigate the disk artifact to find indicators of compromise. Pre-compromise benchmarks measure the first skill (react to a known problem) but not the second (find an unknown one). A benchmark that only reports aggregate success rates cannot distinguish an agent that reads alerts well from one that hunts silently.</li>
+      <li><em>Mechanism.</em> Each SecRespond instance is a <strong>forensic disk snapshot</strong> of a compromised cloud host paired with the reports emitted by a real host security product: alerts, vulnerability scans, and baseline configuration checks. The agent, running the OpenCode harness (host artifacts + CLI access), must produce <em>four</em> deliverables: (i) a forensic report on the intrusion, (ii) a forensic report on baseline configuration risks, (iii) a forensic report on vulnerability risks, and (iv) a remediation plan. Task construction spans 4 entry-point types (i.e. how the attacker got in), 21 ATT&amp;CK techniques (what they did once inside), and 5 OSes (Linux distributions and Windows variants). Evaluation grades detection and remediation separately, and per-range, exposing where the agent covered alert-driven findings but missed silent intrusions.</li>
+      <li><em>Why it works / why it beats prior.</em> Existing agentic-security benchmarks (CyberSecEval, InterCode-CTF, and pre-compromise capture-the-flag setups) place the agent in a clean, single-vulnerability environment and score whether it finds a planted flag. That measures exploit competence but not investigative behavior on a dirty disk. SecRespond&rsquo;s post-compromise framing keeps the CLI-based tool interface familiar to existing agents but forces the agent to reconcile disk artifacts with security-product reports, and its per-range grading of detection versus remediation makes the specific failure mode (silent-intrusion hunting) identifiable rather than lumped into an aggregate score. The result &mdash; agents reliably uncover alert-exposed problems but fail to proactively investigate for silent intrusions and cannot produce comprehensive verified remediation plans &mdash; is what the benchmark was built to surface.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li><strong>23 frontier LLMs</strong> evaluated through the OpenCode agent harness.</li>
+      <li>Agents reliably uncover the problems <em>exposed by alerts</em> from the host security product.</li>
+      <li>Agents <em>struggle to proactively investigate the disk</em> for silent intrusions and to produce comprehensive, verified remediation plans.</li>
+      <li><strong>No model achieves complete detection and remediation on any single range.</strong></li>
+      <li>Task family spans <code>4</code> entry-point types &times; <code>21</code> ATT&amp;CK techniques &times; <code>5</code> operating systems across the <code>10</code> cyber ranges.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Benchmark publicly available at <a href="https://github.com/Alibaba-NLP/qqr/tree/main/data/secrespond">Alibaba-NLP/qqr/tree/main/data/secrespond</a>.</li>
+      <li>Paper positions the failure as a <em>fundamental bottleneck</em> for real-world incident-response agents, not a scaffolding or prompt problem: the missing skill is turning a dirty disk plus partial telemetry into a full attack reconstruction.</li>
+    </ul>
+
+    <h1 id="nvidia">NVIDIA</h1>
+
+    <h2 id="voice-memory"><a href="https://arxiv.org/abs/2607.26410">Voice Memory for Agentic Speech Recognition</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv 2607.26410</span>
+      <span>2026-07-29</span>
+      <span>ASR &middot; Text-space optimization &middot; Test-time adaptation &middot; Agentic systems</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Modern read-speech ASR is below <code>2%</code> WER, so the corrector&rsquo;s dominant decision is no longer <em>which</em> hypothesis to pick but <em>whether</em> to edit the <code>1</code>-best at all. Unconstrained generative error correction (GER) at that operating point <em>over-corrects</em>: it fluently rewrites tokens that were already right, moving output away from the reference. Voice Memory reframes correction as a per-utterance act/abstain decision made by a frozen corrector reading a per-domain, human-readable text memory.</li>
+      <li>NVIDIA submission (Yang, Chen, &Z.dot;elasko, Chen, Balam, Ginsburg). The paper introduces a <strong>listener-thinker (LT) architecture</strong>: the synchronous listener decodes and decides at stream time, the asynchronous thinker rewrites the memory between utterances. Across ten HyPoradise domains with an open corrector, weighted WER falls <code>8.36% &rarr; 7.52%</code> (<code>7.47%</code> with 3 in-context examples) with no dataset regressed below its <code>1</code>-best baseline; harmful edit rate on wsj falls <code>64% &rarr; 35%</code>; the deployed wsj memory is <code>776</code> bytes.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2607.26410v1/x1.png" alt="Voice Memory overview: a frozen corrector reads a learnable text memory and decides per utterance whether to act on the ASR hypothesis or abstain; an offline optimizer distills the memory from training corpora using forward passes only." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). Overview of Voice Memory. At inference, a frozen corrector reads a learnable, human-readable text memory and decides per utterance whether to act on the ASR hypothesis or abstain. Offline, an optimizer distills this instructional memory from training corpora using forward passes only, with no weight updates.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><em>Problem.</em> At sub-<code>2%</code> WER, the corrector must choose whether to modify the hypothesis. Fine-tuning, LoRA, and soft prompts encode that decision in weights or continuous vectors that cannot be inspected, transferred across model families, or reverted without retraining; few-shot exemplars pay a token cost per request. None yields adaptation that is simultaneously inference-only, auditable, and portable across correctors.</li>
+      <li><em>Mechanism.</em> Voice Memory formalizes correction as the <strong>listener-thinker (LT) format</strong>, a tuple <code>(B_&phi;, M_&theta;, &pi;, s, Op)</code>: a frozen ASR decoder <code>B_&phi;</code> emits <code>n</code>-best textual evidence <code>H</code>; a frozen corrector <code>M_&theta;</code> holds a persistent inspectable text state <code>s &isin; &Sigma;*</code> (a short Markdown file, the memory); the policy <code>&pi;(a &vert; H, s)</code> chooses per utterance between <code>act</code> (return <code>M_&theta;(H, s)</code>) and <code>abstain</code> (return the <code>1</code>-best <code>h_1</code>); an asynchronous score-gated optimizer <code>Op</code> revises <code>s</code> from failure and success rollouts through <strong>bounded add/delete/replace edits</strong>, accepting an edit only when it <em>strictly improves</em> a held-out score. Adaptation to a domain therefore happens through forward passes only, with no gradients and no weight updates. The two roles are coupled solely through <code>s</code>, so the learned skill is auditable and portable to correctors from other model families.</li>
+      <li><em>Why it works / why it beats prior.</em> The optimizer discovers <em>restraint</em> as the operative skill: because acceptance is gated on a held-out score, the corrections the loop keeps are those that suppress rewrites &mdash; the deployed memories read like &ldquo;keep the verbatim ASR token; do not normalize&rdquo; and &ldquo;place &lsquo;dollars&rsquo; after the amount, not &lsquo;$&rsquo; before it.&rdquo; This is exactly the policy the low-WER regime needs: over-correction is the failure mode, and the memory writes it out of the frozen corrector without touching weights. Prior alternatives (RobustGER, NeKo) read the noise condition into a latent vector and pay for it with a training run; the same signal is instead written into a per-noise-family text memory read at inference.</li>
+      <li>The paper also introduces two diagnostics: the <strong>Recoverable Information Ratio</strong> <code>&rho; = (WER_{1-best} &minus; WER_{&yhat;}) / (WER_{1-best} &minus; WER_{oracle})</code>, which measures how much of the <code>1</code>-best-to-<code>n</code>-best-oracle WER gap a correction closes (<code>&rho; &gt; 1</code> means recovering tokens present in no hypothesis, going below the oracle bound), and the <strong>Harmful Edit Rate</strong>, the fraction of token edits that break a correct token, which isolates over-correction from WER.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Frozen corrector: open-source <strong>MiniMax-M3</strong> (<code>~428B</code>, 1M context) serves as both corrector and optimizer. Semantic scoring gate uses <code>all-MiniLM-L6-v2</code> (4-bit) on-device.</li>
+      <li>HyPoradise v0 across ten domains under disjoint train/test splits; Whisper <code>5</code>-best hypotheses with references.</li>
+      <li>Weighted WER: <code>8.36% &rarr; 7.52%</code> (Voice Memory, semantic-gated), <code>&rarr; 7.47%</code> with three added in-context examples. No dataset regresses below its <code>1</code>-best baseline.</li>
+      <li>Air-travel commands (<code>atis</code>): <code>8.40% &rarr; 3.40%</code>, <code>&rho; = 0.96</code> (Voice Memory closes 96% of the <code>1</code>-best-to-oracle gap).</li>
+      <li>Noisy far-field speech (<code>CHiME-4</code>): <code>12.69% &rarr; 10.46%</code>, matching training-based robust correction without fine-tuning or latent noise embeddings.</li>
+      <li>Financial news (<code>wsj</code>): unconstrained zero-shot GER raises WER above the <code>1</code>-best; Voice Memory reduces harmful edit rate from <code>0.64 &rarr; 0.35</code>. Deployed wsj memory is <strong>776 bytes</strong>.</li>
+      <li>Per-domain <code>&rho;</code>: <code>atis 0.96</code>, <code>cv 0.59</code>, <code>wsj 0.48</code>, <code>chime4 0.21</code>, <code>lrs2 0.16</code>, <code>coraal 0.15</code>, <code>ls_other 0.06</code>. Near-floor domains (<code>td3</code>, <code>ls_clean</code>) go slightly negative (<code>&rho; = &minus;0.09</code>, <code>&minus;0.11</code>), consistent with restraint being the correct policy where recoverable headroom is exhausted.</li>
+      <li>Across nine domains, per-domain gain from correction tracks recoverable headroom with correlation <code>r = +0.90</code>, delineating the operating regime in which a corrector should act.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><em>Portability.</em> A memory written by one model family improves a corrector from a different family; that second corrector can then re-form its own memory with the same loop. Transfer follows the same recoverable-headroom scaling. The memory transfer generalizes beyond ASR to a translation mini-study.</li>
+      <li><em>Provenance.</em> Quality of the source rollouts beats coverage: memories distilled from a smaller high-quality trajectory set outperform memories built from a larger noisier one.</li>
+      <li><em>Adaptation cost.</em> Order-of-magnitude figures: <code>~10^2</code> utterances at forward-only inference time, minutes wall-clock, <code>&lt;10</code> KB artifact, versus fine-tuning at <code>10^3</code>&ndash;<code>10^4</code> utterances, hours wall-clock, GB/MB adapter, and no auditability or reversibility.</li>
+      <li><em>Semantics vs. surface error.</em> A semantic training signal produces lower final WER than a WER-only training signal, formalized as a <em>surface-to-meaning gap</em> measured on the ASR outputs.</li>
+      <li><em>Corrector-agnostic memory.</em> Appendix C runs a Claude case study showing memory transfer across a proprietary-to-open corrector pair.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Reference implementation and demo at <a href="https://huckiyang.github.io/voice-memory/">huckiyang.github.io/voice-memory</a>; checkpoint at <a href="https://huggingface.co/huckiyang/voice-memory">huckiyang/voice-memory</a>; NeMo-Speech integration at <a href="https://github.com/NVIDIA-NeMo/Speech">NVIDIA-NeMo/Speech</a>.</li>
+      <li>WER and harmful edit rate computed with the open-source <a href="https://pypi.org/project/agwer/">agwer</a> package (MIT), designed to be safe as a reward target inside the optimization loop.</li>
+      <li>The LT format is positioned as the speech instance of the interaction/background split now emerging at the frontier &mdash; a synchronous interaction path coupled to an asynchronous background optimizer through a single persistent artifact.</li>
+    </ul>
+
+    <h1 id="tsinghua-keg">Tsinghua KEG</h1>
+
+    <h2 id="memory-for-llms"><a href="https://arxiv.org/abs/2607.25380">Memory for Large Language Models</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Survey</span>
+      <span>arXiv 2607.25380</span>
+      <span>2026-07-28</span>
+      <span>Survey &middot; LLM memory &middot; Architecture taxonomy</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Memory in LLMs has shifted from an implicit byproduct of attention to an explicit, controllable architectural dimension &mdash; transient attention state, recurrent state dynamics, parameter-efficient adaptations, and scalable lookup storage now coexist in shipping systems. The research landscape has fragmented into incomparable proposals. This survey imposes a shared taxonomy so that new memory mechanisms can be argued against a common frame.</li>
+      <li>Tsinghua KEG submission (Zhoubian, Zhang, Kharlamov, Tang &mdash; Jie Tang leading). 20 pages, 4 figures. Positioned not as a benchmark or method but as the organizing framework in which competing memory mechanisms &mdash; from KV-cache extensions to text-space memories like NVIDIA&rsquo;s Voice Memory &mdash; can be directly compared.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><em>Problem.</em> Recent memory work spans transient attention, recurrent state, parameter-efficient adaptations, and scalable lookup storage. The mechanisms differ in where memory lives (activations vs. addressable storage), when it is written (online vs. offline), and how long it persists (single-turn vs. cross-session). Absent a taxonomy, hybrid memory architectures cannot be argued for on principled grounds and system-level efficiency trade-offs remain implicit.</li>
+      <li><em>Mechanism.</em> The survey characterizes each memory design along three orthogonal axes:
+        <ul>
+          <li><strong>Representation:</strong> implicit (memory lives inside the computation graph, e.g. attention state, hidden states) vs. explicit (memory is an independently addressable object, e.g. a retrieval store, a persistent text artifact).</li>
+          <li><strong>Update dynamics:</strong> offline (memory changes only through a training run) vs. online (memory changes during inference).</li>
+          <li><strong>Persistence:</strong> short-term (bounded by a context window or session) vs. long-term (spans sessions).</li>
+        </ul>
+        On top of the axes, the survey formalizes the <em>granular mechanisms</em> that determine how each memory design writes, routes reads, transitions state, and consolidates entries. The classification distinguishes <em>computation-coupled</em> memory (bound to the model&rsquo;s forward pass) from <em>independently addressable</em> memory (an external artifact or store).</li>
+      <li><em>Why it works / why it beats prior.</em> Earlier surveys either enumerate memory-augmented architectures without a shared frame or fold memory into a general retrieval-augmented-generation discussion. The three-axis characterization is chosen so that the axes are actually independent in practice: a KV-cache-extension paper (implicit / offline / short-term), a MemGPT-style external store (explicit / online / long-term), and a text-space memory like Voice Memory (explicit / online / long-term, but pure natural language) each occupy distinct cells. Argueing about a proposal&rsquo;s trade-offs then reduces to naming which axis it moves along.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Survey; no benchmark results. The paper delivers the taxonomy plus a critical analysis of hybrid memory architectures, system-level efficiency trade-offs, and multi-dimensional evaluation methodologies.</li>
+      <li>The evaluation-methodology discussion pushes back on single-metric memory evaluation &mdash; recall on a needle-in-a-haystack task and throughput at a context length are not commensurable and should not be traded for one another without a stated Pareto frame.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioned as the framework in which the day&rsquo;s other paper &mdash; NVIDIA&rsquo;s Voice Memory &mdash; sits cleanly on the &ldquo;explicit / online / long-term&rdquo; corner alongside external memory stores, while the KV-cache extensions and recurrent state mechanisms it discusses occupy the opposite corners.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
