@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gemini Robotics 2 Launch Review &mdash; August 2, 2026 | Auto Lit Review</title>
+<meta name="description" content="Google DeepMind ships Gemini Robotics 2 &mdash; a three-model family (VLA, ER 2, On-Device 2) bringing whole-body humanoid control, multi-finger dexterity, temporal-progress reasoning, multi-robot collaboration, and an ASIMOV-Agentic safety benchmark; OpenAI CFO Sarah Friar posts a strategy essay on GPT-5.6 pricing (Luna -80%, Terra -20%) and the compute-to-outcome economics powering the abundance loop." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 2, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#google-deepmind" class="toc-h1">Google DeepMind</a>
+          <ul>
+            <li><a href="#gemini-robotics-2" class="toc-h2">Gemini Robotics 2</a></li>
+          </ul>
+        </li>
+        <li><a href="#openai" class="toc-h1">OpenAI</a>
+          <ul>
+            <li><a href="#building-abundant-intelligence" class="toc-h2">Building Abundant Intelligence</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 2, 2026</div>
+    <h1 class="page-title">Gemini Robotics 2 Launch</h1>
+    <div class="page-meta">2 items &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window is dominated by one Tier 1 launch missed in the previous run and one strategy essay from OpenAI&rsquo;s CFO. Google DeepMind ships <strong>Gemini Robotics 2</strong> (2026-07-30), a three-model family &mdash; the <strong>Gemini Robotics 2 VLA</strong> (vision&ndash;language&ndash;action model controlling full humanoids from &ldquo;feet to fingertips&rdquo; and bi-arm grippers), <strong>Gemini Robotics ER 2</strong> (embodied-reasoning model acting as the robot&rsquo;s high-level brain with progress classification, moment finding, and multi-robot orchestration), and <strong>Gemini Robotics On-Device 2</strong> (efficient on-device VLA with rapid cross-embodiment adaptation) &mdash; plus a companion <em>Gemini Robotics 2: Safety Evaluations</em> report introducing the ASIMOV-Agentic benchmark. Google DeepMind also releases Gemini Robotics ER 2 publicly on the Gemini API, Google AI Studio, and (private preview) Gemini Enterprise Agent Platform, and puts the VLA / On-Device models in early access. Alongside, OpenAI CFO <strong>Sarah Friar</strong> publishes <em>Building abundant intelligence</em> (2026-07-31) &mdash; a company-strategy note formalizing OpenAI&rsquo;s &ldquo;cost of a successful outcome&rdquo; framing around the just-announced GPT&#8209;5.6 price moves (Luna <code>&minus;80%</code>, Terra <code>&minus;20%</code>) and reporting that agentic Codex now accounts for <code>99.8%</code> of OpenAI&rsquo;s internal weekly output tokens.</p>
+      <h3>Competitiveness</h3>
+      <p>Gemini Robotics 2 sets the current bar for foundation vision&ndash;language&ndash;action models on the two axes DeepMind picks to compete on &mdash; <em>whole-body control on humanoids</em> and <em>agentic embodied reasoning under real-world safety constraints</em>. On the Apptronik Apollo 2 humanoid with Inspire hands, a single Gemini Robotics 2 VLA checkpoint achieves <code>68.4%</code> success on <em>pick-up-from-table</em>, <code>45.7%</code> on <em>pick-up-from-floor</em> (requiring whole-body crouching), and <code>76.3%</code> on <em>pick-up-from-shelf</em>. On the Apollo 2 with the 22-DoF SharpaWave hand, the same model reaches <code>92%</code> on <em>unscrew bulb</em>, <code>44%</code> on <em>tie trash bag</em>, and <code>40%</code> on <em>ziplock</em> &mdash; DeepMind explicitly labels multi-finger dexterity as still challenging. On the Franka Duo bi-arm gripper platform the model does <code>74.2%</code> on <em>general pick and place</em>, <code>78.9%</code> on <em>diverse tool kitting</em>, and <code>89.6%</code> on <em>precise insertion</em>. On the ER side, Gemini Robotics ER 2 lifts <em>progress classification</em> accuracy to <code>57.4%</code> (best-in-class among reported frontier models), reaches <code>91.3%</code> on <em>moment finding</em> with a <code>0.96s</code> mean absolute distance at claimed <em>4&times;</em> the execution speed of larger competitors, and posts <em>best-of-frontier</em> results on ASIMOV-Agentic safety orchestration &mdash; matching Claude Opus 4.8 and GPT&#8209;5.5 at <code>100%</code> on <em>Safety Tool Calling</em> and scaling <em>VLA-feasibility awareness</em> from <code>62.0%</code> at zero developer-instruction detail to <code>95.8%</code> at the highest tier. Cross-embodiment generalization is real: On-Device 2 adapts to new bi-arm embodiments with typically <code>&lt;200</code> examples and a few hours of adaptation time. No new frontier launch from OpenAI, Anthropic, or Chinese labs in the window &mdash; Sarah Friar&rsquo;s essay is a strategy signal rather than a model release, but it hard-locks GPT&#8209;5.6 Luna at <code>$0.20 / $1.20</code> per million input / output tokens and Terra at <code>$2 / $12</code>, setting the current sub-frontier price floor competitors will be measured against.</p>
+      <h3>New frontier releases</h3>
+      <p>Google DeepMind releases <strong>Gemini Robotics 2</strong> as a three-model family on 2026-07-30. Public today: <strong>Gemini Robotics ER 2</strong> on the <a href="https://ai.google.dev/gemini-api/docs/robotics-overview">Gemini API</a>, <a href="https://ai.dev/prompts/new_chat?model=gemini-robotics-er-2-preview">Google AI Studio</a>, and (private preview) the <a href="https://console.cloud.google.com/agent-platform/publishers/google/model-garden/gemini-robotics-er-2-preview-info">Gemini Enterprise Agent Platform</a>, with an accompanying <a href="https://deepmind.google/models/model-cards/gemini-robotics-er-2">model card</a>. Early-access: the <strong>Gemini Robotics 2 VLA</strong> and <strong>Gemini Robotics On-Device 2</strong> models (<a href="https://deepmind.google/models/model-cards/gemini-robotics-on-device-2">On-Device 2 model card</a>). The <a href="https://storage.googleapis.com/deepmind-media/gemini-robotics/Gemini-Robotics-2-Safety.pdf">Gemini Robotics 2: Safety Evaluations</a> report (2026-07-29) and the <a href="https://huggingface.co/datasets/google/asimov_agentic">ASIMOV-Agentic benchmark dataset</a> land alongside. No new closed-frontier <em>language</em> model launches from OpenAI, Anthropic, or Google DeepMind in the window.</p>
+    </section>
+
+    <h1 id="google-deepmind">Google DeepMind</h1>
+
+    <h2 id="gemini-robotics-2"><a href="https://deepmind.google/blog/gemini-robotics-2-brings-whole-body-intelligence-to-robots/">Gemini Robotics 2: Whole-Body Intelligence, Multi-Finger Dexterity, and Multi-Robot Collaboration</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch (blog + safety technical report + model cards)</span>
+      <span>Google DeepMind blog</span>
+      <span>2026-07-30</span>
+      <span>Foundation robotics &middot; Whole-body VLA &middot; Embodied reasoning &middot; Multi-robot orchestration &middot; ASIMOV-Agentic safety</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Author of the main launch blog: Carolina Parada (Sr. Director, Robotics). The launch groups three model releases and one companion technical report into a single Gemini Robotics 2 family:
+        <ul>
+          <li><strong>Gemini Robotics 2 VLA</strong> &mdash; vision&ndash;language&ndash;action model that converts vision plus language input into motor control, capable of controlling full humanoids (Apptronik Apollo 2 with SharpaWave and Inspire hands) and bi-arm gripper platforms (Franka Duo with the Robotiq gripper) from a <em>single checkpoint</em>.</li>
+          <li><strong>Gemini Robotics ER 2</strong> &mdash; the most capable embodied reasoning (ER) model in the family. A vision&ndash;language model acting as the robot&rsquo;s high-level brain: it understands the physical world, communicates with humans, plans multi-step tasks lasting several minutes, orchestrates the VLA and any user-declared tools, and can call Google Search or user-defined functions natively.</li>
+          <li><strong>Gemini Robotics On-Device 2</strong> &mdash; the most efficient VLA in the family, optimized to run <em>locally</em> on robotic devices with no network latency, and natively multi-embodiment.</li>
+          <li><strong>Gemini Robotics 2: Safety Evaluations</strong> &mdash; companion technical report (2026-07-29, Gemini Robotics Team, Google DeepMind) introducing <em>ASIMOV-Agentic</em>, a new benchmark for agentic safety orchestration and uncertainty resolution; released as a Hugging Face dataset at <a href="https://huggingface.co/datasets/google/asimov_agentic">google/asimov_agentic</a>.</li>
+        </ul>
+      </li>
+      <li>The launch positions Gemini Robotics 2 as a step change over <em>Gemini Robotics 1.5</em> (September 2025) and <em>Gemini Robotics ER 1.6</em> (April 2026) along four axes: (a) <em>whole-body</em> control (not just table-top upper-body), (b) <em>multi-finger dexterity</em> on 22-DoF hands and precise bi-arm gripper tasks, (c) <em>agentic reasoning</em> over continuous video with progress classification and moment finding, (d) <em>multi-robot collaboration</em> where heterogeneous robots (humanoid + fixed bi-arm) share a semantic representation and hand off subtasks.</li>
+      <li>Named contributions that receive mechanism explanations below: <em>Single-checkpoint whole-body VLA</em>, <em>Motion-transfer On-Device VLA</em>, <em>Bidirectional-streaming ER-2 orchestration on the Gemini Live API</em>, <em>Continuous progress classification &amp; moment finding</em>, <em>Multi-robot semantic collaboration</em>, and the <em>ASIMOV-Agentic safety benchmark</em>.</li>
+      <li>Companion developer post: <a href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-2/">Introducing Gemini Robotics ER 2</a> (Steven Hansen, Peng Xu, 2026-07-30). Companion safety PDF: <a href="https://storage.googleapis.com/deepmind-media/gemini-robotics/Gemini-Robotics-2-Safety.pdf">Gemini Robotics 2: Safety Evaluations</a>.</li>
+    </ul>
+
+    <figure>
+      <img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-robotics-2__blog__cover.width-1300.png" alt="Two robots side by side: the Apptronik Apollo 2 humanoid and the Franka Duo bi-arm platform, both powered by Gemini Robotics 2" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Cover image (from the launch). Two of the embodiments Gemini Robotics 2 controls from a single checkpoint: Apptronik&rsquo;s Apollo 2 humanoid (left) and the Franka F3 Duo bi-arm platform (right).</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>Three-model family with a clear division of labour: <em>ER 2 as System 2</em> (agentic reasoning, planning, tool orchestration, safety) hands sub-tasks to <em>VLA / On-Device VLA as System 1</em> (fast motor execution).</li>
+      <li>ER 2 uses a <em>vision&ndash;language model backbone</em> with a bidirectional-streaming endpoint on the <a href="https://ai.google.dev/gemini-api/docs/live-api">Gemini Live API</a>; developers declare low-level control interfaces (VLA models, navigation APIs) as tools, stream multimodal video / audio / text into the model, and the model calls those tools while continuing to reason in parallel &mdash; the launch calls out the resulting absence of &ldquo;jarring stop-and-think pauses&rdquo; between reasoning and action.</li>
+      <li>The VLA controls entire humanoids: it emits torque / joint targets that translate intent (natural-language instructions like <em>&ldquo;put the watering can into the green bin in the bottom shelf&rdquo;</em>) into a walking approach, an upper-body grasp, and a placement, staying in one policy across the whole trajectory rather than switching between locomotion and manipulation controllers.</li>
+      <li><em>Named contribution: single-checkpoint cross-embodiment whole-body VLA &mdash; problem, mechanism, why.</em>
+        <ul>
+          <li><em>Problem.</em> Previous Gemini Robotics VLAs controlled the upper body of a humanoid on table-top tasks only, and cross-embodiment transfer between qualitatively different bodies (five-finger dexterous hand vs. parallel-jaw gripper, humanoid legs vs. fixed base) required per-body fine-tuning. That gates deployment on both the diversity of hardware and the diversity of tasks a single model can handle.</li>
+          <li><em>Mechanism.</em> The Gemini Robotics 2 VLA is trained to emit action tokens for a superset action space covering three concrete embodiments (Apollo 2 with SharpaWave 22-DoF hands, Apollo 2 with Inspire hands, Franka Duo with Robotiq grippers). At inference, the <em>same model checkpoint</em> is used across all three; the environment adapter maps the emitted actions to the target embodiment&rsquo;s low-level command interface. On humanoids, the action space extends beyond arms and hands to include the base and torso, so a single forward pass can plan walking towards a table, crouching, grasping, and placing.</li>
+          <li><em>Why.</em> The reported evaluation is done <em>with a single checkpoint controlling all three embodiments</em>, not per-body fine-tunes &mdash; the pick-from-floor (<code>45.7%</code>) task in particular is not achievable without whole-body coordination. This is the step change over Gemini Robotics 1.5, which controlled upper-body only.</li>
+        </ul>
+      </li>
+      <li><em>Named contribution: Motion-Transfer On-Device 2 &mdash; problem, mechanism, why.</em>
+        <ul>
+          <li><em>Problem.</em> Robots operating in homes, warehouses, or industrial cells often need to run without network latency or connectivity, but on-device models historically lag frontier VLAs and adapt slowly to new hardware. New bi-arm robots with different sensor suites and degrees of freedom typically require thousands of teleoperated demonstrations.</li>
+          <li><em>Mechanism.</em> On-Device 2 is a compressed, latency-optimized VLA that inherits the <em>&ldquo;motion transfer&rdquo;</em> technique introduced with Gemini Robotics 1.5. Motion transfer trains the model on a shared latent action representation across embodiments, so that adapting to a new bi-arm robot only needs to fit the small residual mapping from that latent representation to the new body&rsquo;s command interface, rather than re-learning behaviors from scratch.</li>
+          <li><em>Why.</em> The launch reports adaptation to entirely new bi-arm robot embodiments (Dexmate, SO101, Trossen platforms are the demonstrated examples) with <em>typically <code>&lt;200</code> demonstration examples</em> and adaptation completed in <em>a few hours</em> &mdash; the same-body performance carries over even when the new body has different shape, sensors, and DoF count.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Agentic reasoning &amp; multi-robot orchestration</h3>
+    <ul>
+      <li><em>Named contribution: Continuous progress classification &amp; moment finding &mdash; problem, mechanism, why.</em>
+        <ul>
+          <li><em>Problem.</em> Long-horizon robotic tasks (tightening a light bulb, tying a trash bag) fail silently: the VLA can execute a subtask but the orchestrator has no reliable signal to <em>know when it is done</em>, so it either transitions too early (dropping the bulb, leaving the bag untied) or too late (over-tightening, over-processing). Prior ER models scored progress from static snapshots and missed intra-episode failures.</li>
+          <li><em>Mechanism.</em> ER 2 ingests <em>continuous</em> egocentric video and produces two grounded outputs per frame: (i) <em>progress classification</em> that assigns each frame to one of five progress buckets (<code>0&ndash;20%</code>, <code>20&ndash;40%</code>, <code>40&ndash;60%</code>, <code>60&ndash;80%</code>, <code>80&ndash;100%</code>) toward the current sub-task; (ii) <em>moment finding</em> that localizes the exact frame where a critical event happens (needle crosses a threshold, bag closes, cup fills). Both are used by the orchestrator to gate transitions, retry failed steps, or invoke safety tools; both run inside the same Live-API bidirectional stream so tool calls trigger without pausing perception.</li>
+          <li><em>Why.</em> Reported numbers: <em>progress classification</em> at <code>57.4%</code> accuracy, above prior-generation ER 1.6 and reported frontier competitors; <em>moment finding</em> at <code>91.3%</code> accuracy with mean absolute distance <code>0.96s</code>, at claimed <em><code>4&times;</code> the execution speed</em> and a fraction of the compute of larger frontier competitors. Sub-second moment-finding latency is what makes real-time safety stops physically feasible on a moving humanoid.</li>
+        </ul>
+      </li>
+      <li><em>Named contribution: Multi-robot semantic collaboration &mdash; problem, mechanism, why.</em>
+        <ul>
+          <li><em>Problem.</em> A single robot morphology cannot cover all tasks (a wheeled rover navigates a warehouse floor well but has no arms; a humanoid can grasp but is slow indoors). Prior orchestrators handled one robot at a time.</li>
+          <li><em>Mechanism.</em> ER 2 exposes a shared semantic representation across robots and a coordination protocol on top of the Live API. Robots communicate object-level state (&ldquo;left tool on table A&rdquo;, &ldquo;arrived at shelf B&rdquo;) rather than raw sensor streams, and the ER-2 orchestrator schedules subtasks across bodies &mdash; e.g., Apollo 2 hands off an object to Franka Duo, or the two collaborate on a bimanual task neither can complete alone.</li>
+          <li><em>Why.</em> The launch demonstrates Apptronik&rsquo;s Apollo 2 and Franka F3 Duo collaborating on a shared workflow. This is the first foundation-model robotics release from a major lab that treats multi-robot as a first-class capability rather than a special case &mdash; and it matters because <em>homogeneous fleets are the exception, not the rule</em> for real deployments.</li>
+        </ul>
+      </li>
+      <li>The developer blog measures ER 2 <em>tool orchestration</em> performance in three modes: <em>real-world VLA</em>, <em>simulation VLA</em>, and <em>human tele-op</em>. ER 2 consistently outperforms ER 1.6 across all three modes (reported as a bar chart in the developer post).</li>
+      <li>Improvements in general spatial intelligence:
+        <ul>
+          <li><em>Success/failure detection</em> now operates on <em>raw video feeds</em> rather than static snapshots, catching mid-execution failures like spills, slips, misalignments.</li>
+          <li><em>General instrument reading</em> extends beyond circular dials and sight glasses to include digital displays, linear scales, rulers, and liquid thermometers &mdash; tested across 10 instrument types.</li>
+          <li><em>Enhanced spatial VQA</em> on the ERQA benchmark.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Whole-body / dexterity headline numbers, single Gemini Robotics 2 VLA checkpoint controlling three embodiments (reproduced from the launch bar charts, error bars omitted here):
+        <table>
+          <thead><tr><th>Embodiment / end effector</th><th>Task</th><th>Success</th></tr></thead>
+          <tbody>
+            <tr><td>Apollo 2 &middot; Inspire hands (whole body)</td><td>Pick up from table</td><td><strong>68.4%</strong></td></tr>
+            <tr><td>Apollo 2 &middot; Inspire hands (whole body)</td><td>Pick up from floor</td><td><strong>45.7%</strong></td></tr>
+            <tr><td>Apollo 2 &middot; Inspire hands (whole body)</td><td>Pick up from shelf</td><td><strong>76.3%</strong></td></tr>
+            <tr><td>Apollo 2 &middot; SharpaWave 22-DoF hand</td><td>Screw bulb</td><td>36%</td></tr>
+            <tr><td>Apollo 2 &middot; SharpaWave 22-DoF hand</td><td>Unscrew bulb</td><td><strong>92%</strong></td></tr>
+            <tr><td>Apollo 2 &middot; SharpaWave 22-DoF hand</td><td>Tie trash bag</td><td>44%</td></tr>
+            <tr><td>Apollo 2 &middot; SharpaWave 22-DoF hand</td><td>Dustpan</td><td>32%</td></tr>
+            <tr><td>Apollo 2 &middot; SharpaWave 22-DoF hand</td><td>Ziplock</td><td>40%</td></tr>
+            <tr><td>Franka Duo (bi-arm gripper)</td><td>General pick and place</td><td><strong>74.2%</strong></td></tr>
+            <tr><td>Franka Duo (bi-arm gripper)</td><td>Diverse tool kitting</td><td><strong>78.9%</strong></td></tr>
+            <tr><td>Franka Duo (bi-arm gripper)</td><td>Precise insertion tasks</td><td><strong>89.6%</strong></td></tr>
+          </tbody>
+        </table>
+        The launch is explicit that whole-body and gripper-based dexterous tasks achieve <em>medium-to-high</em> success while <em>multi-finger dexterous manipulation remains challenging</em>.</li>
+      <li>ER 2 agentic reasoning headline numbers (from the developer blog):
+        <table>
+          <thead><tr><th>Capability</th><th>ER 2</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Progress classification accuracy (5-bucket)</td><td><strong>57.4%</strong></td><td>Best reported vs. ER 1.6 and other frontier models</td></tr>
+            <tr><td>Moment-finding accuracy</td><td><strong>91.3%</strong></td><td>MAE <code>0.96s</code>; ~<code>4&times;</code> execution speed of larger competitors</td></tr>
+            <tr><td>Physical-agent orchestration (real VLA, sim VLA, human tele-op)</td><td>Best</td><td>Consistently above ER 1.6 in all three control modes</td></tr>
+            <tr><td>Spatial ERQA (VQA)</td><td>Best</td><td>Above ER 1.6 and reported frontier models</td></tr>
+            <tr><td>Success detection (image / video)</td><td>Best</td><td>New raw-video variant catches mid-execution failures</td></tr>
+            <tr><td>Generalized instrument reading</td><td>Best</td><td>10 instrument types incl. digital / linear / thermometer</td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li><em>ASIMOV-Agentic safety numbers</em> (from the safety technical report):
+        <table>
+          <thead><tr><th>ASIMOV-Agentic component</th><th>Best-reported ER 2</th><th>Baseline / gap</th></tr></thead>
+          <tbody>
+            <tr><td>Safety Instruction Following &mdash; Text modality</td><td>&ge; <code>96.0%</code> (all frontier)</td><td>Text-in / text-out reliable across models</td></tr>
+            <tr><td>Safety Instruction Following &mdash; Pointing / Bounding-Box / Tool-Use</td><td>Highest variance across modalities</td><td>Gap between semantic constraint understanding and grounded spatial / tool execution</td></tr>
+            <tr><td>Proactive Human Safety Monitoring &mdash; single-frame stereo</td><td>MAE <code>0.35&ndash;0.55m</code> to closest human, boundary-breach accuracy <code>79&ndash;93%</code></td><td>&mdash;</td></tr>
+            <tr><td>Proactive Human Safety Monitoring &mdash; agentic tool-use</td><td>No frontier model in ideal top-right quadrant</td><td>FPR &lt; 5% costs FNR &gt; 40%; suppressing FNR to 10&ndash;15% costs 15&ndash;25% FPR</td></tr>
+            <tr><td>Humanoid Safe Stopping (lab, Apollo 2 with garage object-sort)</td><td><strong>99%</strong> human detection, <strong>96%</strong> reliable transition to safe pose</td><td>Reliably detects at 1&thinsp;m and 2&thinsp;m thresholds; autonomously resumes after human departs</td></tr>
+            <tr><td>Safety Tool Calling (JSON safety-message handling)</td><td><strong>100%</strong></td><td>Matched by Claude Opus 4.8 and GPT&#8209;5.5</td></tr>
+            <tr><td>VLA Feasibility Awareness &mdash; one-step, DI0 &rarr; DI3</td><td><code>62.0% &rarr; 95.8%</code></td><td>Larger developer-instruction context on VLA training distribution drives the gain</td></tr>
+            <tr><td>Instruction Ambiguity handling</td><td>Tension</td><td>Systems tuned for helpfulness under-request clarification; systems tuned for uncertainty over-request</td></tr>
+            <tr><td>Aleatoric scene uncertainty (obfuscated instrument reading)</td><td>Frontier models prioritize hallucination avoidance</td><td>Sample ER-2 thinking trace: <em>&ldquo;this is unreadable because there&rsquo;s just no way to get a solid numerical value&rdquo;</em></td></tr>
+          </tbody>
+        </table>
+      </li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><em>Progress classification bucket size.</em> The safety report and developer post choose a five-bucket (<code>0&ndash;20%</code>, ..., <code>80&ndash;100%</code>) discretization &mdash; enough granularity for the orchestrator to decide when to retry vs. advance, without forcing the model to solve arbitrary-precision progress regression.</li>
+      <li><em>Developer-instruction (DI) depth on VLA feasibility.</em> The safety report ablates DI depth on the same ER 2 model: DI0 (no VLA-training-distribution summary) &rarr; 62.0% feasibility-classification accuracy; DI1, DI2 &rarr; intermediate; DI3 (most detailed training-instruction summary) &rarr; 95.8%. All frontier models benefit from feasibility awareness; the ceiling shifts up proportionally with in-context detail.</li>
+      <li><em>Instrument-reading generalization ablation.</em> ER 2 is evaluated across 10 instrument categories (circular dials, sight glasses, digital displays, linear scales, rulers, liquid thermometers, ...) rather than only the circular-dial family that dominated ER 1.6 evaluations, and shows accuracy gains across all of them.</li>
+      <li><em>Real-VLA vs. sim-VLA vs. human tele-op orchestration.</em> ER 2 outperforms ER 1.6 in all three modes, confirming the orchestration gain does not depend on any specific downstream controller.</li>
+      <li><em>Cross-embodiment On-Device 2 fine-tuning budget.</em> The launch reports fast adaptation to Dexmate, SO101, and Trossen platforms with typically <em>&lt; 200</em> demonstrations and a <em>few hours</em> of training time, across bodies with drastically different shapes, sensors, and DoF counts &mdash; concrete evidence that motion transfer is a real transfer mechanism, not a re-training loop.</li>
+    </ul>
+
+    <h3>Safety &amp; limitations</h3>
+    <ul>
+      <li><em>Named contribution: ASIMOV-Agentic benchmark &mdash; problem, mechanism, why.</em>
+        <ul>
+          <li><em>Problem.</em> Prior semantic-safety benchmarks (ASIMOV / ASIMOV-2) evaluated static text-in / text-out safety reasoning of an LLM. Real embodied agents need to (i) refuse unsafe tasks, (ii) trigger protective stops on hardware / proximity events, (iii) shield the VLA from infeasible or out-of-distribution requests, and (iv) proactively resolve ambiguous instructions or scene uncertainty by asking the human. There was no benchmark that measured all four in a single agentic protocol.</li>
+          <li><em>Mechanism.</em> ASIMOV-Agentic contributes six evaluation components: <em>Unsafe Task Refusal &amp; Safety Constraint Following</em> (Text / Pointing / Bounding-Box / Tool-use output modalities), <em>Proactive Human Safety Monitoring</em> (single-frame stereo + agentic tool-use variants), <em>Safety Tool Calling</em> (JSON safety-message handling under mid-task interruption), <em>VLA Feasibility Awareness</em> (one-step + multi-step VLA-confidence-emulation variant), <em>Instruction Ambiguity &amp; Requesting Human Clarification</em> (10-class ambiguity taxonomy), and <em>Aleatoric Scene Uncertainty</em> (obfuscated instrument reading). Data is released on Hugging Face; each component ships with paired &ldquo;good response&rdquo; / &ldquo;bad response&rdquo; examples.</li>
+          <li><em>Why.</em> The report is explicit that <em>no</em> current frontier model sits in the ideal top-right quadrant of the agentic human-proximity trade-off (near-zero false-negative rate <em>and</em> near-zero false-positive rate); the benchmark is designed to make this trade-off visible rather than to be immediately saturated. It also documents the tension between <em>helpfulness</em> (fulfil clear directives) and <em>uncertainty awareness</em> (intercept ambiguous ones), which appears in every component and which any deployed embodied agent has to navigate explicitly.</li>
+        </ul>
+      </li>
+      <li>The safety report explicitly scopes itself to <em>high-level semantic reasoning and orchestration</em> and does <em>not</em> evaluate the underlying functional-safety architecture &mdash; certified hardware, redundancy, real-time system guarantees required for compliant deployment. Regulatory context is anchored in ISO 10218:2025, ISO/TS 15066, ISO 13482, the forthcoming ISO 25785-1 (dynamically stable industrial mobile robots), and IEC 60204-1 stop categories.</li>
+      <li>Privacy and fairness are called out as <em>out of scope</em> for the current ASIMOV-Agentic release; the report identifies demographic / geographic equity, cultural-context adaptation, and strict data minimization for private information as ongoing research directions.</li>
+      <li>The launch does <em>not</em> report SIM &rarr; real hallucination rates for the VLA under long-horizon deployment, or long-term reliability of On-Device 2 adaptation across weeks of use. The multi-finger dexterity numbers (screw bulb 36%, dustpan 32%) are labeled by DeepMind as a known limitation.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li><strong>Gemini Robotics ER 2</strong> is publicly available today: <a href="https://ai.google.dev/gemini-api/docs/robotics-overview">Gemini API</a> &middot; <a href="https://ai.dev/prompts/new_chat?model=gemini-robotics-er-2-preview">Google AI Studio</a> &middot; <a href="https://console.cloud.google.com/agent-platform/publishers/google/model-garden/gemini-robotics-er-2-preview-info">Gemini Enterprise Agent Platform</a> (private preview). Model card: <a href="https://deepmind.google/models/model-cards/gemini-robotics-er-2">Gemini Robotics ER 2</a>. Code examples: <a href="https://github.com/google-gemini/robotics-samples/blob/main/Getting%20Started/gemini_robotics_er.ipynb">google-gemini/robotics-samples</a>, including a Boston Dynamics Spot popcorn-fetching demo at <a href="https://github.com/google-gemini/robotics-samples/tree/main/live-api">live-api/</a>.</li>
+      <li><strong>Gemini Robotics 2 VLA</strong> and <strong>Gemini Robotics On-Device 2</strong> are in <a href="https://docs.google.com/forms/d/1sM5GqcVMWv-KmKY3TOMpVtQ-lDFeAftQ-d9xQn92jCE/viewform?ts=67cef986&edit_requested=true">early-access partner</a> availability. On-Device 2 model card: <a href="https://deepmind.google/models/model-cards/gemini-robotics-on-device-2">Gemini Robotics On-Device 2</a>.</li>
+      <li><strong>Safety technical report:</strong> <a href="https://storage.googleapis.com/deepmind-media/gemini-robotics/Gemini-Robotics-2-Safety.pdf">Gemini Robotics 2: Safety Evaluations</a> (PDF). <strong>ASIMOV-Agentic dataset:</strong> <a href="https://huggingface.co/datasets/google/asimov_agentic">huggingface.co/datasets/google/asimov_agentic</a>. <strong>Developer blog:</strong> <a href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-2/">Introducing Gemini Robotics ER 2</a>.</li>
+      <li>Hardware partners named in the launch: <a href="https://apptronik.com/apollo/apollo-2">Apptronik Apollo 2</a>, <a href="https://franka.de/fr3-duo">Franka F3 Duo</a>, <a href="https://bostondynamics.com/products/spot/">Boston Dynamics Spot</a>, plus Dexmate, SO101, Trossen (On-Device 2 adaptation demos), and Agile Robots (acknowledged partner).</li>
+    </ul>
+
+    <h1 id="openai">OpenAI</h1>
+
+    <h2 id="building-abundant-intelligence"><a href="https://openai.com/index/building-abundant-intelligence/">Building Abundant Intelligence</a></h2>
+    <div class="paper-meta">
+      <span>Tier 3 &middot; Company essay</span>
+      <span>openai.com/index</span>
+      <span>2026-07-31</span>
+      <span>Cost-of-outcome pricing &middot; GPT-5.6 economics &middot; Agentic adoption metrics</span>
+    </div>
+    <ul>
+      <li>Author: <strong>Sarah Friar</strong> (OpenAI CFO). Positions OpenAI&rsquo;s abundance thesis as an operating framework: <em>better intelligence &rarr; broader adoption &rarr; more investment &rarr; better intelligence and efficiency</em>. The essay is a company-strategy note, not a research release.</li>
+      <li>Concrete pricing anchor: yesterday&rsquo;s (2026-07-30) GPT&#8209;5.6 price move &mdash; <strong>GPT&#8209;5.6 Luna &minus;80%</strong> to <code>$0.20 / 1M input</code> and <code>$1.20 / 1M output</code> tokens; <strong>GPT&#8209;5.6 Terra &minus;20%</strong> to <code>$2 / 1M input</code> and <code>$12 / 1M output</code> tokens; <em>GPT&#8209;5.6 Sol Fast mode</em> delivers up to <code>2.5&times;</code> the speed of standard processing at <code>2&times;</code> the price with no change in intelligence.</li>
+      <li>Framing move: replace <em>cost per token</em> with the <em>cost of a successful outcome</em> &mdash; time, retries, oversight, and errors required to actually complete a task. Explicitly argues a stronger model that finishes the work first-try can be cheaper end-to-end than a nominally cheaper model that retries.</li>
+      <li>Efficiency mechanism &mdash; the surrounding <em>system</em>, not the model, drove recent gains:
+        <ul>
+          <li>GPT&#8209;5.6 Sol helped optimize the production software OpenAI uses to serve its own models, reducing end-to-end serving costs by <code>20%</code>.</li>
+          <li>Speculative decoding improvements raised token-generation efficiency by more than <code>15%</code>.</li>
+          <li>The <a href="https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores/">ARC-AGI-3 note</a> is cited as an example: retained reasoning + context-management changes raised GPT&#8209;5.6 Sol&rsquo;s public-set score from <code>13.3% &rarr; 38.3%</code> while using <em>6&times; fewer</em> output tokens. The model didn&rsquo;t change; the surrounding system did.</li>
+        </ul>
+      </li>
+      <li>Adoption metrics reported:
+        <ul>
+          <li>OpenAI models now reach <em>more than 1 billion active users</em> and <em>more than 2 million businesses</em>.</li>
+          <li>Six months in, users send roughly <em>50% more messages per day</em> and use ChatGPT for <em>about twice as many kinds of work</em>.</li>
+          <li>Inside OpenAI, <em>agentic work through Codex now accounts for <code>99.8%</code> of weekly output tokens</em> &mdash; Finance is one of the teams that has made agentic tools primary.</li>
+        </ul>
+      </li>
+      <li>Infrastructure-planning discipline: the essay says the objective is <em>&ldquo;not to build the most infrastructure&hellip; It is to deploy the right capacity, at the right time, against credible demand&rdquo;</em>, and lists the milestones OpenAI uses to gate capacity growth &mdash; user &amp; workload growth, enterprise commitments, API consumption, utilization, revenue, model-capability progress.</li>
+      <li>No new model or research artifact is released; the essay&rsquo;s value here is the explicit codification of the pricing and adoption regime GPT&#8209;5.6 sits in, which will be the reference point for near-term competitive analysis.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
