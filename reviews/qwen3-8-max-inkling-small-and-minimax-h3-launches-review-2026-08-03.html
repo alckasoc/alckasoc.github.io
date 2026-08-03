@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Qwen3.8-Max, Inkling-Small, and MiniMax H3 Launches Review &mdash; August 3, 2026 | Auto Lit Review</title>
+<meta name="description" content="Alibaba turns on Qwen3.8-Max general availability (2.4T-parameter multimodal MoE, 1M context, open weights next week); Thinking Machines Lab ships Inkling-Small (276B/12B-active Apache-2.0 MoE that surpasses its own 975B teacher on reasoning and agentic coding); MiniMax opens the MiniMax H3 omni-modal 2K-video model to public weights under a single-checkpoint pretraining paradigm." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 3, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#alibaba" class="toc-h1">Alibaba</a>
+          <ul>
+            <li><a href="#qwen3-8-max" class="toc-h2">Qwen3.8-Max</a></li>
+          </ul>
+        </li>
+        <li><a href="#minimax" class="toc-h1">MiniMax</a>
+          <ul>
+            <li><a href="#minimax-h3" class="toc-h2">MiniMax H3</a></li>
+          </ul>
+        </li>
+        <li><a href="#thinking-machines-lab" class="toc-h1">Thinking Machines Lab</a>
+          <ul>
+            <li><a href="#inkling-small" class="toc-h2">Inkling-Small</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 3, 2026</div>
+    <h1 class="page-title">Qwen3.8-Max, Inkling-Small, and MiniMax H3 Launches</h1>
+    <div class="page-meta">3 items &middot; 3 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window is a three-front open-weight surge. <strong>Alibaba</strong> flips <strong>Qwen3.8-Max</strong> from July&rsquo;s WAIC preview to general availability on 2026-08-03 &mdash; a <code>2.4T</code>-parameter sparse Mixture-of-Experts model that accepts text, image and video, holds a <code>1M</code>-token context window, and ships as OpenAI- and DashScope-compatible with open weights and a companion <code>Qwen3.8-27B</code> checkpoint promised next week. <strong>Thinking Machines Lab</strong> follows its <em>Inkling</em> teacher (975B/41B-active) with <strong>Inkling-Small</strong> &mdash; a 276B-total / 12B-active Apache-2.0 MoE, natively multimodal (text + image + audio), 1M-token context, controllable reasoning effort, and produced in part by on-policy distillation from Inkling, that then <em>surpasses its teacher</em> on reasoning and agentic coding while ceding ground only on world knowledge. <strong>MiniMax</strong> officially open-sources <strong>MiniMax H3</strong> (Hailuo 3.0), a general-purpose omni-modal generation model unifying text, image, video, and audio into a single generation paradigm, with 2K native output, 4&ndash;15 s clips, and native stereo audio.</p>
+      <h3>Competitiveness</h3>
+      <p>Qwen3.8-Max sets a new open-frontier reference point on multimodal and agentic workloads: it scores <code>86.6</code> on Terminal-Bench 2.1 (ahead of Claude Opus 4.8 and Claude Fable 5 at <code>84.6</code>, behind GPT&#8209;5.6 Sol max at <code>88.8</code>), leads PaperBench at <code>93.0</code> and IFBench at <code>82.8</code>, tops OSWorld-Verified at <code>86.1</code>, Parametric CAD Bench at <code>91.5</code>, and OmniDocBench 1.5 at <code>92.1</code>, and posts <code>92.6</code> on GPQA Diamond &mdash; but pure reasoning gaps remain against Fable 5 on hard coding (<code>67.7</code> vs <code>80.0</code> SWE-bench Pro; <code>73.5</code> vs <code>88.8</code> FrontierSWE). Alibaba&rsquo;s own RL scaling curve peaks at <code>0.725</code> near <code>4,000</code> training environments then declines to <code>0.719</code> and <code>0.689</code>. Inkling-Small compresses Inkling&rsquo;s capability into <em>one quarter of the size</em>: it reaches <code>80.2%</code> on SWE-Bench Verified (vs Inkling&rsquo;s <code>77.6%</code>), <code>31.6%</code> on Humanity&rsquo;s Last Exam text-only (vs <code>29.7%</code>), <code>82.2%</code> on IFBench, <code>84.0%</code> / <code>40.1%</code> on ARC-AGI-1/2 (vs <code>79.5%</code> / <code>36.5%</code>), <code>89.5%</code> on GPQA Diamond, <code>95.5%</code> on AIME 2026, and <code>90.2%</code> on HMMT February 2026, running comfortably on 4&times;B300 or 8&times;H200 in BF16 (or a single B300 in NVFP4 W4A4) &mdash; matching GPT&#8209;5.6 Luna and Gemini 3.5 Flash-Lite&rsquo;s Pareto frontier on reasoning/agentic tradeoffs while remaining open-weight. Its predictable weakness is factuality: SimpleQA Verified drops to <code>20.6%</code> and AA Omniscience to <code>-9.0</code>, well behind DeepSeek V4 Flash and Gemini 3.5 Flash-Lite. On video, MiniMax H3 is the first fully open-weight <em>omni-modal</em> generator that reads text, image, video and audio jointly and outputs 2K video with native stereo audio; at 2K its per-second price is <em>less than one third</em> of mainstream video models and less than half at 768p, positioning it as the open counter to Veo 4 and Sora-family closed frontiers.</p>
+      <h3>New frontier releases</h3>
+      <p><strong>Alibaba</strong> makes <a href="https://qwen.ai/blog?id=qwen3.8">Qwen3.8-Max</a> generally available on 2026-08-03 through <a href="https://www.qwencloud.com/models/qwen3.8-max">QwenCloud</a> and <a href="https://chat.qwen.ai/?models=qwen3.8-max">Qwen Studio</a>, with open weights for Qwen3.8-Max and <a href="https://x.com/Alibaba_Qwen/status/2084100707423289643">Qwen3.8-27B</a> promised next week. <strong>Thinking Machines Lab</strong> releases <a href="https://thinkingmachines.ai/news/inkling-small/">Inkling-Small</a> (2026-07-30, publicized broadly through 2026-08-02) under Apache 2.0 with the <a href="https://huggingface.co/thinkingmachines/Inkling-Small">Inkling-Small BF16 checkpoint</a> and an <a href="https://huggingface.co/thinkingmachines/Inkling-Small-NVFP4">Inkling-Small-NVFP4 checkpoint</a>, plus fine-tuning on <a href="https://tinker.thinkingmachines.ai/playground?utm_source=blog&utm_campaign=inkling_small_model_release">Tinker</a>. <strong>MiniMax</strong> ships <a href="https://www.minimax.io/blog/minimax-h3">MiniMax H3</a> (blog 2026-07-31) into production on the platform API under the model ID <code>MiniMax-H3</code> and in the consumer Hailuo AI app, with open weights formally released on 2026-08-03 under the MiniMax H3 Community License Agreement. No new closed-frontier language-model launches from OpenAI, Anthropic, xAI, or Google DeepMind in the window &mdash; the story is open weights.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="qwen3-8-max"><a href="https://qwen.ai/blog?id=qwen3.8">Qwen3.8-Max: 2.4T Multimodal MoE, 1M Context, Open Weights Next Week</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch (blog + model page + benchmark table)</span>
+      <span>Qwen blog &middot; QwenCloud</span>
+      <span>2026-08-03</span>
+      <span>Flagship LLM &middot; Sparse MoE &middot; Multimodal &middot; 1M context &middot; Open weights</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Alibaba&rsquo;s Qwen team promotes <strong>Qwen3.8-Max</strong> from the July WAIC preview (announced 2026-07-19 at the World AI Conference in Shanghai, previously covered as <code>Qwen3.8-Max-Preview</code>) to broad availability on 2026-08-03, and publicly commits to shipping the <em>open weights</em> next week alongside a smaller companion checkpoint, <code>Qwen3.8-27B</code>. Announcement thread: <a href="https://x.com/Alibaba_Qwen/status/2084100707423289643">Alibaba_Qwen on X</a>.</li>
+      <li>Product framing: Qwen3.8-Max is the flagship, closed-frontier tier of the Qwen line, but this GA event is the first time a Qwen Max-tier model has ever been paired with an open-weight promise. Every earlier Max release (through Qwen3.7-Max, May 2026) stayed API-only. The move is a direct response to Moonshot&rsquo;s open-weight <code>Kimi K3</code> (2.8T total, released 2026-07-27 &mdash; covered in the 2026-07-28 review).</li>
+      <li>Named contributions and artifacts in this launch, each of which receives a mechanism explanation below: (a) <em>2.4T sparse-MoE flagship with text&#8239;+&#8239;image&#8239;+&#8239;video input</em>, (b) <em>1M-token context with thinking mode</em>, (c) <em>Explicit vs. implicit context-cache pricing</em>, (d) <em>Five built-in first-party tools on the Responses API</em>, (e) <em>Companion 27B open-weight checkpoint</em> as the on-premise fallback for the flagship, and (f) the <em>4,000-environment RL scaling curve</em> Alibaba publishes alongside the release.</li>
+      <li>Access surfaces today: OpenAI- and DashScope-compatible <a href="https://www.qwencloud.com/models/qwen3.8-max">QwenCloud API</a>, <a href="https://chat.qwen.ai/?models=qwen3.8-max">Qwen Studio</a> chat UI, Alibaba&rsquo;s Token Plan subscription, and the Qoder / QoderWork platforms. Independent third-party summary of the launch: <a href="https://www.marktechpost.com/2026/08/03/alibaba-qwen-releases-qwen3-8-max/">MarkTechPost</a> (Asif Razzaq, 2026-08-03).</li>
+    </ul>
+
+    <figure>
+      <img src="https://www.marktechpost.com/wp-content/uploads/2026/08/blog6176-5-1024x731.png" alt="Qwen3.8-Max benchmark table cover" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Cover image (from the MarkTechPost launch write-up, sourced from <code>qwen.ai/blog?id=qwen3.8</code>). Qwen3.8-Max flagship benchmark table.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Total parameters: 2.4 trillion</strong>, in a sparse Mixture-of-Experts backbone. Alibaba does <em>not</em> disclose the activated-parameter-per-token count in the launch materials &mdash; a deliberate omission that means serving cost per token cannot yet be modeled from public information alone. This is unusual: the equivalent Kimi K3 disclosure ships activated parameters up front. Community estimates published on release day place actives around <code>95B</code>, but this is unverified.</li>
+      <li><strong>Modalities:</strong> text, image, and video as input; text as output. This makes Qwen3.8-Max the first Qwen model above one trillion parameters to accept visual and video input alongside text &mdash; the earlier <code>Qwen3.5-Omni</code> line handled image/video/audio input+output but capped at <code>235B</code> total. The unification means one flagship checkpoint spans long-document review, video indexing, and structured extraction.</li>
+      <li><strong>Named contribution &mdash; 2.4T sparse-MoE flagship with text&#8239;+&#8239;image&#8239;+&#8239;video input.</strong>
+        <ul>
+          <li><em>Problem.</em> Prior Qwen Max checkpoints were text-first; the multimodal work happened in the smaller Omni line, which capped at 235B and could not match Max-tier reasoning. Long-document / long-video enterprise workloads (repo-scale coding, financial filings review, e-commerce catalog operations) need both frontier reasoning <em>and</em> native multimodal input from the same checkpoint.</li>
+          <li><em>Mechanism.</em> A sparse MoE stack scaled to 2.4T total experts is trained jointly on interleaved text, image, and video tokens under one autoregressive objective. Video is handled as sequences of frame tokens (like <code>Qwen3.5-Omni</code>) but plugged into the Max-tier backbone rather than the Omni head. The context window is extended to 1M tokens so that the video sequence and its accompanying document context can coexist in a single prompt.</li>
+          <li><em>Why.</em> Consolidating modalities on the flagship removes the need for a separate Omni-tier model with worse reasoning; the sparse routing keeps inference cost sub-linear in total parameters, which is the only way a 2.4T model with 1M context reaches serving economics ($2 in / $6 out per Mtok). Improves over the prior split (Qwen3-Max = closed text flagship; Qwen3.5-Omni = smaller multimodal) by removing the tier trade-off.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; 1M-token context with thinking mode.</strong>
+        <ul>
+          <li><em>Problem.</em> Long-context reasoning models trade context length for reasoning budget: at 1M tokens most of the KV cache is occupied by input, leaving little room for a large hidden reasoning trace.</li>
+          <li><em>Mechanism.</em> Qwen3.8-Max publishes two configurations. In non-thinking mode, max input is <code>991K</code> tokens and max output <code>131K</code>. In thinking mode, max input drops slightly to <code>983K</code> (the delta reserved for a scratchpad prefix) and the <em>reasoning budget</em> caps at <code>262K</code> tokens of hidden trace on top of the same <code>131K</code>-token max final output. Reasoning tokens are decoded but not returned in the final answer.</li>
+          <li><em>Why.</em> Two configurations expose the trade-off directly instead of forcing a single number: agentic pipelines that push near-1M-token repository context can still request up to <code>262K</code> reasoning tokens, but pay for both. Improves over predecessor Qwen3.7-Max, which capped thinking at a much smaller budget on shorter contexts.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Pre-training and modalities</h3>
+    <ul>
+      <li>Alibaba has not published a pre-training corpus breakdown or token-count budget for Qwen3.8-Max in the launch materials. What is public: the model was pre-trained with the same overall recipe as the Qwen3.5 line (dense + MoE, thinking / non-thinking unified framework), scaled to the 2.4T total-parameter regime and extended to include image and video tokens throughout pre-training rather than as a bolted-on post-hoc adapter.</li>
+      <li><strong>Named contribution &mdash; Explicit vs. implicit context-cache pricing.</strong>
+        <ul>
+          <li><em>Problem.</em> Agent workloads pay repeatedly for the same system prompt + tool schema + document context on every turn; at 1M-token context lengths this alone can dominate spend.</li>
+          <li><em>Mechanism.</em> QwenCloud exposes two caching modes on top of the same 2.4T backbone: <em>implicit</em> cache hits are served automatically at <code>$0.25</code> / Mtok (8&times; cheaper than the <code>$2.00</code> fresh-input rate); <em>explicit</em> cache creation is <code>$2.50</code> / Mtok up-front and subsequent explicit reads cost <code>$0.17</code> / Mtok. The developer pins the prefix, then reads it at a lower marginal cost than implicit caching.</li>
+          <li><em>Why.</em> Two-tier caching lets agent authors choose between the operational simplicity of implicit caching (no code change) and the tighter unit economics of explicit caching for high-reuse workloads. This is a departure from DeepSeek&rsquo;s single-tier implicit-only 98%-discount model &mdash; more configurable, but requires the developer to model prefix stability. Prefix stability now drives cost more than prompt length.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Post-training and agentic RL</h3>
+    <ul>
+      <li>Post-training details are terse in the launch, but Alibaba published the RL scaling curve underlying agentic performance. <strong>Named contribution &mdash; 4,000-environment RL scaling curve.</strong>
+        <ul>
+          <li><em>Problem.</em> Agentic RL post-training relies on programmatic environments (code sandboxes, browser simulators, tool harnesses) as reward sources. Adding more environments should monotonically improve agentic capability &mdash; but nobody has published where that curve turns over on a flagship-scale model.</li>
+          <li><em>Mechanism.</em> Alibaba trained Qwen3.8-Max across a growing pool of agentic environments and measured a composite agentic score at increasing environment counts. Peak reward of <code>0.725</code> lands at roughly <code>4,000</code> training environments; beyond that the curve declines to <code>0.719</code> and then <code>0.689</code>.</li>
+          <li><em>Why.</em> This is the first public admission from a frontier-scale lab that agentic-RL environment diversity has a <em>practical ceiling</em> under current sampling / rejection strategies &mdash; more environments start hurting past a threshold, likely through reward-hacking overlap or trajectory-distribution collapse. It also directly explains why Qwen3.8-Max leads OSWorld-Verified but trails Fable 5 on hard coding SWE benchmarks: the RL slice is more distributional than pure coding depth.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Five built-in tools on the Responses API.</strong>
+        <ul>
+          <li><em>Problem.</em> Agent developers otherwise wire up their own code interpreter, search, extractor, and image-search tools before their agent works &mdash; each with its own auth, quotas, and failure modes.</li>
+          <li><em>Mechanism.</em> The Qwen3.8-Max Responses API ships five first-party tools invocable by name: <code>code_interpreter</code>, <code>web_search</code>, <code>web_extractor</code>, <code>t2i_search</code> (text-to-image search), and <code>i2i_search</code> (image-to-image search). All are called through the same schema as user-defined function-calls, so the agent policy does not need to distinguish first-party vs. user-registered tools.</li>
+          <li><em>Why.</em> The two <em>image-search</em> tools are the differentiator: they exploit the fact that Qwen3.8-Max already accepts image input, so a t2i or i2i query returns image results the same model can then reason over directly. This is a tighter loop than pipelining out to a separate image-search endpoint (the Anthropic / OpenAI approach today) and improves over the older text-only tool sets shipped with Qwen3.7-Max.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>Alibaba publishes a full benchmark table alongside the launch. Reproduced below from the official model page (numbers as sourced by the MarkTechPost 2026-08-03 write-up). Comparators are Claude Opus 4.8, Claude Fable 5, GPT&#8209;5.6 Sol (max), and Qwen3.7-Max (predecessor).</li>
+    </ul>
+    <table>
+      <thead>
+        <tr>
+          <th>Benchmark</th>
+          <th>Qwen3.8-Max</th>
+          <th>Qwen3.7-Max</th>
+          <th>Claude Opus 4.8</th>
+          <th>Claude Fable 5</th>
+          <th>GPT&#8209;5.6 Sol (max)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Terminal-Bench 2.1</td><td><strong>86.6</strong></td><td>&mdash;</td><td>84.6</td><td>84.6</td><td>88.8</td></tr>
+        <tr><td>SWE-bench Pro</td><td>67.7</td><td>&mdash;</td><td>&mdash;</td><td><strong>80.0</strong></td><td>&mdash;</td></tr>
+        <tr><td>FrontierSWE</td><td>73.5</td><td>40.7</td><td>&mdash;</td><td><strong>88.8</strong></td><td>&mdash;</td></tr>
+        <tr><td>DeepSWE 1.1</td><td><strong>56.6</strong></td><td>21.6</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>PaperBench</td><td><strong>93.0</strong></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>IFBench</td><td><strong>82.8</strong></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>GPQA Diamond</td><td>92.6</td><td>92.4</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>JobBench</td><td><strong>53.4</strong></td><td>31.3</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>OSWorld-Verified</td><td><strong>86.1</strong></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>Parametric CAD Bench</td><td><strong>91.5</strong></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>OmniDocBench 1.5</td><td><strong>92.1</strong></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Reading the table: <em>agentic tool-use and multimodal document workloads are where Qwen3.8-Max leads</em>. On pure hard-coding, the gap to Claude Fable 5 is still wide (SWE-bench Pro <code>67.7</code> vs. <code>80.0</code>; FrontierSWE <code>73.5</code> vs. <code>88.8</code>) &mdash; a delta of <code>12.3</code> and <code>15.3</code> points respectively. Terminal-Bench 2.1 tells a different story: at <code>86.6</code>, Qwen3.8-Max beats both Claude Opus 4.8 and Claude Fable 5 (both <code>84.6</code>) and trails only GPT&#8209;5.6 Sol max at <code>88.8</code>.</li>
+      <li>Generational deltas over Qwen3.7-Max are largest exactly where post-training RL was applied hardest: DeepSWE 1.1 moves from <code>21.6</code> to <code>56.6</code> (<code>+35.0</code>), FrontierSWE from <code>40.7</code> to <code>73.5</code> (<code>+32.8</code>), JobBench from <code>31.3</code> to <code>53.4</code> (<code>+22.1</code>). Pure reasoning barely moves: GPQA Diamond climbs from <code>92.4</code> to <code>92.6</code>. This confirms the post-training story: the release is an agentic-and-multimodal jump, not a knowledge or pure-reasoning jump.</li>
+      <li><strong>Honesty caveats worth flagging.</strong> (a) The multimodal table benchmarks against <em>Qwen3.7-Plus</em>, not Qwen3.7-Max, which flatters the generational multimodal delta. (b) No SimpleQA / factuality numbers were published &mdash; the earlier Qwen3.7-Max had known factuality weaknesses, and the omission means the community cannot yet size whether Qwen3.8-Max fixed them. (c) The published RL scaling curve peaks at <code>0.725</code> near <code>4,000</code> environments then falls to <code>0.719</code> and <code>0.689</code> &mdash; Alibaba is transparent that agentic RL is <em>past</em> its diminishing-returns point in their setup.</li>
+    </ul>
+
+    <h3>Availability, pricing, and open weights</h3>
+    <ul>
+      <li><strong>Hosted API (today).</strong> OpenAI-compatible and DashScope-compatible endpoints on <a href="https://www.qwencloud.com/models/qwen3.8-max">QwenCloud</a>. Rate limits: <code>2M</code> tokens per minute and <code>15K</code> requests per minute. Maximum input: <code>991K</code> tokens (non-thinking) / <code>983K</code> (thinking). Maximum output: <code>131K</code> tokens in both modes. Maximum reasoning budget: <code>262K</code> tokens.</li>
+      <li><strong>Pricing (per 1M tokens).</strong> Input <code>$2.00</code>; output <code>$6.00</code>; implicit cache read <code>$0.25</code>; explicit cache creation <code>$2.50</code>; explicit cache read <code>$0.17</code>. Cached input is 8&times; cheaper than fresh input in the implicit path; ~12&times; cheaper in the explicit path once the write is amortized. Positioning: for text-only workloads, this is roughly on par with Claude Fable 5 (<code>$2 / $12</code> after GPT&#8209;5.6-driven repricing) on input, and half the price on output.</li>
+      <li><strong>Supported capabilities.</strong> Function calling, structured outputs, batches, prefix completion, fine-tuning. Five built-in tools on the Responses API (see Post-training section).</li>
+      <li><strong>Open weights (next week).</strong> Alibaba commits publicly that Qwen3.8-Max <em>and</em> a smaller <code>Qwen3.8-27B</code> checkpoint will ship open-weights on <a href="https://huggingface.co/Qwen">Hugging Face</a> and <a href="https://www.modelscope.cn/organization/qwen">ModelScope</a> within one week of GA. License and activated-parameter-count remain unpublished. The 27B checkpoint, not the 2.4T flagship, is the realistic on-premise deployment path &mdash; the flagship remains a multi-node datacenter artifact.</li>
+    </ul>
+
+    <h3>Safety and limitations</h3>
+    <ul>
+      <li>No safety technical report or system card has been published alongside the launch; Alibaba&rsquo;s pattern to date on Max-tier releases is a lighter safety disclosure than either Anthropic&rsquo;s system cards or Google DeepMind&rsquo;s ASIMOV reports. Downstream deployers relying on Qwen3.8-Max will need to layer their own moderation stack.</li>
+      <li><strong>Documented gaps.</strong> No published activated-parameter count &rArr; no serving-cost model for open-weight deployment; no benchmark table entry for factuality benchmarks (SimpleQA, TriviaQA) &rArr; unknown whether the family&rsquo;s factuality-lag against DeepSeek V4 and Gemini closed the gap; RL scaling curve past its peak &rArr; further agentic improvement will likely need a different training-environment strategy, not just more environments.</li>
+      <li><strong>Deployment surface.</strong> At 2.4T total parameters the open-weight checkpoint is a multi-node datacenter artifact. The 27B companion is the intended on-premise fit for the flagship&rsquo;s architecture family &mdash; ordinary GPU servers can serve it, and Alibaba has framed it as the on-premise deployment path from day one.</li>
+    </ul>
+
+    <h1 id="minimax">MiniMax</h1>
+
+    <h2 id="minimax-h3"><a href="https://www.minimax.io/blog/minimax-h3">MiniMax H3: An Open Model Breaking the Boundaries Between Tasks and Modalities</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch (blog + platform release + open weights)</span>
+      <span>MiniMax blog</span>
+      <span>2026-07-31 (blog) / 2026-08-03 (open weights)</span>
+      <span>Omni-modal video generation &middot; Single-checkpoint multi-task &middot; 2K native output</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>MiniMax launches <strong>MiniMax H3</strong> (a.k.a. <em>Hailuo 3.0</em>, the third generation of the Hailuo video line) as a <em>general-purpose omni-modal generation model</em>: it accepts text, image, video, and audio as a single unified context and returns video with native stereo audio, up to <code>2K</code> resolution and <code>4&ndash;15</code>-second (integer) duration. The blog is dated 2026-07-31; the model went live on the MiniMax platform API under model ID <code>MiniMax-H3</code> and in the consumer Hailuo AI app the same day; formal open-weights release under the <em>MiniMax H3 Community License Agreement</em> lands on 2026-08-03, closing the 36-hour window.</li>
+      <li>Positioning against the prior generations: Hailuo 01 built the video system from the ground up; Hailuo 02 improved architectural efficiency, data quality, and scale on the same paradigm; H3 breaks the pattern by <em>unifying tasks</em>. Where earlier generations split into T2I, image editing, subject-reference, motion-reference, style-reference (image side) and T2V, I2V, first-and-last-frame, voice reference, video editing (video side), and treated voice / sound-effects / music as separate audio subfields, H3 folds every one of these into a single pre-training paradigm where each task is expressed as a natural-language description of the relationship between context and target output.</li>
+      <li>Named contributions receiving a mechanism explanation below: <em>H3-Contextual Omni Representation</em>, <em>H3-VAE</em>, <em>H3-Omni Transformer</em>, and <em>H3 In-Context Regeneration</em>. The full technical report is promised but not yet released.</li>
+    </ul>
+
+    <figure>
+      <img src="https://file.cdn.minimax.io/public/3df321d9-42bd-4be0-ac58-71f22377a11f.png" alt="MiniMax H3 cover art showing omni-modal video generation" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Cover image (from the MiniMax H3 launch page). H3 unifies text, image, video, and audio as a single context and produces 2K video with native stereo audio.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>H3 is an autoregressive multimodal transformer trained end-to-end on interleaved text, image, video, and audio tokens. Rather than pretraining separate expert heads per task, the model is trained on a task-catalog written in natural language: T2I, T2V, T2A, generalized image-to-image reference/edit, image-to-video reference/edit, audio-to-audio reference/edit, and audio-video-to-audio-video reference/edit. Each task is expressed as a captioning-style description of the relationship between context and target, not as a switch on a task-ID input.</li>
+      <li><strong>Named contribution &mdash; H3-Contextual Omni Representation.</strong>
+        <ul>
+          <li><em>Problem.</em> Once every task is expressed in language, the captioning system has to describe not just the target video but the <em>relationship</em> between (potentially many) context items and the target &mdash; and the audio-visual relationships across multiple shots. Off-the-shelf captioners are trained on single-image or single-video description, not on multi-modal, multi-shot relational description.</li>
+          <li><em>Mechanism.</em> MiniMax built a dedicated multi-modal understanding pipeline that describes each source in language, then jointly describes the video&harr;audio and cross-item relationships. Most source material requires ~<code>100K</code> tokens of inference to caption, distilled down to an average of ~<code>4K</code> tokens per training sample. Those distilled multi-relational captions are the training signal that lets a single generator handle every task class in the catalog above.</li>
+          <li><em>Why.</em> Language as the interlingua is what makes generalization across task types possible &mdash; there is no need for a fixed task-ID input, and new task compositions (e.g. &ldquo;reference the Hitchcock camera movement from Video 1, have Image 2 sing, match Audio 3&rdquo;) drop out at inference without additional heads. Improves over the prior Hailuo 02 setup where each of these task variants required either a separate model or a task-specific conditioning branch.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; H3-VAE.</strong>
+        <ul>
+          <li><em>Problem.</em> Native 2K video generation is compute-bound: a 15-second 2K clip has an order-of-magnitude longer token sequence than the 720p&harr;1080p range that predecessor tokenizers were tuned for. Serving cost and training throughput both explode.</li>
+          <li><em>Mechanism.</em> H3 replaces the Hailuo 02 tokenizer with a redesigned <em>H3-VAE</em>. It targets <em>both</em> better reconstruction quality <em>and</em> higher compression ratio simultaneously &mdash; a <code>4&times;</code> gain in effective sequence length over the prior tokenizer at the same visual fidelity.</li>
+          <li><em>Why.</em> The <code>4&times;</code> compression is what makes native 2K feasible: training compute per sample is roughly linear in sequence length, so the same GPU budget now trains a 2K model where before it would have trained a 720p one. Improves over Hailuo 02&rsquo;s tokenizer, which used lower compression and could not efficiently reach 2K.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; H3-Omni Transformer.</strong>
+        <ul>
+          <li><em>Problem.</em> Adding multimodal context tripled the variance in sequence length across training samples (some samples are all short text, others carry multiple long videos as context) and made the compute profile of &ldquo;understand context&rdquo; vs. &ldquo;generate video&rdquo; markedly heterogeneous within one forward pass.</li>
+          <li><em>Mechanism.</em> H3 <em>separates</em> the understanding and generation workloads at the training-architecture level: two hardware utilization regimes, tuned independently, but jointly balanced per-sample against load balancing across samples. MiniMax explicitly abandoned the Hailuo-02 architecture despite its prior advantages, on the argument that its complexity would only get in the way of task generalization.</li>
+          <li><em>Why.</em> End-to-end training throughput improved by nearly <code>30%</code>. In generality-first architectures, the payoff of dropping bespoke architectural tricks in favor of a workload-separated backbone is measurable at the throughput level, not just at a benchmark level.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; H3 In-Context Regeneration for 2K output.</strong>
+        <ul>
+          <li><em>Problem.</em> Native 2K decoding is expensive; the traditional workaround (a dedicated super-resolution module bolted on top of a lower-resolution generator) &ldquo;guesses&rdquo; missing detail and cannot recover fine text or small structure.</li>
+          <li><em>Mechanism.</em> H3 has the base model regenerate its <em>own</em> low-resolution output in-context, at 2K, reusing the full multimodal context of the original prompt. There is no separate super-resolution head; the same H3 that produced the low-res draft produces the 2K version conditioned on both the draft and the original context.</li>
+          <li><em>Why.</em> Two advantages over conventional super-resolution: (a) regeneration reuses the entire generative capability of the base model instead of a narrower upsampling network, and (b) the multimodal context is available to condition the 2K pass, so small text, logos, and fine structure that a super-resolution network would have to hallucinate can be recovered from the original context.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Pre-training paradigm</h3>
+    <ul>
+      <li><em>Data and tasks.</em> Text-to-image, text-to-video with jointly generated audio (all audio output is native stereo), native multi-shot modeling, text-to-audio (no separation between voice, sound-effects, and music &mdash; jointly modeled), generalized reference and editing across image-to-image, image-to-video, audio-to-audio, and audio-video-to-audio-video.</li>
+      <li>The full task family is <em>built entirely from real, natural data</em> with reference/editing relationships expressed through natural language rather than fixed enumerations &mdash; the point being that language (or intelligence structure, broadly) is the generalization bridge.</li>
+      <li><em>Architecture-level pre-training principle.</em> Fuse diverse data types and tasks as early as possible in training; the mixing ratio is the key knob. MiniMax repeats this claim once for architecture design and once for training strategy in the blog, which reads as a deliberate emphasis: the mixing ratio, not the raw amount of data per task, is what governed generalization.</li>
+    </ul>
+
+    <h3>Availability, pricing, and open weights</h3>
+    <ul>
+      <li><strong>Hosted API (live 2026-07-31).</strong> MiniMax Platform API model ID <code>MiniMax-H3</code>. Also live in the consumer <em>Hailuo AI</em> app.</li>
+      <li><strong>Pricing.</strong> At 2K default output, per-second price is <em>less than one third</em> of mainstream video models; at 768p, less than half the price of mainstream 720p. MiniMax does not publish a numeric per-second price in the launch blog.</li>
+      <li><strong>Output surface.</strong> 2K resolution as the default. Duration: 4&ndash;15 seconds, integer values only. Native stereo audio produced jointly with the video.</li>
+      <li><strong>Open weights (2026-08-03).</strong> Released under the <em>MiniMax H3 Community License Agreement</em>. Hardware-compatibility optimization was in scope from the earliest stages of H3&rsquo;s design, per MiniMax, so the checkpoint is expected to be more portable across AI-hardware backends than the prior closed Hailuo checkpoints. Coverage: <a href="https://huggingface.co/blog/ResterChed/minimax-h3-hailuo-3-0">Hugging Face community write-up (ResterChed, 2026-08-01)</a>.</li>
+    </ul>
+
+    <h3>Evaluation and limitations</h3>
+    <ul>
+      <li>MiniMax does not publish a formal benchmark table in this launch (the full <em>H3 Technical Report</em> is promised soon). Qualitatively, the blog highlights three outputs: an omni-context regeneration example (Hitchcock camera-move video + reference image + reference audio &rarr; new video), a native-2K performance clip, and a native-stereo-sound clip. Applications targeted: film opening titles, product-website animation, animated posters, advertising and e-commerce shots.</li>
+      <li>Stated limitations and next-generation priorities: (a) further integrate the M-series multimodal-understanding capabilities into H3&rsquo;s language grounding; (b) scale H3&rsquo;s model size (current size unpublished); (c) improve visual fidelity and push toward higher resolutions.</li>
+      <li><em>Compliance risk flagged externally.</em> Third-party coverage (<a href="https://www.techtimes.com/articles/322521/20260731/minimax-h3-opens-ai-video-developers-copyright-lawsuit-clouds-every-clip.htm">TechTimes, 2026-07-31</a>) notes an active copyright lawsuit against MiniMax at launch time. This is not a technical limitation of the model but is material to production adoption &mdash; developers integrating H3 should track the litigation.</li>
+    </ul>
+
+    <h1 id="thinking-machines-lab">Thinking Machines Lab</h1>
+
+    <h2 id="inkling-small"><a href="https://thinkingmachines.ai/news/inkling-small/">Inkling-Small: A Quarter-Size Open-Weight MoE That Surpasses Its Teacher on Reasoning and Agentic Coding</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch (blog + model card + weights)</span>
+      <span>Thinking Machines Lab blog</span>
+      <span>2026-07-30</span>
+      <span>Open-weight MoE &middot; Hybrid attention &middot; On-policy distillation &middot; Multimodal &middot; Apache 2.0</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Thinking Machines Lab releases <strong>Inkling-Small</strong>, the second entry in the Inkling family, following the June 2026 flagship <em>Inkling</em> (975B total / 41B active). Inkling-Small is a <code>276B</code>-total, <code>12B</code>-active sparse MoE that matches Inkling on aggregate benchmarks at roughly one quarter of the size &mdash; and surpasses Inkling on reasoning and agentic coding. The launch blog was posted 2026-07-30; the checkpoint moved into broad availability (Hugging Face + Tinker Playground) through 2026-08-02 with wide external coverage (<a href="https://www.marktechpost.com/2026/08/02/thinking-machines-lab-releases-inkling-small-276b-open-weights-multimodal-moe-model/">MarkTechPost</a>, <a href="https://venturebeat.com/technology/thinking-machines-debuts-inkling-small-open-source-ai-model-nearing-performance-of-predecessor-at-about-1-4-size">VentureBeat</a>, <a href="https://huggingface.co/blog/thinkingmachines-inkling">HF blog</a>).</li>
+      <li><em>What ships.</em> Full open weights on Hugging Face at <a href="https://huggingface.co/thinkingmachines/Inkling-Small">thinkingmachines/Inkling-Small</a> (BF16 checkpoint) and <a href="https://huggingface.co/thinkingmachines/Inkling-Small-NVFP4">thinkingmachines/Inkling-Small-NVFP4</a> (NVFP4 quantized), both under <em>Apache 2.0</em>. Fine-tuning available on <a href="https://tinker.thinkingmachines.ai/playground?utm_source=blog&utm_campaign=inkling_small_model_release">Tinker Playground</a> with text / image / audio chat; API through the same fine-tuning platform and third-party inference partners.</li>
+      <li>Named contributions receiving a mechanism explanation below: <em>Hybrid local/global sparse-MoE with per-token expert routing</em>, <em>Natively multimodal encoder-free architecture</em>, <em>Variable thinking effort with continuous compute&harr;quality trade-off</em>, and <em>On-policy distillation from the Inkling teacher</em>. Also documented but not receiving a full mechanism explanation: <em>RL against proper scoring rules for calibrated forecasting</em>, and <em>The FORTRESS/StrongREJECT safety recipe inherited from Inkling</em>.</li>
+    </ul>
+
+    <figure>
+      <img src="https://thinkingmachines.ai/news/inkling-small/images/cover-social-inkling-small-post.png" alt="Inkling-Small launch cover art" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Cover image (from the Inkling-Small launch blog). Inkling-Small at 276B total / 12B active shipped side-by-side with the 975B / 41B-active Inkling teacher.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Model type.</strong> Multimodal autoregressive decoder-only transformer, 42 layers deep, sparse Mixture-of-Experts feed-forward backbone. Numerics: BF16, MXFP8, and NVFP4 all supported.</li>
+      <li><strong>Parameters.</strong> 276B total, 12B active per token. Compared with the Inkling teacher (975B total, 41B active), Inkling-Small is <code>3.5&times;</code> smaller in total parameters and <code>3.4&times;</code> smaller in active parameters per token.</li>
+      <li><strong>Named contribution &mdash; Hybrid local/global sparse-MoE with per-token expert routing.</strong>
+        <ul>
+          <li><em>Problem.</em> A dense 12B-active model in this weight class cannot match Inkling on reasoning. A pure MoE with global attention across a 1M-token context is prohibitively expensive to serve. Both approaches trade off the axis (compute at long context, or capability at scale) the model needs to hold.</li>
+          <li><em>Mechanism.</em> Two design choices interlock. On the feed-forward path, each token is routed to <em>6 of 256 experts</em>, plus <em>2 shared experts</em> that fire on every token &mdash; per-token capacity of <code>8/256</code> experts with a guaranteed shared floor. On the attention path, layers alternate between <em>local</em> and <em>global</em> attention windows. The hybrid routing keeps the 12B-active budget while giving every token access to a large expert pool and mixed local/global receptive fields.</li>
+          <li><em>Why.</em> The shared experts protect base capabilities regardless of routing decisions; the 6/256 sparse routing amortizes specialization across many domains without inflating active parameters. Alternating local/global attention brings context-scaling closer to linear time in most layers, so 1M-token context stays affordable on 4&times;B300 (BF16) or a single B300 (NVFP4). This is a more granular routing scheme than the interleaved Mamba+attention hybrids that shipped in Jamba / Nemotron and preserves softmax attention where it matters for retrieval.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Natively multimodal encoder-free architecture.</strong>
+        <ul>
+          <li><em>Problem.</em> Bolt-on multimodal encoders (CLIP-style image encoder + Whisper-style audio encoder + LLM decoder) leak representations at the encoder boundary and cap image / audio reasoning at whatever the frozen encoder could see.</li>
+          <li><em>Mechanism.</em> Inkling-Small reuses Inkling&rsquo;s <em>encoder-free</em> multimodal frontend. Audio is represented as <em>dMel</em> spectrograms (compressed Mel features). Images are divided into <em>40&times;40-pixel patches</em> and transformed through a shallow <em>four-layer hMLP</em>. Both are projected through a lightweight embedding layer into the decoder&rsquo;s hidden space, then processed jointly with text tokens by the same 42-layer decoder. There is no separate image or audio encoder network.</li>
+          <li><em>Why.</em> Every layer of the decoder sees image and audio tokens at full fidelity, so multi-modal reasoning is done by the model&rsquo;s full parameter count rather than being funneled through a frozen encoder&rsquo;s bottleneck. Improves over CLIP-encoder + LLM setups on multimodal reasoning benchmarks (Charxiv RQ <code>77.4</code> / <code>81.3%</code> with Python, MMMU Pro <code>74.0%</code>) where encoder fidelity matters.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Variable thinking effort with continuous compute&harr;quality trade-off.</strong>
+        <ul>
+          <li><em>Problem.</em> Reasoning models expose one or two discrete &ldquo;thinking budgets&rdquo; (e.g. GPT-o1 <em>low / medium / high</em>), which forces users to jump between compute tiers even when their task sits between them.</li>
+          <li><em>Mechanism.</em> Inkling-Small exposes reasoning effort as a continuous knob across five preset levels &mdash; <code>minimal</code>, <code>low</code>, <code>medium</code>, <code>high</code>, <code>xhigh</code>. Sweeping it traces the model&rsquo;s Pareto curve on Terminal-Bench 2.1, HLE text-only, and IFBench directly: output TFLOPs per task and output-token cost both scale monotonically with effort, and Inkling-Small&rsquo;s curve is Pareto-competitive with other open-weight models in its size class.</li>
+          <li><em>Why.</em> A continuous effort dial lets users pick their operating point on a real, published cost curve instead of guessing which tier their task fits. Empirically, Inkling-Small&rsquo;s test-time compute curves sit <em>above</em> Inkling&rsquo;s throughout on HLE, meaning at every reasoning budget the smaller model dominates the larger one on that axis &mdash; the on-policy distillation transferred more than aggregate capability, it transferred a tighter compute&harr;quality tradeoff.</li>
+        </ul>
+      </li>
+      <li><strong>Context.</strong> 1M-token context window (parity with Inkling), text plus image plus audio input, text output only.</li>
+    </ul>
+
+    <h3>Pre-training and training data</h3>
+    <ul>
+      <li><em>Data types.</em> Text, images, audio, video.</li>
+      <li><em>Provenance.</em> Publicly available web + repositories, third-party licensed data, and synthetically generated or augmented data. Curation includes deduplication, junk / low-quality filtering, and safety-oriented filters, applied per data type.</li>
+      <li>Inkling-Small began training after Inkling, which let the team iterate on the pre-training data mix and the machine-learning recipe for the smaller model &mdash; this iteration is what shows up in the reasoning & agentic-coding win over the teacher.</li>
+    </ul>
+
+    <h3>Post-training and distillation</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; On-policy distillation from the Inkling teacher.</strong>
+        <ul>
+          <li><em>Problem.</em> Standard offline distillation trains the student on the teacher&rsquo;s outputs collected once, then optimizes cross-entropy against them. That leaves the student poorly matched to its <em>own</em> rollout distribution &mdash; on RL-heavy skills like tool use and reasoning, off-policy KL to a teacher trace is a weak signal for the trajectories the student actually samples.</li>
+          <li><em>Mechanism.</em> Thinking Machines Lab post-trained an earlier checkpoint &mdash; the <em>Inkling-Small (preview)</em> released with the June 2026 flagship &mdash; in part using <em>on-policy distillation</em> with Inkling as the teacher: the student generates its own rollouts, Inkling scores/labels them, and the student is updated on its own trajectories with Inkling&rsquo;s signal. From that checkpoint, agentic-coding RL was scaled for a further two weeks.</li>
+          <li><em>Why.</em> The student learns the teacher&rsquo;s judgment <em>on the student&rsquo;s own action distribution</em>, which is what matters for agentic and reasoning benchmarks. Two consequences fall out: (a) Inkling-Small beats Inkling on HLE text-only (<code>31.6%</code> vs <code>29.7%</code>) and SWE-Bench Verified (<code>80.2%</code> vs <code>77.6%</code>) at a quarter of the parameters &mdash; the smaller student out-runs its teacher on the axes that were trained on-policy, while Inkling retains its edge on knowledge/factuality (SimpleQA Verified <code>43.9%</code> vs Inkling-Small&rsquo;s <code>20.6%</code>) &mdash; a domain that on-policy distillation does not help.</li>
+        </ul>
+      </li>
+      <li><em>Calibration and epistemics.</em> Same recipe as Inkling: RL against proper scoring rules on a large real-world forecasting corpus, so the model learns to express calibrated confidence under uncertainty. On ForecastBench (no search), Inkling-Small scores <code>61.3 &plusmn; 0.46</code> Brier Index, edging both Inkling (<code>60.1</code>), Grok 4.3 (<code>60.9</code>) and Claude Opus 4.8 (<code>56.2</code>).</li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>All benchmarks run at reasoning effort <code>0.99</code> and temperature <code>1.0</code>; coding evals run under a 256K max-token trajectory limit. External scores are sourced from Artificial Analysis, Scale AI, ARC Prize, Forecasting Research Institute, and Prophet Arena where available.</li>
+      <li><strong>Headline result:</strong> at 12B active parameters and Apache-2.0 license, Inkling-Small matches or beats every other open-weight model in its size class on <em>agentic coding, reasoning, and abstract reasoning</em>, while trailing on factuality.</li>
+    </ul>
+    <table>
+      <thead>
+        <tr>
+          <th>Benchmark</th>
+          <th>Inkling-Small (12B/276B)</th>
+          <th>Inkling (41B/975B)</th>
+          <th>DeepSeek V4 Flash (13B/284B)</th>
+          <th>Qwen3.5-397B-A17B</th>
+          <th>Nemotron 3 Ultra (55B/550B)</th>
+          <th>GPT&#8209;5.6 Luna</th>
+          <th>Gemini 3.5 Flash-Lite</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>AA Index v4.1</td><td>40.0%</td><td>41.0%</td><td>40.0%</td><td>34.0%</td><td>38.0%</td><td><strong>49.0%</strong></td><td>36.0%</td></tr>
+        <tr><td>SWE-Bench Verified</td><td><strong>80.2%</strong></td><td>77.6%</td><td>79.0%</td><td>76.4%</td><td>70.7%</td><td>93.0%</td><td>75.0%</td></tr>
+        <tr><td>SWE-Bench Pro (public)</td><td>55.9%</td><td>54.3%</td><td>52.6%</td><td>50.9%</td><td>46.4%</td><td>62.7%</td><td>54.2%</td></tr>
+        <tr><td>Terminal-Bench 2.1 (best harness)</td><td><strong>64.7%</strong></td><td>63.8%</td><td>61.8%</td><td>51.3%</td><td>56.4%</td><td>82.5%</td><td>54.0%</td></tr>
+        <tr><td>SciCode</td><td><strong>48.7%</strong></td><td>46.1%</td><td>44.9%</td><td>42.0%</td><td>39.9%</td><td>50.0%</td><td>40.9%</td></tr>
+        <tr><td>GDPval-AA v2 (Elo)</td><td>1269</td><td>1238</td><td>1189</td><td>962</td><td>1164</td><td>1530</td><td>1139</td></tr>
+        <tr><td>MCP Atlas (public / all)</td><td>79.6 / 79.2%</td><td>78.8 / 76.0%</td><td>69.0% / &mdash;</td><td>74.2% / &mdash;</td><td>47.4 / 44.7%</td><td>77.0 / 75.0%</td><td>79.8 / 76.8%</td></tr>
+        <tr><td>Toolathlon Verified</td><td>54.4%</td><td>45.5%</td><td>50.9%</td><td>40.7%</td><td>34.3%</td><td>67.9%</td><td>57.1%</td></tr>
+        <tr><td>GPQA Diamond</td><td><strong>89.5%</strong></td><td>87.2%</td><td>89.4%</td><td>89.3%</td><td>86.7%</td><td>89.5%</td><td>83.8%</td></tr>
+        <tr><td>HLE text-only</td><td><strong>31.6%</strong></td><td>29.7%</td><td>32.1%</td><td>27.3%</td><td>26.6%</td><td>35.6%</td><td>17.5%</td></tr>
+        <tr><td>HLE with tools</td><td>47.8%</td><td>46.0%</td><td>45.1%</td><td>48.3%</td><td>37.4%</td><td>48.9%</td><td>42.5%</td></tr>
+        <tr><td>AIME 2026</td><td>95.5%</td><td>97.1%</td><td>95.8%</td><td>93.3%</td><td>94.2%</td><td>97.6%</td><td>82.2%</td></tr>
+        <tr><td>HMMT Feb 2026</td><td>90.2%</td><td>86.3%</td><td>93.9%</td><td>87.9%</td><td>78.8%</td><td>98.5%</td><td>63.6%</td></tr>
+        <tr><td>CritPt</td><td><strong>8.3%</strong></td><td>5.4%</td><td>7.1%</td><td>1.7%</td><td>3.1%</td><td>20.6%</td><td>0.0%</td></tr>
+        <tr><td>ARC-AGI-1</td><td><strong>84.0%</strong></td><td>79.5%</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>87.7%</td><td>&mdash;</td></tr>
+        <tr><td>ARC-AGI-2</td><td><strong>40.1%</strong></td><td>36.5%</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>47.6%</td><td>&mdash;</td></tr>
+        <tr><td>SimpleQA Verified</td><td>20.6%</td><td>43.9%</td><td>34.1%</td><td>26.0%</td><td>32.4%</td><td>41.7%</td><td>44.1%</td></tr>
+        <tr><td>IFBench</td><td><strong>82.2%</strong></td><td>79.8%</td><td>79.2%</td><td>78.8%</td><td>81.4%</td><td>67.3%</td><td>78.6%</td></tr>
+        <tr><td>Global-MMLU-Lite</td><td>86.7%</td><td>88.7%</td><td>88.4%</td><td>90.0%</td><td>85.6%</td><td>88.7%</td><td>89.4%</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Where Inkling-Small beats Inkling:</strong> agentic coding (SWE-Bench Verified <code>80.2%</code> vs <code>77.6%</code>; SWE-Bench Pro <code>55.9%</code> vs <code>54.3%</code>; Terminal-Bench 2.1 <code>64.7%</code> vs <code>63.8%</code>; SciCode <code>48.7%</code> vs <code>46.1%</code>), reasoning (HLE text-only <code>31.6%</code> vs <code>29.7%</code>; CritPt <code>8.3%</code> vs <code>5.4%</code>), abstract reasoning (ARC-AGI-1 <code>84.0%</code> vs <code>79.5%</code>; ARC-AGI-2 <code>40.1%</code> vs <code>36.5%</code>), instruction following (IFBench <code>82.2%</code> vs <code>79.8%</code>), and general Elo (GDPval-AA v2 <code>1269</code> vs <code>1238</code>). This is a smaller student <em>beating</em> its own teacher on the axes on-policy distillation and continued RL were pointed at.</li>
+      <li><strong>Where Inkling retains the edge:</strong> factuality (SimpleQA Verified <code>43.9%</code> vs <code>20.6%</code>; AA Omniscience <code>+2.1</code> vs <code>-9.0</code>), pure math ceiling (AIME 2026 <code>97.1%</code> vs <code>95.5%</code>), multilingual chat (Global-MMLU-Lite <code>88.7%</code> vs <code>86.7%</code>). These are knowledge-coverage-limited axes where the smaller parameter budget is the binding constraint.</li>
+      <li><strong>Multimodal.</strong> Vision: MMMU Pro Standard 10 <code>74.0%</code> (vs Inkling <code>73.5%</code>, Gemini 3.5 Flash-Lite <code>79.0%</code>, GPT&#8209;5.6 Luna <code>78.6%</code>); Charxiv RQ <code>77.4 / 81.3%</code> with Python (vs Inkling <code>78.1 / 82.0%</code>). Audio: Audio MC <code>54.9%</code> (vs Inkling <code>56.6%</code>); MMAU <code>77.0%</code> (vs <code>77.2%</code>); VoiceBench <code>90.1%</code> (vs <code>91.4%</code>). Inkling-Small nearly matches Inkling across multimodal at a fraction of the cost.</li>
+      <li><strong>Forecasting / calibration.</strong> ForecastBench (no search) Brier Index <code>61.3 &plusmn; 0.46</code> vs Inkling <code>60.1 &plusmn; 0.54</code>, Kimi K2.6 <code>58.8</code>, GPT&#8209;5.5 <code>59.3</code>, Claude Opus 4.8 <code>56.2</code>, Gemini 3.1 Pro <code>60.6</code>, Grok 4.3 <code>60.9</code>. Inkling-Small posts the best <em>no-search</em> ForecastBench Brier Index in the compared set. With search, GPT-5.5 leads at <code>64.3 &plusmn; 0.79</code>.</li>
+    </ul>
+
+    <h3>Ablations and efficiency</h3>
+    <ul>
+      <li>The published Pareto curves (see &ldquo;Variable thinking effort&rdquo; above) plot Inkling-Small vs. Inkling under a full sweep of reasoning effort (<code>minimal</code>&harr;<code>xhigh</code>) on Terminal-Bench 2.1, HLE text-only, and IFBench, along the axes of output TFLOPs per task and estimated output cost. Inkling-Small&rsquo;s curves sit consistently above Inkling&rsquo;s on Terminal-Bench 2.1 and HLE, meaning at every compute budget the smaller model is Pareto-dominant on those two benchmarks. On IFBench, Inkling-Small edges Inkling at all effort levels above <code>medium</code>.</li>
+      <li>Token efficiency on agentic tasks: <code>GDPval-AA v2</code> reports Inkling-Small at 1269 Elo using 23K output tokens per task; Inkling at 1238 using 28.6K &mdash; the smaller model gets a higher Elo with 5.6K fewer output tokens per task, a <code>~19%</code> reduction. <code>&tau;<sup>3</sup>-Banking</code> flips the sign: Inkling-Small 15.5% / 5.1K tokens vs Inkling 23.7% / 8.4K tokens &mdash; the teacher wins with more tokens spent per task. Inkling-Small&rsquo;s edge is in agentic and reasoning benchmarks where output-token efficiency compounds; on complex multi-turn tool-use (τ<sup>3</sup>-Banking) the teacher&rsquo;s knowledge advantage still wins.</li>
+    </ul>
+
+    <h3>Safety and limitations</h3>
+    <ul>
+      <li>Inkling-Small inherits Inkling&rsquo;s full safety post-training recipe: internal spec of safety covering everyday human-AI interactions <em>and</em> dual-use CBRN / cyber capabilities, plus refusal-suppressed variants used to estimate latent capability with safeguards removed. Pre-deployment testing included multi-turn external red-teaming targeting sycophancy, harmful manipulation, and parasocial-dependency / delusion-validation failure modes.</li>
+      <li>Reported safety numbers (higher is better throughout): <em>StrongREJECT</em> <code>98.4%</code> (parity with Inkling <code>98.6%</code>); <em>FORTRESS adversarial</em> <code>71.6%</code> (Inkling <code>78.0%</code>); <em>FORTRESS benign</em> <code>96.9%</code> (Inkling <code>95.9%</code>). The FORTRESS adversarial regression is the largest gap in the safety suite &mdash; smaller models tend to lose more ground on adversarially framed dual-use prompts.</li>
+      <li>Loss-of-control assessment: agentic capability, strategic deception, and sabotage potential were benchmarked against public frontier models; Inkling-Small was found materially below the frontier on those axes. TML concluded no material uplift beyond what is already available in the open-weight ecosystem.</li>
+      <li>Residual risks flagged by TML: occasional compliance with role-play and indirectly-framed prompts on harmful topics &mdash; consistent with any open-weight release, and best addressed with a defense-in-depth layer (Llama Guard or similar) around the model, not by relying on refusals alone.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li><strong>Release date:</strong> 2026-07-30, publicized broadly through 2026-08-02. <strong>License:</strong> Apache 2.0.</li>
+      <li><strong>Weights:</strong> <a href="https://huggingface.co/thinkingmachines/Inkling-Small">Inkling-Small BF16</a> and <a href="https://huggingface.co/thinkingmachines/Inkling-Small-NVFP4">Inkling-Small NVFP4</a> on Hugging Face.</li>
+      <li><strong>Hardware requirements.</strong> BF16 checkpoint needs &ge; 600 GB aggregated VRAM &mdash; 4&times;NVIDIA B300 or 8&times;NVIDIA H200. NVFP4 W4A4 runs on <em>a single B300</em> (SM100+ required) and NVFP4 W4A16 runs on 2&times;H200; both configurations bring aggregated VRAM down to <code>180 GB</code>.</li>
+      <li><strong>Software.</strong> SGLang, vLLM, TokenSpeed, Unsloth, or Hugging Face Transformers &mdash; the model runs through any of the mainstream open-weight inference engines.</li>
+      <li><strong>Managed access:</strong> Tinker fine-tuning platform (limited-time discount on Inkling / Inkling-Small); Tinker Playground for text / image / audio chat; third-party inference providers.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
