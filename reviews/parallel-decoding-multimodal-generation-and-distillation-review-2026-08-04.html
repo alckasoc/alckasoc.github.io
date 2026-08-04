@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Parallel Decoding, Multimodal Generation, and Distillation Review &mdash; August 4, 2026 | Auto Lit Review</title>
+<meta name="description" content="Google DeepMind posts the DiffusionGemma Technical Report — a discrete-diffusion fine-tune of the Gemma 4 MoE that decodes 256 tokens per pass at ~1500 tokens/sec on one H100 — while ByteDance releases SwanTale (multi-speaker speech + audio with SwanVAE and Unified-MoE) and Alibaba, Shanghai AI Lab, and Shanghai AI Lab again ship UEmbed (unified sparse+dense multimodal embeddings), SKT (verified skill-use trajectory synthesis), and DAPD (fixing the privilege illusion in on-policy self-distillation)." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 4, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#alibaba" class="toc-h1">Alibaba</a>
+          <ul>
+            <li><a href="#uembed" class="toc-h2">UEmbed</a></li>
+          </ul>
+        </li>
+        <li><a href="#bytedance" class="toc-h1">ByteDance</a>
+          <ul>
+            <li><a href="#swantale" class="toc-h2">SwanTale</a></li>
+          </ul>
+        </li>
+        <li><a href="#google-deepmind" class="toc-h1">Google DeepMind</a>
+          <ul>
+            <li><a href="#diffusiongemma" class="toc-h2">DiffusionGemma Technical Report</a></li>
+          </ul>
+        </li>
+        <li><a href="#shanghai-ai-laboratory" class="toc-h1">Shanghai AI Laboratory</a>
+          <ul>
+            <li><a href="#skt" class="toc-h2">SKT</a></li>
+            <li><a href="#dapd" class="toc-h2">DAPD</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 4, 2026</div>
+    <h1 class="page-title">Parallel Decoding, Multimodal Generation, and Distillation</h1>
+    <div class="page-meta">5 papers &middot; 4 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>No new flagship model launches from any frontier lab in the 36-hour window, but five Tier 2 technical reports and research papers from Google DeepMind, ByteDance, Alibaba, and Shanghai AI Laboratory hit arXiv on 2026-08-03&nbsp;/&nbsp;2026-08-04 and cluster around three threads. <strong>Parallel decoding:</strong> Google DeepMind&rsquo;s <a href="https://arxiv.org/abs/2608.00146"><em>DiffusionGemma Technical Report</em></a> formalizes a discrete-diffusion fine-tune of the Gemma 4 <code>25.2B</code>-total / <code>3.8B</code>-active MoE that iteratively refines blocks of <code>256</code> tokens in parallel, retains multimodal input and thinking mode, and delivers roughly <code>1,500</code> output tokens per second on a single NVIDIA H100 &mdash; substantially faster than autoregressive Gemma 4 with speculative decoding &mdash; using fewer than <code>10%</code> of the base model&rsquo;s pre-training token budget. <strong>Multimodal generation and retrieval:</strong> ByteDance releases <a href="https://arxiv.org/abs/2608.02023"><em>SwanTale</em></a>, a multi-speaker expressive speech-and-audio generator with a purpose-built SwanVAE, Engram conditioning, and a Unified-MoE, trained with curriculum learning plus GRPO post-training; and Alibaba-NLP ships <a href="https://arxiv.org/abs/2608.02583"><em>UEmbed</em></a>, a decoder-only multimodal embedding model that appends <em>N</em> learnable special tokens and partitions the vocabulary into <em>N</em> disjoint subsets so that sparse and dense embeddings fall out of one causal forward pass. <strong>Post-training methods:</strong> Shanghai AI Laboratory publishes two papers &mdash; <a href="https://arxiv.org/abs/2608.02287"><em>SKT</em></a> synthesises <code>27,164</code> verified skill-use trajectories from <code>2,000</code> public agent skills and shows that supervised fine-tuning on them lifts skill-use across models and harnesses, while <a href="https://arxiv.org/abs/2608.01735"><em>DAPD</em></a> diagnoses a <em>privilege illusion</em> failure mode in on-policy self-distillation and proposes a dual-anchoring fix that adds <code>+2.00</code> average points over vanilla OPSD on Qwen3-4B and scales monotonically (<code>+2.69</code> at 4B, <code>+2.78</code> at 32B).</p>
+      <h3>Competitiveness</h3>
+      <p>DiffusionGemma is the day&rsquo;s most consequential artifact. It positions Google DeepMind as the first frontier lab to publish a full technical report on a <em>diffusion-fine-tuned open-weight LLM</em> that reaches native Gemma-4-class quality &mdash; roughly <code>1,500</code> tokens per second per H100 (about <code>20</code> tokens accepted per forward pass, block size <code>256</code>) at a compute cost under <code>10%</code> of the AR base pre-training budget, and while retaining thinking mode, multimodal input, and long context. That is the first credible open-weight rebuttal to closed-frontier throughput advantages such as OpenAI&rsquo;s speculative-decoding-driven <code>&gt;15%</code> serving-cost cuts on GPT&#8209;5.6 Luna disclosed in Sarah Friar&rsquo;s <em>Building abundant intelligence</em> essay (covered in the 2026-08-02 review); it also generalizes the Gemma-4 <a href="https://huggingface.co/google/diffusiongemma-26B-A4B-it">DiffusionGemma 26B/A4B checkpoint</a> that shipped in June 2026 as a preview into a documented, reproducible recipe. SwanTale posts &ldquo;best expressiveness in both instruct and zero-shot&rdquo; on its own SwanBench-Audio suite &mdash; taking the lead ByteDance&rsquo;s SwanVoice (May 2026) held in the monologue/dialogue TTS setting and extending it to full audio-scene generation. UEmbed-9B hits <code>71.8</code> dense and <code>71.0</code> sparse on MMEB-v2 &mdash; the first decoder-only unified sparse+dense multimodal retriever trained on entirely public data to beat RzenEmbed and remain competitive on BEIR. On post-training, SKT and DAPD both quantify the deltas one recipe change gets you: verified skill-use trajectories consistently lift skill-use across harnesses without changing the base policy; dual-anchoring on-policy distillation eliminates a documented failure mode that plagues the recipe Inkling-Small used to surpass its teacher (covered in the 2026-08-03 review), suggesting the on-policy-distillation frontier still has closed-form gains left to extract.</p>
+      <h3>New frontier releases</h3>
+      <p>No new flagship model launches in the 36-hour window from any frontier lab. The day is Tier 2 only: <strong>Google DeepMind</strong>&rsquo;s <a href="https://arxiv.org/abs/2608.00146">DiffusionGemma Technical Report</a> (dated 2026-07-31, submitted to arXiv on 2026-08-04) &mdash; the report describes the <a href="https://huggingface.co/google/diffusiongemma-26B-A4B-it">DiffusionGemma 26B-A4B-it</a> open-weight checkpoint shipped in June under the standard Gemma license and provides the full training recipe. <strong>ByteDance</strong>&rsquo;s <a href="https://arxiv.org/abs/2608.02023">SwanTale</a> is posted 2026-08-03 with a project page at <a href="https://swanaigc.github.io/#swantale">SwanAIGC</a>. <strong>Alibaba-NLP</strong> ships <a href="https://arxiv.org/abs/2608.02583">UEmbed</a> alongside three open-weight checkpoints (<a href="https://huggingface.co/Alibaba-NLP/UEmbed-2B">UEmbed-2B</a>, UEmbed-4B, <a href="https://huggingface.co/Alibaba-NLP/UEmbed-9B">UEmbed-9B</a>) and a public GitHub repo. <strong>Shanghai AI Laboratory</strong> lands two research papers with open datasets: <a href="https://arxiv.org/abs/2608.02287">SKT</a> plus the <a href="https://huggingface.co/datasets/Artemis0430/skilleval-v1">SkillEval-v1</a> held-out benchmark, and <a href="https://arxiv.org/abs/2608.01735">DAPD</a>.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="uembed"><a href="https://arxiv.org/abs/2608.02583">UEmbed: Unified Sparse and Dense Multimodal Embeddings</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-03</span>
+      <span>Multimodal retrieval &middot; Decoder-only embedding &middot; Sparse + dense unification &middot; Open weights</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Tingyu Song, Mingxin Li, Yanzhao Zhang, Dingkun Long, Pengjun Xie, Zhijie Nie, Yilun Zhao, Shu Wu (Alibaba-NLP, Tongyi Lab &mdash; the Qwen team&rsquo;s embedding sibling org).</li>
+      <li>Positioning: Learned Sparse Retrieval (LSR) has so far been an encoder-only artifact (SPLADE lineage, bidirectional BERT-style backbones), and multimodal LSR extensions still bolt cross-modal encoders on top. UEmbed collapses the split by making a <em>decoder-only</em> multimodal LLM emit both a sparse lexical vector and a dense representation in one causal forward pass, on the same weights.</li>
+      <li>Ships three open-weight scales (<code>2B</code>, <code>4B</code>, <code>9B</code>), trained on entirely public data, plus a public GitHub repo. The 9B checkpoint reaches <code>71.8</code> dense / <code>71.0</code> sparse on MMEB-v2, beating public-data-trained baselines like RzenEmbed and remaining competitive with strong dense and sparse baselines on BEIR.</li>
+      <li>Named contribution receiving a mechanism explanation below: <em>N-token vocabulary-partition sparse readout on a causal decoder</em>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; N-token vocabulary-partition sparse readout.</strong>
+        <ul>
+          <li><em>Problem.</em> A decoder-only causal LM can naturally produce a dense embedding from the last token&rsquo;s hidden state, but sparse lexical retrieval needs a per-vocab-item score. Reading a full-vocab softmax off one hidden state at inference forces the model to compress every retrieval-relevant lexical signal into a single vector, which is what dense embeddings do and what LSR was supposed to avoid.</li>
+          <li><em>Mechanism.</em> UEmbed appends <em>N</em> learnable special tokens to the input sequence, and partitions the model&rsquo;s vocabulary into <em>N</em> disjoint subsets. Each of the <em>N</em> tokens&rsquo; causal hidden state predicts sparse weights <em>only</em> over its assigned vocabulary subset, and the <em>N</em> subsets are concatenated to reconstruct the full sparse vector. The dense embedding is read from an additional pooling of the same hidden states in the same forward pass.</li>
+          <li><em>Why.</em> The partition gives the model <em>N</em> different retrieval-conditioning contexts (one per special token) to specialize on different lexical slices, without needing multiple forward passes or a bidirectional readout head. That is what makes the sparse output <em>competitive</em> with the dense output on MMEB-v2 (<code>71.0</code> sparse vs <code>71.8</code> dense at 9B). Improves over encoder-only SPLADE-style LSR by removing the bidirectional-encoder dependency &mdash; the same decoder LLM used for generation can now serve retrieval directly &mdash; and over prior decoder-only embedding work by adding a real sparse signal alongside the dense one.</li>
+        </ul>
+      </li>
+      <li>Training data is entirely public. Modalities: text plus images, unified through the decoder&rsquo;s shared token space.</li>
+      <li>Sparse and dense embeddings are produced in a single causal forward pass, so serving cost per query is one LLM forward regardless of which retrieval mode the downstream stack picks.</li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li><strong>MMEB-v2</strong>: UEmbed-9B reaches <code>71.8</code> dense and <code>71.0</code> sparse. Publicly-data-trained multimodal embedding models (RzenEmbed cited as the direct comparator) are outperformed on both axes.</li>
+      <li><strong>BEIR</strong>: competitive with strong dense and sparse baselines. The paper frames this as demonstrating that unifying sparse+dense within one decoder does not sacrifice text-only retrieval quality.</li>
+      <li>Ablations and utility demonstrations are structured along three dimensions: <em>effectiveness</em> (retrieval quality), <em>efficiency</em> (one forward pass yields both signals), and <em>agentic applications</em> (the same embedding model can serve retrieval calls inside agent tool use without a separate embedding stack).</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Repository: <a href="https://github.com/Alibaba-NLP/UEmbed">Alibaba-NLP/UEmbed</a>. Model collection: <a href="https://huggingface.co/collections/Alibaba-NLP/uembed">UEmbed Collection</a>. Project page: <a href="https://alibaba-nlp.github.io/UEmbed/">alibaba-nlp.github.io/UEmbed/</a>.</li>
+    </ul>
+
+    <h1 id="bytedance">ByteDance</h1>
+
+    <h2 id="swantale"><a href="https://arxiv.org/abs/2608.02023">SwanTale: Unified Multi-Speaker Speech and Audio Generation for Instruct and Zero-Shot Tasks</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv (#1 HF Daily Paper 2026-08-04)</span>
+      <span>2026-08-03</span>
+      <span>Speech + audio generation &middot; Multi-speaker &middot; Unified MoE &middot; GRPO post-training</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Yu Zhang, Ruiqi Li, Changhao Pan, Ke Lei, Xiang Yin, Cheng Yang (ByteDance / SwanAIGC).</li>
+      <li>Third entry in ByteDance&rsquo;s SwanAIGC audio line, following <em>SwanVoice</em> (long-form zero-shot TTS for monologue and dialogue, May 2026) and <em>SwanBench-Speech</em>. SwanTale unifies the previously separate directions: expressive multi-speaker TTS, instruction-conditioned audio-scene generation (environments, effects), and voice reuse across sessions.</li>
+      <li>Two task families are trained jointly: an <em>instruct</em> task where the input is a caption describing environment, speaker styles, and fine-grained content, and a <em>zero-shot</em> task where the input is a reference audio clip plus the same fine-grained content. Both produce multi-speaker speech mixed with environmental audio in a single generation call.</li>
+      <li>Named contributions receiving mechanism explanations below: <em>SwanData-Caption</em> (multi-level caption annotation pipeline), <em>SwanVAE</em> (multi-audio-modality tokenizer), and <em>Unified-MoE with Engram conditioning + reward-conditioned quality control</em>. Also relevant: <em>curriculum learning + GRPO post-training</em>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; SwanData-Caption.</strong>
+        <ul>
+          <li><em>Problem.</em> Multi-speaker instruct-conditioned generation needs training samples annotated at multiple levels of description (per-speaker style, environment, dialogue-level content), but raw speech-and-audio corpora are annotated only at the utterance level or not at all, and the styles present in the wild are heavily biased toward clean single-speaker read speech.</li>
+          <li><em>Mechanism.</em> The pipeline cleans raw speech-and-audio data, adds targeted synthetic coverage for under-represented styles (rare environments, expressive multi-speaker acoustic scenes), and annotates each sample with diverse and accurate <em>multi-level captions</em> spanning speaker style, environment, and fine-grained content.</li>
+          <li><em>Why.</em> Multi-level captions are the training signal that lets one model handle both instruct and zero-shot tasks: instruct queries land at the caption level directly, and zero-shot queries use the fine-grained content field with the reference audio replacing the speaker/environment fields. Synthetic coverage fills the tails so that instruct queries on rare-style requests do not collapse to the corpus mode.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; SwanVAE.</strong>
+        <ul>
+          <li><em>Problem.</em> A single autoencoder tuned for speech loses fidelity on environmental audio (music, effects), and vice-versa; the SwanTale task family needs both, jointly, in one sequence.</li>
+          <li><em>Mechanism.</em> SwanVAE is a purpose-built VAE for multi-audio-modality generation, tokenizing speech, effects, and music with a single latent codebook geometry so downstream MoE layers can attend across modalities without a per-modality encoder switch.</li>
+          <li><em>Why.</em> A shared audio-tokenizer surface is what lets the Unified-MoE below train jointly on speech and audio tasks with one loss; earlier approaches used one tokenizer per audio modality and paid for it in cross-modal misalignment when the model had to mix, for example, environmental ambience under dialogue.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Unified-MoE with Engram conditioning and reward-conditioned quality control.</strong>
+        <ul>
+          <li><em>Problem.</em> Multi-task multi-modality audio training routinely collapses onto whichever task dominates the loss (usually plain TTS), because the model has no principled way to keep speaker-style memories separate from environmental cues.</li>
+          <li><em>Mechanism.</em> A single MoE backbone routes tokens across a set of experts shared across tasks, but incoming context is separated by <em>Engram conditioning</em> &mdash; a structured conditioning slot that carries reusable speaker/environment memories &mdash; and each generated segment is scored under <em>reward-conditioned quality control</em>, so the model can be sampled with an explicit target quality band at inference.</li>
+          <li><em>Why.</em> Engram slots keep multi-speaker identity persistent across long generations without leaking speaker features into environmental ones; reward-conditioning gives the deployment operator a knob at inference (accept lower quality for speed, or spend for cinematic quality) without needing a separate model per operating point.</li>
+        </ul>
+      </li>
+      <li><em>Training recipe.</em> Curriculum learning on the SwanData-Caption pipeline output progressively strengthens the model on each task family, followed by <em>GRPO post-training</em> on the same reward-conditioned quality objective &mdash; the same RL algorithm family Alibaba deploys for Qwen and MiniMax deploys for H3 finds another use here for perceptual audio quality.</li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>SwanTale leads on multiple key zero-shot and instruct metrics on the paper&rsquo;s own SwanBench audio suite, and posts best-in-set <em>expressiveness</em> scores in both instruct and zero-shot settings. The paper claims support for complex instruct generation involving multi-speaker speech and audio.</li>
+      <li>The paper does not publish comparison numbers against non-Swan-family baselines in the abstract; downstream evaluators will want the full table.</li>
+      <li>Demos: <a href="https://swanaigc.github.io/#swantale">swanaigc.github.io/#swantale</a>. HF community page: <a href="https://huggingface.co/papers/2608.02023">2608.02023</a>.</li>
+    </ul>
+
+    <h1 id="google-deepmind">Google DeepMind</h1>
+
+    <h2 id="diffusiongemma"><a href="https://arxiv.org/abs/2608.00146">DiffusionGemma Technical Report</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Technical Report</span>
+      <span>arXiv &middot; Google AI for Developers</span>
+      <span>2026-07-31 (arXiv) &middot; 2026-06-10 (checkpoint)</span>
+      <span>Discrete-diffusion LM &middot; Gemma 4 fine-tune &middot; Parallel decoding &middot; MoE &middot; Open weights</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: DiffusionGemma Team plus a full author list including Adrien Ali Ta&iuml;ga, James Assiene, Daniele Calandriello, Rahma Chaabouni, Jo&atilde;o Gante, Tamara von Glehn, Nate Keating, Chris Knutsen, Martin Kukla, Tianlin Liu, Ivan Lobov, Ofir Nabati, Jo&atilde;o Gabriel Oliveira, Nicolas Perez-Nieves, Nastasia Prutianova, Bobak Shahriari, Jean Tarbouriech, Pavel Tyletski, &Ccedil;a&#287;lar &Uuml;nl&uuml;, Cindy Wu, Glenn Cameron and 22 more (Google DeepMind).</li>
+      <li>The technical report formalizes the training recipe behind the <a href="https://huggingface.co/google/diffusiongemma-26B-A4B-it">DiffusionGemma 26B-A4B-it</a> open-weight checkpoint that shipped 2026-06-10 as vLLM&rsquo;s first natively-supported diffusion LLM (see the <a href="https://vllm.ai/blog/2026-06-10-diffusion-gemma">vLLM blog</a>). The checkpoint sits behind <a href="https://ai.google.dev/gemma/docs/diffusiongemma/model_card">Google&rsquo;s DiffusionGemma model card</a> and the marketing landing at <a href="https://deepmind.google/models/gemma/diffusiongemma/">deepmind.google/models/gemma/diffusiongemma/</a>. This is the first full public accounting of how DeepMind got there.</li>
+      <li>Named contributions receiving a mechanism explanation below: <em>Block-parallel discrete-diffusion fine-tune of an AR MoE</em>, <em>Two-stage SFT-then-RL-with-sampler-distillation training pipeline</em>, and <em>Hybrid AR&harr;diffusion preservation via the same weights</em>.</li>
+      <li>Framing consequence: DiffusionGemma is not trained from scratch; it is a fine-tune of the already-trained <em>Gemma 4</em> mixture-of-experts model (<code>25.2B</code> total / <code>3.8B</code> active), using fewer than <code>10%</code> of the base model&rsquo;s pre-training token budget. That budget scale is central to the paper&rsquo;s claim: converting an AR model to diffusion is roughly a fine-tune, not a rebuild.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Backbone.</strong> The already-trained Gemma 4 MoE, unchanged in weights topology &mdash; <code>25.2B</code> total, <code>3.8B</code> activated per token, thinking mode preserved, multimodal input preserved (text, image, video &rarr; text out), long context preserved.</li>
+      <li><strong>Decoding regime.</strong> Iterative parallel refinement of blocks of <code>256</code> tokens. Each forward pass takes a partially-noised block, denoises in one shot, and the block converges over a small number of steps; averaged across the evaluation suite, DiffusionGemma accepts roughly <code>20</code> tokens per forward pass. At throughput, that translates to about <code>1,500</code> output tokens per second on a single NVIDIA H100 &mdash; described in the paper as substantially faster than AR models even with state-of-the-art speculative decoding.</li>
+      <li><strong>Named contribution &mdash; Block-parallel discrete-diffusion fine-tune of an AR MoE.</strong>
+        <ul>
+          <li><em>Problem.</em> AR decoding&rsquo;s throughput floor is the sequential dependency: one token per forward pass, and even speculative decoding trades hits for a small multiplier. Training a diffusion LM from scratch to break that dependency costs a full pre-training run &mdash; unaffordable at the <code>25B</code>-total scale of Gemma 4.</li>
+          <li><em>Mechanism.</em> Instead of training from scratch, DeepMind fine-tunes the Gemma 4 MoE to <em>parallel discrete denoising</em>: the model no longer predicts the next token but iteratively refines a partially-noised block of <code>256</code> tokens, denoising in parallel until it converges. The training loss teaches the model bidirectional denoising over these blocks under masking rates that anneal during training.</li>
+          <li><em>Why.</em> This yields ~<code>20</code> accepted tokens per forward pass on average, and about <code>1,500</code> tokens per second per H100 &mdash; higher than what AR Gemma 4 achieves with state-of-the-art speculative decoding, at a fine-tune cost of <code>&lt;10%</code> of Gemma 4&rsquo;s original pre-training token budget. The whole thing is a Pareto move: for the same base capability, decode faster, and pay for it in fine-tune compute rather than pre-training compute. Improves over prior diffusion-LM efforts (Diffusion-of-Thoughts, SEDD, LLaDA) that started from scratch and could not reach Gemma-4-tier capability.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Two-stage SFT-then-RL-with-sampler-distillation training pipeline.</strong>
+        <ul>
+          <li><em>Problem.</em> SFT alone teaches the model to denoise, but does not push either the acceptance rate per pass or the quality of the accepted tokens; without a second stage the model would sit at a much lower operating point than the report advertises.</li>
+          <li><em>Mechanism.</em> Stage 1 is <em>supervised fine-tuning</em>: teach the model to reverse a masked-diffusion process on Gemma 4&rsquo;s own text distribution &mdash; the SFT signal is standard cross-entropy under the diffusion denoising objective. Stage 2 combines <em>reinforcement learning</em> on generation quality with <em>sampler distillation</em>, jointly improving output quality and reducing the number of denoising steps needed per block.</li>
+          <li><em>Why.</em> Stage 2 is what turns a diffusion-capable model into a fast one. Sampler distillation compresses the multi-step denoising trajectory into fewer steps without a quality collapse; the RL term on top ensures those fewer steps still land on high-quality outputs. Improves over one-shot SFT-only diffusion baselines that pay throughput to keep quality.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Hybrid AR&harr;diffusion preservation via the same weights.</strong>
+        <ul>
+          <li><em>Problem.</em> Fine-tuning any AR model on a very different objective normally destroys the AR behavior; you get a diffusion model that can no longer decode autoregressively when that mode is more efficient for short outputs.</li>
+          <li><em>Mechanism.</em> The DiffusionGemma weights <em>retain</em> the ability to do AR decoding with only minor performance degradation, alongside the new block-diffusion mode. There is no separate AR head or gate: the same forward pass supports both regimes at inference.</li>
+          <li><em>Why.</em> Real serving loads are heterogeneous: short chat turns benefit from AR&rsquo;s per-token latency, long structured outputs benefit from block-diffusion&rsquo;s throughput. Keeping both on the same weights means one deployed model checkpoint covers both, and opens a path to <em>hybrid diffusion-AR decoding</em> (the paper flags this direction explicitly) where different sections of a single response are decoded in whichever regime is cheaper for that section.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Training data and compute</h3>
+    <ul>
+      <li><em>Base model.</em> Gemma 4 MoE, already pre-trained.</li>
+      <li><em>Fine-tuning budget.</em> Under <code>10%</code> of Gemma 4&rsquo;s pre-training token budget. The report frames this specifically as evidence that AR-to-diffusion conversion is a fine-tune-scale operation, not a rebuild-scale one.</li>
+      <li><em>Retained capabilities.</em> Thinking mode, multimodal inputs (text, image, video), long context all carry through the fine-tune. The retained capabilities are one of the report&rsquo;s central claims: nothing about diffusion decoding forces you to give up any of them.</li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li><em>Throughput.</em> Roughly <code>1,500</code> output tokens per second on a single NVIDIA H100 GPU, averaged across the paper&rsquo;s full evaluation suite. Approximately <code>20</code> tokens accepted per forward pass on the same average.</li>
+      <li><em>Quality.</em> Establishes a new Pareto frontier on the trade-off between generation speed and model capability. The abstract does not quote per-benchmark deltas, but positions the model as competitive with the AR Gemma 4 baseline on standard evaluations while decoding substantially faster. The <a href="https://ai.google.dev/gemma/docs/diffusiongemma/model_card">Google model card</a> reports that DiffusionGemma significantly outperforms Gemma 3 and 3n on the internal safety suite while keeping unjustified refusals low &mdash; the diffusion fine-tune did not regress safety.</li>
+      <li><em>Preservation of AR mode.</em> AR generation from the same weights sees only minor degradation, per the report; this is what makes the hybrid path feasible.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li><strong>Open weights.</strong> <a href="https://huggingface.co/google/diffusiongemma-26B-A4B-it">google/diffusiongemma-26B-A4B-it</a> on Hugging Face under the Gemma license.</li>
+      <li><strong>Serving.</strong> First diffusion LLM with native <a href="https://vllm.ai/blog/2026-06-10-diffusion-gemma">vLLM support</a> (June 2026); this arXiv report supplies the training methodology.</li>
+      <li><strong>Docs.</strong> <a href="https://ai.google.dev/gemma/docs/diffusiongemma/model_card">Google AI for Developers model card</a>, <a href="https://deepmind.google/models/gemma/diffusiongemma/">DeepMind model page</a>, <a href="https://diffusiongemma.org/">diffusiongemma.org</a> hosted try-it.</li>
+    </ul>
+
+    <h1 id="shanghai-ai-laboratory">Shanghai AI Laboratory</h1>
+
+    <h2 id="skt"><a href="https://arxiv.org/abs/2608.02287">SKT: Skill-Use Training at Scale via Verified Synthetic Data Generation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-03</span>
+      <span>Agent skills &middot; Synthetic trajectory generation &middot; Verified data &middot; Skill-use SFT</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Zelin Tan, Yiqun Zhang, Hao Li, Zhiyao Cui, Hejia Geng, Shao Zhang, Hangfan Zhang, Yang Chen, Xiaosong Wang, Lilong Wang, Zhenfei Yin, Shuyue Hu, Chen Zhang, Lei Bai (Shanghai AI Laboratory).</li>
+      <li>Framing: shipping a library of agent skills to a base model is not sufficient &mdash; the model still needs to <em>identify</em>, <em>apply</em>, and <em>coordinate</em> those skills to solve a task. SKT is a verified synthetic-data pipeline that closes that gap by turning a collection of skills into supervised trajectories the base model can learn from.</li>
+      <li>Named contribution receiving a mechanism explanation below: <em>Verified, multi-stage skill-grounded trajectory synthesis pipeline</em>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Verified, multi-stage skill-grounded trajectory synthesis pipeline.</strong>
+        <ul>
+          <li><em>Problem.</em> Prior skill-use datasets are either scraped web trajectories (noisy and not skill-grounded) or single-skill demonstrations that never exercise multi-skill coordination. Neither trains the model to reliably identify which skill to invoke for a real task, and rejection sampling on rollouts throws away most of the compute spent.</li>
+          <li><em>Mechanism.</em> The pipeline runs in three phases. (1) <em>Skill-configuration selection.</em> Given a pool of agent skills, SKT selects both single-skill and multi-skill configurations that are compositionally reachable. (2) <em>Task synthesis with dual verification.</em> Tasks are generated for each configuration and passed through both rule-based and agent-based verification, with feedback-guided repair for tasks that fail either check. (3) <em>Trajectory generation with skill-substantive filter.</em> Trajectories are rolled out against the tasks; SKT retains only successful trajectories that <em>substantially use every required skill</em> &mdash; a coverage filter, not just a success filter.</li>
+          <li><em>Why.</em> The verifier is what makes the synthesis <em>scale to millions of trajectories without collapsing quality</em>: rule-based + agent-based cross-checking catches the two failure modes rule-only checkers miss (semantic drift) and agent-only checkers miss (spec violations). The coverage filter is what makes the resulting SFT signal actually train skill use, not just task completion &mdash; without it, models learn to solve tasks in whatever way avoids invoking the intended skills.</li>
+        </ul>
+      </li>
+      <li><em>Scale.</em> From <code>2,000</code> public agent skills, SKT produces <code>4,000</code> task packages and <code>27,164</code> verified trajectories. A disjoint held-out skill pool feeds a separate benchmark: <em>SkillEval</em>, released at <a href="https://huggingface.co/datasets/Artemis0430/skilleval-v1">Artemis0430/skilleval-v1</a>.</li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li><em>Main SFT result.</em> Supervised fine-tuning on SKT-generated trajectories consistently improves skill-use performance across diverse base models, benchmarks, and agent harnesses. The improvements hold across model families &mdash; SKT is a data recipe, not a model.</li>
+      <li><em>Verification ablation.</em> Removing either the rule-based or the agent-based verifier degrades trajectory quality; both are needed. This is what makes the resulting SFT actually work.</li>
+      <li><em>Cross-harness evaluation.</em> Gains transfer across agent interfaces, not just the harness the trajectories were synthesized under &mdash; skill-use skills learned this way are portable.</li>
+      <li><em>Scaling.</em> Skill-use performance increases with broader skill coverage in the synthesis pool, indicating the pipeline is not saturated at <code>2,000</code> skills.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Removing verified filtering degrades the trained model&rsquo;s skill-use rate materially; the &ldquo;successful trajectory + substantive skill use&rdquo; conjunction is doing real work.</li>
+      <li>The paper positions verified synthetic data as an effective and scalable substitute for human-annotated skill-use traces &mdash; the human bottleneck is what makes prior skill-use SFT expensive to scale.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Held-out benchmark: <a href="https://huggingface.co/datasets/Artemis0430/skilleval-v1">SkillEval-v1</a>. Built with the same SKT pipeline on a disjoint skill pool so scores are directly comparable across models.</li>
+    </ul>
+
+    <h2 id="dapd"><a href="https://arxiv.org/abs/2608.01735">DAPD: Dual-Anchored Policy Distillation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-03</span>
+      <span>On-policy distillation &middot; Post-training &middot; Privilege illusion &middot; Qwen3 fine-tuning</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Jianyu Wu, Yizhou Wang, Encheng Su, Chen Tang, Shixiang Tang (Shanghai AI Laboratory).</li>
+      <li>Directly targets a live failure mode in the on-policy self-distillation (OPSD) recipe that recent open-weight models &mdash; Inkling-Small most visibly (see the 2026-08-03 review) &mdash; use to have a smaller student beat a larger teacher.</li>
+      <li>Named contribution receiving a mechanism explanation below: <em>Dual-Anchored Policy Distillation (DAPD)</em>, decomposing into <em>Dual-Path Anchoring (DPA)</em> and <em>Dual-Source Anchoring (DSA)</em>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; DAPD: Dual-Path Anchoring plus Dual-Source Anchoring, targeting the privilege illusion.</strong>
+        <ul>
+          <li><em>Problem.</em> OPSD strengthens the teacher with <em>privileged information</em> (fuller context, hidden reasoning traces, oracle signals) so the teacher labels student rollouts more reliably. But the student is inference-time deprived of that privilege. When the student trains against a privileged teacher signal it can pick up <em>privilege-dependent behavior</em> &mdash; behavior that only makes sense when the privileged information is available &mdash; and continue emitting it at inference as if the privilege remained. This is the <em>privilege illusion</em>, and it degrades downstream performance.</li>
+          <li><em>Mechanism.</em>
+            <ul>
+              <li><em>Dual-Path Anchoring (DPA).</em> A self-conditioned bridge aligns the reference behavior (privileged) and the rollout behavior (student, unprivileged) along two matched-information paths. The paths carry the same information conditioning, so anything the reference does with privileged context that the rollout cannot reproduce is <em>not</em> flowed into the student&rsquo;s training signal.</li>
+              <li><em>Dual-Source Anchoring (DSA).</em> Applies the same paths in <em>both directions</em>: reference-to-rollout and rollout-to-reference. This reduces the student&rsquo;s reliance on privileged reference guidance while preserving correctness supervision, because DSA still lets the correctness signal cross the anchor.</li>
+            </ul>
+          </li>
+          <li><em>Why.</em> The two-anchor structure isolates <em>information asymmetry</em> as the root failure mode of OPSD, then explicitly neutralizes it while retaining the correctness supervision that made OPSD useful in the first place. Improves over vanilla OPSD by strictly dominating it on the same base checkpoint; the fix is at the loss-and-conditioning level, not a new algorithm.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>On Qwen3-4B, DAPD lifts average across-task performance by <code>+2.00</code> points relative to vanilla OPSD.</li>
+      <li>Gains scale monotonically with model size in the reported grid: <code>+2.69</code> at Qwen3-4B, <code>+2.78</code> at Qwen3-32B (both are averaged across the paper&rsquo;s task suite &mdash; the abstract does not enumerate the individual benchmarks).</li>
+      <li>The consistent-with-scale delta is the paper&rsquo;s key claim: the privilege-illusion pathology of OPSD is <em>not</em> a small-model artifact that vanishes with scale, so a fixed recipe that pays down that debt keeps paying.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Extensive ablations verify that both DPA and DSA are individually load-bearing; removing either recovers most of the OPSD failure mode.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Directly relevant to open-weight labs currently relying on OPSD-style pipelines &mdash; a small change to the distillation recipe recovers a systematic gap. Worth pairing this with the on-policy distillation section of the 2026-08-03 Inkling-Small review.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
