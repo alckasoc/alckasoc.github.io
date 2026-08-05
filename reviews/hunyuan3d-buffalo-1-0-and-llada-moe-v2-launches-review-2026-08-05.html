@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hunyuan3D-Buffalo 1.0 and LLaDA MoE v2 Launches Review &mdash; August 5, 2026 | Auto Lit Review</title>
+<meta name="description" content="Tencent Hunyuan releases Hunyuan3D-Buffalo 1.0, a unified 3D generation-understanding-editing model trained on an 87M-sample multimodal 3D corpus, and Ant Group + Renmin GSAI-ML ship LLaDA MoE v2, a 30B-A3B diffusion LLM built from a full dLLM-specific scaling-law calibration. Shanghai AI Laboratory publishes Quo Vadis, World Modeling? recasting world models as agent-centric interactive proxies, and Tencent AI-Infra-Guard exposes SkillJack, a persistent skill-backdoor attack that survives deletion of the source poisoned records." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 5, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#ant-group" class="toc-h1">Ant Group</a>
+          <ul>
+            <li><a href="#llada-moe-v2" class="toc-h2">LLaDA MoE v2</a></li>
+          </ul>
+        </li>
+        <li><a href="#tencent" class="toc-h1">Tencent</a>
+          <ul>
+            <li><a href="#hunyuan3d-buffalo" class="toc-h2">Hunyuan3D-Buffalo 1.0</a></li>
+            <li><a href="#skilljack" class="toc-h2">SkillJack</a></li>
+          </ul>
+        </li>
+        <li><a href="#shanghai-ai-laboratory" class="toc-h1">Shanghai AI Laboratory</a>
+          <ul>
+            <li><a href="#quo-vadis" class="toc-h2">Quo Vadis, World Modeling?</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 5, 2026</div>
+    <h1 class="page-title">Hunyuan3D-Buffalo 1.0 and LLaDA MoE v2 Launches</h1>
+    <div class="page-meta">4 papers &middot; 3 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>Two frontier-lab launches anchor the day. <strong>Tencent Hunyuan</strong> posts the <a href="https://arxiv.org/abs/2608.02711"><em>Hunyuan3D-Buffalo 1.0</em></a> technical report and project page: a single-architecture unified 3D multimodal model that handles 3D understanding, text-to-3D generation, instruction-guided 3D editing, and text-grounded part generation, built on an <code>87M</code>-sample 3D multimodal corpus (<code>25M</code> understanding + <code>50M</code> text-to-3D pairs + <code>12M</code> editing pairs synthesized with the in-house Nano3D-v2), coupling <em>Hunyuan3D-VLM</em> (semantic, structural, spatial understanding) with <em>Hunyuan3D DiT</em> (high-fidelity 3D synthesis). <strong>Ant Group</strong> and Renmin&rsquo;s GSAI-ML ship <a href="https://arxiv.org/abs/2608.03457"><em>LLaDA MoE v2</em></a>, a <code>30B</code>-total / <code>3B</code>-activated MoE diffusion LLM trained from scratch on <code>23.5T</code> tokens with a full dLLM-specific scaling-law calibration &mdash; the paper is simultaneously a scaling-laws study (batch/LR laws, IsoFLOP compute allocation, MoE architecture sweeps) and a large-scale model launch guided by those laws. Two Tier 2 papers round out the frontier-lab output: <strong>Shanghai AI Laboratory</strong>&rsquo;s <a href="https://arxiv.org/abs/2608.02713"><em>Quo Vadis, World Modeling?</em></a> reframes world modeling as <em>Agent-Centric Interactive World Proxies</em>, and <strong>Tencent AI-Infra-Guard</strong>&rsquo;s <a href="https://arxiv.org/abs/2608.03509"><em>SkillJack</em></a> demonstrates that experience-to-skill pipelines convert poisoned trajectories into persistent behavioral backdoors that survive deletion of the original poisoned records.</p>
+      <h3>Competitiveness</h3>
+      <p>Hunyuan3D-Buffalo 1.0 is the day&rsquo;s most consequential model artifact. The paper claims state-of-the-art or leading performance on text-to-3D generation and 3D editing benchmarks while retaining strong understanding and part-generation capabilities in a single unified checkpoint &mdash; the first credible <em>unified</em> 3D generation-understanding-editing model at this scale from a frontier lab, following the March 2026 Hunyuan3D 2.5 launch and Alibaba&rsquo;s Nano3D benchmark family. Instruction-guided 3D editing is the axis where Hunyuan3D-Buffalo 1.0 most clearly extends prior work: geometry-consistent editing training data has been the bottleneck, and Hunyuan3D-Buffalo 1.0 constructs <code>12M</code> editing pairs via the in-house Nano3D-v2 to break that ceiling. LLaDA MoE v2 is a similarly heavy claim on the diffusion-LM axis: <code>30B</code>-A3B trained from scratch on <code>23.5T</code> tokens &mdash; roughly <code>65%</code> of Qwen3 30B-A3B&rsquo;s <code>36T</code> pretraining budget &mdash; and it reaches <code>MMLU 78.01</code> vs Qwen3&rsquo;s <code>81.38</code>, <code>MMLU-Pro 57.28</code> vs <code>61.49</code>, <code>OlympiadBench 28.74</code> vs <code>30.96</code>, and <code>HumanEval 50.00</code> vs <code>52.44</code>, while beating SDAR Sci (30B-A3B CPT baseline) by <code>+3.78</code> average across 15 benchmarks and by <code>+16.46</code> on HumanEval. After SFT alone (no RL), LLaDA MoE v2 outperforms SDAR Chat on seven of eight reasoning and code benchmarks and stays close to Qwen3 despite Qwen3&rsquo;s extra RL stage. That is the strongest scaling-laws-guided from-scratch dLLM to date, and it positions LLaDA MoE v2 as an open-weight diffusion-LM alternative to DiffusionGemma 26B-A4B (covered in the 2026-08-04 review): DiffusionGemma is a diffusion fine-tune of an AR MoE that pays only <code>&lt;10%</code> of the AR pretraining budget, whereas LLaDA MoE v2 is a from-scratch dLLM with fully calibrated scaling laws &mdash; two distinct paths to competitive parallel decoding, both now in play.</p>
+      <h3>New frontier releases</h3>
+      <p><strong>Tencent Hunyuan</strong> ships <a href="https://arxiv.org/abs/2608.02711">Hunyuan3D-Buffalo 1.0</a> (arXiv 2026-08-03, first surfaced on Hugging Face Daily Papers 2026-08-05) with a project page at <a href="https://tencent-hunyuan.github.io/Hunyuan3D-Buffalo1.0/">tencent-hunyuan.github.io/Hunyuan3D-Buffalo1.0</a>. <strong>Ant Group + Renmin GSAI-ML</strong> ship <a href="https://arxiv.org/abs/2608.03457">LLaDA MoE v2</a> (arXiv 2026-08-04) as a <code>30B</code>-A3B open-weight diffusion LM. No new US-lab flagship launches in the 36-hour window: OpenAI, Anthropic, and Google DeepMind are quiet after the 2026-08-04 DiffusionGemma report.</p>
+    </section>
+
+    <h1 id="ant-group">Ant Group</h1>
+
+    <h2 id="llada-moe-v2"><a href="https://arxiv.org/abs/2608.03457">LLaDA MoE v2: Scaling Mixture-of-Experts Diffusion Language Models</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-08-04</span>
+      <span>Diffusion LM &middot; MoE scaling laws &middot; 30B-A3B &middot; From-scratch pretraining &middot; Open weights</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Fengqi Zhu, Shaoxuan Xu, Jingyang Ou, Zebin You (Gaoling School of AI, Renmin University of China + Beijing Key Laboratory of Research on Large Models and Intelligent Governance + Engineering Research Center of Next-Generation Intelligent Search and Recommendation, MOE), Yipeng Xing, Huabin Liu, Xiaolu Zhang, Jun Zhou, Zhenzhong Lan, Jianguo Li (Ant Group), Yankai Lin, Wayne Xin Zhao, Chongxuan Li, Ji-Rong Wen (GSAI Renmin, corresponding).</li>
+      <li>Two artifacts in one paper: (1) a full set of dLLM-specific scaling laws (hyperparameters, IsoFLOP compute allocation, MoE architecture sweeps), and (2) <em>LLaDA MoE v2</em>, a <code>30B</code>-total / <code>3B</code>-activated MoE dLLM trained from scratch on <code>23.5T</code> tokens using those laws. Companion HF collection: <a href="https://huggingface.co/GSAI-ML">GSAI-ML</a>.</li>
+      <li>Positioning against DiffusionGemma (covered 2026-08-04): DiffusionGemma is a <em>fine-tune</em> of an AR MoE at <code>&lt;10%</code> of the AR pretraining budget; LLaDA MoE v2 is a <em>from-scratch</em> dLLM with fully calibrated scaling laws. Both models converge on parallel decoding as the throughput lever, but from opposite ends of the training-cost spectrum.</li>
+      <li>Positioning against Qwen3 30B-A3B: LLaDA MoE v2 uses <code>~65%</code> of Qwen3&rsquo;s <code>36T</code> pretraining tokens, hits Qwen3-ish scores on several benchmarks, and stays close after SFT alone (Qwen3 uses an additional RL stage).</li>
+      <li>Named contributions receiving mechanism explanations below: <em>dLLM-specific batch-size / learning-rate scaling laws</em>, <em>IsoFLOP model&ndash;data allocation frontier for MoE dLLMs</em>, and <em>dLLM-specific MoE architecture design rules</em> (activation ratio, expert granularity, shared-expert ratio).</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; dLLM-specific hyperparameter scaling laws.</strong>
+        <ul>
+          <li><em>Problem.</em> AR hyperparameter scaling laws (DeepSeek LLM, Chinchilla) were fit on next-token prediction over causal prefixes. dLLMs train a masked denoising objective over partially observed sequences &mdash; only masked positions supply supervision (roughly half the tokens under uniform timestep sampling). Reusing AR batch-size / LR laws systematically underestimates the batch size and misses the correct LR decay for MoE dLLMs.</li>
+          <li><em>Mechanism.</em> Sweep the joint (nominal batch size, learning rate) grid across model scales from <code>158M</code> to <code>3.6B</code> parameters and compute budgets from <code>10^18</code> to <code>3&times;10^20</code> FLOPs; fit power laws. The resulting dLLM-specific laws are <code>B* = 0.374 &middot; C^0.3481</code> and <code>&eta;* = 64.8 &middot; C^-0.2447</code>. Validated by extrapolating from <code>3&times;10^20</code> to <code>6&times;10^20</code> FLOPs: the fitted recommendation lands next to the empirical best in the 2D grid.</li>
+          <li><em>Why.</em> The batch-size exponent is steeper than DeepSeek LLM&rsquo;s AR law, and the LR exponent decays faster. At <code>10^20</code> FLOPs the two fits recommend similar LRs (<code>9.86&times;10^-4</code> AR vs <code>8.27&times;10^-4</code> dLLM) but very different batch sizes (<code>1.02M</code> AR vs <code>3.43M</code> dLLM). The batch-size gap tracks reduced effective supervision per nominal token: with roughly half of positions masked, a nominal token contributes less gradient signal than an AR token, so more tokens per step yield stable optimization. Improves over reusing AR laws unmodified, which is the dominant practice in prior MoE dLLM papers.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; IsoFLOP model&ndash;data allocation frontier for MoE dLLMs.</strong>
+        <ul>
+          <li><em>Problem.</em> For AR MoE, Chinchilla-style laws split compute roughly evenly between activated params and tokens; for dense dLLMs, prior work (SMDM, DLMs) reports a model-side-dominated frontier. MoE dLLMs sit at the intersection and were uncharacterized.</li>
+          <li><em>Mechanism.</em> Use <code>C = MD</code> where <code>M</code> is activated non-embedding FLOPs per token and <code>D</code> is training tokens. Sweep the allocation across <code>10^17</code> to <code>10^20</code> compute budgets and fit the compute-optimal frontier. Result: <code>M*(C) = 0.5152 &middot; C^0.475</code>, <code>D*(C) = 1.9411 &middot; C^0.525</code>. Both exponents sit near <code>0.5</code> with a slight data-side tilt.</li>
+          <li><em>Why.</em> The tilt aggregates two known effects: MoE (vs dense) shifts AR frontiers toward data (Ling: <code>0.5422/0.4578</code> dense &rarr; <code>0.5095/0.4905</code> MoE) and diffusion (vs AR) shifts frontiers toward data (SMDM: <code>0.644/0.356</code> AR &rarr; <code>0.634/0.366</code> dLLM). Combining sparse activation with the dLLM objective pushes the data exponent up to <code>0.525</code>. Actionable rule: at MoE-dLLM scale, marginal compute is better spent on more tokens than more activated FLOPs.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; dLLM-specific MoE architecture design rules.</strong>
+        <ul>
+          <li><em>Problem.</em> AR MoE architecture rules (DeepSeekMoE&rsquo;s <code>S = 25%</code> shared-expert ratio, Qwen3&rsquo;s no shared experts, Ling&rsquo;s &ldquo;one shared expert&rdquo; heuristic) were fit for causal routing. dLLM routing operates on masked, noise-corrupted states &mdash; a different conditioning distribution that could invalidate the AR rules.</li>
+          <li><em>Mechanism.</em> Fix the activated model budget at <code>M*(C)</code> and sweep one architectural knob at a time: activation ratio <code>A = (n_a + n_s) / (n_e + n_s)</code>, expert granularity <code>G = 2 &middot; d_model / d_expert</code>, and shared-expert ratio <code>S = n_s / (n_a + n_s)</code>. Findings: (i) larger compute increasingly favors sparser activation (smaller <code>A</code>); (ii) <code>G = 8</code>&ndash;<code>16</code> is robust across scales with no monotonic optimum; (iii) <code>S = 33.3%</code> is the U-shaped optimum across every scale tested.</li>
+          <li><em>Why.</em> The <code>S = 33.3%</code> rule diverges sharply from AR conventions and gives a concrete design instruction: maintain approximately one unit of shared activated capacity for every two units of routed activated capacity. Under this rule, LLaDA MoE v2 uses <code>128</code> fine-grained routed experts, top-<code>8</code> routing, and one shared expert of width <code>4 &middot; d_expert</code>, yielding <code>A = (8+4)/(128+4) = 9.09%</code>, <code>G = 8</code>, and <code>S = 33.3%</code>. The design principle explains why prior AR-transferred MoE dLLM designs (LLaDA MoE 7B-A1B, DMoE) were compute-inefficient.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.03457v1/x4.png" alt="IsoFLOP curves and fitted power laws for compute-optimal MoE dLLM allocation" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 3 (from the paper). IsoFLOP analysis. Left: U-shaped training loss under different model&ndash;data allocations at fixed compute; stars mark the compute-optimal points. Middle and right: fitted power laws for <code>M*(C)</code> and <code>D*(C)</code>.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.03457v1/x5.png" alt="MoE architecture scaling sweeps for activation ratio, expert granularity, and shared-expert ratio" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 4 (from the paper). MoE architecture scaling. (a) Activation ratio <code>A</code> &mdash; larger scales favor sparser activation. (b) Expert granularity <code>G</code> &mdash; robust in <code>8</code>&ndash;<code>16</code>. (c) Shared-expert ratio <code>S</code> &mdash; U-shaped, optimum at <code>33.3%</code> across every scale tested.</figcaption>
+    </figure>
+
+    <h3>Training data and compute</h3>
+    <ul>
+      <li>Corpus: <code>23.5T</code> pretraining tokens, roughly <code>65%</code> of Qwen3 30B-A3B&rsquo;s <code>36T</code>.</li>
+      <li>Training strategy: five stages. Stages 1&ndash;2 use <code>10T</code> tokens each; Stage 3 anneals over <code>2T</code> tokens. Stage 4 raises RoPE base from <code>10,000</code> to <code>500,000</code> and extends context from <code>4K</code> to <code>32K</code>, continuing for <code>500B</code> tokens. Stage 5 concludes with <code>1T</code> long-context annealing tokens.</li>
+      <li>Architecture (Section 4 &amp; Appendix B.1): <code>30B</code> total parameters, <code>3B</code> activated per token. Each MoE layer has <code>128</code> fine-grained routed experts with top-<code>8</code> routing plus one shared expert of width <code>4 &middot; d_expert</code>. This gives <code>(A, G, S) = (9.09%, 8, 33.3%)</code>.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li>Standard SFT only &mdash; no RL. Fine-tune for three epochs on <code>7M</code> instruction&ndash;response examples. Prompt kept uncorrupted; masking (Eq.&nbsp;1 of the paper) applied only to the response; denoising loss computed over masked response positions.</li>
+      <li>Batch size <code>512</code> sequences; peak LR <code>5.0&times;10^-6</code>; linear warmup over first <code>8%</code> of steps.</li>
+      <li>The paper explicitly leaves RL integration to future work &mdash; the SFT-only result is the disciplined comparison against SDAR Chat and Qwen3.</li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li><strong>Base model benchmark grid</strong> (Table 3 in paper). LLaDA MoE v2 is compared against five baselines: SDAR Sci (MoE dLLM, continued pretraining from Qwen3), LLaDA MoE 7B-A1B, Dream 7B, LLaDA 8B, and Qwen3 30B-A3B. Numbers reported by the paper:</li>
+    </ul>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Benchmark</th>
+          <th>LLaDA MoE v2 30B-A3B</th>
+          <th>SDAR Sci 30B-A3B</th>
+          <th>LLaDA MoE 7B-A1B</th>
+          <th>Dream 7B</th>
+          <th>LLaDA 8B</th>
+          <th>Qwen3 30B-A3B</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Trained tokens</td><td>23.5T</td><td>36 + 1.05T (CPT)</td><td>21T</td><td>18 + 0.58T (CPT)</td><td>2.3T</td><td>36T</td></tr>
+        <tr><td>MMLU</td><td><strong>78.01</strong></td><td>82.72</td><td>64.59</td><td>69.50</td><td>65.90</td><td>81.38</td></tr>
+        <tr><td>MMLU-Pro</td><td>57.28</td><td>56.96</td><td>39.16</td><td>48.15</td><td>41.80</td><td>61.49</td></tr>
+        <tr><td>CEval</td><td>76.11</td><td>86.95</td><td>65.56</td><td>59.18</td><td>70.50</td><td>87.50</td></tr>
+        <tr><td>CMMLU</td><td>77.99</td><td>85.82</td><td>65.65</td><td>60.87</td><td>69.90</td><td>86.35</td></tr>
+        <tr><td>HellaSwag</td><td>77.19</td><td>56.38</td><td>65.46</td><td>74.37</td><td>70.82</td><td>77.92</td></tr>
+        <tr><td>KorBench</td><td>45.92</td><td>40.08</td><td>31.20</td><td>37.44</td><td>33.68</td><td>44.96</td></tr>
+        <tr><td>GSM8K</td><td>83.93</td><td>86.13</td><td>66.41</td><td>77.79</td><td>70.70</td><td>91.81</td></tr>
+        <tr><td>MATH</td><td>54.72</td><td>48.52</td><td>36.10</td><td>39.60</td><td>27.30</td><td>59.04</td></tr>
+        <tr><td>OlympiadBench</td><td>28.74</td><td>24.44</td><td>10.07</td><td>10.22</td><td>6.85</td><td>30.96</td></tr>
+        <tr><td>CRUXEval</td><td>50.62</td><td>53.00</td><td>38.94</td><td>40.31</td><td>36.38</td><td>56.88</td></tr>
+        <tr><td>MBPP</td><td>71.00</td><td>60.40</td><td>52.40</td><td>56.20</td><td>38.20</td><td>74.40</td></tr>
+        <tr><td>MultiPL-E</td><td>53.78</td><td>33.66</td><td>41.13</td><td>27.60</td><td>23.61</td><td>66.53</td></tr>
+        <tr><td>HumanEval</td><td>50.00</td><td>33.54</td><td>45.73</td><td>57.90</td><td>33.50</td><td>52.44</td></tr>
+        <tr><td>LiveCodeBench v6</td><td>31.86</td><td>39.87</td><td>16.18</td><td>14.87</td><td>2.53</td><td>49.18</td></tr>
+        <tr><td>BigCodeBench</td><td>41.84</td><td>33.86</td><td>21.23</td><td>18.33</td><td>13.42</td><td>45.70</td></tr>
+      </tbody>
+    </table>
+
+    <ul>
+      <li>Average across the 15 benchmarks: LLaDA MoE v2 <code>58.60</code>, beating SDAR Sci by <code>+3.78</code> and every smaller dLLM by at least <code>+12.44</code>. Largest coding-side advantages over SDAR Sci: HumanEval <code>+16.46</code>, BigCodeBench <code>+7.98</code>.</li>
+      <li><strong>Compute-controlled scaling</strong> (Figure 5 in paper). At approximately <code>50%</code> of the pretraining FLOPs used by LLaDA MoE 7B-A1B, LLaDA MoE v2 already surpasses the 7B-A1B baseline on MMLU, GSM8K, and KorBench. On HellaSwag, LLaDA MoE v2 surpasses 7B-A1B with less than <code>10%</code> of its training FLOPs.</li>
+      <li><strong>SFT results</strong> (Table 4). LLaDA MoE v2 SFT vs Qwen3 30B-A3B (no-think) and SDAR Chat 30B-A3B on reasoning + code:</li>
+    </ul>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Benchmark</th>
+          <th>LLaDA MoE v2 SFT</th>
+          <th>Qwen3 30B-A3B (no-think)</th>
+          <th>SDAR Chat 30B-A3B</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Math</td><td>80.02</td><td>89.80</td><td>77.80</td></tr>
+        <tr><td>Olympiad</td><td>46.44</td><td>57.26</td><td>34.93</td></tr>
+        <tr><td>AIME24</td><td>30.00</td><td>32.80</td><td>16.70</td></tr>
+        <tr><td>AIME25</td><td>20.00</td><td>21.60</td><td>10.80</td></tr>
+        <tr><td>MBPP</td><td>81.03</td><td>85.48</td><td>71.60</td></tr>
+        <tr><td>LiveCodeBench v6</td><td>27.75</td><td>31.50</td><td>21.70</td></tr>
+        <tr><td>BigCodeBench</td><td>35.53</td><td>41.14</td><td>39.39</td></tr>
+        <tr><td>MultiPL-E</td><td><strong>67.52</strong></td><td>66.60</td><td>45.00</td></tr>
+      </tbody>
+    </table>
+
+    <ul>
+      <li>LLaDA MoE v2 SFT beats SDAR Chat on all four reasoning benchmarks and three of four code benchmarks (loses only BigCodeBench). It surpasses Qwen3 on MultiPL-E despite Qwen3&rsquo;s additional RL stage, and stays close on AIME24/25, MBPP, and LiveCodeBench.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The three architecture sweeps (<code>A</code>, <code>G</code>, <code>S</code>) each function as controlled ablations of the design rule at fixed <code>M*(C)</code>. Activation ratio: monotone reduction in loss with smaller <code>A</code> as compute grows, with the sparsest setting winning at the largest scales tested. Expert granularity: no monotone winner, <code>G = 8</code>&ndash;<code>16</code> stable. Shared-expert ratio: U-shape with minimum at <code>S = 33.3%</code> at every scale.</li>
+      <li>Batch size / LR sweeps at <code>6&times;10^20</code> FLOPs (Figure 2) validate the extrapolation of the fitted hyperparameter law beyond its <code>3&times;10^20</code>-FLOP fitting range.</li>
+      <li>Paper explicitly notes that scaling dimensions were varied one-at-a-time, so interaction effects are not captured; the from-scratch <code>30B</code>-A3B result functions as the joint validation.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Paper: <a href="https://arxiv.org/abs/2608.03457">arXiv:2608.03457</a>. HF org for prior LLaDA MoE checkpoints: <a href="https://huggingface.co/GSAI-ML">GSAI-ML</a>. HF Daily Papers listing: <a href="https://huggingface.co/papers/2608.03457">2608.03457</a>. Ant Group co-authors indicate the model will land on Ant&rsquo;s open-weight tracks alongside prior LLaDA MoE 7B-A1B and LLaDA 2.0 (100B) checkpoints.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="hunyuan3d-buffalo"><a href="https://arxiv.org/abs/2608.02711">Hunyuan3D-Buffalo 1.0: A Unified Multimodal Model for Scalable 3D Generation, Understanding, and Editing</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv &middot; Tencent Hunyuan Project Page</span>
+      <span>2026-08-03 (arXiv) &middot; surfaced on HF Daily 2026-08-05</span>
+      <span>3D generation &middot; 3D editing &middot; 3D understanding &middot; Unified multimodal &middot; VLM + DiT</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Junliang Ye, Kenkun Liu, Guocun Wang, Yang Li, Yansong Qu, Chunshi Wang (core contributors), Jingwei Xu, Yunhan Yang, Zibo Zhao, Jiachen Xu, Jiaao Yu, Lifu Wang, Zhihao Liang, Zhuo Chen, Chunchao Guo (project leaders). All Tencent Hunyuan3D.</li>
+      <li>Unified 3D multimodal framework: a single architecture handles four downstream tasks &mdash; 3D understanding (QA, grounding), text-to-3D generation, instruction-guided 3D editing, and text-grounded part-level generation.</li>
+      <li>Positioning: prior unified image-domain multimodal models (Bagel-family, Emu3, VILA-U) have shown that unification helps generation and understanding together. Unified 3D modeling has lagged because geometrically consistent editing data at scale did not exist. Hunyuan3D-Buffalo 1.0 bridges the gap with an in-house <em>Nano3D-v2</em> synthesizer that produces <code>12M</code> editing pairs.</li>
+      <li>Named contributions receiving mechanism explanations below: <em>87M-scale 3D multimodal corpus with Nano3D-v2-synthesized editing data</em>, <em>Hunyuan3D-VLM + Hunyuan3D DiT dual-backbone unified architecture</em>, and <em>Source-conditioned diffusion for editing and part generation</em>.</li>
+    </ul>
+
+    <figure>
+      <img src="https://tencent-hunyuan.github.io/Hunyuan3D-Buffalo1.0/statics/images/Pipeline.png" alt="Hunyuan3D-Buffalo 1.0 unified pipeline" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Hunyuan3D-Buffalo 1.0 unified pipeline (from Tencent&rsquo;s project page). A shared Hunyuan3D-VLM backbone bridges 3D QA, grounding, generation, editing, and part-level decomposition; Hunyuan3D DiT modules perform the actual 3D synthesis, editing, and part generation.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Hunyuan3D-VLM + Hunyuan3D DiT dual-backbone unified architecture.</strong>
+        <ul>
+          <li><em>Problem.</em> A single decoder cannot simultaneously (a) produce sharp language-conditioned semantic representations for QA/grounding and (b) reach the geometric fidelity needed for text-to-3D synthesis. Prior unified 3D attempts either sacrificed generation quality (understanding-heavy VLM baselines) or lost language grounding (generation-heavy DiT baselines).</li>
+          <li><em>Mechanism.</em> Two purpose-built modules connected through a shared representation. <em>Hunyuan3D-VLM</em> ingests text plus 3D inputs and emits semantic, structural, and spatial conditioning features. <em>Hunyuan3D DiT</em> is a diffusion transformer for 3D synthesis; it consumes the VLM&rsquo;s conditioning features as its guidance and produces geometry. All four tasks route through this shared VLM output: understanding tasks stop at the VLM head, generation tasks pass VLM features into DiT, editing and part-generation tasks additionally condition the diffusion process on the source object representation.</li>
+          <li><em>Why.</em> Concentrating semantic reasoning in the VLM and geometry synthesis in the DiT lets each specialize on its own loss surface without giving up shared token-space grounding. The paper&rsquo;s analysis explicitly shows that both generation and understanding <em>improve editing</em> &mdash; that is, jointly training the VLM on QA/grounding and generation tasks makes it a better conditioner for editing than any task-specialized decoder would be. Improves over unified single-decoder image-domain approaches (VILA-U, Bagel) by decoupling the language and geometry heads while retaining unification through the conditioning interface.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Source-conditioned diffusion for editing and part generation.</strong>
+        <ul>
+          <li><em>Problem.</em> Instruction-guided 3D editing must preserve the source object&rsquo;s unedited regions and overall structure while changing the specific edited region. Text-to-3D generation from scratch does not have this constraint. A unified diffusion process needs a mechanism for both.</li>
+          <li><em>Mechanism.</em> For editing and part generation, the DiT is conditioned not only on the VLM features but also on a representation of the <em>source object</em>. The source conditioning acts as an anchor that constrains the diffusion trajectory to keep unedited regions and overall structure while letting the VLM instruction steer the edited region.</li>
+          <li><em>Why.</em> Without source conditioning, instruction-guided edits collapse to text-to-3D generations that ignore the source geometry. Source conditioning is what makes edit fidelity comparable to text-to-3D fidelity on the same backbone, and it is what enables part-level generation to slot new parts onto an existing whole while keeping the rest intact.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Training data</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; 87M-scale 3D multimodal corpus with Nano3D-v2-synthesized editing data.</strong>
+        <ul>
+          <li><em>Problem.</em> Unified 3D training needs three data types at scale: understanding pairs (3D + text QA), text-to-3D pairs (caption + geometry), and editing pairs (source geometry + instruction + edited geometry with unedited regions preserved). The editing data type is the hard one &mdash; geometrically consistent triplets do not exist in public corpora, and manual creation does not scale.</li>
+          <li><em>Mechanism.</em> Construct an <code>87M</code>-sample corpus comprising <code>25M</code> understanding samples, <code>50M</code> text-to-3D pairs, and <code>12M</code> editing pairs. Editing pairs are generated using an in-house <em>Nano3D-v2</em> synthesizer that produces geometrically consistent (source, instruction, target) triplets at scale.</li>
+          <li><em>Why.</em> Editing-pair count is the direct bottleneck on unified 3D editing quality. <code>12M</code> synthesized triplets at consistency guarantees is a step-change above prior public corpora (typically <code>&lt;100K</code> editing triplets, and none geometrically consistent). The corpus mix &mdash; <code>50M</code>:<code>25M</code>:<code>12M</code> generation-understanding-editing &mdash; is what makes the joint training regime tractable at this scale.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>The paper reports state-of-the-art or leading performance on text-to-3D generation and 3D editing benchmarks, plus strong understanding and part-generation capabilities on the same checkpoint.</li>
+      <li>Analytical claim: joint training on generation and understanding improves editing performance, measured by ablating each task family and re-evaluating editing scores. The paper frames this as the direct evidence that unified 3D multimodal training beats task-specialized checkpoints on shared axes.</li>
+      <li>Specific benchmark suites (text-to-3D, 3D editing, part generation) and reported numerical deltas are on the project page and in the arXiv PDF; the paper positions the results as unified-SOTA rather than posting single benchmark chart-tops.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Project page: <a href="https://tencent-hunyuan.github.io/Hunyuan3D-Buffalo1.0/">tencent-hunyuan.github.io/Hunyuan3D-Buffalo1.0</a>. Paper: <a href="https://arxiv.org/abs/2608.02711">arXiv:2608.02711</a>. HF Daily Papers listing: <a href="https://huggingface.co/papers/2608.02711">2608.02711</a>. Tencent&rsquo;s Hunyuan3D lineage previously shipped Hunyuan3D 2.1 and Hunyuan3D 2.5 open-weights under a permissive Tencent Hunyuan license; a Buffalo 1.0 release under the same terms is expected but not yet posted at the time of this review.</li>
+    </ul>
+
+    <h2 id="skilljack"><a href="https://arxiv.org/abs/2608.03509">SkillJack: Persistent Skill Backdoors in Self-Evolving Agents</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv &middot; Tencent AI-Infra-Guard</span>
+      <span>2026-08-04</span>
+      <span>Agent security &middot; Skill backdoor &middot; Self-evolving agents &middot; Provenance</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Zonghao Ying, Xiangfan Wu, Huiyu Wu, Xing Zheng, Huangsheng Cheng, Xiaorong Shi, Jing Guo (Tencent AI-Infra-Guard).</li>
+      <li>New attack surface for self-evolving agents. Prior work on memory / retrieval poisoning only affects an agent when the poisoned records are surfaced at runtime; SkillJack hijacks the <em>experience-to-skill pipeline</em> so that transient poisoned experiences are baked into durable, reusable skills that persist even after the original records are deleted.</li>
+      <li>Named contribution receiving a mechanism explanation below: <em>Experience-to-skill hijack via sanitization whitewashing, cross-layer promotion, and persistence isolation</em>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Experience-to-skill hijack.</strong>
+        <ul>
+          <li><em>Problem.</em> Skill-augmented agents (SkillX, Anything2Skill, and the broader class of self-evolving harnesses that convert successful trajectories into reusable skills) treat skill extraction as sanitization &mdash; the assumption is that summarizing an experience into a skill launders unsafe context. Traditional memory-poisoning defenses run safety detectors on stored records; they do not run on extracted skills.</li>
+          <li><em>Mechanism.</em> Craft trajectories whose superficial reading passes safety filters but whose skill extraction preserves the malicious behavior. Three properties of the transformation make this durable: <em>sanitization whitewashing</em> (safety detection drops sharply from trajectory-level to skill-level, in the paper&rsquo;s runs from <code>98.5%</code> on poisoned trajectories to <code>11.4%</code> on the extracted skills in SkillX); <em>cross-layer promotion</em> (transient one-shot experiences get promoted to persistent capabilities once extracted); <em>persistence isolation</em> (skills keep functioning after the source poisoned records are deleted, since the skill itself is now the source of truth).</li>
+          <li><em>Why.</em> The three properties compose: whitewashing evades the detectors that would have caught the trajectory, cross-layer promotion converts a one-off attack into a persistent one, and persistence isolation defeats the standard incident-response step of &ldquo;delete the poisoned record.&rdquo; The paper motivates provenance-aware skill lifecycle protection as the appropriate defense.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>Evaluated on two representative self-evolving-agent systems: <em>SkillX</em> and <em>Anything2Skill</em>. Shared attack dataset: <code>150</code> trajectories spanning four policy-risk categories.</li>
+      <li>Safety-detection collapse under skill extraction: SkillX drops from <code>98.5%</code> detection on poisoned trajectories to <code>11.4%</code> on the extracted skills. Anything2Skill shows an analogous drop (paper reports the same directional effect).</li>
+      <li>Attack success rate of implanted skills: <code>56.2%</code> on SkillX, <code>89.2%</code> on Anything2Skill.</li>
+      <li>Persistence after source-record deletion: <code>80.0%</code> of skill-mediated attacks continue to succeed after the original poisoned records are wiped.</li>
+      <li>Unintended activation: some implanted skills fire on benign, unrelated queries &mdash; a collateral-damage failure mode the paper flags as a separate risk beyond the intended attack channel.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Repository: <a href="https://github.com/Tencent/AI-Infra-Guard">Tencent/AI-Infra-Guard</a> (research/skilljack subdirectory). Ties to <em>MemHarness</em> (covered in the 2026-08-01 review) which argued that memory should be reconstructed rather than replayed; SkillJack complements that thread by showing the same argument applies one layer up, at the experience-to-skill boundary.</li>
+    </ul>
+
+    <h1 id="shanghai-ai-laboratory">Shanghai AI Laboratory</h1>
+
+    <h2 id="quo-vadis"><a href="https://arxiv.org/abs/2608.02713">Quo Vadis, World Modeling?</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Position Paper</span>
+      <span>arXiv &middot; WorldBench project</span>
+      <span>2026-08-03</span>
+      <span>World models &middot; Agent proxies &middot; Taxonomy &middot; Roadmap</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Yu Yang, Xuemeng Yang, Licheng Wen, Lingdong Kong, Xiaobin Hu, Dongyue Lu, Wei Chow, Xiyan Huang, Yuxiang Feng, Yue Liao, Jianbiao Mei, Daocheng Fu, Rong Wu, Pinlong Cai, Ran Yi, Ying Tai, Jiangning Zhang, Botian Shi, Yong Liu, Shuicheng Yan (Shanghai AI Laboratory + collaborators).</li>
+      <li>Position paper: reframes world modeling from &ldquo;predict the next physical state&rdquo; to &ldquo;provide agent-usable information transitions.&rdquo; Introduces <em>Agent-Centric Interactive World Proxies</em> as the umbrella term, with a six-way functional taxonomy and a three-level maturity ladder for how proxies serve agents.</li>
+      <li>Named contribution receiving a mechanism explanation below: <em>Agent-Centric Interactive World Proxies taxonomy (six proxies, three levels)</em>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Agent-Centric Interactive World Proxies.</strong>
+        <ul>
+          <li><em>Problem.</em> Classical world models predict future physical states (pixels, poses, dynamics). That formulation is useful for control but narrow for continually-improving agents that need actionable feedback beyond raw state transitions &mdash; execution outcomes, retrieved experiences or skills, verification signals. Treating &ldquo;world model&rdquo; as strictly physical-state prediction locks out most of the feedback sources agents actually consume.</li>
+          <li><em>Mechanism.</em> Redefine the design space as <em>agent-usable information transitions</em> rather than <em>physical state transitions</em>. Organize the resulting space into six functional proxies keyed on feedback modality: <em>dynamics</em>, <em>spatial</em>, <em>execution</em>, <em>memory/experience</em>, <em>skill</em>, and <em>reward/verification</em>. Layer three levels of increasing integration on top: <em>L.1 Inference-Time Guidance</em> (proxy output enriches in-context information), <em>L.2 Training-Time Optimization</em> (proxy output yields rewards, critiques, or synthetic rollouts for policy learning), <em>L.3 Agent&ndash;Proxy Co-Evolution</em> (real-environment evidence updates both proxy and agent).</li>
+          <li><em>Why.</em> The six-proxy taxonomy places existing systems on a shared map: RL-with-rewards is a reward/verification proxy at L.2; skill libraries used by SkillX / Anything2Skill (see the SkillJack entry) are skill proxies at L.1&ndash;L.2; memory harnesses are memory/experience proxies. The three-level ladder makes explicit what most recent agent papers were reaching for individually. Improves over prior world-modeling taxonomies (physical-state-only) by covering the modalities agents actually query at runtime and during training, and provides a common vocabulary for the next round of agentic-RL and agent-memory papers.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>Position paper; no benchmark numbers. Contribution is the taxonomy, the roadmap for building world proxies, and the mapping of extant work into the framework.</li>
+      <li>Companion artifacts: technical blog / catalog at <a href="https://worldbench.github.io/awesome-agentic-world-model">worldbench.github.io/awesome-agentic-world-model</a> and GitHub at <a href="https://github.com/worldbench/awesome-agentic-world-model">worldbench/awesome-agentic-world-model</a>.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Slots directly into the day&rsquo;s SkillJack coverage: SkillJack&rsquo;s experience-to-skill pipeline is exactly the &ldquo;skill proxy&rdquo; box in this taxonomy, and the SkillJack failure mode is a concrete instance of what happens when an L.2 proxy (skill promotion feeding future policy) lacks provenance tracking.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
