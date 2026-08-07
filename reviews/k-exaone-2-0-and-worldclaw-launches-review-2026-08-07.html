@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>K-EXAONE 2.0 and WorldClaw Launches Review &mdash; August 7, 2026 | Auto Lit Review</title>
+<meta name="description" content="LG AI Research releases K-EXAONE 2.0, a 750B-total / 37B-activated MoE upcycled from K-EXAONE with 256K context and Apache 2.0 weights, and Tencent Hunyuan ships WorldClaw, a fully agentic coarse-to-fine framework for open-ended text-to-3D-world generation. Meta AI publishes Towards Physics of Multimodal Pretraining, an empirical study of knowledge flow, synergy, early unification, and compute-efficient recipes across natively unified multimodal training, validated at 13.5B MoE / 2T tokens." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 7, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#lg-ai-research" class="toc-h1">LG AI Research</a>
+          <ul>
+            <li><a href="#k-exaone-2-0" class="toc-h2">K-EXAONE 2.0</a></li>
+          </ul>
+        </li>
+        <li><a href="#tencent" class="toc-h1">Tencent</a>
+          <ul>
+            <li><a href="#worldclaw" class="toc-h2">WorldClaw</a></li>
+          </ul>
+        </li>
+        <li><a href="#meta" class="toc-h1">Meta</a>
+          <ul>
+            <li><a href="#physics-of-mm-pretrain" class="toc-h2">Physics of Multimodal Pretraining</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 7, 2026</div>
+    <h1 class="page-title">K-EXAONE 2.0 and WorldClaw Launches</h1>
+    <div class="page-meta">3 papers &middot; 3 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>Two frontier-lab launches anchor the day. <strong>LG AI Research</strong> posts the <a href="https://arxiv.org/abs/2608.04505"><em>K-EXAONE 2.0 Technical Report</em></a>: a <code>750B</code>-total / <code>~37B</code>-activated fine-grained sparse MoE upcycled from K-EXAONE (<code>236B</code>-total / <code>23B</code>-activated) via depth expansion (<code>48</code>&nbsp;&rarr;&nbsp;<code>78</code> layers) and expert doubling (<code>128</code>&nbsp;&rarr;&nbsp;<code>256</code> experts per layer), with a preserved <em>LLLG</em> hybrid attention block (three sliding-window layers + one global attention layer) reaching <code>256K</code>-token context, dual self-speculative decoding paths (<em>MTP</em> and <em>DSpark</em>), and Apache 2.0 weights. <strong>Tencent Hunyuan</strong> ships <a href="https://arxiv.org/abs/2608.05248"><em>WorldClaw: Agentic 3D Open-World Generation at Scale</em></a> under the Hunyuan3D umbrella: a fully agentic, coarse-to-fine text-to-3D-world pipeline that first plans a structured scene specification, then generates a region-aware global terrain, then populates selected regions with instance-level editable assets, with all output preserved as textured meshes for game-engine reuse. <strong>Meta AI</strong>&rsquo;s <a href="https://arxiv.org/abs/2608.05000"><em>Towards Physics of Multimodal Pretraining</em></a> completes the Tier 2 slate with a controlled empirical study of natively unified multimodal training, validated at <code>13.5B</code>-MoE / <code>2T</code>-token scale.</p>
+      <h3>Competitiveness</h3>
+      <p>K-EXAONE 2.0 is the day&rsquo;s largest model artifact and the first Korea-lab open-weight release to cross the <code>500B</code>-parameter mark. In reasoning mode it hits <code>MMLU-Pro 83.5</code>, <code>GPQA-Diamond 82.2</code>, <code>AIME 2026 92.3</code>, <code>HMMT Feb 2026 78.4</code>, <code>IMO-AnswerBench 78.6</code>, <code>SciCode 40.1</code>, <code>SWE-bench Verified 68.2</code>, <code>Terminal-Bench 2.1 43.8</code>, <code>IFEval 92.4</code>, and <code>IFBench 72.6</code>. The <code>+18.8</code>-point SWE-bench Verified gain and <code>+13.5</code>-point Terminal-Bench 2.1 gain over K-EXAONE are the sharpest deltas, positioning K-EXAONE 2.0 as a genuinely competitive open-weight agentic-coding checkpoint against Qwen3.8-Max, GLM-5-Coding, and DeepSeek-V4 on repository-level and long-horizon terminal tasks &mdash; SWE-Bench Verified <code>68.2</code> sits within striking distance of the leaderboard&rsquo;s current frontier of roughly <code>72</code>&ndash;<code>75</code> held by GPT-5.6 and Claude Opus 5. On the <code>256K</code>-context axis, K-EXAONE 2.0 reports perfect NIAH retrieval throughout the full window, matching the long-context frontier established by Gemini 2.5 Pro and Qwen3.8-Max&rsquo;s <code>2M</code>-context claim in raw NIAH accuracy (though not in raw window size). WorldClaw is the day&rsquo;s most consequential non-language artifact: it explicitly targets the axis where prior open-world 3D pipelines fail &mdash; joint global spatial coherence with rich local content and editable, engine-ready instances &mdash; and delivers all three simultaneously via agentic decomposition rather than a single generative rollout. This positions WorldClaw against World Labs&rsquo; Marble (video-lifting, weak geometric fidelity), Infinigen (procedural, limited representation capacity), and the Native 3D Diffusion family (LT3SD, BlockFusion, XCube; strong geometry but content-diversity bottlenecked on 3D-scene training data). Meta&rsquo;s Physics of Multimodal Pretraining derives a pretraining recipe reaching strong generative performance at <code>5%</code> of the standard compute budget, and confirms &mdash; against the &ldquo;late fusion&rdquo; consensus &mdash; that early unification wins.</p>
+      <h3>New frontier releases</h3>
+      <p><strong>LG AI Research</strong> ships <a href="https://arxiv.org/abs/2608.04505">K-EXAONE 2.0</a> (arXiv 2026-08-05, HF Daily Papers 2026-08-06) under Apache 2.0. <strong>Tencent Hunyuan</strong> ships <a href="https://arxiv.org/abs/2608.05248">WorldClaw</a> (arXiv 2026-08-05, HF Daily Papers 2026-08-07) with a project page at <a href="https://tencent-hunyuan.github.io/Hunyuan3D-WorldClaw">tencent-hunyuan.github.io/Hunyuan3D-WorldClaw</a>. No new US-lab flagship language-model launches in the 36-hour window: OpenAI, Anthropic, Google DeepMind, xAI, and Meta Superintelligence Labs are quiet after the 2026-08-05 Hunyuan3D-Buffalo and LLaDA MoE v2 releases.</p>
+    </section>
+
+    <h1 id="lg-ai-research">LG AI Research</h1>
+
+    <h2 id="k-exaone-2-0"><a href="https://arxiv.org/abs/2608.04505">K-EXAONE 2.0 Technical Report</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-08-05</span>
+      <span>MoE upcycling &middot; 750B-A37B &middot; Hybrid attention &middot; 256K context &middot; Self-speculative decoding &middot; Apache 2.0</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Eunbi Choi, Kibong Choi, Sehyun Chun et al. (LG AI Research); Stanley Jungkyu Choi and Honglak Lee lead among the senior contributors.</li>
+      <li>K-EXAONE 2.0 is a Korean-and-multilingual open-weight foundation model developed by LG AI Research, upcycled from the earlier K-EXAONE (<code>236B</code>-total / <code>23B</code>-activated MoE). The upcycled model has <code>750B</code> total parameters and approximately <code>37B</code> activated per token &mdash; <code>3.2&times;</code> the total capacity of its predecessor but only <code>1.6&times;</code> the per-token activated compute. Multilingual coverage expands from six to ten languages; context length is <code>256K</code> tokens; license is Apache 2.0.</li>
+      <li>Named contributions receiving mechanism explanations below: <em>block-level depth upcycling with expert-row duplication</em>, <em>LLLG hybrid attention block</em>, <em>MTP with total-variation loss</em>, and the <em>DSpark drafter for self-speculative decoding</em>.</li>
+      <li>Positioning: framed by LG AI Research as &ldquo;the beginning, not the endpoint&rdquo; of a Korea-anchored program toward global frontier-scale foundation models. Open under Apache 2.0, which is stricter-than-Qwen-style permissive licensing (Alibaba&rsquo;s Qwen3.8-Max is research-only) and puts K-EXAONE 2.0 in the Llama-family bucket for downstream commercial use.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Backbone.</strong> Fine-grained sparse MoE with <code>78</code> transformer layers total: two dense layers at the bottom followed by <code>76</code> MoE layers. The last <code>16</code> MoE layers use Clamped SwiGLU for training and inference stability. Number of experts per layer: <code>256</code> (doubled from K-EXAONE&rsquo;s <code>128</code>) with expert width unchanged. Routing: top-<code>8</code> routed experts plus one always-on shared expert per token, activating <code>~37B</code> parameters.</li>
+      <li><strong>Hybrid attention (retained from K-EXAONE).</strong> The transformer stack repeats a four-layer <em>LLLG block</em>: three <em>local</em> sliding-window attention layers (L) followed by one <em>global</em> attention layer (G). Sliding-window size, routing policy, and tokenizer are inherited unchanged from K-EXAONE.</li>
+      <li><strong>Named contribution &mdash; LLLG hybrid attention.</strong>
+        <ul>
+          <li><em>Problem.</em> Global attention at <code>256K</code> context has O(n<sup>2</sup>) cost; pure sliding-window attention loses long-range dependencies and hurts NIAH retrieval past the window. A layer-level Mamba/attention interleave (as in Jamba) is a coarse blend that pays the global-attention cost more often than needed.</li>
+          <li><em>Mechanism.</em> Group four consecutive layers into an <em>LLLG</em> block &mdash; three sliding-window layers propagate local context cheaply; the single global attention layer at the block boundary re-aggregates full-sequence information into every residual stream. Stacking many LLLG blocks yields a schedule where global information is refreshed every four layers with roughly <code>1/4</code> of the full-attention FLOPs.</li>
+          <li><em>Why.</em> The <code>3:1</code> local-to-global ratio is the empirical sweet spot for preserving perfect NIAH accuracy at <code>256K</code> tokens (confirmed in Section 4.1 of the paper) while keeping the attention FLOP budget close to the pure sliding-window baseline. Beats layer-interleave hybrids because global attention is scheduled at a fixed structural cadence rather than at the granularity of individual layers, giving predictable KV-cache traffic and easier tensor-parallel sharding.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; block-level depth upcycling with expert-row duplication.</strong>
+        <ul>
+          <li><em>Problem.</em> Training a <code>750B</code>-parameter MoE from scratch is prohibitively expensive. Naive per-layer depth expansion inserts new layers between existing ones and disrupts residual scale statistics; naive expert duplication without router-row copying breaks the routing distribution.</li>
+          <li><em>Mechanism.</em> Depth up-scaling operates at the block level: the parent stack of <code>12</code> LLLG blocks is expanded to <code>19</code> blocks by repeating blocks drawn from the middle of the stack (bringing the layer count from <code>48</code> to <code>78</code>). Width up-scaling doubles the number of experts per MoE layer from <code>128</code> to <code>256</code>; every expert is duplicated <em>together with its router row</em> so the initial routing distribution is unchanged. Post-expansion, an <em>expansion-healing stage</em> continues training on a portion of late-stage K-EXAONE data to re-stabilize activations before the <code>8T</code>-token continual pre-training kicks in.</li>
+          <li><em>Why.</em> Duplicating blocks (not individual layers) preserves the residual-stream normalization statistics because a full LLLG unit is a self-contained sub-computation. Duplicating experts with their router rows preserves routing entropy at initialization &mdash; without it, half of the new experts would be routed to at random, wasting the parent&rsquo;s learned specialization. This beats sparse upcycling as originally proposed by Google (routing-agnostic expert copy) on activation stability during the first <code>&lt;100B</code> tokens of continued training.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.04505v1/x2.png" alt="K-EXAONE 2.0 model architecture with LLLG blocks, MTP head, and DSpark drafter" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). K-EXAONE 2.0 architecture. Two dense layers at the bottom feed a stack of MoE-LLLG blocks; an MTP head and a DSpark drafter attach independently to the same target weights.</figcaption>
+    </figure>
+
+    <h3>Pre-training and mid-training</h3>
+    <ul>
+      <li><strong>Continual pre-training.</strong> After block-level upcycling, a healing stage restabilizes activations on a slice of late-stage K-EXAONE data, followed by <code>8T</code> additional tokens on the K-EXAONE 2.0 pre-training mixture. Ablation (Table 3): a <code>40B</code>-token mixture with <code>10B</code> synthetic Wikipedia-derived tokens using the <em>Active Reading</em> style beats <em>textbook-style</em> generation on average by <code>+0.75</code> vs <code>+0.41</code>; Active Reading&rsquo;s biggest gain is ARC-C (<code>+1.54</code>), while textbook-style wins MMLU (<code>+0.55</code>) and GSM8K (<code>+1.52</code>).</li>
+      <li><strong>Korean data.</strong> Institution-sourced vs open-source Korean data (Table 4): institutional data wins Culture &amp; History (<code>68.23</code> vs <code>67.19</code>); open-source data wins Knowledge &amp; Reasoning (<code>47.21</code> vs <code>46.47</code>). Both sources land within <code>0.15</code> average points of each other, motivating the eventual blend.</li>
+      <li><strong>Mid-training.</strong> Two mid-training stages precede SFT. Stage 1 focuses on long-context adaptation up to <code>256K</code>; NIAH is perfect across all evaluated needle positions and lengths (Figure 5). Stage 2 emphasizes reasoning-centric data and agent workflow / tool-calling formats. Table 5: applying Mid-Stage 2 <em>before</em> SFT delivers <code>+4.71</code> HLE points over the Mid-Stage 1 &rarr; SFT baseline of <code>+3.15</code> &mdash; the mid-training reasoning stage is where the frontier-level HLE score is manufactured, not in SFT.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li>SFT aggregates and synthesizes <code>350B</code> tokens spanning reasoning, world &amp; expert knowledge, instruction following, and agentic systems (Section 5.1). A dedicated preference-learning stage (Section 5.2) follows; the report treats data compliance (Section 5.3) as a first-class post-training concern for the Korean regulatory context.</li>
+      <li>RL is applied after SFT and preference learning, targeting reasoning and agentic tool use.</li>
+    </ul>
+
+    <h3>Inference optimization</h3>
+    <ul>
+      <li><strong>Two self-speculative decoding paths on the same target.</strong> K-EXAONE 2.0 ships with both an MTP head (jointly trained from pre-training onward and refined before RL) and an external DSpark drafter (trained after the final weights were fixed). Both attach to the same FP8 target weights and give operators a choice between the two.</li>
+      <li><strong>Named contribution &mdash; MTP with total-variation loss.</strong>
+        <ul>
+          <li><em>Problem.</em> Multi-Token Prediction heads trained with cross-entropy optimize the per-position log-likelihood of drafts, which is a loose surrogate for the actual multi-step acceptance rate under rejection-sampling verification. The two objectives can diverge, especially past the second draft position, so cross-entropy-trained MTP heads leave acceptance-rate wins on the table.</li>
+          <li><em>Mechanism.</em> Before the RL stage, refine the MTP head with an end-to-end <em>total-variation loss</em> that directly optimizes multi-step acceptance under rejection-sampling verification. The loss penalizes the total variation between the drafter&rsquo;s joint draft distribution and the target&rsquo;s joint distribution over the same tokens, propagating through the whole draft window instead of position-by-position.</li>
+          <li><em>Why.</em> By targeting the acceptance metric directly, the refined MTP head lifts acceptance length noticeably on reasoning-heavy prompts, which yields lower-variance RL rollouts (measured against the cross-entropy MTP baseline in the paper&rsquo;s Section 2.3 ablation). Same target weights, no serving-side cost.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; DSpark drafter.</strong>
+        <ul>
+          <li><em>Problem.</em> Purely autoregressive external drafters are sequential and cap the achievable draft-block width; purely parallel drafters lose intra-block token dependencies and get rejected more often on the tail tokens of the draft.</li>
+          <li><em>Mechanism.</em> DSpark is <em>semi-autoregressive</em>. A block-diffusion backbone predicts the whole draft block in a single forward pass, conditioning on intermediate hidden states siphoned from several layers of the target and injected into the keys and values of every draft layer. A lightweight sequential module then refines the block left-to-right, restoring the intra-block dependencies a fully parallel drafter forgoes. A confidence schedule (the &ldquo;D&rdquo; in DSpark) modulates draft-block width per step.</li>
+          <li><em>Why.</em> The block-diffusion pass extracts richer cross-block context in one shot; the sequential refinement pass narrows the drafter&rsquo;s output distribution back onto the intra-block dependency structure the target model actually uses. Table 2 in the paper shows DSpark end-to-end speedups of <code>4.95&times;</code>/<code>5.41&times;</code> on MATH-500 and HumanEval (draft path / total wall clock) vs <code>3.60&times;</code>/<code>3.67&times;</code> for MTP alone on the same K-EXAONE 2.0 (FP8) target under the same draft budget.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>Reasoning mode headline numbers from Table 6 (asterisks in the paper mark scores from baseline models&rsquo; official reports/leaderboards):</li>
+    </ul>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Benchmark</th>
+          <th>K-EXAONE 2.0</th>
+          <th>Delta vs K-EXAONE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td rowspan="3">World Knowledge</td><td>MMLU-Pro</td><td>83.5</td><td>&mdash;</td></tr>
+        <tr><td>GPQA-Diamond</td><td>82.2</td><td>&mdash;</td></tr>
+        <tr><td>Humanity&rsquo;s Last Exam (text-only)</td><td>18.3</td><td>&mdash;</td></tr>
+        <tr><td rowspan="3">Math</td><td>AIME 2026</td><td>92.3</td><td>&mdash;</td></tr>
+        <tr><td>HMMT Feb 2026</td><td>78.4</td><td>&mdash;</td></tr>
+        <tr><td>IMO-AnswerBench</td><td>78.6</td><td>+2.3</td></tr>
+        <tr><td rowspan="3">Coding / Agentic Coding</td><td>SciCode</td><td>40.1</td><td>&mdash;</td></tr>
+        <tr><td>SWE-bench Verified</td><td>68.2</td><td><strong>+18.8</strong></td></tr>
+        <tr><td>Terminal-Bench 2.1</td><td>43.8</td><td><strong>+13.5</strong></td></tr>
+        <tr><td rowspan="2">Agentic Tool Use</td><td>Claw-Eval</td><td>80.0</td><td>+5.7</td></tr>
+        <tr><td>&tau;<sup>3</sup>-Banking</td><td>14.2</td><td>&mdash;</td></tr>
+        <tr><td rowspan="2">Instruction Following</td><td>IFEval</td><td>92.4</td><td>+2.7</td></tr>
+        <tr><td>IFBench</td><td>72.6</td><td>+5.3</td></tr>
+        <tr><td rowspan="3">Korean</td><td>KMMLU-Pro</td><td>69.1</td><td>&mdash;</td></tr>
+        <tr><td>CLIcK</td><td>84.2</td><td>&mdash;</td></tr>
+        <tr><td>HRM8K-KSM</td><td>91.1</td><td>&mdash;</td></tr>
+        <tr><td>Multilingual</td><td>MMMLU / GlobalMMLU-Lite (avg over 9 non-English)</td><td>86.6 / 86.6</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+
+    <ul>
+      <li>The <code>+18.8</code>-point SWE-bench Verified gain and <code>+13.5</code>-point Terminal-Bench 2.1 gain are the report&rsquo;s two clearest capability improvements over K-EXAONE, and the two axes on which K-EXAONE 2.0 credibly claims agentic-coding parity with contemporary open-weight frontier models.</li>
+      <li>Long-context: perfect NIAH retrieval throughout the full <code>256K</code>-token window across all evaluated needle positions (Figure 5).</li>
+      <li>Speculative decoding (Table 2, MTP / DSpark end-to-end wall-clock speedup, same FP8 target, same draft budget): MATH-500 <code>3.60&times;</code> / <code>4.95&times;</code>; HumanEval <code>3.67&times;</code> / <code>5.41&times;</code>; AIME 2026 <code>3.00&times;</code> / <code>4.00&times;</code>. DSpark consistently outperforms MTP end-to-end on reasoning and code, at the cost of a separate drafter checkpoint.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.04505v1/x4.png" alt="Needle-in-a-Haystack retrieval accuracy across context lengths up to 256K tokens" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 5 (from the paper). NIAH retrieval accuracy of K-EXAONE 2.0 across context lengths up to <code>256K</code> tokens and varying needle positions. Perfect retrieval is maintained throughout the evaluated range.</figcaption>
+    </figure>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Continual pre-training synthetic data (Table 3).</strong> Active Reading and textbook-style generation are the two data-synthesis families tested at <code>10B</code> synthetic tokens on top of a <code>30B</code>-token baseline. Averages relative to the initial K-EXAONE checkpoint: baseline <code>+0.46</code>; Active Reading <code>+0.75</code>; textbook-style <code>+0.41</code>. Active Reading&rsquo;s dominant driver is ARC-C (<code>+1.54</code>).</li>
+      <li><strong>Korean data source (Table 4).</strong> Institutional vs open-source Korean corpora reach <code>57.35</code> vs <code>57.20</code> average across Culture &amp; History and Knowledge &amp; Reasoning &mdash; near-identical averages with categorical trade-offs.</li>
+      <li><strong>Mid-training vs SFT for reasoning (Table 5).</strong> Mid-Stage 2 &rarr; Base SFT delivers <code>+4.71</code> HLE points over Mid-Stage 1 &rarr; Base SFT&rsquo;s <code>+3.15</code>. Reasoning capability is manufactured in mid-training, not SFT.</li>
+      <li><strong>Speculative decoding acceptance (Table 2).</strong> MTP-only vs MTP+DSpark on the same target weights and draft budget shows DSpark wins by ~<code>1&times;</code>&ndash;<code>2&times;</code> end-to-end wall clock across MATH-500, HumanEval, and AIME 2026.</li>
+    </ul>
+
+    <h3>Safety and limitations</h3>
+    <ul>
+      <li>Safety-grounded-in-Korean-sociocultural-context is called out as a first-class training goal alongside reasoning, coding, and multilinguality; Section 6.2&rsquo;s Safety category (Table 6) covers the resulting benchmark suite. Data compliance is treated as a distinct post-training stage in Section 5.3.</li>
+      <li>Section 7 flags standard token-probability failure modes and does not claim closed-book factual correctness at frontier scale; the report frames K-EXAONE 2.0 as the beginning of a Korea-anchored program toward global frontier-scale models rather than an endpoint.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Paper: <a href="https://arxiv.org/abs/2608.04505">arXiv:2608.04505</a>. Weights released under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0</a> license. LG AI Research HF org: <a href="https://huggingface.co/LGAI-EXAONE">LGAI-EXAONE</a>. HF Daily Papers: <a href="https://huggingface.co/papers/2608.04505">2608.04505</a>. Speculative decoding assets (MTP head, DSpark drafter) attach to the same target weights.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="worldclaw"><a href="https://arxiv.org/abs/2608.05248">WorldClaw: Agentic 3D Open-World Generation at Scale</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-08-05</span>
+      <span>Agentic 3D generation &middot; Coarse-to-fine &middot; Terrain foundation &middot; Editable meshes &middot; Hunyuan3D</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Tencent Hunyuan (see project page <a href="https://tencent-hunyuan.github.io/Hunyuan3D-WorldClaw">tencent-hunyuan.github.io/Hunyuan3D-WorldClaw</a>). WorldClaw slots into the Hunyuan3D family alongside Hunyuan3D 2.5 (March 2026) and Hunyuan3D-Buffalo 1.0 (August 2026 &mdash; covered 2026-08-05).</li>
+      <li>The system takes an open-ended text prompt and produces a large-scale, freely explorable 3D world whose terrain, regions, objects, and materials are all preserved as editable, textured meshes with explicit placements &mdash; suitable for game-engine reuse rather than as a fixed rendered clip.</li>
+      <li>Central design insight: a globally coherent world need not be generated everywhere at once. Global constraints (scene semantics, spatial organization, terrain foundation) can be established once, while local content is progressively realized only in regions that need detail. This defines the three sequential stages: <em>intent analysis and planning</em>, <em>global terrain generation</em>, <em>regional object generation and placement</em>.</li>
+      <li>Named contributions receiving mechanism explanations below: <em>Two-agent intent analysis and scene-level planning</em>, <em>Semantic-layout-guided procedural terrain generation</em>, and the <em>Terrain-conditioned regional composition loop with agentic refinement</em>.</li>
+    </ul>
+
+    <h3>Method</h3>
+    <ul>
+      <li>Formalization: given prompt <code>q</code>, WorldClaw computes <code>P = F_plan(q)</code> (structured scene specification), <code>T = F_terrain(P)</code> (global terrain), <code>O = F_region(P, T)</code> (regional objects), and returns the world <code>S = Compose(T, O)</code>. The scene specification decomposes as <code>P = (R, C_terrain, C_object)</code> for regions, terrain constraints, and object constraints.</li>
+      <li><strong>Named contribution &mdash; Two-agent intent analysis and scene-level planning.</strong>
+        <ul>
+          <li><em>Problem.</em> Users describe target scenes with short, open-ended prompts that specify a handful of salient concepts and omit most of what downstream 3D pipelines need (region boundaries, world scale, landform parameters, asset densities, material specs, environmental atmosphere). Passing the raw prompt to a single generation module forces it to jointly perform semantic interpretation, missing-information completion, and geometric instantiation &mdash; and the result can look plausible while silently drifting from the user&rsquo;s intent.</li>
+          <li><em>Mechanism.</em> Split the front-end into two agents. The <em>intent analysis agent</em> extracts and normalizes explicit constraints only (scene type, theme, visual style, key regions/objects, spatial relationships, preferences) &mdash; it summarizes what the user actually said and completes nothing. The <em>scene planning agent</em> then conditions on both the raw prompt and the extracted explicit constraints, resolves ambiguity, and fills in the missing attributes required by downstream modules according to a predefined scene-specification schema, producing <code>P = (R, C_terrain, C_object)</code>.</li>
+          <li><em>Why.</em> Separating explicit-constraint extraction from missing-information completion preserves user intent as an inspectable intermediate, and locks in a shared semantic interface that downstream terrain and object generation both consume &mdash; so terrain choices and object choices cannot silently disagree about what the user asked for. Beats prior MLLM-agent scene pipelines (Holodeck, SceneWeaver, SAGE, SceneSmith) that fuse extraction and completion in a single planning call and drift on complex spatial relationships.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Semantic-layout-guided procedural terrain generation.</strong>
+        <ul>
+          <li><em>Problem.</em> Existing scene-generation pipelines simplify the ground as a planar or weakly varying support and place objects on top of it. This cannot represent geometrically expressive landforms (mountains, canyons, dunes, terraces) and cannot organize a continuous space into semantically distinct regions. Native 3D diffusion methods (LT3SD, BlockFusion, XCube) get the geometry but are content-diversity-bottlenecked on 3D-scene training data.</li>
+          <li><em>Mechanism.</em> A terrain planning agent refines the high-level terrain requirements in <code>P</code> into an executable <em>structured terrain specification</em> and drives a <em>tool-augmented planner</em> that emits a <em>semantic layout map</em> (per-region ground semantics), <em>terrain asset prototypes</em> (reusable), and <em>terrain materials</em> (procedurally or generatively produced). An initial height field is constructed from the semantic layout map, terrain assets are scattered in a region-aware pattern, and a terrain refinement pass improves geometry and appearance. The output <code>T</code> is a region-organized 3D landform with explicit semantics.</li>
+          <li><em>Why.</em> Placing the semantic layout map upstream of the height field guarantees that region-level ground semantics survive into the final terrain, and using reusable terrain-asset prototypes decouples geometry diversity from the (scarce) 3D-scene training-data axis that bottlenecks native 3D diffusion. Beats Infinigen (pure PCG, no semantic layout) and beats video-lifting pipelines like Marble on geometric fidelity because the terrain is constructed as an explicit height field with regional semantics rather than reconstructed from multi-view video.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Terrain-conditioned regional composition loop with agentic refinement.</strong>
+        <ul>
+          <li><em>Problem.</em> Naive object placement on a generated terrain produces object&ndash;terrain interpenetration, floating assets, and violated global scene constraints; a monolithic &ldquo;generate everything in one pass&rdquo; approach cannot enforce region-specific spatial coherence.</li>
+          <li><em>Mechanism.</em> For each selected region, WorldClaw renders the local terrain as a 2D image and drives an image-editing model with a prompt that fuses global scene context with local terrain information (<em>region composition</em>). The inserted objects are lifted to 3D assets via an image-to-3D model (<em>object generation</em>), placed on the terrain with local pose recovery (<em>object placement</em>), and passed through an agentic refinement loop that iteratively fixes object quality, scale/pose, and object&ndash;terrain contact. The terrain itself is also passed through a second refinement pass with global scene context attached.</li>
+          <li><em>Why.</em> Rendering the terrain and using an image-editing model as the region-populating oracle exploits the maturity of 2D image-conditional generation while preserving the 3D scene as the source of truth. The agentic refinement loop closes the geometric-consistency gap that has been the persistent failure mode of prior MLLM-agent 3D pipelines &mdash; those pipelines lack 3D spatial control and, per the paper, &ldquo;may overcorrect because of inadequate spatial scale awareness.&rdquo; The loop replaces one-shot correction with iterative render-and-fix, driven by inspection agents.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.05248v1/figures/pipeline_v2.jpg" alt="WorldClaw three-stage global-to-regional pipeline" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). WorldClaw overview. (1) Intent analysis and planning translates the prompt into a structured scene specification; (2) global terrain generation establishes a region-aware terrain foundation with coherent geometry, appearance, and spatial semantics; (3) regional object generation and placement populates planned regions with editable 3D assets and refines their arrangements and interactions with the terrain.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.05248v1/figures/stage1-3_method_v2.jpg" alt="WorldClaw stage-by-stage method diagram" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). Stage-by-stage decomposition of the three WorldClaw modules, showing intermediate structured representations passed between agents.</figcaption>
+    </figure>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>Section 3 reports qualitative results and qualitative comparisons only; no numerical benchmark grid is provided in the current release. Comparisons are grouped along three axes: <em>Terrain and Region Organization</em>, <em>Content Richness and Prompt Alignment</em>, and <em>Free-Viewpoint Appearance and Scene Representation</em>.</li>
+      <li>Baseline categories compared against in the qualitative gallery (per Section 4 Related Work): PCG (Infinigen), image/video-lifting (Marble by World Labs), native 3D diffusion (XCube, BlockFusion, LT3SD), and MLLM-agent-driven scene generation (Holodeck, SceneWeaver, SAGE, SceneSmith).</li>
+      <li>Reported qualitative wins: WorldClaw preserves region boundaries and inter-region transitions where PCG and video-lifting baselines lose them; supports free-viewpoint camera paths that video-lifting baselines cannot cover without artifact-heavy extrapolation; produces higher content richness and prompt alignment than native 3D diffusion because the object-generation stage inherits the maturity of 2D generative models.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The paper does not report a formal numerical ablation grid, but the three-stage decomposition itself is presented as an implicit ablation over prior methods: PCG (no MLLM-agent planning), MLLM-agents (no terrain foundation), native 3D diffusion (no agentic refinement).</li>
+      <li>The agentic refinement loop is called out as the resolver of object&ndash;terrain contact issues that all prior categories drop.</li>
+    </ul>
+
+    <h3>Limitations</h3>
+    <ul>
+      <li>Section 5 acknowledges that the system inherits limitations from its constituent 2D image editors and image-to-3D models, and that the refinement loop&rsquo;s wall-clock cost grows with region complexity. The absence of a numerical benchmark grid is the report&rsquo;s largest gap and will need to be closed by a v2 release for direct head-to-head positioning against the native 3D diffusion frontier.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Paper: <a href="https://arxiv.org/abs/2608.05248">arXiv:2608.05248</a>. Project page: <a href="https://tencent-hunyuan.github.io/Hunyuan3D-WorldClaw">tencent-hunyuan.github.io/Hunyuan3D-WorldClaw</a>. HF Daily Papers: <a href="https://huggingface.co/papers/2608.05248">2608.05248</a>. Tencent Hunyuan HF org: <a href="https://huggingface.co/Tencent-Hunyuan">Tencent-Hunyuan</a>.</li>
+    </ul>
+
+    <h1 id="meta">Meta</h1>
+
+    <h2 id="physics-of-mm-pretrain"><a href="https://arxiv.org/abs/2608.05000">Towards Physics of Multimodal Pretraining: Knowledge Flow, Modality Synergy, Early Unification, and Recipes</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-05</span>
+      <span>Multimodal pretraining &middot; Early fusion &middot; Compute-efficient recipes &middot; Native MoE</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Junlin Han, Shengbang Tong, David Fan, Minghao Chen, Philip Torr, Filippos Kokkinos, Mike Lewis. Corresponding-author-side lead is Meta AI (David Fan, Filippos Kokkinos, Mike Lewis); collaborations with University of Oxford (Philip Torr) and NYU (Shengbang Tong). Project page: <a href="https://junlinhan.github.io/projects/physics_of_mm_pretrain/">junlinhan.github.io/projects/physics_of_mm_pretrain</a>.</li>
+      <li>An empirical &ldquo;physics of&rdquo;-style paper &mdash; sweeping controlled experiments on synthetic and large-scale real-world datasets to characterize how modalities interact in natively unified multimodal pretraining. Four axes are studied: knowledge flow across modalities, synergy vs competition, early-vs-late unification, and compute-efficient recipes. Results are validated at scale by training multiple <code>13.5B</code>-parameter MoE models on <code>2T</code>-token corpora.</li>
+      <li>Named contribution receiving mechanism explanation below: <em>Early Unification (vs late alignment / sequential training) with modality-specific FFN and shared attention/norm</em>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Knowledge Flow.</strong> Controlled experiments isolate three flows: language &harr; visual understanding, language &harr; visual generation, visual understanding &harr; visual generation. The paper reports <em>distinct patterns of influence and asymmetry</em> &mdash; language transfers into visual understanding more strongly than the reverse; visual generation shares less with visual understanding than either shares with language.</li>
+      <li><strong>Synergy vs Competition.</strong> Modality pairs are synergistic when the training data is high &ldquo;complexity&rdquo; and competitive when it is not; the operational definition of complexity is left to the appendix ablations. Architectural finding: <em>shared attention and normalization combined with modality-specific feed-forward layers</em> is the sweet spot &mdash; it maximizes synergy across the tested visual-tokenizer choices and generalizes across tokenizer designs.</li>
+      <li><strong>Named contribution &mdash; Early Unification with modality-specific FFN.</strong>
+        <ul>
+          <li><em>Problem.</em> The dominant multimodal recipe (LLaVA-family, CLIP-align-then-tune, Flamingo-style late fusion) first trains a language backbone, then aligns a vision encoder, then jointly fine-tunes. This late-fusion pipeline induces a <em>vision laziness</em> phenomenon: the model, having already learned to predict language from language, keeps relying on language priors even after vision is bolted on. The visual pathway under-contributes; the language head over-fires.</li>
+          <li><em>Mechanism.</em> Unify modalities from the earliest pretraining steps. Share attention layers and normalization across modalities so the residual stream carries a single joint representation, but keep <em>modality-specific feed-forward layers</em> so each modality retains a private nonlinear pathway. Train all modalities jointly from step 0 rather than aligning them at a later stage. The paper reports this configuration generalizes across visual-tokenizer designs (i.e., it is not tied to any particular VQ or continuous tokenizer).</li>
+          <li><em>Why.</em> Shared attention/norm force joint representation from the start, breaking vision laziness because the attention layer must attend to both modalities to make any prediction. Modality-specific FFN prevents the two modalities from destructively interfering in the nonlinear layer where semantic transformations concentrate &mdash; the same architectural insight that made MoE routing work in text-only models is here specialized along the modality axis. Beats late-alignment recipes because it never gives the model a chance to develop a language-only prior in the first place; beats fully shared FFN because it lets each modality specialize where interference would otherwise dominate.</li>
+        </ul>
+      </li>
+      <li><strong>Recipes.</strong> The paper distills the four findings into an efficient pretraining recipe that reaches strong generative performance at <code>5%</code> of the standard compute budget (Section &ldquo;Recipes&rdquo; per the abstract). The recipe is validated by training multiple <code>13.5B</code>-parameter MoE models on <code>2T</code>-token corpora.</li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>Headline numerical claim from the abstract: efficient recipes reach strong generative performance using only <code>5%</code> of the standard compute budget, verified across multiple <code>13.5B</code> MoE runs on <code>2T</code>-token corpora.</li>
+      <li>Detailed benchmark grids are hosted on the project page rather than reproduced here; the paper&rsquo;s scientific contribution is the <em>controlled sweep</em> rather than a headline leaderboard result, and its numerical validation is upstream of any single benchmark score.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Knowledge Flow: three pairwise transfer experiments disentangle the asymmetric influence patterns.</li>
+      <li>Synergy vs Competition: complexity sweeps establish the data-complexity threshold at which modality synergy overtakes competition, and architectural sweeps confirm that shared attention/norm + modality-specific FFN is robust across visual-tokenizer choices.</li>
+      <li>Early Unification: a &ldquo;vision laziness&rdquo; ablation compares early-unified training against sequential and late-alignment training on the same total compute; late alignment under-uses the visual pathway even after joint fine-tuning.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning within the current Meta multimodal program: the paper reads as the pretraining-side foundation for the next generation of Meta&rsquo;s natively unified multimodal models, following the vision-laziness thread first raised in earlier Chameleon-family Meta work.</li>
+      <li>Related work: Chameleon (Meta, early unified), Fuyu (Adept), and the DiffusionGemma / LLaDA MoE v2 axis (covered 2026-08-04 and 2026-08-05) sit orthogonally &mdash; those are diffusion-LM training modes, whereas this paper studies the AR native-fusion training mode.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
