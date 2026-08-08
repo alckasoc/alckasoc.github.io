@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Recursive Task Synthesis and World Rehearsal Review — August 8, 2026 | Auto Lit Review</title>
+<meta name="description" content="Four Tier 2 frontier-lab papers: Tencent Hunyuan's Recursive Synthetic Terminal Tasks, Tencent's EnvACE world-rehearsal RL, NAVER AI Lab's On-Policy Delta Distillation, and ByteDance Seed's GST-Bench." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">2026-08-08</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#bytedance">ByteDance</a>
+          <ul>
+            <li class="toc-h2"><a href="#gst-bench">GST-Bench: Can VLMs Develop Global Spatial Awareness from Video?</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#naver">Naver Cloud</a>
+          <ul>
+            <li class="toc-h2"><a href="#opd2">On-Policy Delta Distillation for Multilingual Math Reasoning</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#tencent">Tencent</a>
+          <ul>
+            <li class="toc-h2"><a href="#recursive-synthesis">Recursive Synthesis for Long-Horizon Terminal Tasks</a></li>
+            <li class="toc-h2"><a href="#envace">EnvACE: Internalizing Environment Dynamics via World Rehearsal for Agentic Reinforcement Learning</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review · August 8, 2026</div>
+    <h1 class="page-title">Recursive Task Synthesis, World Rehearsal, and Delta Distillation</h1>
+    <div class="page-meta">4 papers · 3 labs · auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>No flagship model launches from any frontier lab in the 36-hour window; the day is Tier 2. Four frontier-lab papers converge on the same underlying question: how to keep improving agentic and multilingual LLMs when real environments and standard teacher signals are the bottleneck. <strong>Tencent HY LLM Frontier</strong>'s <em>Recursive Synthesis for Long-Horizon Terminal Tasks</em> proposes <em>Recursive Synthetic Terminal Tasks (RST)</em>, a recursive verified pipeline that grows a seed pool of terminal-agent tasks fifteen rounds deep &mdash; 37,484 verified tasks at roughly <code>$0.05</code> each, with <code>DeepSeek-V4-Pro</code> pass@4 collapsing from <code>90%</code> at <code>R<sub>1</sub></code> to <code>2.5%</code> at <code>R<sub>15</sub></code> without exhausting the recursion. <strong>Tencent</strong> + SJTU's <em>EnvACE</em> goes further and removes the environment entirely: one policy plays both actor and environment via <em>world rehearsal</em>, trained end-to-end with <em>Role-Wise GRPO</em>, and beats environment-scaling baselines on <code>BFCL-v4</code>, <code>&tau;<sup>2</sup>-Bench</code>, <code>VitaBench</code>, and <code>FinMCP-Bench</code>. <strong>NAVER AI Lab</strong>'s <em>OPD<sup>2</sup></em> replaces the teacher's raw log-probability with the delta between the post-trained teacher and its base checkpoint, isolating the specifically-learned post-training capability and consistently beating vanilla OPD on Qwen3 multilingual math &mdash; especially in Korean and Japanese. <strong>ByteDance Seed</strong>'s <em>GST-Bench</em> shows that despite recent multimodal progress, the strongest VLM reaches only <code>42.68</code> on global spatial reasoning over 6,790 minutes of video vs a human <code>79.08</code>, and that the failure is not local perception but scene-level consolidation across long-horizon visual streams.</p>
+      <h3>Competitiveness</h3>
+      <p>None of the four papers introduces a new competitive frontier model; the state of the leaderboards remains where <em>Qwen3.8-Max</em> (Alibaba, 2026-08-03), <em>MiniMax H3</em> (2026-08-03), <em>Inkling-Small</em> (Thinking Machines Lab, 2026-07-30), <em>Kimi K3</em> (Moonshot, 2026-07-16/27), <em>GPT-5.6</em> (OpenAI, 2026-07-10 with the 2026-07-31 price cut on Luna/Terra), <em>Claude Opus 5</em> (Anthropic, 2026-07-24), <em>Claude Fable 5</em>, and <em>Gemini 3.6 Flash</em> (Google DeepMind, 2026-07-21) left it. What today's papers do reset is the marginal cost of pushing further: RST cuts long-horizon terminal-task authoring from hundreds of dollars each to five cents, EnvACE removes the sandbox-construction bottleneck for agentic-RL environments, and OPD<sup>2</sup> extracts a cleaner post-training signal from any teacher that a lab has already trained. GST-Bench, by contrast, opens rather than closes a gap: it isolates a capability that even the best current VLMs fall <code>36+</code> points short of human on.</p>
+      <h3>New frontier releases</h3>
+      <p>No new flagship models today. The most recent frontier launches remain the 2026-08-05 pair (Tencent Hunyuan's <em>Hunyuan3D-Buffalo 1.0</em> and Ant Group's <em>LLaDA MoE v2</em>) and the 2026-08-07 pair (LG AI Research's <em>K-EXAONE 2.0</em> and Tencent Hunyuan's <em>WorldClaw</em>) already covered in prior reviews.</p>
+    </section>
+
+    <h1 id="bytedance">ByteDance</h1>
+
+    <h2 id="gst-bench"><a href="https://arxiv.org/abs/2608.05747">GST-Bench: Can VLMs Develop Global Spatial Awareness from Video?</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-06</span>
+      <span>VLMs · Spatial reasoning · Video · Benchmarks</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>ByteDance Seed introduces the <strong>Global-Spatial-Temporal Benchmark (GST-Bench)</strong>, a VQA benchmark for <em>global</em> spatial intelligence in video understanding &mdash; the ability to consolidate a continuous long-horizon visual stream into a globally consistent scene representation, then answer questions from viewpoints unseen in the input.</li>
+      <li>Ships alongside a diagnostic split <strong>GST-Bench-Local</strong> that holds the task format constant while restricting the required reasoning to a single viewpoint, plus a complementary training set <strong>GST-Train</strong>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Problem the benchmark isolates.</strong> Existing spatial benchmarks score models on <em>local</em> perception from a single or a small number of viewpoints. A VLM can be very strong on local questions and still fail to build a scene-level map from a long video &mdash; that failure was previously invisible.</li>
+      <li><strong>Mechanism.</strong> Human-verified VQA over <code>6,790</code> minutes of synthetically generated video. Two capabilities are stressed: (1) spatial inference from <em>novel viewpoints unseen</em> in the input video, and (2) mapping egocentric observations onto a global <em>top-down</em> image of the same environment. Because the video is synthetic, geometry and camera trajectory are ground-truth and the "novel-viewpoint" query is well-posed.</li>
+      <li><strong>Why the local split matters.</strong> GST-Bench-Local uses the same question templates but restricts required evidence to one viewpoint. If a model scores well on GST-Bench-Local but poorly on GST-Bench, the missing capability is not perception but cross-frame consolidation. This design converts a single benchmark score into an interpretable diagnostic.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>22 SOTA VLMs evaluated zero-shot. Best model scores <code>42.68</code>; human score is <code>79.08</code> &mdash; a <code>~36</code>-point gap.</li>
+      <li>Same models do <em>not</em> show a comparable gap on GST-Bench-Local under the identical task formulation, indicating that local spatial understanding is broadly present.</li>
+      <li>The delta between GST-Bench-Local and GST-Bench is the authors' proposed measure of a model's global-scene-consolidation deficit.</li>
+      <li>GST-Train is released as a complementary resource to close that gap.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>All video is synthetically generated, so the benchmark inherits its own domain-shift caveat &mdash; a VLM that solves GST-Bench may still fail on real-world video of the same task format. The paper does not claim otherwise.</li>
+    </ul>
+
+    <h1 id="naver">Naver Cloud</h1>
+
+    <h2 id="opd2"><a href="https://arxiv.org/abs/2608.05802">On-Policy Delta Distillation for Multilingual Math Reasoning</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-06</span>
+      <span>Distillation · Post-training · Multilingual · Math reasoning</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>NAVER AI Lab (Byeongho Heo, Jaehui Hwang, Sangdoo Yun, Dongyoon Han) studies On-Policy Distillation (OPD) in multilingual settings and proposes <strong>OPD<sup>2</sup> (On-Policy Delta Distillation)</strong>, which replaces the teacher's raw log-probability with the <em>delta</em> between the post-trained teacher and its base checkpoint as the learning signal.</li>
+      <li>Framed as a post-training alternative to RL for the specific regime where the teacher is a lab's own post-trained model and the student is trained on-policy on the same architecture family (Qwen3 here).</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Problem.</strong> Vanilla OPD supervises student-sampled tokens with the teacher's log-probability. In a multilingual setting, most of that log-probability mass encodes shared linguistic priors that the student already inherits from its own pre-training. The specifically-learned post-training capability is a small perturbation on top &mdash; and it gets drowned out.</li>
+      <li><strong>Mechanism &mdash; the delta signal.</strong> Let <code>&pi;<sub>T</sub></code> be the post-trained teacher and <code>&pi;<sub>T,base</sub></code> its own base checkpoint (i.e., the pre-post-training checkpoint of the same model). OPD<sup>2</sup> supervises the student with <code>log &pi;<sub>T</sub>(y|x) &minus; log &pi;<sub>T,base</sub>(y|x)</code> instead of <code>log &pi;<sub>T</sub>(y|x)</code>. Everything else in the OPD loop is unchanged: student samples on-policy, per-token divergence against the (delta) signal, standard optimizer.</li>
+      <li><strong>Why.</strong> The delta strips out what the teacher already knew before post-training and keeps only what post-training added. In English, where teacher and base are both strong, this changes little. In Korean and Japanese, where the base is weaker and the post-training capability is a much larger fraction of the total probability mass, the delta is where the useful signal lives &mdash; and prior OPD was dominated by base-model bias that shifted student responses toward English.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Backbone: Qwen3. Domain: mathematical reasoning in English, Korean, Japanese.</li>
+      <li>OPD<sup>2</sup> consistently outperforms vanilla OPD across all three languages, with the largest gains in Korean and Japanese; the English&ndash;Korean performance gap generally narrows.</li>
+      <li>Ablation: English-only OPD raises Korean and Japanese scores <em>but shifts responses toward English</em>, defeating the point. Multilingual data is required to preserve target-language responses even with the delta signal.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Head-to-head against selective OPD baselines (confidence-, information-, or learnability-prioritized token selection).</li>
+      <li>Language-mix ablations that trade off English proficiency preservation against Korean/Japanese lift.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>9 pages, 3 figures, 10 tables. CC BY 4.0.</li>
+      <li>Directly applicable to any lab whose flagship post-training pipeline already produces both a base and post-trained checkpoint (i.e., all of them).</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="recursive-synthesis"><a href="https://arxiv.org/abs/2608.05466">Recursive Synthesis for Long-Horizon Terminal Tasks</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-05</span>
+      <span>Agents · Terminal · Data synthesis · Agentic RL</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Tencent HY LLM Frontier, with University of Georgia, UMD, Penn, Minnesota, Indiana, NUS, and PolyU, proposes <strong>Recursive Synthetic Terminal Tasks (RST)</strong>: a recursive verified pipeline that grows a seed pool of long-horizon terminal-agent tasks &mdash; instruction, sandbox environment, reference solution, and verifier &mdash; fifteen rounds deep while keeping all four mutually consistent.</li>
+      <li>Ranked #1 on Hugging Face Daily Papers for 2026-08-06 (212 upvotes). Code, project site, and the full Recursive Task Synthesis collection released on Hugging Face.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.05466v1/x2.png" alt="Pass rate and trajectory length across recursive synthesis rounds for DeepSeek-V4-Pro and GPT-5.6-sol under 70%, 80%, and 90% partial credit thresholds." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper, hotlinked from arxiv.org). Pass rate and trajectory length across recursive synthesis rounds for <code>DeepSeek-V4-Pro</code> and <code>GPT-5.6-sol</code> under 70%, 80%, and 90% partial-credit thresholds. Pass rate falls monotonically; trajectory length rises without saturation.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Problem.</strong> A useful terminal-agent training task requires four consistent artifacts &mdash; an instruction, a runnable workspace, a reference solution, and a verifier that unambiguously grades success. Human authoring costs hundreds to thousands of dollars per task. Direct one-shot LLM generation breaks the consistency: the solution stops passing the verifier, or the verifier stops matching the instruction. Neither scales to the difficulty regime where current agents actually still fail.</li>
+      <li><strong>Mechanism &mdash; the recursive verified loop.</strong> Starting from a diverse seed pool (bootstrapped from 639 human-verified tasks), each round: (1) select a target from the seed pool under a diversity cap; (2) <em>grow-solution-then-align</em> &mdash; extend the reference solution with additional workflow steps using DeepSeek-V4-Pro, then rewrite the verifier and instruction to match the new solution; (3) run local generation-quality filters and a static preflight; (4) execute in a fresh sandbox against the rewritten verifier as an oracle; (5) accepted tasks join the seed pool and are eligible seeds for the next round. Fifteen rounds total.</li>
+      <li><strong>Why it works.</strong> The verifier acts as an inductive filter that would kill any inconsistency between instruction, environment, and solution &mdash; one-shot LLM generation has no such filter. The recursion converts <em>solver</em> pass-rate on generated tasks (which drops as tasks get harder) into <em>synthesis</em> yield (which stays stable because the verifier only accepts internally consistent tasks). This decouples generation difficulty from validation difficulty.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Synthesis scale and cost.</strong> 37,484 verified terminal-agent tasks across 15 rounds from 639 seeds. Cost roughly <code>$0.05</code> per synthesized task &mdash; four orders of magnitude cheaper than human authoring.</li>
+      <li><strong>Difficulty climb.</strong> Median reference-solution length grows from <code>67</code> to <code>374</code> lines (<code>5.6&times;</code>); median executed commands from <code>40</code> to <code>244</code> (<code>6.1&times;</code>); median instruction length only grows <code>1.4&times;</code>, i.e., the tasks get harder without becoming verbose.</li>
+      <li><strong>Solver collapse.</strong> Under the strictest partial-credit threshold, <code>DeepSeek-V4-Pro</code> pass@4 drops from <code>90%</code> at <code>R<sub>1</sub></code> to <code>2.5%</code> at <code>R<sub>15</sub></code>; pass rate drops from <code>72%</code> to <code>4%</code> for DeepSeek-V4-Pro and <code>72.2%</code> to <code>7%</code> for <code>GPT-5.6-sol</code> from seed to <code>R<sub>15</sub></code>.</li>
+      <li><strong>SFT training utility.</strong> Rejection-sampled Qwen3.5 trajectories on the synthesized tasks, used for SFT, improve Qwen3.5-27B and Qwen3.5-122B-A10B by up to <code>10</code> points on Terminal-Bench 2, Terminal-Bench Hard, and Long-Horizon Terminal Bench.</li>
+      <li><strong>Agentic PPO.</strong> Lifts Qwen3.5-27B further to <code>49.44%</code> on Terminal-Bench 2, <code>32.00%</code> on Terminal-Bench Hard, <code>22.07%</code> on Long-Horizon Terminal Bench &mdash; relative gains of <code>20.0%</code>, <code>41.2%</code>, and <code>21.9%</code> over the base model. Absolute deltas from SFT baseline: <code>+8.24%</code>, <code>+9.33%</code>, <code>+3.97%</code>.</li>
+      <li><strong>No ceiling after 15 rounds.</strong> Synthesis yield and validation rates remain stable as difficulty keeps climbing &mdash; the recursion is not visibly capped by RST's own dynamics.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>DeepSeek-V4-Pro is the synthesis LLM; Qwen3.5 is the trained student; both DeepSeek-V4-Pro and GPT-5.6-sol are used as evaluation solvers.</li>
+      <li>Public collection on <a href="https://huggingface.co/collections/Zhongzhi1228/recursive-task-synthesis">Hugging Face</a>; project site at <a href="https://zhongzhi660.github.io/recursive-verified-synthesis-site/">zhongzhi660.github.io/recursive-verified-synthesis-site</a>.</li>
+    </ul>
+
+    <h2 id="envace"><a href="https://arxiv.org/abs/2608.06197">EnvACE: Internalizing Environment Dynamics via World Rehearsal for Agentic Reinforcement Learning</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-06</span>
+      <span>Agentic RL · World models · Tool use · GRPO</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Tencent (Yasheng Wang, Yan Xu), SJTU (Weinan Zhang, Weiwen Liu), CUHK (Xingshan Zeng), and collaborators propose <strong>EnvACE</strong>, an agentic-RL method that removes external environment interaction from training and rehearses the environment inside the policy.</li>
+      <li>Ships with a two-role training objective (<strong>Role-Wise GRPO</strong>) and a test-time <strong>private rehearsal</strong> mechanism.</li>
+      <li>Code: <a href="https://github.com/Within-yao/EnvACE">github.com/Within-yao/EnvACE</a>.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.06197v1/x3.png" alt="Comparison of three agent rollout paradigms: real-environment rollout, external-simulator rollout, and EnvACE world rehearsal." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper, hotlinked from arxiv.org). Comparison of three agent rollout paradigms &mdash; real-environment rollout, external-simulator rollout, and EnvACE world rehearsal. Prior approaches obtain environment responses from external sources; EnvACE internalizes environment responses within the policy.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Problem.</strong> Agentic-RL training for long-horizon tool use depends on either (a) real executable environments &mdash; costly to build and verify, hard to scale &mdash; or (b) external LLM simulators, which are cheaper but produce inaccurate or inconsistent responses and still need real-environment grounding. In both cases the world-modeling capability lives <em>outside</em> the acting policy, which never has to learn how the environment responds.</li>
+      <li><strong>Mechanism &mdash; world rehearsal.</strong> A single policy plays two roles per turn. First it emits a tool call as the actor; then, without querying any external system, it plays the environment and rehearses the response that tool call would induce; then it conditions the next action on the rehearsed response. A trajectory becomes a self-unfolded process rather than a dialogue with an external system. Both roles are jointly optimized end-to-end under a task-success reward using <strong>Role-Wise GRPO</strong> &mdash; the group-relative normalization is computed <em>per role</em> so the actor is not penalized for a bad rehearsal and vice-versa.</li>
+      <li><strong>Test-time scaling.</strong> Because the same policy is now an internal world model, at inference it can <em>privately rehearse</em> a candidate action before committing to a real execution &mdash; extra rehearsal-budget compute converts to accuracy without additional external interaction.</li>
+      <li><strong>Why it works.</strong> Prior work either consumes externally supplied observations (leaving env-modeling to the sandbox) or predicts them as an auxiliary loss (retaining external ground truth). EnvACE absorbs the simulator into the policy's parameters &mdash; the policy is forced to be consistent between its own actor and its own rehearsal because both are graded on the same task-success reward. That constraint is what turns rehearsal from imagination into a usable world model.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Benchmarks: <code>BFCL-v4</code>, <code>&tau;<sup>2</sup>-Bench</code>, <code>VitaBench</code>, and <code>FinMCP-Bench</code>. EnvACE outperforms environment-scaling baselines in the overall evaluation and shows strong transferability across the four benchmarks.</li>
+      <li>Controlled studies show world rehearsal consistently improves policy learning across model scales &mdash; the gain is not a small-model artifact.</li>
+      <li>Test-time rehearsal budget yields further gains under moderate budgets, without any additional external interaction.</li>
+      <li>Training-dynamics analysis shows that both the actor and rehearsal-role log-likelihoods co-evolve, and that ablating the rehearsal role collapses performance back to the baseline &mdash; the two roles are causally coupled.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><em>World rehearsal on/off</em>: removing the rehearsal role reverts EnvACE to a real-environment-only agentic-RL baseline; gains disappear.</li>
+      <li><em>Rehearsal-budget sweep at test time</em>: monotonic improvement up to a moderate budget, then saturates.</li>
+      <li><em>Scale sweep</em>: rehearsal-driven gains persist across model sizes tested.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Task-success rewards are the only supervision; no per-turn dense reward and no critic. The method sits inside the same GRPO-family loop that has become the default for post-training agentic policies.</li>
+      <li>Positions itself alongside prior world-model-for-agents work (Qwen-AgentWorld, self-play world-model finetuning) &mdash; the distinction is that here the world model is not a separately trained artifact but a role the policy plays under a shared reward.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
