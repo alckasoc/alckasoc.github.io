@@ -36,6 +36,13 @@
       <!-- REVIEW_LIST_START -->
             <ul class="review-list">
         <li class="review-item">
+          <span class="date">August 9, 2026</span>
+          <div>
+            <h2><a href="reviews/turn-level-credit-assignment-for-agentic-rl-review-2026-08-09.html">Turn-Level Credit Assignment for Agentic RL</a></h2>
+            <p>No new flagship model launches in the 36-hour window; a quiet Sunday cadence with a single Tier 2 headline. <strong>Tsinghua</strong> (with Zhejiang University and Meituan) posts <em>AgentOPSD: Recursive Self-Distillation for Agentic Reinforcement Learning</em>, the #1 Hugging Face paper of 2026-08-07, targeting a specific failure of on-policy self-distillation for agentic RL: the token-level teacher&ndash;student log-probability gap is not, on its own, sequential credit. Three named contributions each with a mechanism explanation: (1) formalize turn-level credit as the marginal revision of a Bayesian success belief in log-odds space, using the aggregated per-turn OPSD contrast as a proxy for the outcome-conditional Bayes factor; (2) a recursive belief update <code>c<sub>k</sub> = &gamma;&thinsp;c<sub>k&minus;1</sub> + e<sub>k</sub></code>, <code>&ell;<sub>k</sub> = logit(B<sub>0</sub>) + c<sub>k</sub></code> initialized from the clipped GRPO group success rate, so <code>&Delta;B<sub>k</sub> &asymp; B<sub>k&minus;1</sub>(1&minus;B<sub>k&minus;1</sub>)(e<sub>k</sub> &minus; (1&minus;&gamma;)c<sub>k&minus;1</sub>)</code> makes credit history-dependent and naturally suppressed once support saturates; (3) an outcome-aligned <code>q<sub>k</sub> = sign(A<sub>seq</sub>) &sdot; &Delta;B<sub>k</sub></code> and within-trajectory standardization feeding a bounded multiplier on the GRPO advantage &mdash; never reverses the outcome-supervised direction, requires neither a critic nor extra rollouts. Reaches <code>89.1%</code> success on ALFWorld with Qwen2.5-7B, beats GRPO and the strong self-distillation baselines (StepOPSD, SDAR, Skill-SD, RLSD, GRPO+OPSD) across ALFWorld, WebShop, and Search-QA at both 3B and 7B, and ablations attribute the gains specifically to turn-boundary aggregation aligned with environment transitions and to the history-dependent recursion (not to privileged teacher access alone). Code at github.com/ZethWang/AgentOPSD.</p>
+          </div>
+        </li>
+        <li class="review-item">
           <span class="date">August 8, 2026</span>
           <div>
             <h2><a href="reviews/recursive-task-synthesis-and-world-rehearsal-review-2026-08-08.html">Recursive Task Synthesis, World Rehearsal, and Delta Distillation</a></h2>

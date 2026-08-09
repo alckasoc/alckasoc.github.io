@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Turn-Level Credit Assignment for Agentic RL Review — August 9, 2026 | Auto Lit Review</title>
+<meta name="description" content="Tier 2 frontier-lab paper: Tsinghua/Zhejiang/Meituan's AgentOPSD introduces recursive Bayesian turn-level credit assignment for agentic reinforcement learning, reaching 89.1% success on ALFWorld with Qwen2.5-7B." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">2026-08-09</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#tsinghua">Tsinghua</a>
+          <ul>
+            <li class="toc-h2"><a href="#agentopsd">AgentOPSD: Recursive Self-Distillation for Agentic Reinforcement Learning</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review · August 9, 2026</div>
+    <h1 class="page-title">Turn-Level Credit Assignment for Agentic RL</h1>
+    <div class="page-meta">1 paper · 1 lab · auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>No flagship frontier-lab launches in the 36-hour window; a quiet Sunday cadence with a single Tier 2 headline. <strong>Tsinghua</strong> (with Zhejiang University and Meituan) posts <em>AgentOPSD</em>, the #1 Hugging Face paper of August 7 and a direct answer to a specific failure mode in on-policy self-distillation for agentic RL: the token-level teacher&ndash;student log-probability gap that OPSD produces is not, on its own, sequential credit &mdash; treating each turn's local signal in isolation ignores what earlier turns have already committed the trajectory to. AgentOPSD aggregates the token-level gaps within a turn into a single evidence scalar, then recursively updates a Bayesian belief over eventual success in log-odds space (initialized from the group mean success rate that GRPO already computes), and reads off each turn's credit as the marginal belief revision <code>&Delta;B<sub>k</sub></code>. The credit is sign-aligned with the outcome verifier and used as a bounded, group-standardized multiplier on the standard GRPO advantage &mdash; so the method drops in without a critic, without extra rollouts, and without changing the update direction. It reaches <code>89.1%</code> success on ALFWorld with Qwen2.5-7B, beats GRPO and strong self-distillation baselines across ALFWorld, WebShop, and Search-QA at both 3B and 7B, and ablations attribute the gains to two things prior work skipped: aggregating at turn boundaries aligned with environment transitions, and making the belief update history-dependent rather than turn-local.</p>
+      <h3>Competitiveness</h3>
+      <p>AgentOPSD is a training-method paper, not a model launch: it does not move the frontier on <code>SWE-bench Verified</code>, <code>LiveCodeBench</code>, <code>Terminal-Bench 2.1</code>, <code>MMLU-Pro</code>, or <code>HLE</code>, which remain anchored by <em>Qwen3.8-Max</em> (Alibaba, 2026-08-03), <em>MiniMax H3</em> (2026-08-03), <em>Kimi K3</em> (Moonshot, 2026-07-17/27), <em>GPT-5.6</em> (OpenAI, 2026-07-10 with the 2026-07-31 price cut on Luna/Terra), <em>Claude Opus 5</em> (Anthropic, 2026-07-24), <em>Claude Fable 5</em>, <em>Gemini 3.6 Flash</em> (Google DeepMind, 2026-07-21), and the 2026-08-07 <em>K-EXAONE 2.0</em> (LG AI Research). What it does move is the recipe. On ALFWorld with Qwen2.5-7B it lands at <code>89.1%</code> episode success, matching the region where the strongest published agentic-RL post-trainings sit at the 7B tier; on WebShop and Search-QA the ordering vs GRPO is preserved but the horizon-scaling curve is flatter, which is the axis this class of method is meant to attack. Read as competitive with the existing OPSD line of work (StepOPSD, SDAR, Skill-SD, RLSD, GRPO+OPSD) rather than with the leaderboard models the base policy would appear on.</p>
+      <h3>New frontier releases</h3>
+      <p>No new flagship models. Most recent frontier launches remain the 2026-08-07 pair (LG AI Research's <em>K-EXAONE 2.0</em> and Tencent Hunyuan's <em>WorldClaw</em>) and the 2026-08-05 pair (Tencent Hunyuan's <em>Hunyuan3D-Buffalo 1.0</em> and Ant Group's <em>LLaDA MoE v2</em>), all already covered in prior reviews.</p>
+    </section>
+
+    <h1 id="tsinghua">Tsinghua</h1>
+
+    <h2 id="agentopsd"><a href="https://arxiv.org/abs/2608.05987">AgentOPSD: Recursive Self-Distillation for Agentic Reinforcement Learning</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-06</span>
+      <span>Agentic RL · Credit assignment · Self-distillation · GRPO</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Zi-Han Wang et al. (Tsinghua University, Zhejiang University, Meituan &mdash; work done during Meituan internship, corresponding by Yujiu Yang / Qi Gu) propose <strong>AgentOPSD</strong>, a critic-free, rollout-free, turn-level credit-assignment scheme for agentic reinforcement learning. It sits between two existing lines: outcome-only group-relative RL (GRPO and its agentic variants ARPO, GiGPO) that broadcasts a single trajectory-level advantage across every token, and on-policy self-distillation (OPSD, Skill-SD, RLSD, SDAR, StepOPSD) that produces dense token-level teacher&ndash;student gaps but treats each turn's gap in isolation.</li>
+      <li>Three named contributions, each with its own mechanism: (1) a formalization of turn-level credit as the marginal revision of a Bayesian success belief in log-odds space; (2) a recursive belief-update rule that turns the local self-distillation gap into a history-dependent credit signal; (3) an outcome-aligned, group-standardized bounded advantage reshaping that plugs into standard policy optimization without reversing the GRPO update direction.</li>
+      <li>Evaluated with Qwen2.5-3B and Qwen2.5-7B on ALFWorld, WebShop, and Search-QA. Headline: <code>89.1%</code> success on ALFWorld with Qwen2.5-7B, beating GRPO and the strong self-distillation baselines the paper reports. Code released at <a href="https://github.com/ZethWang/AgentOPSD">github.com/ZethWang/AgentOPSD</a>.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.05987v1/x1.png" alt="Training dynamics and horizon-robustness of AgentOPSD on Qwen2.5-7B / ALFWorld" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). (a) Validation success rate over training on Qwen2.5-7B / ALFWorld; (b) sensitivity to task horizon &mdash; success points lost per extra turn (OLS slope of per-sub-task success against measured mean turns of successful episodes); (c) policy entropy over training.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+
+    <p>The paper's central claim is that OPSD's token-level teacher&ndash;student log-probability gap is a <em>local</em> evidential signal about a turn, and that turning it into <em>sequential</em> credit requires (i) aligning aggregation to environment transitions and (ii) making the credit history-dependent. AgentOPSD is three mechanisms, executed in that order.</p>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism 1 &mdash; Turn-level Bayesian evidence from token-level OPSD gaps</h4>
+    <ul>
+      <li><strong>Problem.</strong> OPSD produces per-token teacher&ndash;student log-probability gaps <code>&delta;<sub>k,t</sub></code>, but an "action" in an agentic environment is a whole turn of many tokens, and the environment only transitions at turn boundaries. Treating <code>&delta;<sub>k,t</sub></code> as a per-step reward signal ignores that mismatch.</li>
+      <li><strong>Mechanism.</strong> AgentOPSD sums the token gaps within turn <code>k</code> into a single scalar <code>e<sub>k</sub></code>, and interprets <code>e<sub>k</sub></code> as a Bayesian evidence in log-odds space for the event <code>C</code> = "the trajectory eventually succeeds." Formally, using Bayes' rule, <code>logit&nbsp;p(C&#8739;s<sub>k</sub>,a<sub>k</sub>) &minus; logit&nbsp;p(C&#8739;s<sub>k</sub>) = log&nbsp;p(a<sub>k</sub>&#8739;s<sub>k</sub>,C) / p(a<sub>k</sub>&#8739;s<sub>k</sub>,&not;C)</code>, and the per-turn self-distillation contrast against a privileged, success-associated self-teacher is used as a computable proxy for that Bayes factor. The paper characterizes when the proxy is valid in Appendix A.</li>
+      <li><strong>Why it works / why it beats prior.</strong> Prior OPSD variants either (a) apply the gap at the token level (SDAR, Skill-SD) &mdash; leaking dense signal into positions where the environment cannot react &mdash; or (b) apply it at the turn level but in isolation (StepOPSD) without any notion of the trajectory's accumulated evidence. Casting the aggregated gap as a Bayes factor puts the whole thing in the same log-odds space as a belief update, which is what the next mechanism operates on.</li>
+    </ul>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism 2 &mdash; Recursive belief update, initialized from the GRPO group mean</h4>
+    <ul>
+      <li><strong>Problem.</strong> An isolated <code>e<sub>k</sub></code> cannot say whether the same evidence is pivotal or redundant given what earlier turns already established. Two identical local signals should not receive identical credit if one appears when the outcome is already all but decided and the other appears at maximum uncertainty.</li>
+      <li><strong>Mechanism.</strong> Maintain a decaying evidence accumulator <code>c<sub>k</sub> = &gamma;&thinsp;c<sub>k&minus;1</sub> + e<sub>k</sub></code>, a log-odds state <code>&ell;<sub>k</sub> = logit(B<sub>0</sub>) + c<sub>k</sub></code>, and a belief <code>B<sub>k</sub> = &sigma;(&ell;<sub>k</sub>)</code>. The initial belief <code>B<sub>0</sub></code> is set to the clipped group success rate <code>R&#772;</code> that GRPO already computes (with <code>&epsilon;<sub>0</sub> = 10<sup>&minus;4</sup></code> to keep log-odds finite for all-correct or all-wrong groups). The decay factor <code>&gamma; &isin; (0, 1]</code> down-weights older turns geometrically; the prior <code>logit(B<sub>0</sub>)</code> is retained at every step. <code>&gamma; = 1</code> recovers Wald's undiscounted sequential log-likelihood ratio; <code>&gamma; &lt; 1</code> makes the state recency-weighted. The importance of turn <code>k</code> is then the marginal belief revision <code>&Delta;B<sub>k</sub> = B<sub>k</sub> &minus; B<sub>k&minus;1</sub> &asymp; B<sub>k&minus;1</sub>(1&minus;B<sub>k&minus;1</sub>)&thinsp;(e<sub>k</sub> &minus; (1&minus;&gamma;)&thinsp;c<sub>k&minus;1</sub>)</code>. The <code>B<sub>k&minus;1</sub>(1&minus;B<sub>k&minus;1</sub>)</code> factor is exactly the state-sensitivity term you get from differentiating the sigmoid &mdash; evidence has greatest effect under uncertainty and is naturally suppressed as belief saturates. Update happens at turn boundaries by default; a token-level variant is kept only as an ablation.</li>
+      <li><strong>Why it works / why it beats prior.</strong> StepOPSD, the closest prior turn-level OPSD variant, uses each turn's contrast as if the trajectory started fresh, ignoring accumulated context. AgentOPSD's recursive update makes the credit at turn <code>k</code> a function of <em>all</em> earlier turns via <code>c<sub>k&minus;1</sub></code>, so pivotal turns (large <code>|&Delta;B<sub>k</sub>|</code> under high uncertainty) are separated from routine confirmations of an already-decided outcome. Ablations attribute a large share of the gain over StepOPSD to this history dependence rather than to turn-boundary aggregation alone.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.05987v1/x2.png" alt="Overview of AgentOPSD converting GRPO advantage to turn-level reshaped advantages" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). Overview of AgentOPSD. Left: the agent loop over turns <code>1,&hellip;,K</code>. Middle: AgentOPSD converts GRPO's single sequence-level advantage into turn-level reshaped advantages in three steps &mdash; (1) aggregate token-level teacher&ndash;student gaps <code>&delta;<sub>k,t</sub></code> within a turn into <code>e<sub>k</sub></code>; (2) recursively update a belief state <code>B<sub>k</sub></code> (initialized from the group success rate) and read off its marginal revision <code>&Delta;B<sub>k</sub></code>; (3) reshape the sequence-level advantage per turn into <code>&Atilde;<sup>(i)</sup><sub>k</sub></code>. Right: vanilla GRPO broadcasts the same <code>A<sup>(i)</sup><sub>seq</sub></code> to every token/turn.</figcaption>
+    </figure>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism 3 &mdash; Outcome-aligned, bounded advantage reshaping</h4>
+    <ul>
+      <li><strong>Problem.</strong> Raw <code>&Delta;B<sub>k</sub></code> is unsigned about the outcome and unbounded in scale &mdash; feeding it directly into a policy update risks reversing the sign of GRPO's outcome-supervised gradient, or destabilizing training under heavy-tailed evidence.</li>
+      <li><strong>Mechanism.</strong> Sign-align the credit with the verifier's outcome: <code>q<sub>k</sub> = sign(A<sub>seq</sub>) &sdot; &Delta;B<sub>k</sub></code>. Within trajectory <code>i</code>, standardize across its <code>K<sub>i</sub></code> turns: <code>&mu;<sub>q</sub><sup>(i)</sup>, &sigma;<sub>q</sub><sup>(i)</sup></code>, and apply a bounded multiplier so the reshaped advantage <code>&Atilde;<sup>(i)</sup><sub>k</sub> = A<sup>(i)</sup><sub>seq</sub> &sdot; m(q<sub>k</sub>)</code> stays strictly positive. Because <code>m(&sdot;)</code> is positive by construction, the sign of the underlying GRPO advantage is preserved &mdash; the reshaping only redistributes magnitude across turns.</li>
+      <li><strong>Why it works / why it beats prior.</strong> Compared to unbounded per-turn reweighting used in some self-distillation baselines, the bounded multiplier gives a clean stability guarantee (never flips direction, bounded variance from within-trajectory standardization) while still amplifying above-average-<code>q</code> turns and attenuating below-average ones. It is what makes AgentOPSD a drop-in on top of GRPO rather than a new optimizer.</li>
+    </ul>
+
+    <h3>Experimental Setup</h3>
+    <ul>
+      <li><strong>Benchmarks.</strong> Three interactive-environment agentic-RL suites: <code>ALFWorld</code> (Shridhar et al. 2020, text-embodied household tasks), <code>WebShop</code> (Yao et al. 2022, grounded web-shopping), and <code>Search-QA</code> (Jin et al. 2025, Search-R1's search-and-answer setting). All three use terminal-only verifiable rewards.</li>
+      <li><strong>Base models.</strong> Qwen2.5-3B-Instruct and Qwen2.5-7B-Instruct, so trends are read at two scales.</li>
+      <li><strong>Baselines.</strong> Vanilla (SFT/prompted), Skill-Prompt&lowast;, GRPO, Skill-GRPO / Skill-GRPO&lowast;, OPSD, GRPO+OPSD, Skill-SD, RLSD, SDAR, StepOPSD. This is the current standard bake-off for agentic-RL post-training with dense supervision.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Headline.</strong> On Qwen2.5-7B / ALFWorld, AgentOPSD reaches <code>89.1%</code> episode success and consistently exceeds GRPO and the strong self-distillation baselines the paper reports across ALFWorld, WebShop, and Search-QA at both 3B and 7B.</li>
+      <li><strong>Gain source.</strong> The paper isolates two ablation questions in §3.2: <em>the gain comes from credit construction, not privileged access</em> (matched-teacher controls hold the teacher constant so any lift is attributable to the recursion, not to the teacher itself), and <em>the advantage grows with the interaction horizon</em> (measured as OLS slope of per-sub-task success against mean turns of successful episodes; steeper slope = worse horizon scaling, and AgentOPSD flattens it relative to GRPO and StepOPSD).</li>
+      <li><strong>Training dynamics.</strong> Figure 1(a) shows AgentOPSD's validation success rate crosses baselines mid-training and continues to improve where GRPO plateaus; Figure 1(c) shows the policy entropy trace is comparable to GRPO's, so the gain is not bought by collapsing exploration.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Granularity and recursion (§3.3, Px1).</strong> Removing turn-boundary aggregation (i.e., updating at every token) or removing the recursion (i.e., using <code>e<sub>k</sub></code> in isolation) each strictly hurts, and their combined removal recovers the StepOPSD-style behavior. Both contribute; the recursion contribution is larger, matching the paper's claim that history-dependence is the missing ingredient.</li>
+      <li><strong>Outcome-aligned signed direction (§3.3, Px2).</strong> Dropping the <code>sign(A<sub>seq</sub>)</code> alignment &mdash; i.e., letting <code>&Delta;B<sub>k</sub></code> feed the multiplier with its raw sign &mdash; degrades results. The verifier's terminal signal is what fixes the global optimization direction; the belief-revision magnitude only redistributes credit within that direction.</li>
+      <li><strong>State-prior anchoring (§3.3, Px3).</strong> Initializing <code>B<sub>0</sub></code> from the clipped group success rate <code>R&#772;</code> outperforms initializing from a uniform prior. Since <code>R&#772; = S/G</code> is exactly the group mean GRPO already tracks, this is free.</li>
+      <li><strong>Hyperparameter sensitivity (§3.4).</strong> The reshaping weight <code>&lambda;</code>, the evidence decay <code>&gamma;</code>, and the DAPO-style high policy-clipping bound <code>&epsilon;<sub>high</sub></code> are each swept. Results are broadly stable across a wide band of <code>&gamma;</code>, with the recency-weighted regime (<code>&gamma; &lt; 1</code>) matching or slightly beating the Wald-limit (<code>&gamma; = 1</code>).</li>
+    </ul>
+
+    <h3>Related work &amp; positioning</h3>
+    <ul>
+      <li><strong>Agentic post-training with verifiable rewards.</strong> AgentOPSD sits in the GRPO / DAPO / ARPO / GiGPO family, sharing their outcome-verifier structure but replacing the uniform trajectory-level broadcast with per-turn reshaping.</li>
+      <li><strong>On-policy (self-)distillation.</strong> Compared to OPSD, Self-Distilled Reasoner, Self-Distillation Zero, Skill-SD, RLSD, SDAR, and StepOPSD, the differentiator is the Bayesian recursion in log-odds space rather than the choice of teacher or the token-level contrast recipe.</li>
+      <li><strong>Long-horizon credit assignment.</strong> The paper frames itself against classical POMDP belief-state methods (&Aring;str&ouml;m 1965; Kaelbling et al. 1998) &mdash; the belief update is the same object, but conditioned on OPSD-derived evidence rather than observation likelihoods.</li>
+    </ul>
+
+    <h3>Limitations</h3>
+    <ul>
+      <li>All three environments use binary terminal rewards; the mapping from graded / partial-credit rewards to the Bayes-factor interpretation is not derived in the main text.</li>
+      <li>The self-teacher contrast is an approximation to the true outcome-conditional Bayes factor; Appendix A gives sufficient conditions but does not characterize failure modes when those conditions break (e.g., when the privileged conditioning barely changes the teacher's action distribution).</li>
+      <li>Ablations are reported at 3B and 7B on Qwen2.5; no evidence yet on larger scales or on MoE bases, where the interaction between GRPO's group standardization and AgentOPSD's within-trajectory standardization has not been characterized.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Code: <a href="https://github.com/ZethWang/AgentOPSD">github.com/ZethWang/AgentOPSD</a>. No new model weights released; the method is applied on top of Qwen2.5-3B-Instruct and Qwen2.5-7B-Instruct.</li>
+      <li>Paper page and discussion: <a href="https://huggingface.co/papers/2608.05987">huggingface.co/papers/2608.05987</a> (#1 Paper of the Day for 2026-08-07, 84 upvotes at time of review).</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
