@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Muse Glimmer Launch Review — August 10, 2026 | Auto Lit Review</title>
+<meta name="description" content="Tier 1 launch: Meta Superintelligence Labs open-sources Muse Glimmer, a 30B dense multimodal agentic model distilled from Muse Spark, with K-Quant-17GB compression and a DFlash block-diffusion drafter for on-device deployment under Apache 2.0." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">2026-08-10</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#meta">Meta Superintelligence Labs</a>
+          <ul>
+            <li class="toc-h2"><a href="#muse-glimmer">Muse Glimmer: An Open Agentic Model That Runs on Your Device</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review · August 10, 2026</div>
+    <h1 class="page-title">Muse Glimmer Launch</h1>
+    <div class="page-meta">1 launch · 1 lab · auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p><strong>Meta Superintelligence Labs</strong> open-sources <em>Muse Glimmer</em>, a <code>~29.6B</code>-parameter dense multimodal agentic model under Apache 2.0 &mdash; the first open-weight release from MSL since <em>Muse Spark</em> went closed in April, distilled from <em>Muse Spark</em> with a pre-training / mid-training / post-training pipeline explicitly optimized for on-device agent workflows (function calling, long-horizon planning, failure recovery, multimodal grounding). The architecture is a <code>52</code>-layer causal transformer, hidden dimension <code>6656</code>, <code>[Local, Local, Local, Global]</code> repeating attention with a <code>2048</code>-token sliding window, gated attention, <code>GQA 32:2</code> (ratio <code>16:1</code>), SwiGLU FFN with intermediate <code>19,968</code>, RoPE (&theta;=<code>500,000</code>) applied only on local layers, and a frozen <code>~1.8B</code> ViT-G/14 <em>Perception Encoder</em> (patch <code>14</code>, width <code>1536</code>, <code>50</code> layers). Context is <code>131,072+</code> tokens, vocabulary is <code>202,048</code> (<code>200K</code> BPE + <code>2K</code> specials), and knowledge cutoff is <code>2026-01-04</code>. Three named contributions each carry a mechanism explanation below: a logit-distillation-plus-agent-mid-training-plus-mixed-SFT/OPD/RL post-training recipe that transfers <em>agentic</em> behavior (not just next-token likelihood) from a much larger Muse Spark teacher into a device-sized dense student; a <em>K-Quant-17GB</em> compression scheme that brings the LM weights under <code>20&nbsp;GB</code> at ~<code>1.0%</code> average degradation across 15 benchmarks and leaves headroom for KV cache + perception encoder + drafter within a <code>24&nbsp;GB</code> envelope; and a lightweight <em>DFlash</em> block-diffusion drafter (block size <code>16</code>, sliding-window attention throughout) attached to the frozen target for verified speculative decoding at <code>3.1&times;</code> on an RTX 5090, <code>1.8&times;</code> on an M5 Max, and <code>1.5&times;</code> on an M4 Max.</p>
+      <h3>Competitiveness</h3>
+      <p>Muse Glimmer's size class is open-weight <code>~30B</code>-scale &mdash; the head-to-head labs put in the model card are <em>Gemma4-31B</em> and <em>Qwen3.6-27B</em>, and that is the frame the numbers should be read in, not the closed frontier occupied by <em>GPT-5.6</em>, <em>Claude Opus 5</em>, <em>Gemini 3.6 Flash</em>, <em>Qwen3.8-Max</em>, <em>Kimi K3</em>, or <em>MiniMax H3</em>. Within that class, Meta leads on general agentic (<code>MCP Atlas 75.5</code> vs <code>54.2</code> / <code>62.5</code>, <code>DeepSearch QA 74.6</code> vs <code>61.7</code> / <code>71.1</code>, <code>&tau;<sup>3</sup>-Banking 23.5</code> vs <code>15.1</code> / <code>16.7</code>, <code>WildClawBench 47.6</code> vs <code>37.6</code> / <code>43.2</code>, <code>Gaia2 43.3</code> vs <code>36.4</code> / <code>40.0</code>), leads on <code>SWE-Bench Pro 51.2</code> (vs <code>36.9</code> / <code>50.2</code>), leads on <code>SciCode 43.6</code> and <code>CharXiv 78.8</code>, leads on <code>IFBench 77.0</code>, <code>AIME 2026 94.7</code>, <code>AA-LCR 80.0</code>, and <code>BEAM-128K 65.1</code>. Qwen3.6-27B holds the row on <code>SWE-Bench Verified 77.2</code> vs <code>76.0</code>, <code>Terminal-Bench 2.1 60.7</code> vs <code>51.7</code>, <code>OSWorld-Verified 75.6</code> vs <code>65.9</code>, <code>GDPVal-AA v2 1141</code> vs <code>953</code>, <code>SkillsBench 46.6</code> vs <code>44.3</code>, <code>ScreenSpot Pro 76.1</code> vs <code>75.4</code>, <code>OmniDocBench v1.5 77.8</code> vs <code>75.8</code>, and <code>MMMU-Pro 75</code> vs <code>74</code>; Gemma4-31B holds <code>GPQA Diamond 85.7</code> vs <code>83.5</code> and <code>HLE-text 23.6</code> vs <code>22.0</code>. Read this as: Meta traded some closed-book knowledge and full-desktop computer-use headroom for a clear win on agentic tool-use, deep-research browsing, and long-context reasoning &mdash; the surfaces most affected by a distillation recipe that biases toward multi-turn, multi-tool trajectories. Against Meta's own <em>Muse Spark 1.2</em> (Aug 5) and <em>Muse Spark 1.1</em> (Jul 9), Glimmer is a size-class open-weights companion, not a frontier successor.</p>
+      <h3>New frontier releases</h3>
+      <p>One frontier launch in the 36-hour window: <strong>Meta Superintelligence Labs &mdash; Muse Glimmer</strong> (2026-08-10, Apache 2.0, <a href="https://huggingface.co/meta-models/Muse-Glimmer-30B">huggingface.co/meta-models/Muse-Glimmer-30B</a>). No new launches from OpenAI, Anthropic, Google DeepMind, xAI, Qwen, DeepSeek, Moonshot, MiniMax, Z.ai, Tencent Hunyuan, ByteDance, Ant Group, LG AI Research, Mistral, Cohere, Cursor, or Thinking Machines Lab in the same window. Meta separately signaled that open weights for a version of Muse Spark 1.2 will follow.</p>
+    </section>
+
+    <h1 id="meta">Meta Superintelligence Labs</h1>
+
+    <h2 id="muse-glimmer"><a href="https://research.meta.ai/blog/introducing-muse-glimmer-open-agentic-model">Muse Glimmer: An Open Agentic Model That Runs on Your Device</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Model Launch + Model Card + Evaluation Methodology</span>
+      <span>Meta AI Research &middot; Hugging Face &middot; Methodology PDF</span>
+      <span>2026-08-10</span>
+      <span>Open weights &middot; Dense &middot; Multimodal &middot; Agentic &middot; Distillation &middot; Quantization &middot; Speculative decoding</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Meta Superintelligence Labs releases <strong>Muse Glimmer</strong>, a <code>~29.6B</code>-parameter dense causal transformer with a dedicated <code>~1.8B</code> ViT-G/14 perception encoder, distilled from <em>Muse Spark</em> and targeted specifically at always-on local agent workflows on a single consumer GPU or a Mac (BF16 + two <code>4</code>-bit K-Quant variants + a <em>DFlash</em> speculative drafter, all Apache 2.0 on Hugging Face).</li>
+      <li>Ships alongside a public <em>Evaluation Methodology</em> PDF that names every harness, judge model, and split used for the head-to-head numbers (Meta reports third-party results as its own reproductions unless the number is available on Artificial Analysis, in which case AA is used) &mdash; a step past the Muse Spark 1.2 launch, which shipped without one.</li>
+      <li>Three named contributions, each with a mechanism explanation below: (1) a three-phase distillation recipe (pre-train on Muse Spark's outputs via logit distillation, mid-train on longer-context agent-heavy data with reasoning traces, post-train with SFT + on-policy distillation + RL across general / reasoning / coding / agentic); (2) two 4-bit K-Quant compression variants that fit the model into <code>24&nbsp;GB</code> or <code>32&nbsp;GB</code> envelopes at ~<code>0.2</code>&ndash;<code>1.0%</code> average degradation; (3) <em>DFlash</em>, a block-diffusion speculative drafter (block size <code>16</code>, sliding-window attention, five uniformly-spaced hidden-feature layers) that yields verified per-forward-pass acceptance and end-to-end speedups of <code>3.1&times;</code> on RTX 5090 / <code>1.8&times;</code> on M5 Max / <code>1.5&times;</code> on M4 Max, with quantized drafter variants for memory-tight envelopes.</li>
+      <li>Positioning: not a frontier-capability push. Meta explicitly places Muse Glimmer <em>outside</em> the AAISF "Frontier AI" definition (it is broadly weaker than Muse Spark), and the launch is pitched at scaffold compatibility (<em>OpenClaw</em>, <em>Hermes Agent</em>), controllable-effort reasoning strengths (<code>low</code> / <code>medium</code> / <code>high</code> / <code>xhigh</code>), &gt;100-language coverage, and the parts of agent work that break in practice: tool calls with exact schemas, plans held over long horizons, and recovery when a tool returns an unexpected result.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <table>
+      <thead><tr><th>Component</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Total parameters (LM + encoder)</td><td>~<code>29.6B</code></td></tr>
+        <tr><td>Language-model architecture</td><td>Dense causal transformer</td></tr>
+        <tr><td>Hidden dimension</td><td><code>6656</code></td></tr>
+        <tr><td>Layers</td><td><code>52</code></td></tr>
+        <tr><td>Attention pattern</td><td><code>[Local, Local, Local, Global]</code> repeating</td></tr>
+        <tr><td>Sliding-window size (local layers)</td><td><code>2048</code></td></tr>
+        <tr><td>Gated attention</td><td>Yes</td></tr>
+        <tr><td>Attention heads (Q / KV)</td><td><code>32 / 2</code> (GQA ratio <code>16:1</code>)</td></tr>
+        <tr><td>Head dimension</td><td><code>128</code></td></tr>
+        <tr><td>FFN type / intermediate dim</td><td>SwiGLU / <code>19,968</code></td></tr>
+        <tr><td>Position encoding</td><td>RoPE, &theta;=<code>500,000</code>, local layers only</td></tr>
+        <tr><td>Perception encoder</td><td>ViT-G/14, <code>~1.8B</code> params, <code>50</code> layers, width <code>1536</code>, patch <code>14</code></td></tr>
+        <tr><td>Max visual tokens / image</td><td><code>4,096</code></td></tr>
+        <tr><td>Vocabulary</td><td><code>202,048</code> (<code>200,000</code> BPE + <code>2,048</code> special)</td></tr>
+        <tr><td>Context length</td><td><code>131,072+</code></td></tr>
+        <tr><td>Supported modalities</td><td>Input: text + image &middot; Output: text</td></tr>
+        <tr><td>Knowledge cutoff</td><td>2026-01-04</td></tr>
+      </tbody>
+    </table>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Design note &mdash; sliding-window-heavy attention with global every fourth layer</h4>
+    <ul>
+      <li>Three-quarters of the <code>52</code> layers use <code>2048</code>-token sliding windows; every fourth is global. RoPE is applied on local layers only. This is a KV-footprint move: at <code>131K</code> context, keeping full-length KV on <code>13</code> global layers instead of all <code>52</code> reduces the KV-cache size proportionally, which is precisely the constraint that binds a <code>4</code>-bit model at <code>24</code>&ndash;<code>32&nbsp;GB</code>. GQA at ratio <code>16:1</code> compounds the effect &mdash; each layer has only <code>2</code> KV heads. Gated attention is retained across the board.</li>
+    </ul>
+
+    <h3>Training</h3>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism 1 &mdash; Three-phase distillation from Muse Spark to a device-sized dense student</h4>
+    <ul>
+      <li><strong>Problem.</strong> A generic "distill a large teacher into a small student" recipe transfers next-token likelihood, not agentic behavior. What breaks first on a distilled small model in an agent loop is not knowledge but reliable tool-schema adherence, long-horizon plan coherence, and recovery from a failed tool call &mdash; behaviors that live in trajectories, not in individual tokens.</li>
+      <li><strong>Mechanism.</strong> Meta splits training into three phases with different objectives:
+        <ul>
+          <li><em>Pre-training.</em> Muse Glimmer is trained on Muse Spark's outputs via logit distillation, over a data mix similar to the teacher's. The student learns the teacher's full output distribution at every position, not just the sampled tokens &mdash; the standard high-signal form of knowledge distillation.</li>
+          <li><em>Mid-training.</em> The student is trained on longer-context, more agent-heavy data with richer reasoning traces, mixed with organic data. This is where trajectory-shaped behavior (multi-turn planning, tool-call chains) gets pushed into the base.</li>
+          <li><em>Post-training.</em> Combines SFT with a mix of <em>on-policy distillation</em> and RL across general, reasoning, coding, and agentic domains. On-policy distillation lets the student generate its own rollouts and then match the teacher's distribution at those states &mdash; addressing the covariate-shift failure mode of pure offline distillation (student sees only teacher-generated states during training but produces its own at inference). The RL stage adds outcome supervision from verifiable tasks.</li>
+        </ul>
+      </li>
+      <li><strong>Why it works / why it beats prior.</strong> Two lines of open-weight ~<code>30B</code> distillates have converged on offline SFT-on-teacher-traces (Gemma-4-31B) or SFT-plus-preference-optimization (Qwen3.6-27B). The result is the observed comparison table: Glimmer wins the surfaces where trajectory-shaped, on-policy behavior matters (MCP Atlas +<code>21.3</code> over Gemma4, +<code>13.0</code> over Qwen3.6; DeepSearch QA +<code>12.9</code> / +<code>3.5</code>; WildClawBench +<code>10.0</code> / +<code>4.4</code>; Gaia2 +<code>6.9</code> / +<code>3.3</code>) and loses the surfaces that reward larger absorbed knowledge or GUI-specific pre-training (GPQA, HLE, OSWorld, GDPVal). The on-policy-distillation-plus-RL stack is the same shape that Thinking Machines Lab reported for <em>Inkling-Small</em> beating its own teacher on 2026-08-03; Muse Glimmer is a second data point that the same shape transfers to a <code>~30B</code> dense student without the mixture-of-experts machinery.</li>
+    </ul>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism 2 &mdash; K-Quant-Dynamic and K-Quant-17GB 4-bit compression</h4>
+    <ul>
+      <li><strong>Problem.</strong> A <code>30B</code>-parameter BF16 model is <code>&gt;55&nbsp;GB</code> of weights &mdash; larger than any consumer GPU. Even before adding KV cache, the perception encoder, and a speculative drafter, the raw weight budget rules out a <code>24</code> or <code>32&nbsp;GB</code> device. Naive 4-bit quantization drops accuracy enough to unwind the distillation gains at exactly the tasks the model is being shipped for (agentic multi-turn, long-context memory).</li>
+      <li><strong>Mechanism.</strong> Two K-Quant variants ship. Both compress weights to ~<code>4</code>-bit precision. <em>K-Quant-Dynamic</em> is tuned for a <code>32&nbsp;GB</code> VRAM envelope; <em>K-Quant-17GB</em> is a tighter recipe that fits the LM into <code>17&nbsp;GB</code> and the full stack (LM + KV + perception encoder + DFlash drafter) into <code>24&nbsp;GB</code>. Meta measures degradation as the average delta across 15 common benchmarks against full precision.</li>
+      <li><strong>Why it works / why it beats prior.</strong> Meta reports <code>0.2%</code> degradation at K-Quant-Dynamic (<code>32&nbsp;GB</code>) and <code>1.0%</code> at K-Quant-17GB (<code>24&nbsp;GB</code>) &mdash; low enough that the head-to-head vs Gemma4-31B and Qwen3.6-27B under Meta's numbers is preserved even for the tighter variant. The relevant comparison is not to another quantization <em>algorithm</em> but to the previous open-weight practice of shipping full-precision or BF16 checkpoints and letting the community quantize downstream (Muse Spark 1.2's pattern) &mdash; here Meta ships and validates the quantized artifact itself, so agentic-benchmark scores hold at the device envelope where the model is actually run.</li>
+    </ul>
+
+    <table>
+      <thead><tr><th>Variant</th><th>Avg degradation vs full precision</th><th>Target hardware</th></tr></thead>
+      <tbody>
+        <tr><td>Full precision (BF16)</td><td>&mdash;</td><td><code>64&nbsp;GB</code> VRAM</td></tr>
+        <tr><td>K-Quant-Dynamic</td><td><code>0.2%</code></td><td><code>32&nbsp;GB</code> VRAM</td></tr>
+        <tr><td>K-Quant-17GB</td><td><code>1.0%</code></td><td><code>24&nbsp;GB</code> VRAM</td></tr>
+      </tbody>
+    </table>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism 3 &mdash; DFlash block-diffusion speculative drafter</h4>
+    <ul>
+      <li><strong>Problem.</strong> Autoregressive token-by-token decoding is latency-bound on consumer hardware, and the batch-1 memory-bandwidth ceiling on a Mac or a single 5090 makes long reasoning chains and multi-step tool calls feel sluggish &mdash; the specific failure mode that breaks "local agent" as a product.</li>
+      <li><strong>Mechanism.</strong> Muse Glimmer ships with a lightweight companion drafter based on <em>DFlash</em> (Meta, arXiv <a href="https://arxiv.org/abs/2602.06036">2602.06036</a>). DFlash is a block-diffusion model that predicts <em>entire blocks of <code>16</code> tokens in a single forward pass</em>. The main model then runs a single verified parallel forward pass over the proposed block, accepting the longest prefix that matches the target's distribution and correcting the rest. The drafter has <code>5</code> draft layers, block size <code>16</code>, sliding-window attention (<code>2048</code>) across every layer, <code>32</code> query / <code>8</code> KV heads (GQA <code>4:1</code>), sequence length <code>131,072</code>, and hooks into the target's hidden features at <code>5</code> uniformly-spaced layers (<code>{1, 13, 25, 37, 49}</code> of <code>52</code>). Quantized drafter variants exist to reduce memory overhead at tight envelopes.</li>
+      <li><strong>Why it works / why it beats prior.</strong> Standard autoregressive draft models (Medusa, EAGLE, EAGLE-2/3) draft one or a few tokens per pass and are bottlenecked by the same sequential dependency they were built to escape. Block-diffusion drafting proposes <code>16</code> tokens per forward pass in parallel, converting drafter throughput from token-per-step to block-per-step; because the target still verifies parallel, the output distribution is identical to the target's. On Meta's numbers, the K-Quant-17GB target plus quantized DFlash drafter reaches <code>233.4 tok/s</code> on an RTX 5090 (<code>3.1&times;</code> the <code>74.9 tok/s</code> baseline), <code>50.2 tok/s</code> on an M5 Max (<code>1.8&times;</code> vs <code>26.6</code>), and <code>37.8 tok/s</code> on an M4 Max (<code>1.5&times;</code> vs <code>23.7</code>), all measured at batch size <code>1</code> and greedy decoding; M4/M5 measurements use ExecuTorch and RTX uses llama.cpp.</li>
+    </ul>
+
+    <table>
+      <thead><tr><th>Hardware</th><th>Baseline (tok/s)</th><th>DFlash-verified (tok/s)</th><th>Speedup</th></tr></thead>
+      <tbody>
+        <tr><td>Nvidia RTX 5090</td><td><code>74.9</code></td><td><code>233.4</code></td><td><code>3.1&times;</code></td></tr>
+        <tr><td>Apple M5 Max</td><td><code>26.6</code></td><td><code>50.2</code></td><td><code>1.8&times;</code></td></tr>
+        <tr><td>Apple M4 Max</td><td><code>23.7</code></td><td><code>37.8</code></td><td><code>1.5&times;</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Evaluation &amp; results</h3>
+
+    <p>Meta compares Muse Glimmer at <code>high</code> reasoning strength against Gemma4-31B (thinking mode) and Qwen3.6-27B (thinking mode). Numbers come from a mixture of internal reproductions under Meta's own harness (all three models on the same setup) and Artificial Analysis's numbers where AA covers the benchmark. Best-in-row is bolded.</p>
+
+    <table>
+      <thead><tr><th>Category</th><th>Benchmark</th><th>Muse Glimmer-30B</th><th>Gemma4-31B</th><th>Qwen3.6-27B</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="8"><em>General Agentic</em></td><td>MCP Atlas (Public)</td><td><strong>75.5</strong></td><td>54.2</td><td>62.5</td></tr>
+        <tr><td>DeepSearch QA</td><td><strong>74.6</strong></td><td>61.7</td><td>71.1</td></tr>
+        <tr><td>&tau;<sup>3</sup>-Banking</td><td><strong>23.5</strong></td><td>15.1</td><td>16.7</td></tr>
+        <tr><td>WildClawBench</td><td><strong>47.6</strong></td><td>37.6</td><td>43.2</td></tr>
+        <tr><td>GDPVal-AA v2</td><td>953</td><td>811</td><td><strong>1141</strong></td></tr>
+        <tr><td>Gaia2</td><td><strong>43.3</strong></td><td>36.4</td><td>40.0</td></tr>
+        <tr><td>SkillsBench (with skills)</td><td>44.3</td><td>32.4</td><td><strong>46.6</strong></td></tr>
+        <tr><td>OSWorld-Verified</td><td>65.9</td><td>58.5</td><td><strong>75.6</strong></td></tr>
+        <tr><td rowspan="4"><em>Agentic Coding</em></td><td>SWE-Bench Pro</td><td><strong>51.2</strong></td><td>36.9</td><td>50.2</td></tr>
+        <tr><td>SWE-Bench Verified</td><td>76.0</td><td>66.6</td><td><strong>77.2</strong></td></tr>
+        <tr><td>Terminal-Bench 2.1 (Terminus 2)</td><td>51.7</td><td>43.4</td><td><strong>60.7</strong></td></tr>
+        <tr><td>SciCode</td><td><strong>43.6</strong></td><td>43.4</td><td>39.8</td></tr>
+        <tr><td rowspan="4"><em>Multimodal</em></td><td>CharXiv Reasoning</td><td><strong>78.8</strong></td><td>77.7</td><td>78.4</td></tr>
+        <tr><td>ScreenSpot Pro</td><td>75.4</td><td>75.9</td><td><strong>76.1</strong></td></tr>
+        <tr><td>OmniDocBench v1.5</td><td>75.8</td><td>72.5</td><td><strong>77.8</strong></td></tr>
+        <tr><td>MMMU Pro</td><td>74</td><td>73</td><td><strong>75</strong></td></tr>
+        <tr><td rowspan="2"><em>Safety</em></td><td>CI Memories &mdash; Violation&nbsp;(&darr;) / Coverage</td><td>26.4 / 64.8</td><td><strong>12.1</strong> / 53.0</td><td>53.4 / <strong>66.9</strong></td></tr>
+        <tr><td>Siren AgentDojo &mdash; ASR&nbsp;(&darr;) / Utility</td><td>28.4 / <strong>94.2</strong></td><td><strong>25.6</strong> / 90.8</td><td>40.3 / 92.7</td></tr>
+        <tr><td rowspan="6"><em>General Reasoning</em></td><td>IFBench</td><td><strong>77.0</strong></td><td>76.0</td><td>70.8</td></tr>
+        <tr><td>AIME 2026</td><td><strong>94.7</strong></td><td>89.2</td><td>94.1</td></tr>
+        <tr><td>GPQA Diamond (AA)</td><td>83.5</td><td><strong>85.7</strong></td><td>84.2</td></tr>
+        <tr><td>HLE-text (AA)</td><td>22.0</td><td><strong>23.6</strong></td><td>23.1</td></tr>
+        <tr><td>AA-LCR</td><td><strong>80.0</strong></td><td>68.3</td><td>73.3</td></tr>
+        <tr><td>BEAM-128K</td><td><strong>65.1</strong></td><td>58.2</td><td>63.0</td></tr>
+      </tbody>
+    </table>
+
+    <p>Two things worth reading off the table beyond the headline wins. First, the general-agentic column is the cleanest sweep: Glimmer takes MCP Atlas, DeepSearch QA, &tau;<sup>3</sup>-Banking, WildClawBench, and Gaia2, which is the specific bundle the training recipe was aimed at. GDPVal-AA v2 (Qwen wins by <code>+188</code>) and OSWorld-Verified (Qwen wins by <code>+9.7</code>) are the two agentic surfaces Glimmer loses; both reward richer computer-use grounding that Qwen3.6-27B has explicitly trained for. Second, on standalone reasoning, Glimmer wins the on-policy-verifiable tasks (AIME, IFBench, AA-LCR, BEAM-128K) and loses the closed-book expert-knowledge tasks (GPQA, HLE), which is the expected profile of an on-policy-distillation-plus-RL post-train.</p>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Chem/Bio safety benchmarks (in size class + Kimi K3 as larger-model context)</h4>
+    <table>
+      <thead><tr><th>Benchmark</th><th>Muse Glimmer-30B</th><th>Gemma4-31B</th><th>Qwen3.6-27B</th><th>Kimi K3 (larger)</th></tr></thead>
+      <tbody>
+        <tr><td>MBCT</td><td>41.5%</td><td><strong>50.6%</strong></td><td>45.9%</td><td><em>58.9%</em></td></tr>
+        <tr><td>HPCT</td><td>52.3%</td><td><strong>54.0%</strong></td><td>48.7%</td><td><em>59.6%</em></td></tr>
+        <tr><td>VCT</td><td>37.0%</td><td><strong>43.5%</strong></td><td>33.7%</td><td><em>48.0%</em></td></tr>
+        <tr><td>WMDP (Bio)</td><td><strong>86.5%</strong></td><td>85.9%</td><td>84.8%</td><td><em>89.1%</em></td></tr>
+        <tr><td>WMDP (Chem)</td><td>75.2%</td><td><strong>80.5%</strong></td><td>74.8%</td><td><em>84.2%</em></td></tr>
+        <tr><td>Lab Bench (ProtocolQA)</td><td><strong>80.2%</strong></td><td>75.8%</td><td>69.1%</td><td><em>81.9%</em></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Quantization degradation.</strong> Averaged over <code>15</code> benchmarks: K-Quant-Dynamic loses <code>0.2%</code> vs BF16; K-Quant-17GB loses <code>1.0%</code>. The tighter <code>17&nbsp;GB</code> variant is the one shipped for <code>24&nbsp;GB</code> GPUs and is small enough not to unwind the head-to-head-vs-Gemma-and-Qwen ordering above.</li>
+      <li><strong>DFlash speculative decoding.</strong> End-to-end wall-clock throughput vs the same target running standard token-by-token decoding: <code>3.1&times;</code> on RTX 5090, <code>1.8&times;</code> on M5 Max, <code>1.5&times;</code> on M4 Max, batch size <code>1</code>, greedy. Meta notes the output is identical to the non-speculative baseline &mdash; verified rejection preserves the target's distribution.</li>
+      <li><strong>Head-to-head reporting policy.</strong> Meta explicitly documents that agentic third-party numbers may not be tuned to each competitor's harness (their system prompts, tool defs, temperature). This is an honest limit on the sweep-in-agentic-tasks claim: Qwen3.6-27B's own release harness may squeeze out extra points not captured here. Where Artificial Analysis covers the benchmark (GPQA, HLE, Terminal-Bench 2.1, SciCode, MMMU-Pro, GDPVal, AA-LCR, &tau;<sup>3</sup>-Banking) Meta uses AA, which is judge-and-harness-neutral across labs.</li>
+    </ul>
+
+    <h3>Safety &amp; limitations</h3>
+    <ul>
+      <li><strong>Preparedness classification.</strong> Muse Glimmer is <em>not</em> "Frontier AI" under Meta's Advanced AI Scaling Framework because it is generally weaker than Muse Spark. Preparedness Team designations: Chem/Bio Moderate-or-lower; Cyber Moderate-or-lower (inferred from Muse Spark 1.0); Loss-of-Control Moderate-or-lower (inferred).</li>
+      <li><strong>Train-time mitigations.</strong> Safety SFT covering agentic tool-use boundaries, prompt-injection resistance, and permission handling; safety RL with reward signals that penalize violations while rewarding legitimate helpfulness; dedicated synthetic data for contextual-integrity principles (data-sensitivity recognition, minimization, local-first execution).</li>
+      <li><strong>Prompt-injection performance.</strong> Siren AgentDojo attack success rate <code>28.4%</code> (Gemma4 <code>25.6%</code>, Qwen3.6 <code>40.3%</code>); utility under injection <code>94.2%</code> (best in row). Higher utility with a mid-pack ASR is the interesting trade-off &mdash; Glimmer completes more benign work in the presence of adversarial prompts, at the cost of a few extra successful injections.</li>
+      <li><strong>Privacy (CIMemories).</strong> Violation rate <code>26.4%</code> (Gemma4 <code>12.1%</code> is best; Qwen3.6 <code>53.4%</code> is worst); coverage <code>64.8%</code> (Qwen3.6 <code>66.9%</code> is best). Meta pays for its higher coverage of appropriate information sharing with more inappropriate sharing than Gemma4.</li>
+      <li><strong>Known limitations.</strong> Not explicitly optimized for video (frames are processed individually); performance may degrade outside the strongly-supported languages; quantized inference may show edge-case quality differences; not intended for use by individuals under <code>18</code>; audio input/output not supported.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li><strong>Weights.</strong> BF16, K-Quant-Dynamic, K-Quant-17GB, DFlash drafter head, and the frozen ViT-G/14 perception encoder &mdash; all under Apache 2.0 at <a href="https://huggingface.co/meta-models/Muse-Glimmer-30B">huggingface.co/meta-models/Muse-Glimmer-30B</a>, with a Muse Glimmer collection page and community-uploaded GGUF variants (<a href="https://huggingface.co/unsloth/Muse-Glimmer-30B-GGUF">unsloth/Muse-Glimmer-30B-GGUF</a>) landing within hours of release.</li>
+      <li><strong>Runtimes.</strong> Day-of support in Transformers and vLLM / SGLang server images; llama.cpp, MLX, and ExecuTorch integrations landing in the following days; Ollama, LM Studio, Unsloth for local; Together AI, Fireworks AI, OpenRouter for hosted. Docker Model Runner works directly (<code>docker model run hf.co/meta-models/Muse-Glimmer-30B</code>).</li>
+      <li><strong>Best-practice generation settings.</strong> <code>temperature=1.0</code>, <code>top_p=0.95</code>, <code>top_k=64</code>; reasoning strength set via system prompt as <code>Reasoning strength: {low|medium|high|xhigh}</code>; Meta recommends <code>high</code> or <code>xhigh</code> for coding / agentic / complex problem-solving.</li>
+      <li><strong>Companion papers.</strong> <em>Perception Encoder: The best visual embeddings are not at the output of the network</em> (arXiv <a href="https://arxiv.org/abs/2504.13181">2504.13181</a>, 2025-04-17), the ViT-G/14 backbone reused here; <em>DFlash: Block Diffusion for Flash Speculative Decoding</em> (arXiv <a href="https://arxiv.org/abs/2602.06036">2602.06036</a>, 2026-02-05), the speculative drafter.</li>
+      <li><strong>Coming next.</strong> Meta signals that open weights for a version of <em>Muse Spark 1.2</em> will follow, closing the closed-weights stretch that began with Muse Spark's original April launch.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
