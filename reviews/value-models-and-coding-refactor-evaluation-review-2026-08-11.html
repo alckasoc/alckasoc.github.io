@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Value Models and Coding-Refactor Evaluation Review — August 11, 2026 | Auto Lit Review</title>
+<meta name="description" content="Two frontier-lab research papers: Alibaba DAMO's RynnValue replaces preference/progress with temporal distance as a scalable robot-value supervision target; ByteDance's SWE-Bench ProMax reboots coding-agent evaluation on 170 multilingual cross-file refactors." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">2026-08-11</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba (DAMO Academy)</a>
+          <ul>
+            <li class="toc-h2"><a href="#rynnvalue">RynnValue: Scaling Robotic Value Foundation Models with Temporal Distance</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#bytedance">ByteDance</a>
+          <ul>
+            <li class="toc-h2"><a href="#swe-bench-promax">SWE-Bench ProMax: Benchmarking Agents on Large-Scale Multilingual Code Refactoring</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review · August 11, 2026</div>
+    <h1 class="page-title">Value Models and Coding-Refactor Evaluation</h1>
+    <div class="page-meta">2 papers · 2 labs · auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>Two Tier 2 frontier-lab papers land inside the 36-hour window, both attacking supervision quality rather than model scale. <strong>Alibaba DAMO Academy</strong>'s <em>RynnValue</em> is an open-source robotic value foundation model that swaps preference-comparison and normalized-progress supervision for <em>temporal distance</em> &mdash; the directed cost-to-go, in demonstration steps, from an observation to a language-specified goal &mdash; a label that can be read straight off timestamps and therefore scales to <code>7,000+</code> hours and <code>~3M</code> instruction-conditioned clips across heterogeneous embodiments without any human annotation. <strong>ByteDance</strong> and collaborators release <em>SWE-Bench ProMax</em>, a <code>170</code>-instance expert-curated multilingual code-refactoring benchmark spanning seven languages (Python, Java, TypeScript, Go, C, C++, Rust), designed to replace saturated SWE-bench Verified with a substantially harder and cleaner target: instances average <code>11.4</code> modified files and <code>261.6</code> lines of code, issue descriptions were rewritten from scratch to remove ambiguity, test suites were manually filtered to strip overly narrow / overly broad tests, and the best frontier model under evaluation resolves only <code>41.2%</code>. Both papers are about paying down technical debt in the evaluation and reward stack that everyone else assumes.</p>
+      <h3>Competitiveness</h3>
+      <p>Neither paper is a headline capability push, so competitiveness reads through their target stacks. On robot value modeling, RynnValue's <code>0.675</code> average Kendall's &tau;<sub>a</sub> on <em>RBM-EVAL-OOD</em> beats the fully preference-supervised prior state of the art at <code>0.655</code> and roughly <code>2.3&times;</code> the progress-only counterpart at <code>0.292</code>, while lifting real-world manipulation policy success from <code>52.5% &rarr; 72.5%</code> online and <code>63.8% &rarr; 82.5%</code> offline when the value is turned into a dense reward &mdash; a clean win on the exact axis (transfer without preference labels) where preference-based reward models get expensive. On coding-agent evaluation, SWE-Bench ProMax targets a benchmark ecosystem where frontier systems have crossed <code>75</code>&ndash;<code>80%</code> on SWE-Bench Verified (<em>Qwen3.6-27B thinking</em> at <code>77.2</code>, <em>Muse Glimmer</em> at <code>76.0</code> on the Aug 10 leaderboard) and where an outside audit found <code>~60%</code> of unsolved Verified instances have flawed tests; a <code>41.2%</code> ceiling on ProMax indicates the benchmark is far from saturated, cross-file refactoring is meaningfully harder than issue-fixing, and the "which model is best at real SWE work" question is now open again. Neither release changes the raw model leaderboard, but both change what "best" is measured against.</p>
+      <h3>New frontier releases</h3>
+      <p>No Tier 1 flagship-model launches in the 36-hour window. No new dated model repos from OpenAI, Anthropic, Google DeepMind, xAI, Meta Superintelligence Labs, Qwen, DeepSeek, Moonshot, MiniMax, Z.ai, Tencent Hunyuan, Ant Group, LG AI Research, Mistral, Cohere, Cursor, or Thinking Machines Lab. <em>RynnValue</em> ships as an open-source value model, not a flagship LLM launch, so it stays Tier 2. Meta's <em>Muse Glimmer</em> (2026-08-10) is covered in the prior day's review.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba (DAMO Academy)</h1>
+
+    <h2 id="rynnvalue"><a href="https://arxiv.org/abs/2608.09853">RynnValue: Scaling Robotic Value Foundation Models with Temporal Distance</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv:2608.09853</span>
+      <span>2026-08-10</span>
+      <span>Robotics &middot; Reward modeling &middot; Value learning &middot; VLA &middot; Manipulation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Open-source value foundation model for robotic manipulation from Alibaba DAMO Academy, positioned as a drop-in reward interface for downstream generalist policies (VLA fine-tuning, RL-based imitation) rather than as an end-to-end control model in the <em>Rynnbrain</em> / <em>Xiaomi-Robotics</em> mold.</li>
+      <li>Sole named contribution is the training target itself: <em>temporal distance</em>, i.e. the directed cost-to-go from an observation frame to the language-specified goal frame, measured in units of the demonstration's own timeline. Because the label is a timestamp difference, the training corpus can be assembled from any embodiment and any camera view without preference annotators or per-task progress rubrics.</li>
+      <li>Scale reported: <code>7,000+</code> hours of manipulation video across heterogeneous embodiments, roughly <code>~3M</code> instruction-conditioned clips, all trained without any preference-label pass.</li>
+      <li>Headline number: <code>0.675</code> average Kendall's &tau;<sub>a</sub> on <em>RBM-EVAL-OOD</em>, beating the previous fully preference-supervised SOTA at <code>0.655</code> and a progress-only counterpart at <code>0.292</code>. Zero-shot generalization to unseen tasks, embodiments, and viewpoints. Downstream, potential-based reward shaping using RynnValue lifts real-world policy success from <code>52.5% &rarr; 72.5%</code> online and <code>63.8% &rarr; 82.5%</code> offline.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism &mdash; Temporal distance as the supervision target</h4>
+    <ul>
+      <li><strong>Problem.</strong> Robot-scale reward learning has two dominant supervision sources and both break under heterogeneity. Preference comparisons require labeled pairs from a matched embodiment / camera / task, do not compose across corpora, and get expensive fast. Normalized progress (<code>t / T</code>) is cheap but only well-defined per demonstration and per task; the same physical state gets a different label depending on which trajectory it is embedded in, and any regression or recovery within a demonstration becomes a "backwards in progress" instance that a monotonic normalized-progress model refuses to represent.</li>
+      <li><strong>Mechanism.</strong> RynnValue predicts <em>temporal distance</em>: the number of steps from the current observation to the goal frame that satisfies the language instruction, taken directly from the demonstration's timeline. This label is (a) derivable from raw timestamps &mdash; no annotator loop, (b) directional and additive along a trajectory, and (c) sign-consistent across embodiments because the meaning of "how many steps until you reach the goal" transfers even when the embodiment does not. Three architectural / sampling ingredients keep the target learnable at scale:
+        <ul>
+          <li><em>Random temporal sampling.</em> Frames within a clip are sampled non-uniformly rather than at fixed strides, so the model cannot learn to read the clip index as a proxy for the label.</li>
+          <li><em>Temporal-order shuffling.</em> Some training clips have their frame order perturbed. The model has to recover the goal-relative distance from visual content, not from position in the input sequence &mdash; forcing the representation to be genuinely observation-conditioned.</li>
+          <li><em>Value-isolation attention.</em> A masking pattern that prevents the value head from attending across frames in ways that would let it back-compute distance from adjacent-frame contrast rather than from the goal-conditioned semantics. The paper reports this suppresses shortcut solutions that leave predictions insensitive to failures and regressions.</li>
+        </ul>
+      </li>
+      <li><strong>Why it works / why it beats prior.</strong> Against preference-based RMs, temporal distance replaces a scarce annotated signal with a signal already implicit in any recorded demonstration, so the training corpus grows with data collection rather than with labeling budget &mdash; and evaluation shows the annotation-free supervision <em>outperforms</em> the preference-labeled prior state on the same OOD benchmark (<code>0.675</code> vs <code>0.655</code>). Against progress-based RMs, cost-to-go is defined per (observation, goal) rather than per (frame, demonstration), so it degrades gracefully across embodiments and can penalize regression &mdash; empirically shown by the <code>2.3&times;</code> gap to the progress-only baseline (<code>0.675</code> vs <code>0.292</code>). The value-isolation-attention + shuffling suppress the shortcut solutions that would otherwise let a large model reach low training loss without actually being sensitive to failures.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <table>
+      <thead><tr><th>Setting</th><th>Metric</th><th>RynnValue</th><th>Preference-SOTA</th><th>Progress-only</th></tr></thead>
+      <tbody>
+        <tr><td>RBM-EVAL-OOD (avg)</td><td>Kendall's &tau;<sub>a</sub></td><td><strong>0.675</strong></td><td>0.655</td><td>0.292</td></tr>
+        <tr><td>Real-world policy (online)</td><td>Success rate</td><td><strong>72.5%</strong></td><td colspan="2">baseline 52.5%</td></tr>
+        <tr><td>Real-world policy (offline)</td><td>Success rate</td><td><strong>82.5%</strong></td><td colspan="2">baseline 63.8%</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>The downstream real-world numbers convert the value model into a dense reward via potential-based shaping, then use it to train (or fine-tune) a manipulation policy &mdash; this is the deployment-relevant regime for VLA post-training pipelines.</li>
+      <li>Zero-shot transfer is reported across unseen tasks, unseen embodiments, and unseen viewpoints; the abstract does not break out per-axis numbers.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Three ingredients &mdash; random temporal sampling, temporal-order shuffling, value-isolation attention &mdash; are framed as jointly necessary to suppress shortcuts. Per-ingredient numbers are in the full report rather than the abstract.</li>
+      <li>Comparison against a progress-only counterpart trained on the same corpus isolates the effect of the label choice from the effect of scale: with <code>~3M</code> clips, progress-only reaches <code>0.292</code>; temporal distance on the same data reaches <code>0.675</code>. The gap is attributable to the label, not the parameters or data volume.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning inside Alibaba's robotics stack: DAMO's prior open-weight releases in this line include <em>Rynnbrain 1.1</em> (Jul 21) as the VLA policy and <em>Robostral Navigate</em> (Jul 25) as the navigation policy. RynnValue is the piece that supplies a scalable, embodiment-agnostic reward for either.</li>
+      <li>Broader positioning: the paper is an argument that "general-purpose reward model" is the current bottleneck for scaling robot learning, and that the fix is a supervision target that lives in the data itself, not a bigger annotator budget.</li>
+    </ul>
+
+    <h1 id="bytedance">ByteDance</h1>
+
+    <h2 id="swe-bench-promax"><a href="https://arxiv.org/abs/2608.09802">SWE-Bench ProMax: Benchmarking Agents on Large-Scale Multilingual Code Refactoring</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper (Benchmark, COLM 2026)</span>
+      <span>arXiv:2608.09802</span>
+      <span>2026-08-10</span>
+      <span>Coding agents &middot; Benchmark &middot; Refactoring &middot; Multilingual &middot; Evaluation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Expert-curated multilingual coding-agent benchmark of <code>170</code> instances drawn from real commits across seven languages: <em>Python, Java, TypeScript, Go, C, C++, Rust</em>. Task type is <em>code refactoring</em> &mdash; coordinated, behavior-preserving edits across many files &mdash; explicitly chosen because it is (a) meaningfully harder than issue-fixing and (b) resistant to the training-data leakage failure modes that have started to saturate SWE-bench Verified.</li>
+      <li>Named contribution is the benchmark itself, plus a multi-stage curation pipeline built to fix three concrete quality problems documented in prior benchmarks:
+        <ul>
+          <li><em>Verbatim gold-patch memorization</em> &mdash; frontier models have been observed to reproduce SWE-bench Verified gold patches from training data, invalidating the resolve-rate signal.</li>
+          <li><em>Overly narrow tests</em> that reject correct solutions.</li>
+          <li><em>Overly broad tests</em> that check unstated requirements a well-behaved refactor would not satisfy.</li>
+        </ul>
+      </li>
+      <li>Scale per instance: mean <code>11.4</code> modified files and <code>261.6</code> lines of code, substantially exceeding existing benchmarks. This is the "coordinated cross-file edit" regime that most prior benchmarks approximate poorly.</li>
+      <li>Best-model resolve rate under two agent scaffolds: <code>41.2%</code>. The benchmark is unsaturated and headroom is real.</li>
+      <li>Public artifact: <a href="https://huggingface.co/datasets/swe-bench-promax/SWE-Bench-ProMax">huggingface.co/datasets/swe-bench-promax/SWE-Bench-ProMax</a>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism &mdash; Multi-stage curation targeting the three failure modes of prior benchmarks</h4>
+    <ul>
+      <li><strong>Problem.</strong> A recent audit found nearly <code>60%</code> of unsolved SWE-bench Verified instances contain flawed tests: some are so narrow they reject any solution that isn't token-identical to the gold patch, others are so broad they check requirements the issue never states. Independently, frontier models can reproduce gold patches verbatim from training data. Together, these mean SWE-bench Verified is measuring a mixture of test-suite noise and training-set overlap rather than the underlying coding-agent capability. Refactoring benchmarks that would sidestep both problems are underserved.</li>
+      <li><strong>Mechanism.</strong> ProMax fixes each failure explicitly:
+        <ul>
+          <li><em>Task selection is on real commits with coordinated cross-file edits.</em> Instances with insufficient complexity or limited cross-file scope are filtered out, leaving <code>170</code> instances at an average of <code>11.4</code> files and <code>261.6</code> LOC touched. This forces the benchmark into the regime where retrieval, dependency tracking, and long-horizon planning matter, not single-file bug fixes.</li>
+          <li><em>Issue descriptions are rewritten from scratch.</em> Rather than reuse the original commit message or issue body (which can leak the patch structure to a model that has seen the repo), ProMax authors write precise, unambiguous specifications describing <em>what</em> to refactor and <em>what invariants</em> to preserve, without prescribing <em>how</em>.</li>
+          <li><em>Test suites are manually reviewed.</em> Every test in the retained instance is inspected; overly narrow tests that only accept the specific gold patch are removed, and overly broad tests that check unstated requirements are removed. The remaining suite defines behavior preservation without over-specifying implementation.</li>
+          <li><em>Seven-language coverage.</em> Same curation pipeline applied across Python, Java, TypeScript, Go, C, C++, Rust &mdash; ensuring the benchmark rewards genuine multilingual competence rather than Python-specific tooling.</li>
+        </ul>
+      </li>
+      <li><strong>Why it works / why it beats prior.</strong> The three curation stages each target a specific way a well-scoring model could pass without actually solving the task: rewritten descriptions remove the leakage channel that let frontier models reproduce gold patches; per-instance test review removes the false-negative and false-positive noise the audit found; the file/LOC / cross-file filters push the difficulty above what per-file bug-fix benchmarks measure. Together they produce a benchmark whose ceiling is <code>41.2%</code> at current frontier strength &mdash; roughly half of the current SWE-bench Verified ceiling and, by construction, not attackable by memorization.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Frontier models evaluated under two agent scaffolds. The best resolve rate is <code>41.2%</code>. The abstract does not break out per-model or per-language numbers; the full paper does.</li>
+      <li>Interpretation: cross-file behavior-preserving refactoring is a materially harder problem than SWE-bench Verified for the current generation of coding agents, even absent memorization advantages.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The curation pipeline itself is the ablation frame: the authors report that the three-stage filter (issue rewriting, test cleanup, cross-file / LOC filtering) is what separates ProMax from an uncurated commit-based benchmark. Numbers on how much each stage moves the score are in the full report.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Fits directly alongside the day's discourse on <em>Muse Glimmer</em> and <em>Qwen3.6-27B</em> pushing SWE-Bench Verified past <code>75</code>. If ProMax holds up as a harder, cleaner target, the interesting head-to-head shifts from "who is best on Verified" to "who is best on cross-file refactoring under a leakage-resistant benchmark".</li>
+      <li>COLM 2026 conference paper; benchmark is CC-BY 4.0 licensed via the arXiv listing.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
