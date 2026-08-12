@@ -36,6 +36,13 @@
       <!-- REVIEW_LIST_START -->
             <ul class="review-list">
         <li class="review-item">
+          <span class="date">August 12, 2026</span>
+          <div>
+            <h2><a href="reviews/milmmt-46-multilingual-mt-post-training-review-2026-08-12.html">MiLMMT-46 Multilingual MT Post-training</a></h2>
+            <p>No new frontier flagship model launches in the 36-hour window; one Tier 2 paper survives dedup. <strong>Xiaomi Research</strong> posts <em>Reference-Free Post-Training of Open Large Language Models for Multilingual Machine Translation</em>, applying <code>GRPO</code> with a language-identification-gated averaged reference-free QE reward on top of the SFT-only Gemma3-based <em>MiLMMT-46-v0.1</em> models, then linearly interpolating the SFT and RL checkpoints to produce <em>MiLMMT-46-v1.0</em> at <code>1B</code>, <code>4B</code>, and <code>12B</code>. Two named contributions each get a mechanism explanation: the <em>LID-gated averaged-QE reward</em> that averages two independent QE models and hard-zeros the reward whenever LID disagrees with the requested target language &mdash; killing the &ldquo;high-QE-score in the wrong language&rdquo; failure mode that a single-QE reward permits at 46-language coverage &mdash; and the <em>SFT&harr;RL linear checkpoint interpolation</em> that recovers SFT-side quality on axes the RL reward does not cover while retaining the RL-side improvement on axes it does. Released weights beat open MT baselines <em>Seed-X</em> (ByteDance), <em>HY-MT2</em> (Tencent Hunyuan), and <em>TranslateGemma</em>, and achieve leading reference-free scores against evaluated proprietary systems <em>Google Translate</em>, <em>Gemini 3 Pro</em>, and <em>GPT-5</em>. An on-policy-distillation ablation reaches but does not exceed the RL+CI frontier &mdash; a useful negative result for teams comparing OPD-vs-GRPO+CI recipes at 12B on multilingual generative-quality objectives. The Aug 10 SWE-Bench ProMax paper (ByteDance) is dedup&rsquo;d against the 2026-08-11 review.</p>
+          </div>
+        </li>
+        <li class="review-item">
           <span class="date">August 11, 2026</span>
           <div>
             <h2><a href="reviews/value-models-and-coding-refactor-evaluation-review-2026-08-11.html">Value Models and Coding-Refactor Evaluation</a></h2>

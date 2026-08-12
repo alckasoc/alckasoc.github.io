@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MiLMMT-46 Multilingual MT Post-training Review &mdash; August 12, 2026 | Auto Lit Review</title>
+<meta name="description" content="Xiaomi Research posts Reference-Free Post-Training of Open Large Language Models for Multilingual Machine Translation. GRPO with a language-identification-gated averaged reference-free QE reward, plus SFT-to-RL linear checkpoint interpolation, applied on top of Gemma3-based MiLMMT-46-v0.1 to produce MiLMMT-46-v1.0 at 1B, 4B, and 12B scales. Released weights beat open baselines Seed-X, HY-MT2, and TranslateGemma across 46 languages and reach leading reference-free scores against Google Translate, Gemini 3 Pro, and GPT-5. On-policy distillation reaches but does not surpass the RL+CI frontier." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 12, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#xiaomi" class="toc-h1">Xiaomi</a>
+          <ul>
+            <li><a href="#milmmt-46" class="toc-h2">Reference-Free MMT Post-training (MiLMMT-46)</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 12, 2026</div>
+    <h1 class="page-title">MiLMMT-46 Multilingual MT Post-training</h1>
+    <div class="page-meta">1 paper &middot; 1 lab &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>No new frontier flagship model launches in the 36-hour window; one Tier 2 paper survives dedup. <strong>Xiaomi Research</strong> posts <a href="https://arxiv.org/abs/2608.10812"><em>Reference-Free Post-Training of Open Large Language Models for Multilingual Machine Translation</em></a>, applying <code>GRPO</code> with a language-identification-gated reference-free quality-estimation reward on top of the SFT-only Gemma3-based <em>MiLMMT-46-v0.1</em> models, then linearly interpolating the SFT and RL checkpoints to produce <em>MiLMMT-46-v1.0</em> at <code>1B</code>, <code>4B</code>, and <code>12B</code>. Released weights beat open MT baselines <em>Seed-X</em>, <em>HY-MT2</em>, and <em>TranslateGemma</em> across 46 languages and achieve leading reference-free scores against <em>Google Translate</em>, <em>Gemini 3 Pro</em>, and <em>GPT-5</em>. An on-policy-distillation ablation reaches but does not exceed the RL-plus-checkpoint-interpolation frontier. Note: the Aug 10 SWE-Bench ProMax paper (ByteDance) is dedup&rsquo;d against the 2026-08-11 review.</p>
+      <h3>Competitiveness</h3>
+      <p>MiLMMT-46 is the first open translation model family reported to hold reference-free-quality parity with <em>Gemini 3 Pro</em> and <em>GPT-5</em> on 46-language coverage, and the <code>12B</code> checkpoint keeps that claim at a size that runs on a single H100 &mdash; a shift in the open-vs-proprietary MT frontier that previously belonged to Google Translate&rsquo;s hosted stack and to Gemini-3 and GPT-5 general-purpose systems. The comparison field also includes recent open MT specialists (Seed-X from ByteDance, HY-MT2 from Tencent Hunyuan, TranslateGemma), so the claim is not just &ldquo;better than the previous open MT baseline&rdquo; but &ldquo;better than the current open MT frontier and competitive with the current proprietary frontier.&rdquo; The paper&rsquo;s ablation result that on-policy distillation (OPD) matches but does not surpass RL-plus-checkpoint-interpolation is a useful negative result for labs comparing OPD-vs-GRPO+CI recipes at the 12B scale on multilingual generative-quality objectives; recent inkling-family and DAPD work has been converging on OPD as a default, and this data point argues for RL+CI on 46-language MT specifically.</p>
+      <h3>New frontier releases</h3>
+      <p>No new general-purpose frontier flagship models were announced in the 36-hour window. Task-specific model artifacts released alongside the paper: <a href="https://huggingface.co/xiaomi-research/MiLMMT-46-1B-v1.0">MiLMMT-46-1B-v1.0</a>, <a href="https://huggingface.co/xiaomi-research/MiLMMT-46-12B-v1.0">MiLMMT-46-12B-v1.0</a>, and a companion <code>4B</code> checkpoint from Xiaomi Research (all Gemma3-based), plus a live demo at <a href="https://huggingface.co/spaces/xiaomi-research/milmmt-46-translation">xiaomi-research/milmmt-46-translation</a>.</p>
+    </section>
+
+    <h1 id="xiaomi">Xiaomi</h1>
+
+    <h2 id="milmmt-46"><a href="https://arxiv.org/abs/2608.10812">Reference-Free Post-Training of Open Large Language Models for Multilingual Machine Translation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv &middot; HF Daily Papers</span>
+      <span>2026-08-11</span>
+      <span>Multilingual MT &middot; GRPO &middot; Reference-free QE reward &middot; Checkpoint interpolation &middot; Gemma3 upcycling &middot; Open weights</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Chris Han, Pengzhi Gao, Pei Fu, Jian Luan &mdash; all Xiaomi Research. Submitted by Pengzhi Gao. Code and weights at <a href="https://github.com/xiaomi-research/gemmax">github.com/xiaomi-research/gemmax</a>.</li>
+      <li>Setup: MiLMMT-46 is a family of Gemma3-based open multilingual translation models covering 46 languages, released at <code>1B</code>, <code>4B</code>, and <code>12B</code> parameter scales. The v0.1 checkpoints are SFT-only; the v1.0 checkpoints released here add a reference-free RL post-training stage plus a checkpoint-interpolation step with the SFT baseline.</li>
+      <li>Named contributions receiving mechanism explanations below: <em>reference-free GRPO with LID-gated averaged-QE reward</em> and <em>SFT&harr;RL linear checkpoint interpolation</em>. The paper also reports a negative result for a third alternative &mdash; on-policy distillation &mdash; that reaches, but does not surpass, the RL+CI frontier.</li>
+      <li>Positioning: the paper&rsquo;s central claim is that a small open MT family, post-trained with a reference-free RL signal and released under an open license, can hold reference-free-quality parity with proprietary frontier systems (<em>Google Translate</em>, <em>Gemini 3 Pro</em>, <em>GPT-5</em>) across 46 languages. If replicable, that is a shift in where the open/proprietary line sits for translation.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Base checkpoints.</strong> Start from MiLMMT-46-v0.1, the supervised-fine-tuned Gemma3-based multilingual translation models at <code>1B</code>, <code>4B</code>, and <code>12B</code>. The upstream Gemma3 base and the SFT stage on the MiLMMT-46 mixture are treated as fixed for the purposes of this paper.</li>
+      <li><strong>Named contribution &mdash; reference-free GRPO with LID-gated averaged-QE reward.</strong>
+        <ul>
+          <li><em>Problem.</em> Post-training rewards for MT have historically come from reference-based metrics (BLEU / COMET-QE-with-reference) that require aligned bitext and cannot rate the tail of low-resource language pairs where high-quality references do not exist. Reference-free QE models can score any (source, hypothesis) pair, but taking a single QE model as the reward exposes RL to that model&rsquo;s specific biases (length preferences, script preferences, ID confusion between closely-related languages). Naive GRPO with a single reference-free reward degenerates on the low-resource tail by producing high-QE-score outputs in the wrong target language.</li>
+          <li><em>Mechanism.</em> The reward is the mean of two independent reference-free QE models, gated by a language-identification classifier. For each sampled translation: (i) run LID on the hypothesis; if the detected language does not match the requested target language, the reward is set to a fixed low value; (ii) if it matches, the reward is the average of the two QE models&rsquo; scores. GRPO then uses this scalar as its group-relative advantage signal in the standard way.</li>
+          <li><em>Why.</em> Averaging two QE models de-biases the reward from any single model&rsquo;s systematic preferences (a common source of RL reward hacking). Gating by LID directly forbids the &ldquo;output high-quality text in the wrong language&rdquo; failure mode that a QE-only reward permits &mdash; particularly acute on 46-language RL where the model can drift into pivot languages such as English or Chinese to farm high QE scores. Together these two changes are what makes reference-free RL usable at 46-language coverage without collapsing on the long tail.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; SFT&harr;RL linear checkpoint interpolation.</strong>
+        <ul>
+          <li><em>Problem.</em> RL post-training on a single reward improves what the reward measures but can degrade other quality axes (fluency on high-resource pairs, register preservation, refusal to hallucinate on rare pairs) that the SFT stage learned but the reward does not cover. Selecting a single RL checkpoint forces one such trade-off.</li>
+          <li><em>Mechanism.</em> Take the SFT-only checkpoint (v0.1) and the post-RL checkpoint and linearly interpolate their weights in parameter space at a chosen mixing coefficient, producing the released v1.0 checkpoint. Interpolation is applied uniformly across all parameters.</li>
+          <li><em>Why.</em> Weight-space interpolation recovers SFT-side quality on axes the RL reward did not cover while retaining the RL-side improvement on axes the reward did cover &mdash; the parameter-space midpoint dominates either endpoint on the aggregate reference-free score across 46 languages. On-policy distillation, an alternative post-training path the paper also investigates, matches but does not exceed this RL+CI frontier, making RL+CI the empirically preferred recipe at the 12B scale on multilingual MT quality.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>Across 46 languages, MiLMMT-46-v1.0 consistently improves reference-free translation quality over the SFT-only v0.1 baseline at every model scale (<code>1B</code>, <code>4B</code>, <code>12B</code>).</li>
+      <li>Beats strong recent open MT baselines: <em>Seed-X</em> (ByteDance), <em>HY-MT2</em> (Tencent Hunyuan), and <em>TranslateGemma</em>.</li>
+      <li>Achieves leading reference-free scores against evaluated proprietary systems: <em>Google Translate</em>, <em>Gemini 3 Pro</em>, and <em>GPT-5</em>.</li>
+      <li>Released model checkpoints on Hugging Face: <a href="https://huggingface.co/xiaomi-research/MiLMMT-46-1B-v1.0">MiLMMT-46-1B-v1.0</a>, <a href="https://huggingface.co/xiaomi-research/MiLMMT-46-12B-v1.0">MiLMMT-46-12B-v1.0</a>, with the <code>4B</code> checkpoint in the same collection.</li>
+      <li>Live demo hosted at <a href="https://huggingface.co/spaces/xiaomi-research/milmmt-46-translation">xiaomi-research/milmmt-46-translation</a>; additional Space mirrors at <a href="https://huggingface.co/spaces/hugging-apps/xiaomi-research-milmmt-46-1b-v1-0">hugging-apps/xiaomi-research-milmmt-46-1b-v1-0</a> and <a href="https://huggingface.co/spaces/hugging-apps/xiaomi-research-milmmt-46-4b-v1-0">hugging-apps/xiaomi-research-milmmt-46-4b-v1-0</a>.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>On-policy distillation vs RL+CI.</strong> The paper investigates on-policy distillation (OPD) as an alternative to the RL-plus-checkpoint-interpolation post-training pipeline. The empirical finding is that OPD <em>reaches</em> the RL+CI reference-free-quality frontier but does not <em>surpass</em> it &mdash; a useful negative result for teams comparing the two post-training pipelines at the 12B scale on multilingual generative-quality objectives, particularly given the recent inkling-family and DAPD papers converging on OPD as a general-purpose default.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>The paper submitter (Pengzhi Gao) is listed as a Xiaomi Research affiliate on Hugging Face; the paper page confirms Xiaomi Research as the sole institutional affiliation of record. Xiaomi Research corresponds to the Xiaomi (MiMo) entry on the frontier-labs list.</li>
+      <li>License and license terms for the released weights are not documented in the material fetched here; consult the Hugging Face repositories directly.</li>
+      <li>A <em>MiLMMT-46 Collection</em> is maintained on Hugging Face at <a href="https://huggingface.co/collections/xiaomi-research/milmmt-46">xiaomi-research/milmmt-46</a>, containing 12 items associated with this release.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
