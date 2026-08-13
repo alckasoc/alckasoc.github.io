@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Diffusion-Based Video Dereflection Review &mdash; August 13, 2026 | Auto Lit Review</title>
+<meta name="description" content="Xiaomi MiLM Plus posts a closed-loop framework for video reflection removal: S2R-Synthesis (physics-grounded augmentation plus a diffusion renderer that produces paired reflected/clean video training data), S2R-Removal (two-stage adaptation of a pretrained video diffusion prior with reflection-aware latent adaptation then one-step pixel-geometric refinement), and S2R-Benchmark (first video reflection-removal benchmark, with S2R-Ref and S2R-Real splits). Beats GenSIRR by 1.80 PSNR on S2R-Ref at 83x lower per-frame latency, and leads on image benchmarks Real, SIR2, and Nature." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 13, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#xiaomi" class="toc-h1">Xiaomi</a>
+          <ul>
+            <li><a href="#s2r-video-dereflection" class="toc-h2">S2R: Physics-Grounded Video Dereflection</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 13, 2026</div>
+    <h1 class="page-title">Diffusion-Based Video Dereflection</h1>
+    <div class="page-meta">1 paper &middot; 1 lab &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>No new flagship model launches survive dedup in the 36-hour window; one Tier 2 paper is the day&rsquo;s frontier-lab output. <strong>Xiaomi MiLM Plus</strong> posts <a href="https://arxiv.org/abs/2608.11562"><em>From Synthesis to Removal: Physics-Grounded Reflection Simulation and Diffusion-Based Video Dereflection</em></a>, a three-part closed-loop framework: <em>S2R-Synthesis</em> (a structure/appearance-decoupled generator that combines a video diffusion renderer trained on FLUX-generated pseudo-reflection videos with a Physics-Grounded Augmentation module controlling roughness, thickness, and reflectance), <em>S2R-Removal</em> (two-stage adaptation of a pretrained video diffusion prior &mdash; Stage I reflection-aware latent adaptation with a residual-derived intensity loss, then Stage II one-step pixel-geometric refinement with reconstruction, SSIM, and depth losses), and <em>S2R-Benchmark</em> (first dedicated video reflection-removal benchmark, comprising 60 paired videos and 50 in-the-wild videos). On <em>S2R-Ref</em> the method scores <code>28.84</code> PSNR against prior best <em>GenSIRR</em> at <code>27.04</code> (+<code>1.80</code>) while running at <code>87.09</code> ms/frame vs GenSIRR&rsquo;s <code>7214.94</code> ms/frame (83&times; speedup at 832&times;480), and it also leads on the standard single-image benchmarks Real, SIR<sup>2</sup>, and Nature. Note: no Anthropic, OpenAI, Google DeepMind, Qwen, Kimi, or Z.ai flagship launched in the window; the DeepSeek API homepage lists a silent checkpoint bump to <em>DeepSeek-V4-Pro-0813</em> today, but the DeepSeek changelog and blog carry no accompanying release note, so there is nothing substantive to review beyond the version string.</p>
+      <h3>Competitiveness</h3>
+      <p>Video reflection removal has been an underserved sibling of single-image reflection removal &mdash; prior video work (DSRNet, DSIT, RDNet, DAI) largely treated frames independently, and the strongest recent generative baseline, <em>GenSIRR</em> (CVPR&rsquo;26), pays for its quality with a 7-second per-frame inference cost that rules it out for practical video use. The S2R result is the first video reflection remover that dominates GenSIRR on both PSNR (+<code>1.80</code> on S2R-Ref) and on human-perceptual removal/preservation scores (<code>0.787</code>/<code>0.980</code> vs <code>0.654</code>/<code>0.831</code>) while running 83&times; faster than GenSIRR and even faster than the non-diffusion prior state-of-the-art RDNet (<code>87</code> ms/frame vs <code>145</code> ms/frame). On the single-image benchmarks Real, SIR<sup>2</sup>, and Nature, average PSNR reaches <code>28.77</code> (vs GenSIRR <code>28.03</code> and DAI <code>27.35</code>). The methodological headline is orthogonal: they never train a video reflection-removal model on real paired data. All supervision comes from a physics-grounded synthesis pipeline built on top of a video diffusion renderer, then transferred via reflection-aware latent adaptation of the prior. This makes the recipe replicable by any lab holding a video diffusion prior of comparable capability &mdash; the paper positions the frontier for this task as diffusion-prior adaptation + physics-grounded synthetic data, rather than as end-to-end training on scarce paired video.</p>
+      <h3>New frontier releases</h3>
+      <p>No new general-purpose frontier flagship models were announced in the 36-hour window. Only artifact release tied to the day&rsquo;s paper is a promised (not yet published) code and pretrained-weights drop at the S2R project page. The DeepSeek API docs homepage now reports <a href="https://api-docs.deepseek.com/">DeepSeek-V4-Pro-0813</a> as the current pointer for <code>deepseek-v4-pro</code>, replacing the July 31 &ldquo;preview&rdquo; note that said the official release would follow &mdash; but with no blog, no technical report, no benchmarks, and no changelog entry, this is a version-string bump rather than a launch and is not reviewed here.</p>
+    </section>
+
+    <h1 id="xiaomi">Xiaomi</h1>
+
+    <h2 id="s2r-video-dereflection"><a href="https://arxiv.org/abs/2608.11562">From Synthesis to Removal: Physics-Grounded Reflection Simulation and Diffusion-Based Video Dereflection</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv &middot; HF Daily Papers</span>
+      <span>2026-08-12</span>
+      <span>Video reflection removal &middot; Diffusion prior adaptation &middot; Physics-grounded synthesis &middot; Benchmark release</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Zepeng Wang*, Jiagao Hu*, Fuhao Li*, Yuxuan Chen, Fei Wang, Daiguo Zhou (equal contribution starred). All at <strong>MiLM Plus, Xiaomi Inc.</strong> Paper flagged for AAAI 2027 submission per the project page keywords. arXiv <a href="https://arxiv.org/abs/2608.11562">2608.11562</a>; project page and figures at <a href="https://codingwzp.github.io/VideoDereflection_S2R/">codingwzp.github.io/VideoDereflection_S2R</a>; code and weights promised (&ldquo;coming soon&rdquo;) but not yet released.</li>
+      <li>Setup: single unified framework <em>S2R</em> for video reflection removal, with three named contributions &mdash; <em>S2R-Synthesis</em> (data generator), <em>S2R-Removal</em> (removal model), and <em>S2R-Benchmark</em> (evaluation split: 60 paired videos + 50 real-world videos). Each of the three gets a mechanism explanation below.</li>
+      <li>Positioning: video reflection removal has lagged the single-image variant because paired video ground truth is essentially unobtainable at scale (you would need a rig that captures the same scene twice with and without a pane of glass in perfect camera-motion sync). Prior video methods (DSRNet, DSIT, RDNet, DAI) either applied image models frame-by-frame or trained on very small paired video sets; the strongest recent generative baseline <em>GenSIRR</em> (CVPR&rsquo;26) is single-image and, when applied to video, runs at ~7s per frame. S2R&rsquo;s claim is that a physics-grounded synthetic paired-video pipeline plus a two-stage adaptation of a pretrained video diffusion prior beats all of those on both video and image benchmarks, at a per-frame cost lower even than the non-diffusion RDNet.</li>
+    </ul>
+
+    <figure>
+      <img src="https://codingwzp.github.io/VideoDereflection_S2R/static/images/fig1_overview.jpg" alt="Overview of the S2R reflection synthesis and removal pipeline: left shows controllable synthesis across glass roughness/reflectance/thickness; right shows qualitative removal results on in-the-wild videos." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper, hotlinked from the S2R project page). Overview. Left: S2R-Synthesis controllably varies glass roughness, reflectance, and thickness. Right: S2R-Removal qualitative results on in-the-wild videos.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li>The full framework closes a loop: <em>S2R-Synthesis</em> produces paired (reflected, clean) videos with controllable glass properties, <em>S2R-Removal</em> is trained on those pairs to recover the transmission video, and <em>S2R-Benchmark</em> scores the removal on both paired and real videos. The three contributions each address a distinct bottleneck.</li>
+
+      <li><strong>Named contribution &mdash; S2R-Synthesis (structure/appearance decoupling + Physics-Grounded Augmentation).</strong>
+        <ul>
+          <li><em>Problem.</em> Training a video reflection-removal model needs paired (reflected, clean) videos. Real paired video is essentially uncollectable at scale, and traditional pixel-space synthesis (blend a &ldquo;reflection layer&rdquo; RGB video with a &ldquo;transmission layer&rdquo; RGB video using an alpha or additive rule) does not reproduce roughness-induced blur, thickness-induced ghosting, or reflectance variation &mdash; three physically distinct effects a real pane of glass produces. UE5-based simulation reproduces the physics but the rendered appearance domain-gaps against real footage.</li>
+          <li><em>Mechanism.</em> Two-stage pipeline that decouples reflection structure from reflection appearance. Stage A trains a structure-guided video renderer to map a structure signal (an intermediate representation of what the reflection <em>geometrically is</em>) to realistic reflected-video appearance, using FLUX-generated pseudo reflection videos as its training pairs. Stage B takes two independent clean videos as the transmission and reflection source, fuses their structure-space conditions through the Physics-Grounded Augmentation module (PGA &mdash; the paper&rsquo;s operator set is P/St/Pa/Re/Th/Ro for Planar/Static/Partial/Reflectance/Thickness/Roughness controls), and then invokes the Stage-A renderer to produce a realistic reflected video paired with the original transmission video. This gives arbitrary paired data whose glass properties are directly controllable rather than baked into the training set.</li>
+          <li><em>Why.</em> The structure/appearance decoupling is what makes physics controllable without giving up appearance realism: PGA acts in the structure space (where roughness, thickness, and reflectance have clean parametrizations) while the renderer supplies photorealism it learned from FLUX-generated pseudo data. Ablation Table 1 shows this decomposition is what pays. Panel A (data source) reports RDNet trained on the OpenRR-1k train split reaches <code>28.05</code> PSNR / <code>0.9465</code> SSIM on the OpenRR-1k test split; adding traditional synthesis brings it to <code>31.98</code>/<code>0.9619</code> (+<code>3.93</code> PSNR); adding S2R physics-only augmentation instead brings it to <code>32.35</code>/<code>0.9643</code>; combining both reaches <code>33.26</code>/<code>0.9679</code> (+<code>5.21</code> PSNR over the base). Panel B (PGA variants) shows the six PGA operators are additive: starting from <code>P</code> alone at <code>32.35</code>, incrementally enabling <code>St</code>, <code>Pa</code>, <code>Re</code>, <code>Th</code>, <code>Ro</code> lifts PSNR to <code>33.70</code> and Full PGA to <code>34.13</code> (+<code>1.78</code> over <code>P</code> alone). No single operator carries the improvement; the operator set is what matters, which is the expected signature of a physics-grounded rather than ad-hoc augmentation.</li>
+        </ul>
+      </li>
+
+      <li><strong>Named contribution &mdash; S2R-Removal (two-stage adaptation of a video diffusion prior).</strong>
+        <ul>
+          <li><em>Problem.</em> A pretrained video diffusion prior encodes strong temporal appearance statistics but has no awareness of the reflection/transmission decomposition. Naive fine-tuning of such a prior on paired dereflection data (a) burns the temporal prior, and (b) tends to keep sub-visible reflection residuals in the latent that a decoder cannot suppress. Meanwhile, standard multi-step denoising during inference costs multiple seconds per frame, which is what makes GenSIRR unusable for video despite its removal quality.</li>
+          <li><em>Mechanism.</em> Two stages. <strong>Stage I &mdash; reflection-aware latent adaptation.</strong> The video diffusion prior is fine-tuned so that its latent representation is explicitly reflection-aware, supervised by the standard diffusion loss <code>&#8466;<sub>diff</sub></code> plus a <code>&#8466;<sub>int</sub></code> residual-derived intensity loss (loss on the reflected-vs-clean intensity residual, which the paper uses as a proxy for &ldquo;where in the latent the reflection lives&rdquo;). <strong>Stage II &mdash; one-step pixel-geometric refinement.</strong> A single denoising step is applied to produce the transmission video, supervised by a reconstruction loss <code>&#8466;<sub>rec</sub></code>, a structural loss <code>&#8466;<sub>ssim</sub></code>, and a depth-consistency loss <code>&#8466;<sub>depth</sub></code>. The whole inference path is one denoising step, which is where the <code>87.09</code> ms/frame budget comes from.</li>
+          <li><em>Why.</em> Splitting adaptation into &ldquo;make the latent know about reflection&rdquo; and &ldquo;refine in pixel/geometric space&rdquo; lets each stage keep the losses it needs without corrupting the other: Stage I&rsquo;s intensity loss teaches the latent to represent the reflection residual, and Stage II&rsquo;s SSIM + depth losses recover clean transmission structure without back-propagating pixel losses through the whole diffusion trajectory. The one-step Stage-II refinement is the mechanism that makes the model 83&times; faster than GenSIRR (7215 &rarr; 87 ms/frame at 832&times;480) while <em>improving</em> on GenSIRR&rsquo;s PSNR by 1.80 on S2R-Ref. Ablation Table 2 stacks the losses on the S2R-Ref split: <code>&#8466;<sub>diff</sub></code> only gives <code>27.00</code> / <code>0.8348</code>; adding <code>&#8466;<sub>int</sub></code> gives <code>27.71</code> / <code>0.8430</code>; adding <code>&#8466;<sub>rec</sub></code> gives <code>28.21</code> / <code>0.8513</code>; adding <code>&#8466;<sub>ssim</sub></code> gives <code>28.55</code> / <code>0.8566</code>; adding <code>&#8466;<sub>depth</sub></code> gives <code>28.84</code> / <code>0.8594</code>. Depth consistency is what closes the gap; without it the Stage-II refinement rounds off transmission geometry in ways that show up on SSIM.</li>
+        </ul>
+      </li>
+
+      <li><strong>Named contribution &mdash; S2R-Benchmark (S2R-Ref + S2R-Real).</strong>
+        <ul>
+          <li><em>Problem.</em> No dedicated video reflection-removal benchmark existed. Prior work reused image-only splits (DSRNet&rsquo;s Real-20, SIR<sup>2</sup>, Nature-20) which cannot measure temporal consistency, and it evaluated video methods by qualitative side-by-side. This left removal-vs-preservation trade-offs and temporal flicker unquantified.</li>
+          <li><em>Mechanism.</em> Two splits released together. <em>S2R-Ref</em> is 60 paired videos captured (or rendered) so that reflected and clean sequences share identical virtual camera motion, enabling full-reference PSNR/SSIM and temporal-consistency (TC) evaluation. <em>S2R-Real</em> is 50 in-the-wild reflection videos spanning multiple glass materials, lighting conditions, reflection strengths, and camera motions, scored by human raters on three axes: reflection Removal quality, transmission Preservation, and TC.</li>
+          <li><em>Why.</em> Splitting evaluation into paired (numerical, reproducible) and real-world (perceptual, but scoring the axes users actually care about) forces methods to trade off the axes explicitly rather than optimizing PSNR at the cost of oversuppressing transmission or introducing flicker. The Preservation axis is the sharpest signal here: S2R-Real Preservation lifts to <code>0.980</code> vs the next-best DAI at <code>0.871</code> and GenSIRR at <code>0.831</code>, meaning the model does not carve out transmission content when removing reflection, which is the classic failure mode of aggressive dereflection.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <figure>
+      <img src="https://codingwzp.github.io/VideoDereflection_S2R/static/images/fig2_synthesis.jpg" alt="S2R-Synthesis pipeline diagram: Stage A trains a structure-guided reflection renderer from FLUX-generated pseudo reflection videos; Stage B fuses two clean videos' conditions through Physics-Grounded Augmentation and renders paired reflected videos. Right side shows representative PGA operations." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper, hotlinked from the S2R project page). S2R-Synthesis. Left: motivation and the two-stage renderer-plus-PGA design. Right: representative PGA operations.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://codingwzp.github.io/VideoDereflection_S2R/static/images/fig4_removal.jpg" alt="Overview of the two-stage S2R-Removal pipeline showing Stage I reflection-aware latent adaptation and Stage II one-step pixel-geometric refinement." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 4 (from the paper, hotlinked from the S2R project page). S2R-Removal two-stage architecture.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li><strong>Video benchmark (S2R-Ref, 60 paired videos + S2R-Real, 50 real videos, 832&times;480).</strong> S2R-Removal beats all reported baselines on every axis where a comparison is defined, and comes within <code>0.011</code> SSIM of the best (DSIT/RDNet tied at <code>0.870</code>). Per-frame latency is the outlier &mdash; S2R runs faster than the non-diffusion RDNet.</li>
+      <li>Video benchmark table (reproduced from Table 3 in the paper):</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th rowspan="2">Method</th><th colspan="3">S2R-Ref (60)</th><th colspan="3">S2R-Real (50)</th><th>Efficiency</th></tr>
+        <tr><th>PSNR &uarr;</th><th>SSIM &uarr;</th><th>TC &uarr;</th><th>Removal &uarr;</th><th>Preserv. &uarr;</th><th>TC &uarr;</th><th>ms/frame &darr;</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>DSRNet (ICCV&rsquo;23)</td><td>23.78</td><td>0.857</td><td>0.9546</td><td>0.163</td><td>0.785</td><td>0.9790</td><td>329.23</td></tr>
+        <tr><td>DSIT (NeurIPS&rsquo;24)</td><td>24.06</td><td><strong>0.870</strong></td><td>0.9585</td><td>0.297</td><td>0.853</td><td>0.9781</td><td>241.05</td></tr>
+        <tr><td>RDNet (CVPR&rsquo;25)</td><td>24.71</td><td><strong>0.870</strong></td><td>0.9564</td><td>0.175</td><td>0.867</td><td>0.9797</td><td>145.13</td></tr>
+        <tr><td>DAI (AAAI&rsquo;26)</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>0.332</td><td>0.871</td><td>0.9777</td><td>217.27</td></tr>
+        <tr><td>GenSIRR (CVPR&rsquo;26)</td><td>27.04</td><td>0.846</td><td>0.9648</td><td>0.654</td><td>0.831</td><td>0.9747</td><td>7214.94</td></tr>
+        <tr><td><strong>S2R-Removal (Ours)</strong></td><td><strong>28.84</strong></td><td>0.859</td><td><strong>0.9740</strong></td><td><strong>0.787</strong></td><td><strong>0.980</strong></td><td><strong>0.9827</strong></td><td><strong>87.09</strong></td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Image benchmarks (Real-20, SIR<sup>2</sup>-454, Nature-20).</strong> Even though S2R is trained for video, it takes the top per-benchmark PSNR on all three image splits and takes the top average PSNR at <code>28.77</code> against GenSIRR at <code>28.03</code> and DAI at <code>27.35</code>. On average SSIM, GenSIRR keeps a lead (<code>0.931</code> vs <code>0.921</code>). This is the transfer-back-to-images signal: the video prior does not sacrifice image performance, and dominates on the classic PSNR axis of the image benchmarks.</li>
+      <li>Image benchmark table (reproduced from Table 4 in the paper):</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th rowspan="2">Method</th><th colspan="2">Real (20)</th><th colspan="2">SIR<sup>2</sup> (454)</th><th colspan="2">Nature (20)</th><th colspan="2">Average</th></tr>
+        <tr><th>PSNR &uarr;</th><th>SSIM &uarr;</th><th>PSNR &uarr;</th><th>SSIM &uarr;</th><th>PSNR &uarr;</th><th>SSIM &uarr;</th><th>PSNR &uarr;</th><th>SSIM &uarr;</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>DSRNet (ICCV&rsquo;23)</td><td>23.91</td><td>0.818</td><td>25.71</td><td>0.906</td><td>25.22</td><td>0.832</td><td>25.62</td><td>0.899</td></tr>
+        <tr><td>DSIT (NeurIPS&rsquo;24)</td><td>25.22</td><td>0.836</td><td>26.43</td><td>0.911</td><td>26.77</td><td>0.847</td><td>26.40</td><td>0.905</td></tr>
+        <tr><td>RDNet (CVPR&rsquo;25)</td><td>25.71</td><td>0.850</td><td>26.69</td><td>0.908</td><td>26.31</td><td>0.846</td><td>26.63</td><td>0.903</td></tr>
+        <tr><td>DAI (AAAI&rsquo;26)</td><td>25.21</td><td>0.841</td><td>27.47</td><td>0.919</td><td>26.81</td><td>0.843</td><td>27.35</td><td>0.913</td></tr>
+        <tr><td>GenSIRR (CVPR&rsquo;26)</td><td>27.58</td><td><strong>0.881</strong></td><td>28.08</td><td><strong>0.937</strong></td><td>27.34</td><td>0.840</td><td>28.03</td><td><strong>0.931</strong></td></tr>
+        <tr><td><strong>S2R-Removal (Ours)</strong></td><td><strong>28.23</strong></td><td><strong>0.881</strong></td><td><strong>28.83</strong></td><td>0.925</td><td><strong>27.89</strong></td><td><strong>0.883</strong></td><td><strong>28.77</strong></td><td>0.921</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Qualitative comparison vs the general-purpose video editor Kling O1.</strong> Figure 6 in the paper compares S2R-Removal against Kling O1 (a general-purpose video editing/generation model) on three representative reflection cases. The paper reports S2R suppresses reflections more completely while preserving transmission content, whereas Kling O1 either leaves visible reflection residuals or hallucinates content behind the reflection. This is the strongest available signal that general-purpose video editors are not a substitute for a task-specialized diffusion adapter on reflection removal, even at the cost of Kling&rsquo;s much larger base model.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Synthesis data source (Table 1, Panel A).</strong> Base RDNet (OpenRR-1k train) on OpenRR-1k test: <code>28.05</code> / <code>0.9465</code>. + Traditional pixel-space synthesis: <code>31.98</code> / <code>0.9619</code> (+<code>3.93</code>). + S2R physics-only synthesis: <code>32.35</code> / <code>0.9643</code> (+<code>4.30</code>). + Both: <code>33.26</code> / <code>0.9679</code> (+<code>5.21</code>). Combining traditional and physics-grounded synthesis dominates either alone.</li>
+      <li><strong>PGA operator composition (Table 1, Panel B).</strong> P alone: <code>32.35</code>. P + St: <code>32.81</code>. P + St + Pa: <code>33.62</code>. P + St + Pa + Re: <code>33.58</code>. P + St + Pa + Re + Th: <code>33.70</code>. Full PGA (adds Ro): <code>34.13</code>. The reflectance operator is the one non-monotonic step (PSNR ticks down <code>0.04</code> but SSIM ticks up), and the full operator set is <code>+1.78</code> PSNR over P alone. This is the additive signature the physics-grounded framing predicts.</li>
+      <li><strong>S2R-Removal loss stack (Table 2).</strong> Progressive enablement on S2R-Ref: <code>&#8466;<sub>diff</sub></code>: <code>27.00</code> / <code>0.8348</code>. + <code>&#8466;<sub>int</sub></code>: <code>27.71</code> / <code>0.8430</code>. + <code>&#8466;<sub>rec</sub></code>: <code>28.21</code> / <code>0.8513</code>. + <code>&#8466;<sub>ssim</sub></code>: <code>28.55</code> / <code>0.8566</code>. + <code>&#8466;<sub>depth</sub></code>: <code>28.84</code> / <code>0.8594</code>. Every loss adds; the intensity loss (Stage I) and the depth loss (Stage II) are the two largest single contributors.</li>
+      <li><strong>Stage I vs Stage II (Figure 10).</strong> Qualitative comparison isolates what Stage II adds on top of Stage I &mdash; the paper reports Stage II removes fine-grained reflection residuals and recovers transmission texture that Stage I leaves smoothed out. This is consistent with the quantitative Stage-II-only lift of <code>+1.13</code> PSNR / <code>+0.0164</code> SSIM in Table 2 (row 2 &rarr; row 5).</li>
+      <li><strong>Comparison with UE5-based synthesis (Figure 3).</strong> Under controlled variation of roughness, reflectance, and thickness, S2R-Synthesis reproduces the physics trends more faithfully than a UE5-based reflection synthesis pipeline. The paper does not report a quantitative PSNR/SSIM on this comparison; the claim is qualitative and rests on the reader inspecting Figure 3.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li><strong>Limitations, per the paper.</strong> S2R-Removal inherits the base video diffusion prior&rsquo;s failure modes on lighting extremes and rare glass geometries; when the reflection component overlaps transmission content at similar intensity, Stage II can leave residual ambiguity. The paper does not evaluate on very-long-form video (multi-minute clips) or on live-camera streaming.</li>
+      <li><strong>Reproducibility.</strong> Code and pretrained weights are listed as &ldquo;coming soon&rdquo; on the project page as of publication. The S2R-Ref and S2R-Real splits are the benchmark contribution and are expected to accompany the release. Nothing is currently on Hugging Face for direct use; the paper submitter (HigherHu) confirmed release intent in the HF Papers thread.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>

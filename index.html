@@ -36,6 +36,13 @@
       <!-- REVIEW_LIST_START -->
             <ul class="review-list">
         <li class="review-item">
+          <span class="date">August 13, 2026</span>
+          <div>
+            <h2><a href="reviews/diffusion-based-video-dereflection-review-2026-08-13.html">Diffusion-Based Video Dereflection</a></h2>
+            <p>No new flagship model launches survive dedup in the 36-hour window; one Tier 2 paper is the day&rsquo;s frontier-lab output. <strong>Xiaomi MiLM Plus</strong> posts <em>From Synthesis to Removal: Physics-Grounded Reflection Simulation and Diffusion-Based Video Dereflection</em>, a three-part closed-loop framework. Three named contributions each with a mechanism explanation: <em>S2R-Synthesis</em> decouples reflection structure from appearance &mdash; a structure-guided video renderer trained on FLUX-generated pseudo reflection videos supplies photorealism while a Physics-Grounded Augmentation module (operators P/St/Pa/Re/Th/Ro for Planar/Static/Partial/Reflectance/Thickness/Roughness) controls glass physics in structure space, so paired (reflected, clean) videos can be generated at scale without a physical rig; <em>S2R-Removal</em> adapts a pretrained video diffusion prior in two stages &mdash; Stage I reflection-aware latent adaptation with a residual-derived intensity loss teaches the latent where the reflection lives, then Stage II one-step pixel-geometric refinement with reconstruction, SSIM, and depth losses recovers clean transmission in a single denoising step; <em>S2R-Benchmark</em> is the first dedicated video reflection-removal benchmark, comprising <em>S2R-Ref</em> (60 paired videos, full-reference PSNR/SSIM/TC) and <em>S2R-Real</em> (50 in-the-wild videos, human perceptual scoring of Removal / Preservation / TC). On S2R-Ref the model scores <code>28.84</code> PSNR against prior best <em>GenSIRR</em> (CVPR&rsquo;26) at <code>27.04</code> (+<code>1.80</code>) while running at <code>87.09</code> ms/frame vs GenSIRR&rsquo;s <code>7214.94</code> (83&times; speedup at 832&times;480), and it also leads on the standard single-image benchmarks Real, SIR<sup>2</sup>, and Nature. DeepSeek&rsquo;s API homepage now points <code>deepseek-v4-pro</code> at <em>DeepSeek-V4-Pro-0813</em> today, but with no changelog entry, blog post, or technical report attached it is a silent version bump rather than a reviewable launch.</p>
+          </div>
+        </li>
+        <li class="review-item">
           <span class="date">August 12, 2026</span>
           <div>
             <h2><a href="reviews/milmmt-46-multilingual-mt-post-training-review-2026-08-12.html">MiLMMT-46 Multilingual MT Post-training</a></h2>
