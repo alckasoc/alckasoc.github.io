@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gemini 3.7 Flash, Intern-S2-Preview &amp; DreamX-Phi 1.0 Launches Review &mdash; August 14, 2026 | Auto Lit Review</title>
+<meta name="description" content="Three Tier 1 flagship launches in the 36-hour window: Google DeepMind's Gemini 3.7 Flash (algorithmic reasoning upgrade over 3.6 Flash, half-price introductory tier, headline gains on FrontierCode 1.1, DeepSWE v1.1, AutomationBench, GDP.pdf); Shanghai AI Laboratory's Intern-S2-Preview scientific agentic foundation model (404B MoE with native visual-page pretraining, multi-task + agentic RL, time-series decoder, Memory-Decoder specialization path); Alibaba AMAP's DreamX-Phi 1.0 action-conditioned video world model for robotic manipulation (PRoPE-style per-arm SE(3) attention, SAM3+V-JEPA object-consistency teacher, DMD few-step distillation, first place Track 1 / second Track 2 of WorldArena 2.0 IROS Challenge)." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 14, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#google-deepmind">Google DeepMind</a>
+          <ul>
+            <li class="toc-h2"><a href="#gemini-3-7-flash">Gemini 3.7 Flash</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#shanghai-ai-laboratory">Shanghai AI Laboratory</a>
+          <ul>
+            <li class="toc-h2"><a href="#intern-s2-preview">Intern-S2-Preview: Scientific Agentic Foundation Model</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba (AMAP-ML)</a>
+          <ul>
+            <li class="toc-h2"><a href="#dreamx-phi-1">DreamX-Phi 1.0: Action-Conditioned Video World Model for Robotic Manipulation</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 14, 2026</div>
+    <h1 class="page-title">Gemini 3.7 Flash, Intern-S2-Preview &amp; DreamX-Phi 1.0 Launches</h1>
+    <div class="page-meta">3 papers &middot; 3 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>Three Tier 1 flagship-model launches survive dedup in the 36-hour window &mdash; the day's headline is a coordinated wave of frontier-lab releases across three very different capability axes. <strong>Google DeepMind</strong> ships <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-3-7-flash/"><em>Gemini 3.7 Flash</em></a> just three weeks after <em>3.6 Flash</em>: the model card confirms it reuses the 3.6 Flash architecture, training dataset, hardware, and software stacks, and the delta is purely an algorithmic upgrade to the core reasoning foundation, delivered at the same <code>$0.75</code>/<code>$3.75</code> per-1M input/output introductory price with a <code>1M</code>-token input and <code>64K</code>-token output context. <strong>Shanghai AI Laboratory</strong> open-sources the <a href="https://arxiv.org/abs/2608.13505"><em>Intern-S2-Preview</em></a> family (Apache-2.0), a scientific agentic foundation model series topped by <em>Intern-S2-Preview-397B</em> &mdash; a <code>404B</code>-parameter multimodal MoE continued-pretrained from a Qwen3.5 backbone with hybrid linear/full attention, a <code>262K</code> native context, and a shared-weight MTP head; a smaller <em>Intern-S2-Preview</em> (<code>36B</code>/<code>3B</code>-active) ships alongside. The pipeline layers visual-page pretraining (learning symbolic + visual semantics jointly from raw scientific PDFs without an intermediate parser), a unified post-training stack (SFT &rarr; scalable multi-task RL &rarr; black- and white-box agentic RL &rarr; on-policy distillation), a time-series decoder for numerical forecasting, and a separate <em>Memory Decoder</em> (<em>Intern-MemDec-4B</em>) as a memory-augmented specialization path that lifts scientific benchmark scores without touching the frozen 397B backbone. <strong>Alibaba AMAP-ML</strong> ships <a href="https://arxiv.org/abs/2608.13489"><em>DreamX-Phi 1.0</em></a>, an action-conditioned video world model for bimanual robotic manipulation that took first on Track 1 and second on Track 2 of the <em>WorldArena 2.0</em> IROS Challenge; the release stacks PRoPE-style per-arm SE(3) geometric attention, a lightweight depth branch for scene geometry, and a SAM3-mask + frozen V-JEPA teacher for object-identity consistency, then distills the multi-step generator into a few-step student via distribution-matching distillation for deployment-grade latency.</p>
+      <h3>Competitiveness</h3>
+      <p>Gemini 3.7 Flash's own model card benchmarks it head-to-head against <em>Gemini 3.6 Flash</em>, <em>Claude Sonnet 5</em>, <em>GPT-5.6 Terra</em>, and <em>Muse Spark 1.2</em> and reports wins on <code>7</code> of the <code>18</code> shared benchmarks &mdash; specifically <em>FrontierCode 1.1 Main</em> at <code>43.6%</code> (vs GPT-5.6 Terra <code>41.3%</code>, Claude Sonnet 5 <code>42.7%</code>, 3.6 Flash <code>34.4%</code>), <em>Code Arena WebDev</em> Elo <code>1588</code> (vs 3.6 Flash <code>1538</code>, Claude Sonnet 5 <code>1541</code>), <em>AutomationBench</em> at <code>30.4%</code> (vs GPT-5.6 Terra <code>23.6%</code>, Claude Sonnet 5 <code>10.7%</code>, 3.6 Flash <code>17.0%</code>), <em>Harvey LAB-AA</em> <code>90.7%</code>, <em>GDP.pdf</em> <code>34.0%</code>, <em>LVBench</em> <code>85.4%</code>, <em>GDM-MRCR v2 (8-needle, 128k)</em> <code>97.0%</code>, and <em>HLE-Verified</em> <code>53.6%</code>. GPT-5.6 Terra still leads on <em>DeepSWE v1.1</em> (<code>69.6%</code> vs 3.7 Flash <code>65.3%</code>), <em>Terminal-bench 2.1</em>, <em>OSWorld-2.0</em>, and <em>Artificial Analysis Intelligence Index</em> (tied at <code>57</code> with Muse Spark 1.2, 3.7 Flash <code>56</code>), and Claude Sonnet 5 still leads <em>Agent's Last Exam</em> (<code>33.3%</code>). The pricing story is the more consequential one: at <code>$0.75</code>/<code>$3.75</code> per-1M through year-end, 3.7 Flash sits at roughly <code>1/3</code> the input cost and <code>1/3</code>&ndash;<code>1/2</code> the output cost of <em>Claude Sonnet 5</em> and <em>GPT-5.6 Terra</em> while topping them on the coding-agent axis where Flash historically sat behind. On the open-source scientific-agent axis, <em>Intern-S2-Preview-397B</em> reports <code>44.7</code> Overall on <em>WildClawBench</em> (the newly-released Shanghai AI Lab agentic benchmark, first-listed leaderboard entry at this parameter tier as of publication) at an average latency of <code>541</code> seconds per task, positioning itself as the strongest open-weights entry against closed scientific-agent stacks like <em>Kimi K3 Explorer</em> and <em>Qwen3.8-Max Research</em> covered in earlier reviews, and it is the first frontier-lab release to jointly ship native time-series forecasting, image-text-to-text, and long-horizon agent RL in a single open-weights checkpoint. On the world-model axis, <em>DreamX-Phi 1.0</em> won Track 1 and placed second on Track 2 of the WorldArena 2.0 IROS Challenge as of paper submission &mdash; the same benchmark where <em>Alibaba's DreamX-World 1.0</em> (July) and <em>Xiaomi RynnBrain 1.1</em> (July) had previously traded state-of-the-art, indicating that manipulation-specific world models built on video-diffusion priors have crossed the point where per-arm rigid-motion geometry (rather than pixel-level realism) is now the differentiator.</p>
+      <h3>New frontier releases</h3>
+      <p>Three flagship model releases in the window. <em>Gemini 3.7 Flash</em> (Google DeepMind, 2026-08-13) &mdash; general availability today via Gemini API, Google AI Studio, Antigravity, Gemini Enterprise, and Gemini Spark, in <a href="https://support.google.com/gemini/answer/17094507">160+ countries</a>. <em>Intern-S2-Preview</em> and <em>Intern-S2-Preview-397B</em> (Shanghai AI Laboratory, 2026-08-13) &mdash; open-weights under Apache-2.0 at <a href="https://huggingface.co/internlm/Intern-S2-Preview-397B">huggingface.co/internlm/Intern-S2-Preview-397B</a>, with a companion <em>Intern-MemDec-4B</em> extension; hosted API at <a href="https://chat.intern-ai.org.cn/">chat.intern-ai.org.cn</a>. <em>DreamX-Phi 1.0</em> (Alibaba AMAP-ML, 2026-08-13) &mdash; weights and inference code promised at <a href="https://github.com/AMAP-ML/DreamX-Phi">github.com/AMAP-ML/DreamX-Phi</a> after the WorldArena 2.0 IROS Challenge concludes.</p>
+    </section>
+
+    <h1 id="google-deepmind">Google DeepMind</h1>
+
+    <h2 id="gemini-3-7-flash"><a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-3-7-flash/">Gemini 3.7 Flash: Our Most Intelligent Workhorse Model for Coding and Agents</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch Blog + Model Card</span>
+      <span>blog.google &middot; deepmind.google</span>
+      <span>2026-08-13</span>
+      <span>Flagship model launch &middot; Coding &middot; Agents &middot; Long context &middot; Multimodal</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Released by Tulsee Doshi (Senior Director, Product Management) on behalf of the Gemini team on August 13, 2026 &mdash; three weeks after <em>Gemini 3.6 Flash</em> (covered in the <a href="gemini-3-6-flash-and-mage-flow-launches-review-2026-07-22.html">July 22 review</a>). Positioned as "our most intelligent workhorse model yet for coding and agents." Ships general availability today via Gemini API, Google AI Studio, Antigravity, Gemini Enterprise Agent Platform, and Gemini Spark (across <code>160+</code> countries per the Spark availability page); the accompanying <a href="https://deepmind.google/models/model-cards/gemini-3-7-flash">model card</a> was published the same day. The <em>Gemini 3.7 Frontier Safety Framework Report</em> is promised to follow shortly.</li>
+      <li>Sourcing: publication group of one launch blog post, one model card, and Gemini API documentation updates (<code>gemini-3.7-flash</code> is now the current pointer), all first-party. No accompanying arXiv technical report; per the model card the training pipeline is unchanged from 3.6 Flash so the substantive 3.6 Flash <a href="https://storage.googleapis.com/deepmind-media/Model-Cards/Gemini-3-6-Flash-Model-Card.pdf">model card</a> is the authoritative technical reference for architecture, training data, hardware, and software.</li>
+      <li>Positioning: 3.7 Flash targets the same Flash-tier price point as 3.6 Flash (<code>$0.75</code>/<code>$3.75</code> per 1M input/output through 2026-12-31; <code>$1.50</code>/<code>$7.50</code> from 2027-01-01), so the release is exclusively a capability push, not a pricing move. The competitive frame in the model card is against <em>Claude Sonnet 5</em>, <em>GPT-5.6 Terra</em>, and <em>Muse Spark 1.2</em>, i.e. the current mid-tier frontier trio.</li>
+    </ul>
+
+    <figure>
+      <img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-7-flash.width-1300.png" alt="Gemini 3.7 Flash launch card." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Launch card for Gemini 3.7 Flash (hotlinked from the Google blog launch post).</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>The 3.7 Flash model card explicitly delegates architecture, training dataset, training data processing, hardware, and software to <em>Gemini 3.6 Flash</em>, i.e. 3.7 Flash is architecturally identical to 3.6 Flash. Public architecture parameters visible in the 3.6 Flash card and the shared 3.7 Flash card: <code>1M</code>-token input context, <code>64K</code>-token output, multimodal inputs (text, image, audio, video), text-only outputs, thinking-mode support with a customizable thinking budget knob to trade quality vs. cost vs. latency.</li>
+      <li><strong>Named contribution &mdash; algorithmic upgrade to the core reasoning foundation.</strong>
+        <ul>
+          <li><em>Problem.</em> The 3.6 Flash release (July 22) established the current Flash-tier architecture and price envelope. Three weeks is not enough time to retrain the base at a new architecture or on a fundamentally new pretraining mix, so the only lever a launch cadence this tight can pull is a targeted improvement to the post-training reasoning pipeline &mdash; the challenge is doing that without regressing the tone, safety, or refusal behaviour that 3.6 Flash already ships with.</li>
+          <li><em>Mechanism.</em> The launch blog attributes the delta to "algorithmic innovations that we look forward to bringing to future models" applied on top of the frozen 3.6 Flash base (architecture, training data, hardware, and software all inherited unchanged per the model card). The observable surface of that upgrade is (a) more disciplined multi-step planning and tool-calling behaviour ("it thinks more diligently, putting in more effort into multi-step planning and tool calls"), (b) improved first-pass code accuracy, and (c) higher fidelity to instructions and clarification-on-ambiguity behaviour. Safety-evaluation-wise, the model card's automated evals show 3.7 Flash performs similarly to 3.6 Flash on both safety and tone with low unjustified refusals (Text-to-Text safety <code>+1.17pp</code>, Multilingual <code>-0.48pp</code>, Image-to-Text <code>no change</code>, Unjustified-refusals <code>+0.84pp</code>, all "lower is better"), consistent with an intervention that is targeted at the reasoning trace rather than the safety head.</li>
+          <li><em>Why.</em> Because the base is frozen, the improvement decomposes cleanly against 3.6 Flash on the same benchmark suite (see Evaluation &amp; Results table below): the win pattern &mdash; <code>+9.2pp</code> on FrontierCode 1.1 Main, <code>+16.7pp</code> on DeepSWE v1.1, <code>+9.5pp</code> on Terminal-bench 3.0, <code>+13.4pp</code> on AutomationBench, <code>+12pp</code> on GDP.pdf, <code>+14.1pp</code> on OSWorld-2.0 &mdash; concentrates on long-horizon coding, agent, and document-comprehension tasks, exactly the axes where more diligent planning and tool-use would matter. On tasks that don't reward planning depth (CharXiv Reasoning no-tools: <code>84.5%</code> vs 3.6 Flash's <code>85.2%</code>) the delta is neutral or slightly negative. This is the signature of a reasoning-side upgrade rather than a broad capability bump, and explains why it can ship at the same price without regressing safety or tone.</li>
+        </ul>
+      </li>
+      <li>Frontier Safety Framework assessment (April-2026 FSF): Gemini 3.7 Flash reaches the <em>alert threshold</em> for the Cybersecurity Uplift Level 1 CCL, and for the CBRN Uplift Level 1 CCL a subset of expert red-teamers were able to elicit accurate and actionable information across the full harm journey &mdash; the model card assesses 3.7 Flash below the CCL threshold in both cases due to modest average red-teaming scores and a requirement for explicit expert steering, but ships with updated CBRN + cyber-offense safeguards as a precautionary measure. No CCL was reached across CBRN, Cybersecurity, Harmful Manipulation, ML R&amp;D (Acceleration Level 1, Automation Level 1), or Stealth &amp; Situational Awareness.</li>
+    </ul>
+
+    <h3>Pre-training &amp; Post-training</h3>
+    <ul>
+      <li>Pre-training: unchanged from Gemini 3.6 Flash per the 3.7 Flash model card. Knowledge cutoff is March 2026, with the caveat that "users can expect updated information for some domains while in others they may experience the model's knowledge is limited to January 2025 (in line with the Gemini 3 Model Family)," i.e. the 3.7 upgrade did not extend or refresh the pretraining corpus.</li>
+      <li>Post-training: the reasoning-side algorithmic upgrade is applied here. Neither the launch blog nor the model card discloses the specific algorithm; developer testimonials (Box, Browser Use, Cartwheel, Databricks, Emergent, Harvey, Hebbia, LangChain, Nunu.ai, OpenCode, Pydantic, Stanford Biology) collectively describe the observable improvements as (i) fewer retries per task, (ii) better adherence to instructions across long tool-use chains, (iii) improved multi-step planning, (iv) improved intent-clarification behaviour on ambiguous prompts. This is the diligence-of-reasoning axis rather than a raw capability shift.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Benchmark grid reproduced from the model card. Bold indicates leader across the shown models.</li>
+    </ul>
+    <table>
+      <thead>
+        <tr>
+          <th>Benchmark (notes)</th>
+          <th>Gemini 3.7 Flash</th>
+          <th>Gemini 3.6 Flash</th>
+          <th>Claude Sonnet 5</th>
+          <th>GPT-5.6 Terra</th>
+          <th>Muse Spark 1.2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Input price ($/1M tokens)</td><td>$0.75*</td><td>$0.75*</td><td>$2.00</td><td>$2.00</td><td>$1.25</td></tr>
+        <tr><td>Output price ($/1M tokens)</td><td>$3.75*</td><td>$3.75*</td><td>$10.00</td><td>$12.00</td><td>$4.25</td></tr>
+        <tr><td>Artificial Analysis Intelligence Index</td><td>56</td><td>52</td><td>55</td><td><strong>57</strong></td><td><strong>57</strong></td></tr>
+        <tr><td>FrontierCode 1.1 Main (production code quality)</td><td><strong>43.6%</strong></td><td>34.4%</td><td>42.7%</td><td>41.3%</td><td>&mdash;</td></tr>
+        <tr><td>DeepSWE v1.1 (long-horizon SWE)</td><td>65.3%</td><td>48.6%</td><td>53.8%</td><td><strong>69.6%</strong></td><td>54.9%</td></tr>
+        <tr><td>Code Arena WebDev (Elo)</td><td><strong>1588</strong></td><td>1538</td><td>1541</td><td>1523</td><td>1535</td></tr>
+        <tr><td>Terminal-bench 2.1 (agentic terminal coding)</td><td>85.8%</td><td>78.0%</td><td>80.4%</td><td><strong>87.4%</strong></td><td>82.9%</td></tr>
+        <tr><td>Terminal-bench 3.0 (general agent)</td><td>14.9%</td><td>5.4%</td><td>14.6%</td><td><strong>20.8%</strong></td><td>&mdash;</td></tr>
+        <tr><td>AutomationBench (enterprise workflows, private)</td><td><strong>30.4%</strong></td><td>17.0%</td><td>10.7%</td><td>23.6%</td><td>&mdash;</td></tr>
+        <tr><td>GDPVal-AA v2 (knowledge work, Elo)</td><td>1525</td><td>1422</td><td>1598</td><td>1578</td><td><strong>1628</strong></td></tr>
+        <tr><td>Harvey LAB-AA (complex legal workflows)</td><td><strong>90.7%</strong></td><td>85.1%</td><td>90.1%</td><td>85.2%</td><td>&mdash;</td></tr>
+        <tr><td>GDP.pdf (expert PDF comprehension)</td><td><strong>34.0%</strong></td><td>22.0%</td><td>28.0%</td><td>24.7%</td><td>16.0%</td></tr>
+        <tr><td>CharXiv Reasoning (no tools)</td><td>84.5%</td><td>85.2%</td><td>77.0%</td><td><strong>85.9%</strong></td><td>&mdash;</td></tr>
+        <tr><td>CharXiv Reasoning (with tools)</td><td>88.7%</td><td><strong>89.4%</strong></td><td>88.3%</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>LVBench (long video)</td><td><strong>85.4%</strong></td><td>84.2%</td><td>68.5%</td><td>78.9%</td><td>&mdash;</td></tr>
+        <tr><td>GDM-MRCR v2 (8-needle, 128k avg)</td><td><strong>97.0%</strong></td><td>91.8%</td><td>81.5%</td><td>93.5%</td><td>&mdash;</td></tr>
+        <tr><td>OSWorld-2.0 (agentic computer use)</td><td>47.9%</td><td>33.8%</td><td>&mdash;</td><td><strong>50.2%</strong></td><td>&mdash;</td></tr>
+        <tr><td>Agent's Last Exam (pass rate)</td><td>26.3%</td><td>24.2%</td><td><strong>33.3%</strong></td><td>28.0%</td><td>&mdash;</td></tr>
+        <tr><td>HLE-Verified (expert multidisciplinary)</td><td><strong>53.6%</strong></td><td>51.2%</td><td>31.0%</td><td>51.1%</td><td>&mdash;</td></tr>
+        <tr><td>BioMysteryBench (human-solvable)</td><td>87.1%</td><td>80.6%</td><td><strong>87.5%</strong></td><td>83.8%</td><td>&mdash;</td></tr>
+        <tr><td>BioMysteryBench (human-difficult)</td><td>43.5%</td><td>41.2%</td><td>34.1%</td><td><strong>49.4%</strong></td><td>&mdash;</td></tr>
+        <tr><td>LABBench2 (biology research)</td><td><strong>82.1%</strong></td><td>76.1%</td><td>80.1%</td><td>81.2%</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:var(--ink-faint);margin-top:-8px;">* 3.6 and 3.7 Flash introductory pricing expires 2026-12-31; then $1.50 / $7.50 per 1M input/output.</p>
+
+    <ul>
+      <li>Delta vs 3.6 Flash: 3.7 Flash beats 3.6 on <code>17</code> of <code>19</code> rows in this grid, ties on none, and regresses on <code>2</code> (CharXiv Reasoning no-tools <code>-0.7pp</code>, with tools <code>-0.7pp</code>). Largest gains: OSWorld-2.0 <code>+14.1pp</code>, AutomationBench <code>+13.4pp</code>, GDP.pdf <code>+12.0pp</code>, DeepSWE v1.1 <code>+16.7pp</code>, Terminal-bench 3.0 <code>+9.5pp</code>. GDPVal-AA v2 (knowledge work) sees the largest Elo jump, <code>+103</code>.</li>
+      <li>Cross-model: 3.7 Flash tops <em>Claude Sonnet 5</em> on <code>12</code> of <code>17</code> shared rows and <em>GPT-5.6 Terra</em> on <code>6</code> of <code>17</code>. GPT-5.6 Terra remains the SWE / agentic-terminal leader (DeepSWE v1.1 <code>69.6%</code>, Terminal-bench 2.1 <code>87.4%</code>, OSWorld-2.0 <code>50.2%</code>); Claude Sonnet 5 remains the desktop-multimodal-agent leader (Agent's Last Exam <code>33.3%</code>). Google's own Artificial Analysis Intelligence Index composite has 3.7 Flash at <code>56</code>, one point behind GPT-5.6 Terra and Muse Spark 1.2 at <code>57</code>.</li>
+      <li>Ablation-in-spirit: because 3.7 Flash isolates a post-training reasoning upgrade over 3.6 Flash on identical base weights, the 3.7 - 3.6 column is effectively a controlled study of that upgrade's marginal value.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>Automated safety evaluations (lower better on safety, higher better on tone): Text-to-Text Safety <code>+1.17pp</code>, Multilingual Safety <strong><code>-0.48pp</code></strong>, Image-to-Text Safety <em>no change</em>, Tone <code>-0.47pp</code>, Unjustified-refusals <code>+0.84pp</code> &mdash; net "similar to 3.6 Flash across both safety and tone, with low unjustified refusals."</li>
+      <li>Frontier Safety Framework verdict: no tracked or critical capability level (T/CCL) reached across CBRN, Cybersecurity, Harmful Manipulation, ML R&amp;D (Acceleration Level 1, Automation Level 1), or Stealth &amp; Situational Awareness. Alert threshold reached on Cybersecurity Uplift Level 1 and (for a subset of expert red-teamers) on CBRN Uplift Level 1. Updated CBRN and cyber-offense safeguards ship with the model.</li>
+      <li>Known limitation flagged: knowledge cutoff March 2026 in some domains, January 2025 in others (unchanged from Gemini 3 family). Human red-teaming outside the model-development team; child-safety launch thresholds passed.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Model identifier: <code>gemini-3.7-flash</code>. Distributed via Gemini App (Spark), Gemini Enterprise, Gemini Enterprise Agent Platform, Google AI Studio, Gemini API, Google Antigravity. Available in the same <a href="https://support.google.com/gemini/answer/17094507">160+ countries</a> as prior Spark deployments, excluding EEA, Nigeria, Switzerland, and the UK.</li>
+      <li>Pricing: <code>$0.75</code>/1M input tokens, <code>$3.75</code>/1M output tokens through 2026-12-31; <code>$1.50</code>/<code>$7.50</code> from 2027-01-01. Half of the launch price of 3.6 Flash per the blog post.</li>
+    </ul>
+
+    <h1 id="shanghai-ai-laboratory">Shanghai AI Laboratory</h1>
+
+    <h2 id="intern-s2-preview"><a href="https://arxiv.org/abs/2608.13505">Intern-S2-Preview: Scientific Agentic Foundation Model</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report + Open-Weights Launch</span>
+      <span>arXiv:2608.13505 &middot; HuggingFace &middot; #1 HF Daily 2026-08-14</span>
+      <span>2026-08-13</span>
+      <span>Flagship model launch &middot; Scientific reasoning &middot; Multimodal &middot; Agentic RL &middot; Time series &middot; Memory augmentation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Author list: Lei Bai, Jiaqi Cao, Chiyu Chen et al. (<code>125</code> authors, Shanghai AI Laboratory / InternLM). Successor to the <em>Intern-S1</em> line (arXiv 2508.15763), positioned as the group's most capable multimodal foundation model for scientific intelligence and long-horizon agents.</li>
+      <li>Series ships two open-weights checkpoints under Apache-2.0: <em>Intern-S2-Preview</em> (36B total / 3B active MoE, 256 experts, hybrid linear/full attention, 262K native context, shared-weight MTP for speculative decoding; continued pre-trained from Qwen3.5) and <em>Intern-S2-Preview-397B</em> (the flagship; safetensors size reports <code>404B</code> parameters). A companion <em>Intern-MemDec-4B</em> extension ships as a Memory Decoder specialization path.</li>
+      <li>Named contributions in the technical report: (1) a new <em>visual-page pretraining paradigm</em> that jointly models symbolic + visual semantics of raw scientific documents; (2) a unified post-training pipeline &mdash; SFT &rarr; scalable multi-task RL &rarr; black- and white-box agentic RL &rarr; on-policy distillation &mdash; with practical stabilizers (partial rollout w/ off-policy correction, adaptive length regularization, online speculative decoding, robust multi-task optimization, trace-aware experience assembly); (3) a <em>time-series module</em> in the 397B model extending long-sequence understanding to numerical forecasting; (4) a separate <em>Memory Decoder</em> path (Intern-MemDec-4B) as a memory-augmented rapid specialization channel that does not modify the frozen 397B backbone. Each of the four is given a mechanism explanation in the Methodology section below.</li>
+      <li>Headline empirical claims: (a) Intern-S2-Preview-397B achieves competitive or leading results across scientific, multimodal, agentic, and general-purpose benchmarks (leading among open-source models per the model card, using OpenCompass, VLMEvalKit, and AgentCompass); (b) time-series modules improve scientific signal understanding and forecasting on <em>SciTS</em>; (c) the <em>Intern-MemDec-4B</em> extension lifts <em>Biology-Instructions</em> average from <code>56.92 &rarr; 60.32</code> without modifying the frozen 397B backbone; (d) on the newly-released <em>WildClawBench</em> agentic leaderboard, Intern-S2-Preview-397B posts <code>44.7</code> Overall at an average latency of <code>541</code> seconds per task.</li>
+    </ul>
+
+    <figure>
+      <img src="https://huggingface.co/internlm/Intern-S2-Preview-397B/resolve/main/figs/title.png" alt="Intern-S2-Preview-397B title card summarizing the scientific agentic foundation model release." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Title card for Intern-S2-Preview-397B (hotlinked from the HuggingFace model repo).</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>Two-tier release: the smaller <em>Intern-S2-Preview</em> is a <code>36B</code>-total / <code>3B</code>-active MoE with <code>256</code> experts, hybrid linear/full attention, <code>262K</code> native context, and a shared-weight MTP head for speculative decoding; per the vLLM recipe it is continued pre-trained from Qwen3.5. The flagship <em>Intern-S2-Preview-397B</em> reports <code>404B</code> parameters in the safetensors metadata; the model card describes it as extending time-series modelling from long-sequence understanding to numerical forecasting, i.e. the flagship carries a dedicated time-series decoding path in addition to the standard image-text-to-text head.</li>
+      <li>Long-context handling: base <code>max_position_embeddings = 262144</code>, with YaRN RoPE scaling (rope_type <code>yarn</code>, factor <code>4.0</code>) documented in the vLLM recipe as the supported path to <code>512K</code> effective context, i.e. the model is packaged to interoperate with existing YaRN-style extension recipes rather than shipping its own long-context method.</li>
+      <li>Both models ship with a switchable thinking mode (<code>enable_thinking</code>, default on; the model card explicitly warns against disabling it for agentic tasks) and are wired for tool-calling via LMDeploy's <code>interns2-preview</code> parser. LMDeploy also exposes an Anthropic-compatible <code>/v1/messages</code> endpoint so the model can be pointed at from Claude Code with <code>ANTHROPIC_MODEL=internlm/Intern-S2-Preview-397B</code>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism &mdash; Visual-page pretraining paradigm</h4>
+    <ul>
+      <li><em>Problem.</em> Standard multimodal pretraining on scientific corpora runs each document through an intermediate parser: OCR extracts text, layout tools separate figures/tables from body prose, and the vision encoder sees only the cropped figures. That pipeline discards the geometric relationship between prose and equations, between axis labels and plot content, and between an in-line reference ("see Fig.&nbsp;3") and the target figure. Parser errors on rendered math and on scientific diagrams also propagate into training-loss noise the base model then has to average out.</li>
+      <li><em>Mechanism.</em> The visual-page pretraining head consumes rendered scientific pages directly &mdash; the whole page rendered as an image, jointly with its symbolic text stream &mdash; and learns a shared representation in which pixels and tokens are tied to the same page-space coordinates. Symbolic semantics (the LaTeX / prose token stream) and visual relationships (figure&harr;caption placement, equation formatting, plot geometry) are jointly modeled from the same document without an intermediate parser stage. The paper positions this as strengthening spatial and visual reasoning and improving data efficiency.</li>
+      <li><em>Why.</em> Removing the parser means (a) equations, subscripts, and scientific typography are learned as pixel-level features rather than as parser-lossy tokens; (b) figure&harr;text co-reference is a spatial-attention task the model can learn directly rather than an inferred pair from separately-cropped inputs; (c) domains where the "text" and "figure" separation is arbitrary (crystallographic diagrams, spectra, gene-expression heatmaps) get end-to-end supervision. The paper reports this paradigm delivers a step change on scientific reasoning benchmarks vs. text-only or parsed-multimodal baselines.</li>
+    </ul>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism &mdash; Unified post-training pipeline for stability at agentic-RL scale</h4>
+    <ul>
+      <li><em>Problem.</em> Large-scale multi-task RL and long-horizon agentic RL are the two dominant post-training pushes across current frontier labs, but each has well-known failure modes. Multi-task RL suffers from task interference and gradient conflicts when very different rewards are trained jointly. Long-horizon agentic RL on sandboxed environments (black-box &mdash; the model calls tools and only sees end-of-trajectory reward) suffers from rollouts long enough that on-policy sampling is prohibitively slow, and from length-explosion where the model discovers that longer thinking traces reliably win at low compute cost.</li>
+      <li><em>Mechanism.</em> The pipeline runs SFT &rarr; scalable multi-task RL &rarr; black- and white-box agentic RL &rarr; on-policy distillation, with five stabilizers plumbed through the RL stages: <em>partial rollout with off-policy correction</em> (so rollouts don't have to complete before a gradient step, corrected via importance sampling on the drifted policy); <em>adaptive length regularization</em> (a per-task length prior that suppresses the length-explosion failure mode without cutting off tasks that legitimately need long reasoning); <em>online speculative decoding</em> (rollout throughput is lifted by drafting with the smaller model or the MTP head, then verifying with the target); <em>robust multi-task optimization</em> (handling the gradient-conflict / task-interference regime at 20+ scientific RL tasks); and <em>trace-aware experience assembly</em> for agentic tasks (which bundles the tool-call trace with the environment observation so the replay buffer captures the causal chain rather than just the final reward). By connecting multiple agent frameworks to large-scale sandboxed environments for black-box agentic RL, the pipeline enables long-horizon RL across both general and scientific domains.</li>
+      <li><em>Why.</em> Together the stabilizers address the three specific failure modes that block naive RL at this scale: rollout-throughput starvation (partial rollout + speculative decoding), reward-hacking via length explosion (adaptive length regularization), and multi-task interference (robust multi-task optimization + trace-aware assembly). The reported outcome is that Intern-S2-Preview-397B improves generalization and raises the capability ceiling for long-horizon tasks in both general and scientific domains, and on the WildClawBench leaderboard (a new agentic benchmark released alongside the model) it is currently the sole entry at the &le;500B-parameter tier.</li>
+    </ul>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism &mdash; Time-series modelling for scientific forecasting</h4>
+    <ul>
+      <li><em>Problem.</em> Scientific workflows routinely involve numeric time-series signals (seismographic traces, electricity load curves, sensor telemetry, physiological signals). A text-only LLM cannot ingest raw waveform data at meaningful sampling rates, and pre-tokenizing every numeric sample into digit strings destroys the structure the signal actually carries. Existing LLM-plus-forecasting approaches typically bolt on a separate small forecasting model whose outputs are then narrated in text, which decouples reasoning from prediction.</li>
+      <li><em>Mechanism.</em> Intern-S2-Preview-397B extends the model's long-sequence understanding path to accept a <code>time_series_url</code> content type in the OpenAI-compatible chat schema, with sampling-rate metadata attached. Time-series bytes (npy, csv, wav, mp3, flac, etc.) are base64-encoded and fed as a first-class modality alongside text and images. A dedicated forecasting head produces both a point forecast and a quantile forecast on demand (via <code>enable_forecasting: true</code> and an optional <code>forecast_horizon</code>), and the same input surface also serves discriminative queries (e.g. earthquake P-wave / S-wave onset detection on seismic data). At the reasoning layer, the model can jointly attend to the time-series representation, the text prompt, and any provided auxiliary text conditioning (weather-conditioned electricity-load forecasting is the paper's example).</li>
+      <li><em>Why.</em> Because the time-series decoder ships inside the same 397B backbone, the model can chain a forecast through its downstream scientific reasoning without a modality break &mdash; the same model that predicts the next 48 half-hourly load values can then reason about grid stability using its own forecast as input. The paper reports the time-series modules improve scientific signal understanding and forecasting on SciTS, and the API surface (base64 upload + point + quantile forecast) is a superset of what most standalone forecasting stacks expose.</li>
+    </ul>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism &mdash; Memory Decoder / Intern-MemDec-4B specialization path</h4>
+    <ul>
+      <li><em>Problem.</em> Domain specialization on a 400B-scale backbone is expensive: full fine-tuning burns a copy of the base per specialization, and LoRA-style adaptation gives up capability headroom on hard tasks. What scientific practitioners actually want is a way to bolt domain-specific memory (biology datasets, chemistry references, materials-science corpora) onto a shared frozen backbone without paying a per-domain training bill.</li>
+      <li><em>Mechanism.</em> The <em>Memory Decoder</em> is a separate memory-augmented decoder module trained as a <em>4B</em> extension (<em>Intern-MemDec-4B</em>) that composes with the frozen 397B backbone at inference. The 397B remains untouched; the Memory Decoder is what changes across specializations. The paper reports this as "a separate memory-augmented path for rapid scientific specialization without modifying the frozen 397B backbone."</li>
+      <li><em>Why.</em> The reported win is concrete and clean: on <em>Biology-Instructions</em> the Intern-MemDec-4B extension lifts the average score from <code>56.92 &rarr; 60.32</code> (<code>+3.4pp</code>) with the 397B backbone frozen. That means the specialization delta is decoupled from the backbone's shared capabilities, and multiple Memory Decoders can be swapped in per domain without the operator having to hold multiple copies of the 400B weights &mdash; the storage and serving story is <code>404B + n &times; 4B</code> rather than <code>n &times; 404B</code>. This is a materially different economics story from LoRA at the flagship scale.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Reported evaluation suite: OpenCompass (general reasoning), VLMEvalKit (multimodal), and AgentCompass (agentic). Text-reasoning benchmarks are evaluated with a max inference length of <code>256K</code> tokens; multimodal benchmarks at <code>64K</code>. The paper reports Intern-S2-Preview-397B achieves competitive or leading results in multiple settings across scientific, multimodal, agentic, and general-purpose benchmarks &mdash; per the model card "leading general-reasoning performance among open-source models" and strong results in specialized scientific tasks such as biomolecular interaction design and material structure generation. The technical report includes full benchmark grids against recent VLMs and LLMs; the model repository ships general_tasks.png and scientific_tasks.png with the reproducible per-benchmark numbers.</li>
+      <li>Named benchmark wins in first-party sourcing: <em>WildClawBench</em> Overall <code>44.7</code> at <code>541</code> seconds average per-task latency (leaderboard-tracked; only entry at the &le;500B parameter tier as of publication); <em>SciTS</em> improvements from the time-series modules; <em>Biology-Instructions</em> average <code>56.92 &rarr; 60.32</code> with Intern-MemDec-4B on the frozen 397B backbone.</li>
+    </ul>
+
+    <figure>
+      <img src="https://huggingface.co/internlm/Intern-S2-Preview-397B/resolve/main/figs/general_tasks.png" alt="Intern-S2-Preview-397B general-task benchmark grid comparing against recent VLMs and LLMs across reasoning, coding, tool use, and multimodal axes." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>General-task benchmark grid for Intern-S2-Preview-397B (from the HuggingFace model repo). Underline: best among open-source models. Bold: best overall.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://huggingface.co/internlm/Intern-S2-Preview-397B/resolve/main/figs/scientific_tasks.png" alt="Intern-S2-Preview-397B scientific-task benchmark grid across biology, chemistry, physics, materials science, and multimodal scientific benchmarks." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Scientific-task benchmark grid for Intern-S2-Preview-397B (from the HuggingFace model repo).</figcaption>
+    </figure>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The Intern-MemDec-4B result is itself an ablation of the Memory Decoder path: identical 397B backbone, plus/minus a 4B memory extension, +3.4pp average on Biology-Instructions.</li>
+      <li>The paper positions the time-series modules as an isolable capability &mdash; the flagship 397B carries them, and their contribution is measured on SciTS scientific signal understanding and forecasting benchmarks. Full ablation tables and hyperparameter grids are in the arXiv technical report.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>Open-weights release under Apache-2.0. No CBRN / cyber-offense frontier-safety report is bundled with the release; the model card focuses on capability and deployment guidance rather than red-team results. The model card explicitly recommends keeping thinking mode enabled for agentic tasks.</li>
+      <li>Sampling recommendations (from the model card): <code>top_p = 0.95</code>, <code>top_k = 50</code>, <code>min_p = 0.0</code>, <code>temperature = 0.8</code>.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Open weights: <a href="https://huggingface.co/internlm/Intern-S2-Preview-397B">huggingface.co/internlm/Intern-S2-Preview-397B</a> (Apache-2.0, BF16, <code>404B</code> params); <a href="https://huggingface.co/internlm/Intern-S2-Preview">huggingface.co/internlm/Intern-S2-Preview</a> (<code>36B</code>/<code>3B</code>-active MoE, hybrid linear/full attention, <code>262K</code> ctx, shared-weight MTP); <a href="https://huggingface.co/collections/internlm/intern-s2">Intern-S2 collection</a> lists 6 items.</li>
+      <li>Serving: LMDeploy, vLLM (nightly, <code>InternS2PreviewForConditionalGeneration</code> handler via <a href="https://github.com/vllm-project/vllm/pull/42705">PR #42705</a>), SGLang. Recommended vLLM command uses tensor-parallel-size 2 on 2&times;H100/H800 with MTP speculative decoding (<code>num_speculative_tokens: 4</code>); single H200 (141GB) is sufficient for BF16 of the 36B/3B variant. FP8 checkpoint fits a single H100/H200.</li>
+      <li>Hosted API: <a href="https://chat.intern-ai.org.cn/">chat.intern-ai.org.cn</a> exposes both OpenAI-compatible (<code>/api/v1</code>) and Anthropic-compatible (for Claude Code integration) endpoints. GitHub: <a href="https://github.com/InternLM/Intern-S1">InternLM/Intern-S1</a>. ModelScope collection: <a href="https://modelscope.cn/collections/Shanghai_AI_Laboratory/intern-s2">modelscope.cn/collections/Shanghai_AI_Laboratory/intern-s2</a>.</li>
+    </ul>
+
+    <h1 id="alibaba">Alibaba (AMAP-ML)</h1>
+
+    <h2 id="dreamx-phi-1"><a href="https://arxiv.org/abs/2608.13489">DreamX-Phi 1.0: Action-Conditioned Video World Model for Robotic Manipulation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report + Open-Weights Launch</span>
+      <span>arXiv:2608.13489 &middot; HuggingFace &middot; #2 HF Daily 2026-08-14</span>
+      <span>2026-08-13</span>
+      <span>World models &middot; Robotic manipulation &middot; Video diffusion &middot; SE(3) geometric attention &middot; DMD distillation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: DreamX Team; named authors include Rui Chen, Xiangxiang Chu, Geng Li, Jifan Li, Qingfeng Shi, Datao Tang, Jing Tang, Jun Wang, Pengfei Zhang (52 total). Affiliation: Alibaba (AMAP-ML). arXiv <a href="https://arxiv.org/abs/2608.13489">2608.13489</a>, code and weights promised at <a href="https://github.com/AMAP-ML/DreamX-Phi">github.com/AMAP-ML/DreamX-Phi</a> after the WorldArena 2.0 IROS Challenge concludes.</li>
+      <li>Task: given (i) an observed frame, (ii) a language instruction, and (iii) a prescribed action sequence comprising bimanual end-effector poses and gripper states, predict the resulting future video observations. This is an <em>action-conditioned</em> video world model, i.e. the model is being asked to faithfully realize a specific commanded plan rather than to hallucinate a plausible continuation. The claim is that this problem needs different inductive biases than free-form video generation.</li>
+      <li>Positioning: DreamX-Phi 1.0 is the manipulation-specific sibling of the general-purpose <em>DreamX-World 1.0</em> (arXiv 2606.16993, initialized from Wan2.2 with the LongForcing training methodology). The paper's contribution is not the underlying video diffusion prior &mdash; it is the set of manipulation-specific geometric and object-consistency inductive biases layered on that prior.</li>
+      <li>Headline result: at time of writing, <em>first place</em> on Track 1 and <em>second place</em> on Track 2 of the <em>WorldArena 2.0</em> IROS Challenge (a unified benchmark for perception and functional utility of embodied world models, arXiv 2602.08971, world-arena.ai).</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>Backbone: an action-conditioned video diffusion model in the DreamX-World family, taking three inputs at each generation step &mdash; observed frame, language instruction, and prescribed bimanual action sequence &mdash; and producing a video of the resulting manipulation. The paper identifies "realism does not imply faithfulness" as the failure mode a raw video-diffusion prior exhibits on this task: a convincing rollout can still move the wrong arm or lose the manipulated object, i.e. the generated video is temporally coherent but does not respect the commanded plan.</li>
+      <li>Four inductive-bias interventions are stacked on the prior; the paper labels each explicitly as a named contribution. Each gets a mechanism explanation in the Methodology section below.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism &mdash; Per-arm SE(3) geometric attention via PRoPE-style encoding</h4>
+    <ul>
+      <li><em>Problem.</em> When a bimanual system is given a commanded trajectory for each arm, a naive action-conditioned video model concatenates the two end-effector pose streams with the language embedding and lets attention route the information. Empirically this loses arm identity &mdash; predicted rollouts move the wrong arm along the commanded path &mdash; because the pose channels are shape-identical between arms and attention has no built-in prior tying arm-A's pose to arm-A's pixels. Standard positional encodings (absolute, rotary in feature space) don't carry the rigid-motion structure of an SE(3) trajectory, so long-horizon rollouts drift out of joint-limit-feasible configurations.</li>
+      <li><em>Mechanism.</em> Inject per-arm SE(3) transformations into the attention layers via a PRoPE-style (Projective Positional Encoding &mdash; see Li, Yi et al. 2025, arXiv 2507.10496) geometric encoding. Each arm gets its own SE(3)-parameterized encoding, so attention weights between (query, key) pairs pick up the relative rigid-motion transform between the two arms &mdash; not a learned scalar embedding of "arm A vs. arm B". Arm identity and rigid-motion structure are preserved through the attention stack because the encoding is a projection-geometry operator rather than a learned lookup.</li>
+      <li><em>Why.</em> Where standard rotary / absolute PE would let the model confuse the two arms whenever their commanded poses are similar, per-arm PRoPE ties each frame region to the SE(3) frame of the arm actually driving it &mdash; the geometric relationship is baked into the attention operator rather than something the model has to learn from data. The comparable prior work &mdash; <em>DreamX-World 1.0</em>'s <em>E-PRoPE</em> variant for general-purpose interactive video (July 2026) &mdash; showed that projective camera encodings substantially improve multi-view consistency of world-model rollouts; DreamX-Phi 1.0 transfers that inductive bias from the camera axis to the per-arm SE(3) axis, which is the axis that matters for manipulation faithfulness.</li>
+    </ul>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism &mdash; Lightweight depth branch for scene-level geometry</h4>
+    <ul>
+      <li><em>Problem.</em> Action-conditioning constrains where the arms go, but not how the rest of the scene evolves &mdash; the geometry of the tabletop, the pose of a manipulated object, the contact edges between gripper and object &mdash; and a video diffusion prior asked to generate all pixels from a language + action prompt tends to drift these on longer rollouts. Once the scene geometry drifts, the arm+object contact becomes physically implausible, and downstream policy evaluation flags the rollout as an unsuccessful manipulation.</li>
+      <li><em>Mechanism.</em> A lightweight depth prediction branch runs alongside the video generation and produces a per-pixel depth estimate for each generated frame. Because depth is a low-dimensional, geometry-only signal, the branch adds a small parameter overhead but gives the model an explicit representation of the 3D structure the rollout must remain consistent with. Depth is used as an auxiliary target rather than as an input, so at inference the model still consumes only observed RGB + action + language, but its internal representation carries an explicit geometry channel.</li>
+      <li><em>Why.</em> A depth-supervised model is forced to represent the scene as a 3D layout rather than as an RGB texture manifold, which is what pushes back against the drift failure mode of a pure-video prior on long rollouts. This is the standard geometry-supervision argument known from monocular reconstruction, transferred into the action-conditioned generation setting: the depth branch is essentially free at inference and provides a differentiable geometric consistency constraint at training time.</li>
+    </ul>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism &mdash; Object-identity consistency via SAM3 masks + frozen V-JEPA teacher</h4>
+    <ul>
+      <li><em>Problem.</em> On grasping-and-manipulating tasks, the specific failure mode that separates a good world-model rollout from a bad one is "lose the object": the object in hand gets rendered as blurred paint, teleports, or gets swapped for a similar-looking object mid-trajectory. This wrecks any downstream policy learning that uses the rollout as synthetic data. A pure appearance-space training loss can't distinguish "same object rendered differently" from "different object" because pixel-space similarity is dominated by texture and lighting.</li>
+      <li><em>Mechanism.</em> Two ingredients working together. (i) At training time, SAM3 (<a href="https://ai.meta.com/blog/segment-anything-model-3/">Segment Anything 3</a>) produces object-level segmentation masks for the manipulated object across each ground-truth video, so the model has an explicit object-identity signal per frame. (ii) A frozen V-JEPA teacher provides object-representation targets: the student's masked-region features are supervised against the teacher's V-JEPA embeddings, which are trained to be invariant to appearance changes but sensitive to object identity. The combination gives the training loss an explicit "same object as last frame" signal separate from pixel-level reconstruction.</li>
+      <li><em>Why.</em> Pixel-space losses reward continuity of texture, not continuity of identity; a JEPA-style teacher rewards continuity of latent identity while being invariant to nuisance appearance changes; SAM3 masks localize the identity signal to the actually-manipulated object rather than diluting it across the whole scene. The composition tackles the manipulation-specific failure mode head-on: the model can still render the object with photometric variation frame-to-frame, but the identity-consistency signal is enforced in latent space by a frozen teacher, which is what SAM3+V-JEPA together give you without touching the underlying video prior.</li>
+    </ul>
+
+    <h4 style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-top:24px;">Mechanism &mdash; Distribution-matching distillation to a few-step student</h4>
+    <ul>
+      <li><em>Problem.</em> Multi-step diffusion samplers make the base model unusable for closed-loop manipulation deployment: a video world model that produces a 2-second rollout in 30 seconds of wall clock is fine for offline benchmarking and useless as a policy-evaluation loop or synthetic-data pipeline in a real robot stack.</li>
+      <li><em>Mechanism.</em> Distribution-matching distillation (DMD): the multi-step teacher generator is distilled into a few-step student by matching output distributions (rather than pointwise samples) between teacher and student across noise levels. The student inherits the teacher's action-conditioned generation quality at a fraction of the sampling budget, which is what makes deployment-grade latency achievable.</li>
+      <li><em>Why.</em> DMD is the currently-strongest distillation recipe for turning a many-step diffusion prior into a few-step deployment model without the reward-hacking artifacts consistency-model distillation exhibits on out-of-distribution prompts. Applying it after the geometric + object-consistency inductive biases have already been baked into the teacher means the student inherits both the faithfulness properties (per-arm SE(3), depth, SAM3+V-JEPA) and the sampling-efficient inference cost &mdash; the release ships an efficient deployable checkpoint rather than only a research-grade multi-step generator.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Headline: <em>first place</em> on Track 1, <em>second place</em> on Track 2 of the WorldArena 2.0 IROS Challenge as of paper submission (August 13, 2026). WorldArena 2.0 (arXiv 2602.08971) evaluates embodied world models along two axes: perception (video-perception quality across 16 metrics over 6 sub-dimensions) and functional utility (world models as synthetic-data engines, policy evaluators, and action planners); the two tracks correspond to these two evaluation modes.</li>
+      <li>Numeric per-benchmark scores are in the arXiv PDF; publication-time reporting on the HuggingFace paper page and by the paper submitter confirms the ranking above. Model weights and inference code will be made publicly available at <a href="https://github.com/AMAP-ML/DreamX-Phi">github.com/AMAP-ML/DreamX-Phi</a> after the IROS challenge concludes.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The paper's four named contributions decompose the improvement into orthogonal axes &mdash; per-arm SE(3) (faithfulness to commanded plan), depth branch (scene geometry stability), SAM3+V-JEPA (object identity), DMD (deployment latency) &mdash; and the arXiv PDF carries the per-contribution ablation table. The claim structure ("realism does not imply faithfulness") is set up so each ablation targets a specific failure mode observable in raw video-diffusion baselines.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>Robotics safety is out of scope for the paper &mdash; DreamX-Phi 1.0 is an offline video world model used as a synthetic-data engine, policy evaluator, and action planner (per the WorldArena 2.0 evaluation framing), not a control policy. Real-robot deployment safety would be a property of the downstream policy that consumes DreamX-Phi rollouts, not of the world model itself.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Paper: arXiv <a href="https://arxiv.org/abs/2608.13489">2608.13489</a>. HuggingFace paper page: <a href="https://huggingface.co/papers/2608.13489">huggingface.co/papers/2608.13489</a> (#2 Paper of the day 2026-08-14). Code and weights: <a href="https://github.com/AMAP-ML/DreamX-Phi">github.com/AMAP-ML/DreamX-Phi</a> ("after WorldArena 2.0 IROS Challenge concludes"). Companion general-purpose world model: <a href="https://amap-ml.github.io/DreamX_World/">DreamX-World project page</a>.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  (function(){
+    const btn = document.getElementById('themeToggle');
+    if (!btn) return;
+    const saved = localStorage.getItem('theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+    btn.addEventListener('click', function(){
+      const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', cur);
+      localStorage.setItem('theme', cur);
+    });
+  })();
+</script>
+</body>
+</html>
