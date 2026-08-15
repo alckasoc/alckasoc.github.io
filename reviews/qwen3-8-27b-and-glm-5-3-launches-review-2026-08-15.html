@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Qwen3.8-27B &amp; GLM-5.3 Launches Review &mdash; August 15, 2026 | Auto Lit Review</title>
+<meta name="description" content="Two Tier 1 flagship launches in the 36-hour window: Alibaba's Qwen3.8-27B (28B dense multimodal with Gated DeltaNet hybrid, 262K native / 1M scaled context, Apache-2.0, agentic-coding SOTA at its scale) and Z.ai's GLM-5.3 (post-trained on the 743B GLM-5.2 base, cyber-defense specialization with CyberGym lead, AutomationBench and GDPVal-AA v2 lead, staged open-weights rollout). One Tier 2 paper from NVIDIA on causal video distribution-matching distillation for autoregressive interactive video." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 15, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba</a>
+          <ul>
+            <li class="toc-h2"><a href="#qwen3-8-27b">Qwen3.8-27B</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#z-ai">Z.ai</a>
+          <ul>
+            <li class="toc-h2"><a href="#glm-5-3">GLM-5.3</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#nvidia">NVIDIA</a>
+          <ul>
+            <li class="toc-h2"><a href="#context-matched-distillation">Context-Matched Distillation: Teacher Causality for Autoregressive Video Distillation</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 15, 2026</div>
+    <h1 class="page-title">Qwen3.8-27B &amp; GLM-5.3 Launches</h1>
+    <div class="page-meta">3 papers &middot; 3 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>Two Tier 1 flagship launches survive dedup in the 36-hour window, both landing on 2026-08-14 within hours of each other from Chinese labs. <strong>Alibaba</strong>'s <a href="https://huggingface.co/Qwen/Qwen3.8-27B"><em>Qwen3.8-27B</em></a> is the dense, deployable member of the Qwen3.8 family (topped by hosted <em>Qwen3.8-Max</em>): a <code>27B</code>-parameter Apache-2.0 causal multimodal model with a hybrid Gated DeltaNet + Gated Attention backbone (16 repeats of the <code>[DeltaNet, DeltaNet, DeltaNet, Attention]</code> block over <code>64</code> layers), native <code>262,144</code>-token context (YaRN-extensible to <code>1,000,000</code>), an MTP head trained with multiple lookahead steps, first-class image and video inputs, on-by-default thinking mode with a <code>reasoning_effort</code> knob (<code>xhigh</code>/<code>medium</code>/<code>low</code>), and a <em>preserve_thinking</em> mechanism that keeps historical thinking blocks in-context for agent workloads. On its own model-card benchmark grid it leads its size cohort on agentic coding (<em>SWE-bench Pro</em> <code>61.7</code>, <em>DeepSWE 1.1</em> <code>42.2</code>, <em>QwenSWEBench</em> <code>79.0</code>), agentic multimodal (<em>OSWorld-Verified</em> <code>84.3</code>, <em>WebArena-Verified</em> <code>64.8</code>, <em>AndroidWorld</em> <code>81.9</code>, <em>SWE-MM</em> <code>38.6</code>), and long-horizon office work (<em>CoWorkBench</em> <code>70.7</code>, <em>Agents' Last Exam</em> Pass@1 <code>20.4</code> / Score <code>42.9</code>), while trailing Opus 4.6 Max on HLE, GPQA Diamond, and Terminal Bench 2.1. <strong>Z.ai</strong>'s <a href="https://z.ai/blog/glm-5.3"><em>GLM-5.3</em></a> ships post-trained on the same <code>743B</code>-parameter base as <em>GLM-5.2</em> &mdash; there is no new pretraining run &mdash; and every reported gain comes from an extended post-training stack tuned for coding and defensive cybersecurity. First-party benchmarks put GLM-5.3 first on <em>AutomationBench</em> (<code>48.2%</code>), <em>GDPVal-AA v2</em> Elo (<code>1769</code>), and <em>CyberGym</em> (<code>84.5%</code>), while trailing <em>Mythos/Fable 5</em> and <em>GPT-5.6 Sol</em> on <em>Terminal Bench 3.0</em>, <em>DeepSWE</em>, <em>HLE w/ Tools</em>, and by <code>20+</code> points on the offensive <em>ExploitBench</em>/<em>ExploitGym</em> pair &mdash; a capability skew consistent with the explicit "cyber defense, not offense" tagline. Uniquely for the GLM line, this release is <strong>staged</strong>: GLM Coding Plan and ZCode access are live today, but API and open-weights are gated behind a two-week safety review before publication. One Tier 2 frontier-lab paper survives dedup: <strong>NVIDIA</strong>'s <a href="https://arxiv.org/abs/2608.13391"><em>Context-Matched Distillation</em></a> (Bandyopadhyay, Ren, Fidler et al.) fixes a specific supervision mismatch in autoregressive video distillation &mdash; bidirectional teachers scoring complete clips implicitly leak future frames into a causal student's supervision signal &mdash; and replaces it with a causal teacher plus <em>Prefix Scoring</em> and <em>Prefix Corruption</em> so the teacher sees exactly the cached student-generated prefix that produced each target.</p>
+      <h3>Competitiveness</h3>
+      <p>Qwen3.8-27B is the day's most convincing candidate for the strongest openly-licensed dense multimodal model in the <code>~30B</code> class. On its own model-card grid it beats <em>Muse Glimmer-30B</em> (the freshly-open-sourced Meta Superintelligence Labs entry from 2026-08-10, covered <a href="muse-glimmer-launch-review-2026-08-10.html">here</a>) on every one of the <code>8</code> rows where both are reported &mdash; Terminal Bench 2.1 (<code>73.0</code> vs <code>51.7</code>), SWE-bench Pro (<code>61.7</code> vs <code>51.2</code>), IFBench (<code>79.5</code> vs <code>77.0</code>), GPQA Diamond (<code>89.2</code> vs <code>83.5</code>), HLE (<code>30.8</code> vs <code>22.0</code>), OSWorld-Verified (<code>84.3</code> vs <code>65.9</code>), CharXiv <em>without-CI</em> (<code>83.7</code> vs <code>78.8</code>), OmniDocBench 1.5 (<code>91.1</code> vs <code>75.8</code>). Against closed Opus 4.6 Max the picture is a swap: Qwen3.8-27B leads on <em>SWE-bench Pro</em> (<code>61.7</code> vs <code>53.4</code>), <em>QwenSWEBench</em> (<code>79.0</code> vs <code>63.8</code>), <em>CoWorkBench</em> (<code>70.7</code> vs <code>68.2</code>), <em>IFBench</em> (<code>79.5</code> vs <code>62.5</code>), <em>LiveCodeBench v6</em> (<code>90.3</code> vs <code>88.8</code>), and sweeps the agentic-multimodal cluster (<em>OSWorld-Verified</em> <code>84.3</code> vs <code>72.7</code>, <em>AndroidWorld</em> <code>81.9</code> vs <code>62.0</code>, <em>SWE-MM</em> <code>38.6</code> vs <code>27.1</code>, <em>MathVision With-CI</em> <code>94.6</code> vs <code>65.5</code>, <em>BabyVision With-CI</em> <code>85.6</code> vs <code>12.6</code>, <em>ERQA</em> <code>65.5</code> vs <code>40.8</code>), while ceding <em>Terminal Bench 2.1 (Terminus)</em> (<code>78.2</code> Opus vs <code>73.0</code>), <em>NL2Repo-Bench</em> (<code>47.6</code> vs <code>42.3</code>), <em>GPQA Diamond</em> (<code>91.3</code> vs <code>89.2</code>), and <em>HLE</em> (<code>40.0</code> vs <code>30.8</code>). GLM-5.3 is the opposite story: its own vendor chart concedes leadership on general coding to <em>Mythos/Fable 5</em> and <em>GPT-5.6 Sol</em> (Terminal Bench 3.0 <code>33.7</code>/<code>34.6</code> vs <code>28.3</code>, DeepSWE <code>69.7</code>/<code>72.7</code> vs <code>66.9</code>, HLE w/ Tools <code>63.9</code>/<code>64.5</code> vs <code>62.5</code>) but claims the row leader on the automation cluster (<em>AutomationBench</em>, <em>GDPVal-AA v2</em> Elo) and on defensive cybersecurity (<em>CyberGym</em>), and lifts its own predecessor GLM-5.2 by roughly <code>20&ndash;30pp</code> on every row via post-training alone. Both launches sit against a US-side incumbent picture where <em>Claude Opus 4.6 Max</em>, <em>GPT-5.6 Sol</em>, and <em>Mythos/Fable 5</em> still lead single-shot Terminal-Bench-family coding and pure exploit generation but no longer lead the agentic-coding-and-office cluster (SWE-bench Pro, DeepSWE 1.1, CoWorkBench, AutomationBench, GDPVal-AA v2). On the video-model axis, <em>Context-Matched Distillation</em> is the strongest reported autoregressive-video distillation result to date and specifically targets the interactive-generation setting where causal control matters more than aggregate FID; NVIDIA reports state-of-the-art aggregate performance on short and long benchmarks and substantially improved adherence to time-varying camera controls, without introducing bidirectional-teacher scoring artifacts.</p>
+      <h3>New frontier releases</h3>
+      <p>Two flagship launches in the window. <em>Qwen3.8-27B</em> (Alibaba Qwen, 2026-08-14, 15:00 UTC) &mdash; Apache-2.0 open weights on <a href="https://huggingface.co/Qwen/Qwen3.8-27B">Hugging Face</a> and ModelScope; a hosted <em>Qwen3.8-Max</em> is announced concurrently and covered from the <a href="https://qwen.ai/blog?id=qwen3.8">Qwen blog</a>. Day-zero framework support (vLLM, SGLang, TokenSpeed), day-of quantization tree (<code>303</code> quantizations tracked at publication), and evaluation results filed to the Hugging Face leaderboards for DeepSWE, SWE-bench Pro, GPQA Diamond, HLE, and Claw-Eval Multimodal. <em>GLM-5.3</em> (Z.ai / Zhipu, 2026-08-14, 10:47 local) &mdash; live now via <a href="https://z.ai/subscribe">GLM Coding Plan</a> tiers (Lite <code>$12.6</code>/mo, Pro <code>$56</code>/mo, Max <code>$117.6</code>/mo) and the new <em>ZCode 3.0</em> agent (macOS/Windows/Linux), plus routing support through Claude Code and OpenCode; API and open-weights release staged for approximately two weeks after safety review. No Tier 3 blog posts or engineering notes in the window.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="qwen3-8-27b"><a href="https://huggingface.co/Qwen/Qwen3.8-27B">Qwen3.8-27B: A New Bar for Coding and Cowork (dense open-weights member of the Qwen3.8 family)</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Model Card + Launch Blog</span>
+      <span>huggingface.co/Qwen &middot; qwen.ai</span>
+      <span>2026-08-14</span>
+      <span>Flagship dense open-weights launch &middot; Multimodal &middot; Agentic coding &middot; Long context</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Alibaba's Qwen team released Qwen3.8-27B on 2026-08-14 at <code>15:00</code> UTC alongside the <em>Qwen3.8-Max</em> hosted flagship. The <code>27B</code> checkpoint ships under Apache-2.0 on Hugging Face and ModelScope; a hosted <em>Qwen3.8-27B</em> endpoint with the full <code>1M</code>-token context and built-in tools is announced as "coming soon" on Qwen Cloud. The launch is cited under BibTeX as <em>{Qwen3.8-Max}: A New Bar for Coding and Cowork</em> from qwen.ai/blog?id=qwen3.8 with the Qwen Team as sole author.</li>
+      <li>Sourcing: model card at <a href="https://huggingface.co/Qwen/Qwen3.8-27B">huggingface.co/Qwen/Qwen3.8-27B</a>; Qwen Cloud page for the hosted variant; the <a href="https://huggingface.co/collections/Qwen/qwen38">Qwen3.8 Collection</a> (4 items, listed as updated 2 days ago). No arXiv technical report yet; the model card is the primary source and includes complete architecture parameters, sampling recipes, quantization strategy, and benchmark grid.</li>
+      <li>Positioning: the tagline is "the most capable generation in the Qwen open-model family to date." Explicit design targets are <em>coding</em>, <em>professional work</em>, <em>research</em>, and <em>long-horizon agentic tasks</em>. Qwen3.8-27B is the "compact, deployment-friendly" member of the family: a native VL model with flexible thinking control, sized to sit against Muse Glimmer-30B and dense open competitors around the <code>~30B</code> mark rather than against Opus 4.6 Max or GPT-5.6 Sol directly (Qwen3.8-Max fills that slot).</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Overall shape.</strong> Causal Language Model with a fused vision encoder, hidden dimension <code>5120</code>, <code>64</code> transformer layers, token embedding padded to <code>248,320</code>, feed-forward intermediate <code>17,408</code>, LM head padded to <code>248,320</code>. Native context <code>262,144</code>, extensible to <code>1,000,000</code> via YaRN. Config identifier <code>qwen3_5</code> (the architecture family is inherited from Qwen3.5, not renamed for 3.8).</li>
+      <li><strong>Hybrid attention layout.</strong> The <code>64</code>-layer stack is organized as <code>16 &times; ( 3 &times; (Gated DeltaNet &rarr; FFN) + 1 &times; (Gated Attention &rarr; FFN) )</code>. That is, three linear-attention DeltaNet layers followed by one full gated-attention layer, repeated <code>16</code> times.
+        <ul>
+          <li><em>Gated DeltaNet</em> (linear-attention block): <code>48</code> V heads and <code>16</code> QK heads at head-dim <code>128</code>.</li>
+          <li><em>Gated Attention</em> (full-attention block): <code>24</code> Q heads and <code>4</code> KV heads at head-dim <code>256</code>, with a partial RoPE of dimension <code>64</code>.</li>
+          <li><em>Problem &rarr; Mechanism &rarr; Why.</em> Full-attention layers throughout the stack would blow up KV-cache size at the intended <code>~1M</code>-token context; a pure linear-attention stack loses the exact-recall capacity needed for coding and long-context reasoning. The <code>3:1</code> hybrid ratio keeps DeltaNet's cheap sequence-length scaling on the majority of layers while retaining one true attention layer per block for exact recall &mdash; giving the model roughly the memory footprint of a hybrid-linear architecture at the reasoning quality of a mostly-attention architecture. The gated-DeltaNet variant (vs vanilla DeltaNet) also lets the linear layer approximate more expressive kernels without giving up parallel training.</li>
+        </ul>
+      </li>
+      <li><strong>Multi-Token Prediction (MTP).</strong> The head is trained with multiple lookahead steps &mdash; the model card records this as <em>trained with multiple steps</em>. <em>Problem &rarr; Mechanism &rarr; Why.</em> Standard next-token prediction underuses the top hidden state as a supervision signal; training with multi-step MTP means each hidden state is regressed against several future tokens, which both regularizes representations and pre-conditions the checkpoint for downstream speculative decoding and (per the Qwen Cloud page) built-in draft-and-verify inference.</li>
+      <li><strong>Vision-language.</strong> Native image and video inputs. Video preprocessing is conservatively configured out of the box (<code>size.longest_edge</code> tuned for text-heavy workloads); the model card provides a recommended override to <code>longest_edge: 469,762,048</code> (equivalent to <code>224K</code> video tokens) to enable higher frame-rate sampling for hour-scale videos, with vLLM and SGLang PR references (<a href="https://github.com/vllm-project/vllm/pull/34330">vLLM #34330</a>, <a href="https://github.com/sgl-project/sglang/pull/18467">SGLang #18467</a>) for the implementation. Sampling parameter <code>fps</code> (default <code>2</code>) is user-tunable in vLLM.</li>
+      <li><strong>Long-context recipe.</strong> Native <code>262K</code>; extension to <code>1M</code> is done via YaRN with concrete parameters shipped in the model card:
+<pre><code>{
+  "mrope_interleaved": true,
+  "mrope_section": [11, 11, 10],
+  "rope_type": "yarn",
+  "rope_theta": 10000000,
+  "partial_rotary_factor": 0.25,
+  "factor": 4.0,
+  "original_max_position_embeddings": 262144
+}</code></pre>
+        The card explicitly warns that static YaRN degrades short-context quality and recommends only enabling the extension when actually needed, and tuning <code>factor</code> to the workload (e.g. <code>2.0</code> for <code>524K</code> use cases).</li>
+    </ul>
+
+    <h3>Post-training and inference-time controls</h3>
+    <ul>
+      <li><strong>Thinking mode is on by default.</strong> A <code>&lt;think&gt;\n...&lt;/think&gt;\n\n</code> block precedes the response. Callers can disable it per-request via <code>chat_template_kwargs.enable_thinking=False</code> or, on Qwen Cloud, <code>enable_thinking=False</code> directly.</li>
+      <li><strong>Named contribution &mdash; <code>reasoning_effort</code>.</strong>
+        <ul>
+          <li><em>Problem.</em> A single fixed thinking budget forces callers to overpay compute on easy prompts or underpay on hard ones; ad-hoc "think longer" prompts drift.</li>
+          <li><em>Mechanism.</em> The API exposes three named tiers &mdash; <code>xhigh</code> (default), <code>medium</code>, <code>low</code> &mdash; each mapping to an internal reasoning-length regime baked into post-training so the model actually stops on time in the lower tiers.</li>
+          <li><em>Why.</em> Compared to prompt-level "think for N tokens" hacks, tier-conditioning is a learned property so the low tier does not just truncate but produces genuinely shorter reasoning; the model card notes that in multi-turn agentic tasks lower effort can <em>increase</em> total task time because thinner analysis leads to more retries.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; <code>preserve_thinking</code>.</strong>
+        <ul>
+          <li><em>Problem.</em> Standard chat-completion serialization strips the assistant's thinking blocks from prior turns, forcing the model to re-derive intermediate state on every turn and breaking KV-cache reuse across turns.</li>
+          <li><em>Mechanism.</em> When <code>preserve_thinking=True</code> (the default), thinking blocks from every historical assistant turn are retained in the context sent to the model on the next turn.</li>
+          <li><em>Why.</em> For agent scenarios &mdash; multi-turn tool-use loops in particular &mdash; keeping the reasoning trace gives the model full history, avoids re-deriving state, and (per the model card) improves KV-cache utilization at inference. The trade is context window; callers can flip to per-turn-latest-only via <code>preserve_thinking=False</code>.</li>
+        </ul>
+      </li>
+      <li><strong>Sampling defaults</strong> baked into the shipped recipe:
+        <ul>
+          <li>Thinking mode: <code>temperature=1.0</code>, <code>top_p=0.95</code>, <code>top_k=20</code>, <code>min_p=0.0</code>, <code>presence_penalty=0.0</code>, <code>repetition_penalty=1.0</code>.</li>
+          <li>Instruct (non-thinking) mode: <code>temperature=0.7</code>, <code>top_p=0.80</code>, <code>top_k=20</code>, <code>min_p=0.0</code>, <code>presence_penalty=1.5</code>, <code>repetition_penalty=1.0</code>.</li>
+          <li>Recommended output budget within the <code>1M</code> context: reasoning up to <code>262,144</code> tokens, final response up to <code>131,072</code> tokens.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <p>All rows are quoted from the model card. Where two settings are reported ("Without CI" and "With CI"), the "With CI" column shows tool-augmented accuracy; where a single value is shown the model card supplies only that setting. Best value in each row is bolded. All coding rows are evaluated with the <em>Claude Code</em> harness at <code>temp=1.0</code>, <code>top_p=0.95</code>, <code>256K</code> context unless otherwise noted; HLE is judged by GPT-4o.</p>
+
+    <h4>Text</h4>
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th>Qwen3.8-27B</th><th>Qwen3.6-27B</th><th>Qwen3.7-Plus</th><th>Muse Glimmer-30B</th><th>Opus 4.6 Max</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Terminal Bench 2.1 (Terminus)</td><td>73.0</td><td>63.4</td><td>64.0</td><td>51.7</td><td><strong>78.2</strong></td></tr>
+        <tr><td>SWE-bench Pro</td><td><strong>61.7</strong></td><td>53.5</td><td>57.6</td><td>51.2</td><td>53.4</td></tr>
+        <tr><td>NL2Repo-Bench</td><td>42.3</td><td>36.2</td><td>41.1</td><td>&mdash;</td><td><strong>47.6</strong></td></tr>
+        <tr><td>DeepSWE 1.1</td><td><strong>42.2</strong></td><td>13.3</td><td>14.2</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>QwenSWEBench (avg@3, 8h, 32K max_tokens)</td><td><strong>79.0</strong></td><td>49.3</td><td>59.2</td><td>&mdash;</td><td>63.8</td></tr>
+        <tr><td>CoWorkBench</td><td><strong>70.7</strong></td><td>61.0</td><td>65.1</td><td>&mdash;</td><td>68.2</td></tr>
+        <tr><td>JobBench</td><td><strong>33.4</strong></td><td>21.8</td><td>27.6</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>Agents' Last Exam &mdash; Pass@1</td><td><strong>20.4</strong></td><td>10.6</td><td>13.2</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>Agents' Last Exam &mdash; Score</td><td><strong>42.9</strong></td><td>27.3</td><td>33.6</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>IFBench</td><td><strong>79.5</strong></td><td>69.1</td><td>79.1</td><td>77.0</td><td>62.5</td></tr>
+        <tr><td>GPQA Diamond</td><td>89.2</td><td>87.8</td><td>90.3</td><td>83.5</td><td><strong>91.3</strong></td></tr>
+        <tr><td>HLE (GPT-4o judge)</td><td>30.8</td><td>24.0</td><td>34.7</td><td>22.0</td><td><strong>40.0</strong></td></tr>
+        <tr><td>LiveCodeBench v6</td><td><strong>90.3</strong></td><td>83.9</td><td>89.6</td><td>&mdash;</td><td>88.8</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Vision-language</h4>
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th>Qwen3.8-27B</th><th>Qwen3.6-27B</th><th>Qwen3.7-Plus</th><th>Muse Glimmer-30B</th><th>Opus 4.6 Max</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>OSWorld-Verified</td><td><strong>84.3</strong></td><td>63.9</td><td>73.3</td><td>65.9</td><td>72.7</td></tr>
+        <tr><td>WebArena-Verified</td><td><strong>64.8</strong></td><td>48.8</td><td>55.3</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>AndroidWorld</td><td><strong>81.9</strong></td><td>70.3</td><td>81.0</td><td>&mdash;</td><td>62.0</td></tr>
+        <tr><td>RecreationBench</td><td><strong>47.1</strong></td><td>29.8</td><td>30.2</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>ClawEval-MM &mdash; Pass@3</td><td><strong>57.4</strong></td><td>42.6</td><td><strong>57.4</strong></td><td>&mdash;</td><td>52.5</td></tr>
+        <tr><td>ClawEval-MM &mdash; Average</td><td>56.9</td><td>50.4</td><td><strong>60.1</strong></td><td>&mdash;</td><td>54.7</td></tr>
+        <tr><td>SWE-MM (Opus 4.7 sys-card mods)</td><td><strong>38.6</strong></td><td>25.7</td><td>30.0</td><td>&mdash;</td><td>27.1</td></tr>
+        <tr><td>Vision2Web (Claude Code harness, gpt-5.4 judge)</td><td><strong>62.9</strong></td><td>45.0</td><td>42.1</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>MathVision (Without CI / With CI)</td><td>90.0 / <strong>94.6</strong></td><td>85.1 / &mdash;</td><td><strong>90.3</strong> / &mdash;</td><td>&mdash;</td><td>65.5 / &mdash;</td></tr>
+        <tr><td>BabyVision (Without CI / With CI)</td><td><strong>65.7</strong> / <strong>85.6</strong></td><td>28.9 / &mdash;</td><td>64.7 / 70.4</td><td>&mdash;</td><td>12.6 / &mdash;</td></tr>
+        <tr><td>CharXiv RQ (Without CI / With CI)</td><td>83.7 / <strong>90.2</strong></td><td>78.4 / &mdash;</td><td><strong>85.8</strong> / 85.9</td><td>78.8 / &mdash;</td><td>66.0 / &mdash;</td></tr>
+        <tr><td>OmniDocBench 1.5</td><td>91.1</td><td>89.4</td><td><strong>91.4</strong></td><td>75.8</td><td>86.6</td></tr>
+        <tr><td>RealWorldQA</td><td>85.9</td><td>84.1</td><td><strong>86.9</strong></td><td>&mdash;</td><td>73.9</td></tr>
+        <tr><td>ERQA (embodied)</td><td>65.5</td><td>62.5</td><td><strong>69.8</strong></td><td>&mdash;</td><td>40.8</td></tr>
+      </tbody>
+    </table>
+
+    <ul>
+      <li><strong>Row-level reading.</strong> Qwen3.8-27B wins <code>17</code> of the <code>25</code> reported rows outright at its size class; against Opus 4.6 Max it wins <code>14</code> of <code>18</code> overlapping rows and gives up only Terminal Bench 2.1, NL2Repo-Bench, GPQA Diamond, and HLE. Against Muse Glimmer-30B (the direct <code>~30B</code> dense open-source comp from 2026-08-10) it wins every one of the <code>8</code> shared rows: Terminal Bench 2.1 (+<code>21.3</code>), SWE-bench Pro (+<code>10.5</code>), IFBench (+<code>2.5</code>), GPQA Diamond (+<code>5.7</code>), HLE (+<code>8.8</code>), OSWorld-Verified (+<code>18.4</code>), CharXiv without-CI (+<code>4.9</code>), OmniDocBench 1.5 (+<code>15.3</code>).</li>
+      <li><strong>Row-level caveats.</strong> The card corrects ground-truth annotation errors in MathVision and CharXiv (RQ) before evaluation and reports Qwen3.8-27B's MathVision score under a fixed <code>\boxed{}</code>-formatted prompt while allowing the baselines to pick whichever prompt scores higher &mdash; a self-imposed penalty. QwenSWEBench is Qwen's in-house SWE benchmark and should be read as internal signal. All SWE-bench Pro numbers except Opus 4.6 Max are re-evaluated under the Claude Code harness with the "problematic tasks corrected" refinement.</li>
+    </ul>
+
+    <h3>Deployment and inference</h3>
+    <ul>
+      <li>Day-zero support in <em>vLLM</em>, <em>SGLang</em>, and <em>TokenSpeed</em> with published recipes; Docker Model Runner (<code>docker model run hf.co/Qwen/Qwen3.8-27B</code>). Featherless AI listed as a day-one Inference Provider.</li>
+      <li>Adapter and quantization ecosystem at publication: <code>4</code> adapters, <code>46</code> finetunes, <code>303</code> quantizations tracked in the Hugging Face model tree (llama.cpp, LM Studio, Jan, Ollama).</li>
+      <li><code>91,917</code> downloads in the last month; <code>9.42K</code> likes on the model repo; <code>~28B</code> BF16 safetensors size (~<code>56 GB</code> at BF16 &mdash; 24 GB VRAM floor requires quantization).</li>
+      <li>Model tree shows <code>10</code> Spaces already running the model day-zero including <em>victor/Qwen3.8-27B-free-endpoint</em>, <em>akhaliq/Qwen3.8-27B</em>, and <em>NodeLinker/Qwen-3.8-27B-H200</em>.</li>
+    </ul>
+
+    <h3>License, availability, ecosystem</h3>
+    <ul>
+      <li>License: Apache-2.0 (permissive; commercial use allowed).</li>
+      <li>Availability: open weights on Hugging Face and ModelScope at launch; hosted <em>Qwen3.8-27B</em> on Qwen Cloud "coming soon" with <code>1M</code>-token context by default and official built-in tools. The Qwen3.8-Max hosted flagship is announced concurrently for the top of the family; the model card leaves architecture details of the Max variant to the qwen.ai blog and Qwen Cloud model page.</li>
+      <li>Ecosystem: registered evaluation submissions to Hugging Face leaderboards for <em>Deep SWE</em>, <em>SWE Bench Pro</em>, <em>GPQA Diamond</em>, <em>HLE</em>, and <em>Claw-Eval Multimodal</em> at launch (<a href="https://huggingface.co/Qwen/Qwen3.8-27B/discussions/22">discussions/22</a>).</li>
+    </ul>
+
+    <h1 id="z-ai">Z.ai</h1>
+
+    <h2 id="glm-5-3"><a href="https://z.ai/blog/glm-5.3">GLM-5.3: Built to Code. Ready for Cyber Defense.</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch Blog + Vendor Chart</span>
+      <span>z.ai/blog &middot; cvd.z.ai</span>
+      <span>2026-08-14</span>
+      <span>Flagship launch &middot; Post-training only &middot; Coding &middot; Cybersecurity &middot; Staged open weights</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Zhipu / Z.ai announced GLM-5.3 on 2026-08-14 at <code>10:47</code> local time via <a href="https://x.com/Zai_org">@Zai_org</a> with the tagline "Built to Code. Ready for Cyber Defense." The launch post drew <code>62,500+</code> views within hours per third-party coverage. The model is live today via the <em>GLM Coding Plan</em> and the <em>ZCode 3.0</em> agent; API and open-weights access are staged behind an approximately-two-week safety review.</li>
+      <li>Sourcing: Z.ai's launch post at <a href="https://z.ai/blog/glm-5.3">z.ai/blog/glm-5.3</a>, a public vulnerability ledger at <a href="https://cvd.z.ai/">cvd.z.ai</a> confirming the <code>2,436</code>-vulnerability / <code>269</code>-project claim (<code>53</code> disclosures published, <code>2,383</code> not yet public), and two independent third-party writeups: <a href="https://the-decoder.com/zhipu-ai-releases-glm-5-3-claims-its-the-strongest-open-weights-coding-model/">The Decoder</a> (Aug 14 10:21 UTC) and <a href="https://mlq.ai/news/zhipu-releases-glm-53-through-its-coding-service-with-weights-still-two-weeks-away/">MLQ.ai</a> (Aug 14 18:37 UTC), plus a detailed benchmark writeup by <a href="https://explainx.ai/blog/glm-5-3-launch-cyber-defense-benchmarks-august-2026">explainx.ai</a> that reproduces the vendor benchmark chart.</li>
+      <li>Positioning: not a general-capability leader &mdash; the vendor chart concedes ground on Terminal Bench 3.0, DeepSWE, and HLE w/ Tools to Mythos/Fable 5 and GPT-5.6 Sol. The differentiation is a specific cluster: automation (<em>AutomationBench</em>, <em>GDPVal-AA v2</em>) and defensive cybersecurity (<em>CyberGym</em>), with a deliberately-suppressed offensive-exploit ceiling.</li>
+    </ul>
+
+    <h3>Architecture and training</h3>
+    <ul>
+      <li><strong>Base model.</strong> GLM-5.3 is post-trained on the <em>same</em> <code>743B</code>-parameter base as GLM-5.2. Z.ai states plainly that there is no new pretraining run: the base checkpoint is shared and every capability delta is a post-training gain. The base architecture (MoE decoder, hybrid attention, tokenizer) is inherited from GLM-5.2 &mdash; see the <a href="value-models-and-coding-refactor-evaluation-review-2026-08-11.html">2026-08-11 review</a>'s GLM-5.2 context and the earlier GLM-5.2 launch materials.</li>
+      <li><strong>Named contribution &mdash; extended post-training on 743B base for coding + defensive cyber.</strong>
+        <ul>
+          <li><em>Problem.</em> GLM-5.2, launched in June under MIT, hit a coding-benchmark ceiling roughly aligned with the mid-2026 open-weights frontier but sat well behind US frontier models on cybersecurity capability. A pretraining rerun was infeasible on Z.ai's timeline; the alternative was to squeeze the base harder.</li>
+          <li><em>Mechanism.</em> Z.ai reports "extended post-training" on top of the GLM-5.2 base with training environments specifically constructed to (a) build multi-stage exploitation reasoning ("the model began to reason across multiple stages of exploitation, forming coherent plans for complete exploitation chains") and (b) find, prioritize, and patch software vulnerabilities. Working with security teams in China, Z.ai says the resulting model helped identify <code>2,436</code> vulnerabilities across <code>269</code> open-source projects &mdash; some flaws dating back <code>45</code> years &mdash; and cataloged them in a public vulnerability ledger at cvd.z.ai. No paper-level detail on the RL algorithm or the environment engineering is published; Z.ai says the model, tech blog, and safety review are the launch surface and that a technical report is not part of this release.</li>
+          <li><em>Why.</em> Z.ai reports a <code>50%</code> aggregate improvement in coding capability over GLM-5.2 from post-training alone, and its own vendor chart puts GLM-5.3 first on <em>CyberGym</em> (<code>84.5%</code>), edging Mythos/Fable 5 (<code>83.8%</code>) and GPT-5.6 Sol (<code>83.6%</code>). The staged open-weights rollout (below) is consistent with a model tuned toward offensive-adjacent capability being gated for safety review rather than dropping raw weights day-one as GLM-5.2 did.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; staged safety-gated release.</strong>
+        <ul>
+          <li><em>Problem.</em> GLM-5.2's cycle was fast-open: MIT weights on Hugging Face within days of the coding plan launch, immediately quantized and folded into third-party subscriptions (Cline's <code>$9.99</code>/mo plan). Replaying that pattern for a model explicitly marketed for cybersecurity capability and scoring on offensive benchmarks like ExploitBench and ExploitGym is high-risk.</li>
+          <li><em>Mechanism.</em> Access is split across five tiers: <em>GLM Coding Plan</em> (live), <em>ZCode 3.0</em> agent (live, first-party), select partners with usage policies (live, gated), <em>API</em> (staged, safety review pending), <em>open weights</em> (staged, safety review pending). Z.ai says weights will publish "in stages following rigorous safety evaluations," approximately two weeks after launch per Zhipu's follow-up post.</li>
+          <li><em>Why.</em> This is a real departure from the GLM-5.2 script and effectively resets community expectations for the GLM line. It also means the quant-and-self-host cycle that produced &gt;<code>300</code> quantized GLM-5.2 variants is paused until Z.ai completes review.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <p>All numbers are from Z.ai's own nine-benchmark launch chart ("LLM Performance Evaluation"), reproduced from explainx.ai's writeup. Bold marks row leader; this is vendor reporting, not an independent audit.</p>
+
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th>GLM-5.3</th><th>GLM-5.2</th><th>Kimi K3</th><th>Mythos / Fable 5</th><th>GPT-5.6 Sol</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Terminal Bench 3.0</td><td>28.3%</td><td>4.6%</td><td>17.4%</td><td>33.7%</td><td><strong>34.6%</strong></td></tr>
+        <tr><td>DeepSWE</td><td>66.9%</td><td>46.2%</td><td>67.5%</td><td>69.7%</td><td><strong>72.7%</strong></td></tr>
+        <tr><td>Agents' Last Exam (CLI)</td><td>28.5%</td><td>23.8%</td><td>27.6%</td><td>23.8%</td><td><strong>28.6%</strong></td></tr>
+        <tr><td>AutomationBench</td><td><strong>48.2%</strong></td><td>26.2%</td><td>46.7%</td><td>46.2%</td><td>45.8%</td></tr>
+        <tr><td>HLE w/ Tools</td><td>62.5%</td><td>54.7%</td><td>59.8%</td><td>63.9%</td><td><strong>64.5%</strong></td></tr>
+        <tr><td>GDPVal-AA v2 (Elo)</td><td><strong>1769</strong></td><td>1508</td><td>1682</td><td>1743</td><td>1730</td></tr>
+        <tr><td>CyberGym (defensive)</td><td><strong>84.5%</strong></td><td>77.2%</td><td>80.0%</td><td>83.8%</td><td>83.6%</td></tr>
+        <tr><td>ExploitBench (offensive)</td><td>54.4%</td><td>24.4%</td><td>32.2%</td><td><strong>78.0%</strong></td><td>76.5%</td></tr>
+        <tr><td>ExploitGym 2hr / 6hr</td><td>105 / 130</td><td>29 / 39</td><td>36 / 70</td><td><strong>181 / 247</strong></td><td>unclear</td></tr>
+      </tbody>
+    </table>
+
+    <ul>
+      <li><strong>Own-line comparison.</strong> GLM-5.3 beats GLM-5.2 on every row of the chart, with the largest gaps on <em>Terminal Bench 3.0</em> (+<code>23.7pp</code>, <code>4.6&rarr;28.3</code>) and <em>ExploitBench</em> (+<code>30.0pp</code>, <code>24.4&rarr;54.4</code>). This is the comparison Z.ai foregrounds.</li>
+      <li><strong>Cross-vendor reading.</strong> GLM-5.3 leads three of the nine rows: AutomationBench, GDPVal-AA v2 Elo, CyberGym. It trails on Terminal Bench 3.0, DeepSWE, Agents' Last Exam (marginally), HLE w/ Tools, ExploitBench, ExploitGym. The cluster of leads is coherent &mdash; automation-flavored and defensive cybersecurity &mdash; and the cluster of trails is also coherent &mdash; general terminal coding and offensive exploit generation.</li>
+      <li><strong>Cyber-defense framing consistency.</strong> The offensive-vs-defensive split (<em>CyberGym</em> lead, <em>ExploitBench</em>/<em>ExploitGym</em> trail by <code>20+</code> points) is not accidental. Z.ai's tagline is "ready for cyber defense," not offense; a defensive-tuned model that led ExploitGym would be closer to a launch-day contradiction. Read alongside the staged open-weights gate, the release is internally consistent as a defensive-security posture.</li>
+      <li><strong>Cybersecurity operating claim.</strong> Public vulnerability ledger at cvd.z.ai currently lists <code>2,436</code> entries across <code>269</code> projects (<code>53</code> disclosed, <code>2,383</code> embargoed) &mdash; Z.ai's own claim, not independently reproduced.</li>
+    </ul>
+
+    <h3>Pricing and access</h3>
+    <table>
+      <thead>
+        <tr><th>Tier</th><th>Price (USD/mo)</th><th>Quota</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Lite</td><td>$12.6</td><td>10,000 credits/week</td><td>20+ agent tools; Claude Code + ZCode routing</td></tr>
+        <tr><td>Pro</td><td>$56</td><td>6&times; Lite</td><td>Adds MCP tool support</td></tr>
+        <tr><td>Max</td><td>$117.6</td><td>14&times; Lite</td><td>Highest quota</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Tiers were built around GLM-5.2 and are not GLM-5.3-specific; Z.ai has not published a GLM-5.3 launch-price change. ZCode 3.0 is Z.ai's first-party coding agent (macOS / Windows / Linux) and explicitly supports routing GLM-5.3 through Claude Code, OpenCode, and other third-party harnesses rather than locking usage into its own IDE.</li>
+    </ul>
+
+    <h3>License, availability, ecosystem</h3>
+    <ul>
+      <li>License: unspecified at launch pending safety review; GLM-5.2 shipped under MIT. Weight license and model card will publish with the staged weight release.</li>
+      <li>Availability today: GLM Coding Plan + ZCode 3.0 first-party, plus initial partner integrations with usage policies. Command Code AI (<a href="https://x.com/MrAhmadAwais">@MrAhmadAwais</a>) confirmed a day-one partner integration and an anecdote about GLM-5.3 being the first model in Z.ai's coding-agent lineage that detects and breaks out of an intentionally-planted infinite reasoning loop (prior GLM models "just keep looping"). Unsloth AI publicly asked for open weights to enable community quantization; that path is currently gated.</li>
+      <li>Notable feature omissions: <strong>vision</strong> was the top of the June community-wishlist poll (Jie Tang / Zhipu) and did not ship; the launch materials do not mention multimodal capability.</li>
+    </ul>
+
+    <h1 id="nvidia">NVIDIA</h1>
+
+    <h2 id="context-matched-distillation"><a href="https://arxiv.org/abs/2608.13391">Context-Matched Distillation: Teacher Causality for Autoregressive Video Distillation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; arXiv</span>
+      <span>arXiv:2608.13391 &middot; cs.CV</span>
+      <span>2026-08-13</span>
+      <span>Video generation &middot; Distillation &middot; Autoregressive &middot; Interactive control</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Authors: Hmrishav Bandyopadhyay, Xuanchi Ren, Zijian Huang, Jay Zhangjie Wu, Tianshi Cao, Ruilong Li, Bryan Chu, Sanja Fidler, Yi-Zhe Song, Zian Wang. Project page at <a href="https://hmrishavbandy.github.io/cmd-site/">hmrishavbandy.github.io/cmd-site/</a>. Submitted 2026-08-13 (v1), <code>6,185</code>&nbsp;KB source. Author affiliations map to NVIDIA (organization tag on the Hugging Face Daily Papers listing) with academic co-authors.</li>
+      <li>Setting: interactive autoregressive video generation. Two competing constraints: (1) low-latency rollouts demand a few-step distilled student; (2) online control (camera path, actions) demands a causal information set &mdash; frames and blocks may depend only on history and controls available at generation time.</li>
+      <li>Problem statement: existing video distribution-matching-distillation (DMD) pipelines distill causal few-step students using <em>bidirectional</em> teachers that score complete clips. The teacher's score for a target can therefore depend on future frames and controls that were not available when the student generated that target &mdash; a supervision-side leakage of the future into training a causal model. CMD reframes DMD to close this leak.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; causal teacher for causal students.</strong>
+        <ul>
+          <li><em>Problem.</em> A bidirectional teacher scores each target given the entire clip, so its gradient for target frame <code>t</code> depends on frames <code>&gt; t</code>. When that gradient trains a causal student that at inference sees only frames <code>&le; t</code>, the student is supervised for a task it cannot perform &mdash; and predictably fails to obey time-varying controls.</li>
+          <li><em>Mechanism.</em> Replace the bidirectional full-clip scorer with a <em>causal teacher</em> that scores each target using only history and current controls, exactly matching the student's information set. The same causal teacher is used to initialize the few-step student, so the causal formulation is consistent across teacher training, distillation, and inference.</li>
+          <li><em>Why.</em> Alignment on the temporal information boundary means the DMD gradient is a legitimate distributional-match signal for the student's actual generation task, rather than a signal that requires access the student will never have. This is the smallest change that makes DMD sound for autoregressive video.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Prefix Scoring.</strong>
+        <ul>
+          <li><em>Problem.</em> Even a causal teacher, applied to a target frame, is normally conditioned on the <em>ground-truth</em> prefix from the training clip. But at inference the student's prefix is whatever the student itself rolled out &mdash; often meaningfully different in early training. Scoring a target under the ground-truth prefix trains the student to hit targets that never appear along its own trajectory.</li>
+          <li><em>Mechanism.</em> Prefix Scoring evaluates each target under the <em>cached student-generated prefix</em> that produced it. The teacher gradient is thus computed over the exact context the student's rollout actually encountered.</li>
+          <li><em>Why.</em> Matches the supervision to the student's realized rollout context, closing the second leak (ground-truth-prefix leakage) after the causal-teacher fix closes the first (future-frame leakage). Both are needed to make the distillation objective consistent with autoregressive inference.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Prefix Corruption.</strong>
+        <ul>
+          <li><em>Problem.</em> Early in training, student-generated prefixes are unreliable &mdash; noisy enough that Prefix Scoring on top of them destabilizes gradients and can collapse the student to trivial modes.</li>
+          <li><em>Mechanism.</em> Prefix Corruption perturbs unreliable early-training prefixes while preserving the target-context alignment property. As training proceeds and prefixes improve, corruption is annealed.</li>
+          <li><em>Why.</em> Preserves the DMD stability benefits of a stationary supervision distribution during early training while still producing a student conditioned on realistic rollout prefixes at convergence.</li>
+        </ul>
+      </li>
+      <li><strong>Extensions.</strong> The causal formulation naturally scales to frame-wise and chunk-wise generation, long-video distillation, and camera-conditioned distillation without changing the objective.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>The paper reports state-of-the-art aggregate performance among autoregressive methods on both short- and long-video benchmarks (the arXiv abstract summarizes results at the aggregate level; per-benchmark tables live in the PDF and are not reproduced here to avoid mis-numbering).</li>
+      <li>Headline qualitative claim: <em>substantially improved adherence to time-varying camera controls</em>. This is the specific failure mode that the bidirectional-teacher supervision introduced (the student was gradient-punished when it obeyed a control the teacher, seeing the future, thought would be relaxed), and it is the direct payoff of the causal-teacher fix.</li>
+    </ul>
+
+    <h3>Notes</h3>
+    <ul>
+      <li>This work is the second frontier-lab DMD-for-video result in the last month after AMAP-ML's <a href="gemini-3-7-flash-intern-s2-preview-and-dreamx-phi-1-launches-review-2026-08-14.html#dreamx-phi-1"><em>DreamX-Phi 1.0</em></a>, which also used distribution-matching distillation to reach few-step deployment latency for an action-conditioned world model. CMD and DreamX-Phi share the underlying DMD framework but target different failure modes: DreamX-Phi's mechanism was action-conditioning stability via SAM3+V-JEPA object-identity teachers, while CMD's is temporal information-boundary alignment for interactive camera control. The two approaches are complementary rather than competitive.</li>
+      <li>License: arXiv non-exclusive distribution. Project page has demos and video comparisons.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
