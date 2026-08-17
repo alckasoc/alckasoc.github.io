@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mobius: Decoupled Knowledge and Reasoning Review &mdash; August 17, 2026 | Auto Lit Review</title>
+<meta name="description" content="Shanghai AI Laboratory's Intern-S2-Mobius technical report introduces Mobius-v0, an architecture that pulls FFN knowledge storage out of its per-layer binding and exposes a single shared knowledge-vector repository to every attention layer, with backward residual connections and native dynamic latent reasoning. Continual-pretrained from Qwen3.5-35B on 1TB tokens, it matches Qwen3.5-35B downstream while delivering roughly 4x end-to-end inference speedup via markedly shorter chains of thought." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 17, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#shanghai-ai-laboratory">Shanghai AI Laboratory</a>
+          <ul>
+            <li class="toc-h2"><a href="#intern-s2-mobius">Intern-S2-Mobius: Foundation Model with Decoupled Knowledge and Reasoning</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 17, 2026</div>
+    <h1 class="page-title">Mobius: Decoupled Knowledge and Reasoning</h1>
+    <div class="page-meta">1 paper &middot; 1 lab &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window is quiet on flagship launches &mdash; no new Tier 1 model releases follow last Friday's <em>Qwen3.8-27B</em> and <em>GLM-5.3</em> launches (covered <a href="qwen3-8-27b-and-glm-5-3-launches-review-2026-08-15.html">here</a>). One Tier 2 frontier-lab paper surfaces on Hugging Face Daily today after being submitted to arXiv on 2026-08-14: <strong>Shanghai AI Laboratory</strong>'s <a href="https://arxiv.org/abs/2608.14290"><em>Intern-S2-Mobius: Foundation Model with Decoupled Knowledge and Reasoning</em></a>. Mobius-v0 breaks the standard per-layer <code>[Self-Attn &rarr; FFN]</code> binding by consolidating <em>every</em> FFN in the stack into a single globally shared knowledge-vector repository that every attention layer can query, and introduces <em>Backward Residual Connection</em> and <em>Dynamic Latent Reasoning</em> as native architectural capabilities that fall out of that design. Two empirical claims anchor the report: a 7B-A1B Mobius trained-from-scratch matches a 7B Transformer's MMLU at <code>1TB</code> tokens using only <code>0.626&times;</code> the training data (<code>1.6&times;</code> data efficiency), and <em>Intern-S2-Mobius-35B</em>, continually pretrained from Qwen3.5-35B-A3B on <code>1TB</code> tokens, matches or beats the Qwen3.5-35B baseline on every reported general and scientific benchmark while delivering nearly <code>4&times;</code> end-to-end inference speedup &mdash; the speedup coming from markedly shorter chains of thought rather than kernel-level tricks. Model weights are released on Hugging Face at <a href="https://huggingface.co/internlm/Intern-S2-Mobius">internlm/Intern-S2-Mobius</a>.</p>
+      <h3>Competitiveness</h3>
+      <p>Mobius is presented as an architectural direction rather than as a scoreboard entrant, and the reported grid is against the Qwen3.5-35B base it continually pretrains from &mdash; not against current SOTA frontier models. On the Mobius team's own eval (Table 1), <em>Intern-S2-Mobius-35B</em> lifts the Qwen3.5-35B baseline on <em>MMLU Pro</em> (<code>89.05</code> vs <code>85.31</code>), <em>GPQA Diamond</em> (<code>80.81</code> vs <code>80.24</code>), <em>IMO Bench</em> (<code>81.25</code> vs <code>77.50</code>), <em>AIME 2026</em> (<code>95.31</code> vs <code>92.08</code>), <em>HMMT 2026</em> (<code>85.51</code> vs <code>78.50</code>), <em>AMO</em> (<code>58.00</code> vs <code>50.00</code>), <em>SimpleQA</em> (<code>28.90</code> vs <code>21.39</code>), and every scientific-task row (<em>Biology-Instructions</em> <code>51.40</code> vs <code>3.77</code>, <em>Mol-Instructions</em> <code>45.73</code> vs <code>21.70</code>, <em>MolecularIQ</em> <code>59.29</code> vs <code>29.13</code>), while trailing on <em>UGD hard</em> (<code>73.02</code> vs <code>78.02</code>) and <em>HLE</em> (<code>19.11</code> vs <code>22.40</code>). Against the current dense/MoE frontier &mdash; <em>Qwen3.8-27B</em> (Apache-2.0, dense hybrid, HLE <code>30.8</code>, GPQA Diamond <code>89.2</code>) and <em>Muse Glimmer-30B</em> (HLE <code>22.0</code>) &mdash; the 35B Mobius checkpoint lands below both on HLE and below Qwen3.8-27B on GPQA Diamond, but that comparison is disingenuous without matched post-training: Mobius is a <code>1TB</code>-token continual-pretrain plus SFT/RL from a 2024-era 35B base, not a fresh flagship training run. The result of note here is not the absolute scoreboard position but that a substantial architectural change &mdash; unbinding FFN from layer-local attention and adding a globally shared knowledge repository &mdash; can be applied on top of an existing checkpoint at <code>1TB</code> tokens of continual pretraining and cash out as a nearly <code>4&times;</code> inference-throughput improvement while preserving capability. On mechanism, Mobius sits in the same conceptual neighborhood as Universal Transformers, Looped Transformers, COCONUT, and recurrent-depth latent reasoning, but its distinguishing feature is the shared FFN repository indexed by every layer's attention rather than parameter-tied depth loops or continuous-thought tokens.</p>
+      <h3>New frontier releases</h3>
+      <p>No new Tier 1 flagship launches in the 36-hour window. One Tier 2 paper with an accompanying open-weights checkpoint: <em>Intern-S2-Mobius-35B</em> (Shanghai AI Laboratory, arXiv v1 submitted 2026-08-14 <code>13:21</code> UTC, HF Daily 2026-08-17), released as an <code>internlm/Intern-S2-Mobius</code> repository. No Tier 3 blog posts or engineering notes in the window.</p>
+    </section>
+
+    <h1 id="shanghai-ai-laboratory">Shanghai AI Laboratory</h1>
+
+    <h2 id="intern-s2-mobius"><a href="https://arxiv.org/abs/2608.14290">Intern-S2-Mobius: Foundation Model with Decoupled Knowledge and Reasoning</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-08-14</span>
+      <span>Architecture &middot; Latent reasoning &middot; Continual pretraining &middot; Inference efficiency</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>The Intern-S2-Mobius Team at Shanghai AI Laboratory (48-author author list led by Kai Chen; corresponding author Ermo Hua) introduces <strong>Mobius-v0</strong>, an architecture that decouples FFN knowledge storage from its per-layer binding, exposes it as a single globally shared knowledge-vector repository, and lets every attention layer &mdash; called a <em>Reasoner</em> in this paper &mdash; retrieve from the full repository through what the paper calls <em>Backward Residual Connection</em> and <em>Dynamic Latent Reasoning</em>. The report is filed as arXiv:2608.14290 [cs.AI]; the checkpoint is at <a href="https://huggingface.co/internlm/Intern-S2-Mobius">huggingface.co/internlm/Intern-S2-Mobius</a>. This is a companion architectural follow-up to <em>Intern-S2-Preview</em>, the scientific-agentic foundation model covered in the <a href="gemini-3-7-flash-intern-s2-preview-and-dreamx-phi-1-launches-review-2026-08-14.html">2026-08-14 review</a>; Mobius keeps the Intern-S2 program's science-benchmark focus but replaces the Transformer backbone with the decoupled architecture.</li>
+      <li>Two model artifacts are released and evaluated. <em>Mobius 7B-A1B</em> is a 7B MoE trained-from-scratch (TFS) on <code>1TB</code> tokens; a parameter-matched 7B Transformer baseline is trained under the same recipe. <em>Intern-S2-Mobius-35B</em> is a continual-pretraining (CPT) checkpoint that starts from Qwen3.5-35B-A3B, continues pretraining on a <code>1TB</code>-token Mobius corpus, then applies SFT and RL post-training. The 35B CPT variant is the one whose weights ship on Hugging Face.</li>
+      <li>Positioning: the report is explicit that neither direction of prior scaling &mdash; more parameters/data/CoT length on one hand, or reduced attention complexity (SSM, GDN, Mamba, linear attention) on the other &mdash; is currently paying off. Mobius takes the opposite bet: <em>increase</em> architectural complexity (per-inference activation is sparser and memory-access pressure is higher) to raise the effective ceiling of per-forward reasoning, and let the end-to-end token count fall as a consequence.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Standard Transformer layout the paper is arguing against.</strong> In the vanilla Transformer, each layer <em>k</em> holds its own FFN, its own attention, and its own residual pathway. Attention at layer <em>k</em> can only see hidden states produced by attention at layer <em>k</em>-1 through the forward residual stream; the FFN at layer <em>k</em> is the only knowledge source that layer <em>k</em>'s attention has direct access to. Deep-layer attention cannot retrieve shallow-layer knowledge from any layer above it in the stack, and shallow-layer attention cannot retrieve deep-layer knowledge at all. When a required piece of knowledge fails to be activated at the layer that needs it, the model has no in-forward-pass path to it &mdash; it has to emit a chain-of-thought token whose only purpose is to trigger the missing knowledge on the next forward pass.</li>
+      <li><strong>Mobius' core rewrite: shared knowledge repository.</strong> Mobius removes the per-layer FFN binding entirely. All FFNs in the stack are collapsed into a single, globally shared knowledge-vector database. Every attention layer in the stack (every <em>Reasoner</em>) is granted read access to this whole repository through its query mechanism. Concretely, the paper implements the shared repository by <em>horizontal concatenation</em> of the FFN key-value pools from every layer, keeping the standard "FFN as key-value knowledge memory" interpretation intact (per Geva et al., 2021) and preserving the correspondence between original keys and their values. At larger scales, the concatenated pool is partitioned block-wise MoE-style so only a sparse subset activates per forward, otherwise the activation cost would erase the inference-efficiency win.</li>
+      <li><strong>Named contribution 1 &mdash; Backward Residual Connection.</strong>
+        <ul>
+          <li><em>Problem.</em> Standard residual connections in Transformer, and every mainstream variant (Hyper-Connection, Attention-Residual, DenseNet-style), are unidirectional: they carry shallow hidden states forward into deeper layers but provide no path for deep hidden states to reach back and retrieve shallow-layer knowledge inside a single forward pass. That asymmetry is what forces token-mediated chain-of-thought as the only mechanism for after-the-fact knowledge retrieval.</li>
+          <li><em>Mechanism.</em> Because every Reasoner in Mobius indexes into the <em>same</em> shared repository rather than its own local FFN, the direction of "which layer stored which knowledge" is erased. A deep Reasoner can, on its very first attention step, query and retrieve a key-value pair whose original home was a shallow layer &mdash; the retrieval path is a repository lookup, not a residual-stream traversal. Symmetrically, a shallow Reasoner can retrieve knowledge whose original home was a deep layer. The paper phrases this as an "indirect implementation" of backward residuals: it does not add explicit backward edges to the compute graph (which would break parallelizability), it simply removes the per-layer knowledge home that made forward-only residuals the only path in the first place.</li>
+          <li><em>Why it works / why it beats prior.</em> Hyper-Connection and Attention-Residual improved the <em>capacity</em> of the forward residual pathway but did not change its directionality; DenseNet-style dense connectivity increased connection count but still fires shallow-to-deep. Mobius' backward access is not a stronger forward residual &mdash; it is a different topology in which "shallow" and "deep" no longer index disjoint knowledge sets that must be bridged.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; Dynamic Latent Reasoning.</strong>
+        <ul>
+          <li><em>Problem.</em> Long chain-of-thought is expensive in two ways. Generation cost grows super-linearly in chain length, and models frequently produce trial-and-error-and-correct traces whose informational value per token is low &mdash; the report cites this as the reason today's Transformers "produce verbose, tangential output regardless of problem difficulty." The proximate cause is that the minimum-granularity reasoning unit is a single discrete token, a low-information-density carrier.</li>
+          <li><em>Mechanism.</em> Because Reasoners in Mobius can hit the entire knowledge repository within a small number of layers rather than needing to traverse the full stack once per token, one iteration of latent refinement no longer needs to pass through the whole depth. The model can loop a handful of Reasoners over a hidden state, refining that state against the shared Memory at each pass, and only at deeper layers decode multiple tokens synchronously off the refined latent. The paper describes this as an "upgraded synthesis of Looped Transformer and Diffusion Language Model": Looped-Transformer-style latent recurrence, but at a higher loop frequency (few layers per iteration) and with continuous, high-information-density latents that jointly parameterize multiple future tokens rather than one.</li>
+          <li><em>Why it works / why it beats prior.</em> Universal Transformers and looped LMs share parameters across depth but still update one token at a time and re-traverse the full parameter set each iteration. Continuous-thought lines (COCONUT, CODI, SoftCoT) pass differentiable representations between explicit reasoning steps but require an external soft-thought generator or self-distillation from an explicit CoT trace. Speculative decoding traverses knowledge once and then verifies drafted tokens. Mobius internalizes the deliberate/backtrack/refine loop into the continuous latent update against the shared Memory, so the same "extra reasoning" happens without emitting the trial-and-error tokens that speculative decoding still generates and CoT-based methods still supervise on.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; the Reasoner/Memory role split.</strong> The paper reifies the "FFN = key-value knowledge, attention = compositional reasoning" division of labor from prior mechanistic-interpretability work (Elhage et al., 2021; Geva et al., 2021) into two named module classes: <em>Memory</em> is a globally shared FFN pool of knowledge vectors, and <em>Reasoner</em> is a self-attention block whose only job is to iteratively query Memory for the knowledge vectors it needs. Hidden states play the role of cache and carrier &mdash; the paper treats them as the medium by which Reasoners request from and receive from Memory, rather than as per-layer activation buffers.</li>
+      <li><strong>Training recipes.</strong> Two independent runs anchor the empirical claims.
+        <ul>
+          <li><em>Train-from-scratch (TFS).</em> A 7B-A1B MoE checkpoint with the Mobius architecture and a 7B-A1B MoE Transformer baseline are both trained on <code>1TB</code> tokens under an otherwise-matched recipe. Only downstream MMLU is reported for this experiment; the point is data-efficiency scaling, not a full eval sweep.</li>
+          <li><em>Continual pretraining (CPT).</em> The <code>Qwen3.5-35B-A3B</code> open checkpoint is used as the starting point. The Mobius architectural rewrite is applied and <code>1TB</code> tokens of continual pretraining are run over it. After CPT, SFT and RL are applied to produce <em>Intern-S2-Mobius-35B</em>. This is the checkpoint whose weights are released and whose numbers appear in Table 1.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li><strong>Table 1 &mdash; general and scientific benchmarks, Intern-S2-Mobius-35B vs Qwen3.5-35B baseline.</strong> First-party grid; higher is better in each row.</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Category</th><th>Benchmark</th><th>Intern-S2-Mobius-35B</th><th>Qwen3.5-35B</th></tr>
+      </thead>
+      <tbody>
+        <tr><td rowspan="9">General</td><td>MMLU Pro</td><td><strong>89.05</strong></td><td>85.31</td></tr>
+        <tr><td>GPQA Diamond</td><td><strong>80.81</strong></td><td>80.24</td></tr>
+        <tr><td>IMO Bench</td><td><strong>81.25</strong></td><td>77.50</td></tr>
+        <tr><td>AIME 2026</td><td><strong>95.31</strong></td><td>92.08</td></tr>
+        <tr><td>HMMT 2026</td><td><strong>85.51</strong></td><td>78.50</td></tr>
+        <tr><td>UGD hard</td><td>73.02</td><td><strong>78.02</strong></td></tr>
+        <tr><td>AMO</td><td><strong>58.00</strong></td><td>50.00</td></tr>
+        <tr><td>SimpleQA</td><td><strong>28.90</strong></td><td>21.39</td></tr>
+        <tr><td>HLE</td><td>19.11</td><td><strong>22.40</strong></td></tr>
+        <tr><td colspan="2"><em>General avg</em></td><td><strong>67.88</strong></td><td>65.05</td></tr>
+        <tr><td rowspan="3">Scientific</td><td>Biology-Instructions</td><td><strong>51.40</strong></td><td>3.77</td></tr>
+        <tr><td>Mol-Instructions</td><td><strong>45.73</strong></td><td>21.70</td></tr>
+        <tr><td>MolecularIQ</td><td><strong>59.29</strong></td><td>29.13</td></tr>
+        <tr><td colspan="2"><em>Scientific avg</em></td><td><strong>52.14</strong></td><td>18.20</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Data-efficiency claim (Figure 2).</strong> MMLU learning curves for the 7B-A1B TFS runs. When Transformer's MMLU at <code>1TB</code> tokens is used as the baseline target, the Mobius 7B reaches the same MMLU with only <code>0.626&times;</code> the tokens, i.e. <code>1.6&times;</code> data efficiency of Transformer at parameter parity. The paper does not offer a proof of the mechanism; the offered hypothesis is that per-layer FFNs redundantly store overlapping knowledge in a Transformer stack, and that the shared repository compresses this redundancy away, so a given fact needs fewer training tokens to be captured once instead of many times.</li>
+      <li><strong>Inference-efficiency claim (Figures 3&ndash;4).</strong> Aggregated across the Table 1 eval suite, Intern-S2-Mobius-35B attains substantially higher request throughput than the Qwen3.5-35B baseline. The output-length audit (Figure 4) attributes the throughput gap to shorter chains of thought at matched problem difficulty rather than to per-token kernel savings &mdash; per-pass forward is actually less efficient in Mobius because of the higher memory-access pressure from the sparser, larger activation surface, but the token-count reduction dominates end-to-end. The headline figure is "nearly 4&times; end-to-end inference speedup over Transformer at same parameters."</li>
+      <li><strong>Case study (Table 2, MMLU-Pro Mathematics linear-algebra question).</strong> Both models select the correct answer (Option C). Per-step token counts (Qwen3.5 tokenizer): task framing <code>17</code> vs <code>20</code>; Statement 1 <code>178</code> vs <code>283</code>; Statement 2 <code>142</code> vs <code>197</code>; option-matching <code>22</code> vs <code>122</code>; repeated derivation and checks <code>0</code> vs <code>1,147</code>; visible final answer <code>157</code> vs <code>595</code>. Totals: <strong>516</strong> tokens for Intern-S2-Mobius-35B vs <strong>2,364</strong> tokens for Qwen3.5-35B on the same problem, correct answer both times. The saving is concentrated in the "repeated derivation and checks" and "visible final answer" rows &mdash; the reduction is not from truncated deliberation but from the elimination of the trial-and-error-and-recheck loop.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Two implementation choices are ablated inside the main text. First, the concatenation strategy for building the shared knowledge repository: horizontal concatenation of per-layer FFN key-value pools is compared to alternatives, and horizontal concatenation is retained because it preserves the original key&harr;value correspondence that the "FFN as key-value memory" interpretation relies on. Second, the activation strategy at larger scales: naive dense activation of the shared pool is compared to block-wise MoE-style partitioned activation, and the sparse variant is adopted because dense activation "degrades the model's training and inference efficiency" at the scales the CPT run targets.</li>
+      <li>Additional analysis material appears in appendices (referenced but not surfaced in the main text of the report): Appendix B (Expert Activation Patterns) inspects which parts of the shared repository fire for which inputs, Appendix C (Toy Task of Compositional Generalization) validates the compositional-generalization claim on a synthetic setup drawn from Allen-Zhu's Physics-of-LMs, Appendix D (Case Study: Chain-of-Thought Reasoning) extends the Table 2 case study, and Appendix E (Layerwise Analysis of Latent Reasoning) inspects the recurrent-latent-refinement behavior at each depth. Numerical details from these appendices are not reproduced in the main body.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li><strong>Relationship to prior lines the paper explicitly demarcates.</strong> <em>Latent Reasoning:</em> COCONUT (Hao et al., 2024) and CODI feed hidden states back as embeddings between reasoning steps; SoftCoT projects soft thoughts from an assistant. These preserve reasoning information in continuous form but still rely on token-level supervision or external generators; Mobius makes the pattern a native architectural capability. <em>Looped LMs:</em> Universal Transformers, Looped Transformers, and recurrent-depth pretraining (Geiping et al., 2025) increase effective depth by parameter-tied loops over full layers; Mobius scales computation through recurrence but each iteration touches only a few layers while retaining access to the full shared Memory. <em>Speculative decoding &amp; MTP:</em> speculative decoding (Medusa, EAGLE, Chen et al. 2023) and MTP heads (Gloeckle et al. 2024, DeepSeek-V3) traverse knowledge once, then draft-and-verify; Mobius performs multiple rounds of knowledge traversal internally and natively supports multi-token prediction from the refined latent. <em>Concise CoT (RL-based length compression):</em> RL-based length shaping and pruned-CoT supervision reduce chain length externally, at some risk of curtailing deliberation; Mobius reduces chain length by moving deliberation into the latent space rather than by penalizing its tokens.</li>
+      <li><strong>Forward-looking positions.</strong> The paper's Section 5 takes explicit positions on four capabilities where the authors argue Mobius is a better substrate than Transformer, without claiming any of them are validated in this release: <em>Self-Evolving</em> (knowledge&harr;reasoning decoupling as a prerequisite for continual learning without catastrophic forgetting of reasoning skills); <em>World Model</em> (native latent reasoning as a prior for continuous-space modeling, where the paper argues terabyte-parameter Transformers cannot reach petabyte-scale world modeling within existing hardware limits); <em>Scientific Discovery</em> (flatter knowledge access improves compositional generalization across knowledge domains); <em>Hardware-Software Co-Design</em> (Memory can live predominantly on SSD with on-demand loading of high-priority knowledge blocks into GPU memory, while only Reasoner parameters need to be resident). All four are marked as requiring future validation.</li>
+      <li><strong>Availability.</strong> Weights released under the <a href="https://huggingface.co/internlm/Intern-S2-Mobius">internlm/Intern-S2-Mobius</a> repository. License: CC BY 4.0 for the paper itself. No formal weight license is quoted in the arXiv PDF text; the InternLM org typically publishes under a permissive research license.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
