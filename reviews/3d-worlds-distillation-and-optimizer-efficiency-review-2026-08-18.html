@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>3D Worlds, Distillation &amp; Optimizer Efficiency Review &mdash; August 18, 2026 | Auto Lit Review</title>
+<meta name="description" content="Five Tier 2 frontier-lab papers surface on Hugging Face Daily in the 36-hour window ending 2026-08-18: Shanghai AI Laboratory's MegaParts scales part-aware 3D object generation to 300 parts via token-efficient VQ, Tencent's VibeWorlding open-sources a benchmark plus RL post-training gym for 3D world-construction agents, Shanghai AI Laboratory's SimpleOPD lifts short-context students by distilling from long-context reasoning teachers across mismatched tokenizers, ByteDance Seed's Scaling Domain Data Repetition study characterizes the optimal domain-repetition count at fixed tokens-per-parameter, and Microsoft Research's Dion3 delivers up to 6x faster Muon steps via cheaper orthogonalization and a partial-row update rule. No Tier 1 flagship launches in the window." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 18, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#bytedance-seed">ByteDance Seed</a>
+          <ul>
+            <li class="toc-h2"><a href="#scaling-domain-data-repetition">Scaling Domain Data Repetition in LLM Pretraining</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#microsoft-research">Microsoft Research</a>
+          <ul>
+            <li class="toc-h2"><a href="#dion3">Dion3: Full-Stack Orthogonal Updates</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#shanghai-ai-laboratory">Shanghai AI Laboratory</a>
+          <ul>
+            <li class="toc-h2"><a href="#megaparts">MegaParts: Scaling Part-Aware 3D Object Generation to 300 Parts via Token-Efficient Autoregressive Modeling</a></li>
+            <li class="toc-h2"><a href="#simpleopd">SimpleOPD: Simple Tokenizer-Agnostic On-Policy Distillation for Long-Context Reasoning</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#tencent">Tencent</a>
+          <ul>
+            <li class="toc-h2"><a href="#vibeworlding">VibeWorlding: Can Multimodal Agents Construct 3D Open Worlds End-to-End?</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 18, 2026</div>
+    <h1 class="page-title">3D Worlds, Distillation &amp; Optimizer Efficiency</h1>
+    <div class="page-meta">5 papers &middot; 4 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window from 2026-08-17 to 2026-08-18 is a quiet day on flagship launches &mdash; no new Tier 1 model releases follow last week's <em>Qwen3.8-27B</em>, <em>GLM-5.3</em>, <em>Intern-S2-Preview</em> and <em>DreamX-Phi 1.0</em>. Five Tier 2 frontier-lab papers surface across the Hugging Face Daily selections for both dates. Two target part-aware 3D generation and open-world 3D agent construction: <strong>Shanghai AI Laboratory</strong>'s <a href="https://arxiv.org/abs/2608.14783"><em>MegaParts</em></a> pushes autoregressive part-aware 3D synthesis to <code>300</code> parts and <code>256k</code>-token sequences by inserting a token-efficient vector-quantized shape tokenizer under a bounding-box-then-shape LLM head, and <strong>Tencent</strong>'s <a href="https://arxiv.org/abs/2608.15265"><em>VibeWorlding</em></a> ships a benchmark (<code>VWE-BENCH</code>, 2,616 assets, 323 seed worlds, 6,828 queries) plus a multimodal RL post-training gym in which asset retrieval, editing, and rendering are wrapped as MCP tools and reward is scored by a rubric verifier that combines physical feasibility with intent fulfillment. Two concern how capability gets into a small model: <strong>Shanghai AI Laboratory</strong>'s <a href="https://arxiv.org/abs/2608.14277"><em>SimpleOPD</em></a> transfers proof-reasoning from the long-context <code>SU-01</code> teacher to short-context students across mismatched tokenizers by aligning only spans that share identical text, and adds a student-reference KL plus advantage-masking of termination tokens to prevent length explosion. <strong>ByteDance Seed</strong>'s <a href="https://arxiv.org/abs/2608.14071"><em>Scaling Domain Data Repetition in LLM Pretraining</em></a> characterizes the optimal repetition count for scarce high-quality domain data under a fixed tokens-per-parameter ratio and finds it mildly increases with model size and correlates negatively with a domain's final validation loss. And <strong>Microsoft Research</strong>'s <a href="https://arxiv.org/abs/2608.11612"><em>Dion3</em></a> reworks the Muon orthogonalizing optimizer end-to-end &mdash; a Gram-based Newton-Schulz variant, CuteDSL kernels that exploit symmetry, megabatched all-gather, and a partial-row update rule &mdash; and reports up to <code>6&times;</code> faster optimizer steps at matched or better loss.</p>
+      <h3>Competitiveness</h3>
+      <p>None of the five papers ships a checkpoint aimed at the current dense/MoE reasoning frontier &mdash; the day's substantive results are architectural, evaluation, and infrastructure, not scoreboard entries. The one paper that reports a competitive number against frontier models is <em>VibeWorlding</em>: on the <code>VWE-BENCH</code> agent task the closed frontier <em>GPT-5.5</em> and <em>Qwen3.8-Max</em> both come in below <code>60%</code> success rate, and the paper's own <em>VibeWorlder-30B-A3B</em> post-trained under <em>VibeWorlding-Gym</em> takes the top Pass@1 across all evaluated models, with the 8B student comparable to frontier MLLMs; the reported bottleneck for frontier models is precise 3D-world editing, not planning or intent inference. <em>SimpleOPD</em> reports that its distilled <em>Intern-S2-Preview</em> improves by <code>21.2</code> points on <em>ProofBench</em> to <code>55.2</code>, surpassing <em>Gemini-2.5-Pro</em> on that benchmark, with knock-on gains on <em>HLE</em> and <em>HiPhO</em>. <em>MegaParts</em> reports higher mesh quality than baseline autoregressive and diffusion models on part-aware 3D generation but does not benchmark against a general-purpose text-to-3D frontier system (<em>Qwen3.8-Max</em>, <em>Gemini 3.7 Flash</em>, or <em>Kimi K3</em>'s multimodal variant). <em>Dion3</em>'s scoreboard is against Muon and Dion, not against downstream benchmarks &mdash; the claim is same-or-better pretraining loss at <code>6&times;</code> the optimizer-step speed. <em>Scaling Domain Data Repetition</em> is a methodology paper with no comparison model.</p>
+      <h3>New frontier releases</h3>
+      <p>No new Tier 1 flagship model launches. Two Tier 2 papers with accompanying open artifacts: <em>MegaParts</em> ships a project page and code trail at <a href="https://expmaster.github.io/megaparts_webpage">expmaster.github.io/megaparts_webpage</a>, and <em>Dion3</em> is available as a drop-in Muon replacement in the <a href="https://github.com/microsoft/dion"><code>microsoft/dion</code></a> package. No Tier 3 blog posts or engineering notes in the window.</p>
+    </section>
+
+    <h1 id="bytedance-seed">ByteDance Seed</h1>
+
+    <h2 id="scaling-domain-data-repetition"><a href="https://arxiv.org/abs/2608.14071">Scaling Domain Data Repetition in LLM Pretraining</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-14</span>
+      <span>Pretraining &middot; Data scaling &middot; Domain mixing</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Jingwei Li, Xinran Gu, Rui Dai, Xintong Hao, Chengyin Xu, Yan Wu, Shuran Zheng and Jingzhao Zhang (ByteDance Seed and collaborators; corresponding author Jingzhao Zhang) study how many times a scarce high-quality domain corpus should be repeated when the overall training-token budget grows in proportion to model size. arXiv:2608.14071 [cs.AI], HF Daily 2026-08-17.</li>
+      <li>The framing is the practical scaling regime rather than the Chinchilla-style compute-optimal one: model size <em>N</em> and training-token budget <em>D</em> grow together at an approximately fixed tokens-per-parameter ratio <code>TPP&nbsp;=&nbsp;D/N</code>. In that regime the absolute quantity of general web data grows freely with <em>D</em>, but the quantity of high-quality domain data (code, math, science, curated instruction) does not &mdash; so as <em>N</em> scales, the <em>fraction</em> of domain data in the mixture shrinks unless the domain is repeated.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; repetition scaling at fixed TPP.</strong>
+        <ul>
+          <li><em>Problem.</em> The dominant heuristics on data repetition either warn against any repetition (single-epoch training) or apply a fixed, model-size-agnostic repetition count (e.g. 4x for code). Neither answers the practical question that shows up in a pretraining recipe: given that <em>N</em> and <em>D</em> scale together and the domain corpus is finite, how does the optimal number of repetitions of that corpus depend on <em>N</em>, on <em>D</em>, and on which domain it is?</li>
+          <li><em>Mechanism.</em> The study fixes TPP, then sweeps repetition count <em>R</em> for a domain corpus of fixed unique-token count while varying <em>N</em> (and therefore <em>D</em>&nbsp;=&nbsp;<em>N</em>&nbsp;&times;&nbsp;TPP). Optimal <em>R</em> is read off the validation-loss curve for that domain. Repeating the sweep across several domains gives the mapping from domain properties to optimal <em>R</em>. The paper's positive claims come out of this design: (a) at fixed TPP, optimal <em>R</em> mildly increases with <em>N</em>; (b) across domains, optimal <em>R</em> is strongly negatively correlated with the domain's final validation loss &mdash; domains that the model learns to lower loss on tolerate and benefit from more repetition; (c) the amount of unique domain data is only weakly related to optimal <em>R</em>.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior repetition heuristics (Muennighoff et al.'s <em>data-constrained scaling</em> line and its successors) work in a regime where the total data budget is fixed and repetition trades off against having more unique tokens. The ByteDance Seed setting is different: <em>D</em> grows with <em>N</em> under TPP, so more <em>N</em> allocates more absolute tokens to <em>every</em> component of the mixture, and the question is which component absorbs that budget as fresh vs. as re-passes. The domain-loss correlation is the actionable finding: a domain whose loss curve bottoms out on a proxy 1B or 2B model can be safely repeated more when the recipe scales to 30B or 100B, because its loss floor bounds the overfitting risk. That converts "how many repetitions do I set for this new domain?" into "run a smaller proxy at the same TPP, read the validation loss, look up the corresponding <em>R</em>."</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>The paper's headline empirical claims, per the abstract: at fixed TPP, the optimal repetition count mildly increases with model size; across different domains at fixed TPP the optimal repetition count is strongly negatively correlated with the domain's final validation loss; unique-token count within a domain is only weakly related to the optimal repetition count. Concrete per-domain numbers, model sizes swept, and the fitted correlation are in the paper body and not surfaced in the abstract.</li>
+      <li>The practical extrapolation the paper endorses is that repetition counts tuned on smaller proxy models at the same TPP can predict the right repetition count for larger models &mdash; a decoupling that lets pretraining recipes settle domain-mix decisions cheaply on 1B&ndash;3B proxies before spending compute at 30B&ndash;100B.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The abstract does not enumerate ablation axes beyond model size, domain identity, and unique-token count; a full ablation grid (over TPP, over corpus size, over domain identity) is in the paper body.</li>
+    </ul>
+
+    <h1 id="microsoft-research">Microsoft Research</h1>
+
+    <h2 id="dion3"><a href="https://arxiv.org/abs/2608.11612">Dion3: Full-Stack Orthogonal Updates</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-12</span>
+      <span>Optimizer &middot; Muon &middot; Newton-Schulz &middot; Distributed training</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Noah Amsel, Jack Zhang, Kwangjun Ahn, Ali Naeimi, Austin Feng, Berlin Chen, Tri Dao and John Langford (Microsoft Research and collaborators) release <em>Dion3</em>, a revision of the Muon optimizer targeted at the two costs that erode Muon's benefit at scale: the cubic-time Newton-Schulz orthogonalization step, and the all-gather / all-reduce communication overhead that compounds it when weights are sharded. arXiv:2608.11612 [cs.LG], 37 pages, 23 figures; drop-in code at <a href="https://github.com/microsoft/dion"><code>github.com/microsoft/dion</code></a>. HF Daily 2026-08-17.</li>
+      <li>The paper positions itself against two prior points: (1) <em>Muon</em>, which orthogonalizes the momentum matrix on every step via Newton-Schulz and pays the full cubic-in-<em>d</em> cost plus the sharded-weight communication cost; (2) <em>Dion</em>, a "compressed" Muon variant that traded off some optimizer quality for speed. Dion3 claims to strictly dominate both: matched-or-lower loss than Muon at up to <code>6&times;</code> lower optimizer step time.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; Gram Newton-Schulz algorithm.</strong>
+        <ul>
+          <li><em>Problem.</em> Muon's per-step orthogonalization of the momentum matrix <em>M</em> uses Newton-Schulz iteration on <em>M</em> directly. Each Newton-Schulz iterate costs a matrix-matrix multiply of dimension <code>d&times;d</code> where <em>d</em> is the smaller matrix dimension; the aggregate FLOP cost is cubic in <em>d</em> and quickly becomes a significant fraction of total step time at large hidden sizes.</li>
+          <li><em>Mechanism.</em> Dion3 replaces the Newton-Schulz iteration on <em>M</em> with a Newton-Schulz iteration on the Gram matrix <code>M<sup>T</sup>M</code>. The Gram matrix is <em>k&times;k</em> where <em>k</em>&nbsp;=&nbsp;min(rows, cols), symmetric positive semidefinite, and preserves the singular-value information Muon needs to orthogonalize. Iterating Newton-Schulz on the Gram then recovering the orthogonalized update requires fewer FLOPs than iterating on the full <em>M</em>, and hits a more cache-friendly memory layout.</li>
+          <li><em>Why it works / why it beats prior.</em> Standard Newton-Schulz on <em>M</em> repeatedly computes <code>M &sdot; M<sup>T</sup> &sdot; M</code>-shaped products at the full matrix size. Iterating on the Gram condenses the recurring products into the smaller symmetric surface, and the symmetry lets a specialized kernel skip roughly half the FMA count. The trade-off is one extra <code>M<sup>T</sup>M</code>-shaped product to build the Gram up-front and one <code>M &sdot; (&sdot;)</code>-shaped product to recover the update afterwards; both are one-shot rather than per-iteration.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; CuteDSL kernels for symmetric orthogonalization.</strong>
+        <ul>
+          <li><em>Problem.</em> Even with the Gram reduction, a general GEMM kernel treats the Gram <code>M<sup>T</sup>M</code> as an arbitrary matrix and computes both triangles independently, wasting roughly half the FLOPs.</li>
+          <li><em>Mechanism.</em> Dion3 ships hand-written CuteDSL kernels that exploit the symmetry of the Gram matrix: the kernel computes only one triangle and mirrors, and fuses the surrounding Newton-Schulz update into the same launch to avoid intermediate memory traffic.</li>
+          <li><em>Why it works / why it beats prior.</em> Muon's off-the-shelf cuBLAS-based path pays for both triangles and pays for the launch-and-store cycle between successive iterates; the CuteDSL fusion collapses these into a single write-back per iteration.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; megabatching for sharded communication.</strong>
+        <ul>
+          <li><em>Problem.</em> When weights are sharded (ZeRO-3, FSDP), the momentum matrix on a single rank is a shard of the full <em>M</em>. Muon's per-step orthogonalization needs the full <em>M</em>, so each step triggers an all-gather. All-gather latency scales with matrix size and dominates when the compute per step is fast.</li>
+          <li><em>Mechanism.</em> Megabatching batches the orthogonalization work across multiple parameter tensors (or multiple micro-steps) into a single all-gather, amortizing the collective latency. The exact accumulation cadence is a hyperparameter the paper tunes.</li>
+          <li><em>Why it works / why it beats prior.</em> The naive per-tensor per-step all-gather pays collective startup cost repeatedly; megabatching pays it once for a bundle. This overlaps well with the reduced kernel cost from contributions 1 and 2, so the collective doesn't become the new bottleneck.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 4 &mdash; partial-row orthogonalization update rule.</strong>
+        <ul>
+          <li><em>Problem.</em> Even after the algorithmic and kernel wins above, orthogonalizing every row of the momentum matrix on every step is more work than the update needs &mdash; many rows change slowly between steps.</li>
+          <li><em>Mechanism.</em> The update rule is changed to orthogonalize only a fraction of rows of <em>M</em> at each step, chosen per-step. The remaining rows use their prior orthogonalized state (or a cheaper approximation). The paper claims this is both faster (fewer FLOPs per step) and improves loss versus Dion's compressed Muon.</li>
+          <li><em>Why it works / why it beats prior.</em> Dion's compressed variant reduced Muon cost by approximating orthogonalization globally, at a loss cost. Partial-row orthogonalization keeps the orthogonalization exact where it is applied and skips it where it is least useful, so it is not a uniform quality/speed trade like Dion's compression.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Headline: <em>Dion3</em> matches or improves on the pretraining loss achieved by Muon at up to <code>6&times;</code> lower optimizer step time. The per-component contribution of each of the four ingredients (Gram Newton-Schulz, CuteDSL, megabatching, partial-row update) is reported in the paper body (23 figures) and not itemized in the abstract.</li>
+      <li>The comparison against <em>Dion</em> (the compressed Muon predecessor) is not just speed but also loss: Dion3's partial-row update rule improves both axes simultaneously, so the abstract frames Dion3 as strictly dominating Dion rather than as a different point on the compression/quality Pareto.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Availability: the <code>dion</code> pip/conda package (<a href="https://github.com/microsoft/dion"><code>github.com/microsoft/dion</code></a>) exposes Dion3 as a drop-in replacement for Muon. Existing Muon training scripts should require only an optimizer swap.</li>
+    </ul>
+
+    <h1 id="shanghai-ai-laboratory">Shanghai AI Laboratory</h1>
+
+    <h2 id="megaparts"><a href="https://arxiv.org/abs/2608.14783">MegaParts: Scaling Part-Aware 3D Object Generation to 300 Parts via Token-Efficient Autoregressive Modeling</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-08-14</span>
+      <span>3D generation &middot; Autoregressive &middot; VQ tokenizer &middot; Long context</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Manwen Liao, Xinyu Lian, Jian Mao, Kaixu Chen, Li Luo, Jinghao Yan, Wanshui Gan, Qiao Yu, Weitian Zhang, Chunhua Shen, Guang Chen, Bo Dai, Xudong Xu, Zhaoyang Lyu (Shanghai AI Laboratory and collaborators; corresponding author Zhaoyang Lyu) introduce <strong>MegaParts</strong>, a scalable autoregressive part-aware 3D object generation framework. arXiv:2608.14783 [cs.CV], 12 pages + 6 pages appendix, 13 figures, filed as a technical report; project page at <a href="https://expmaster.github.io/megaparts_webpage">expmaster.github.io/megaparts_webpage</a>. HF Daily 2026-08-18, hosted on the Shanghai AI Laboratory HF org.</li>
+      <li>The problem the paper targets: part-aware 3D generation &mdash; producing objects as a coherent assembly of named semantic parts &mdash; is what downstream applications (rigging, articulation, editable modeling) actually need, but prior part-aware generators do not scale as the part count grows. Detailed part geometry scales token count and memory prohibitively past a few dozen parts; the resulting cap on part count is the operative ceiling on which objects can be represented.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; token-efficient vector-quantized shape tokenizer.</strong>
+        <ul>
+          <li><em>Problem.</em> Fixed-length shape tokenization is wasteful because part complexity varies by orders of magnitude within a single object (a hinge vs. a chassis panel). If every part is padded to the worst-case token budget, the sequence length blows up long before you hit 300 parts. If every part shares a small fixed budget, high-complexity parts lose fidelity.</li>
+          <li><em>Mechanism.</em> MegaParts trains a VQ tokenizer whose latent code sequence is <em>adaptive-length</em>: for each part, the tokenizer minimizes token usage subject to a high-fidelity reconstruction constraint. Simple parts encode in few tokens, complex parts in many. The learned codebook is shared across the whole dataset, so cross-part regularities are captured.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior part-aware generators either commit to a fixed per-part budget (limiting object complexity) or serialize raw part geometry (blowing up sequence length). Adaptive-length VQ decouples the two: total sequence length is set by geometric complexity, not by part count times a worst-case cap. This is what lets the same LLM backbone reach the paper's headline <code>300</code>-parts / <code>256k</code>-tokens regime.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; unified structured sequence over object box, part boxes, and part tokens.</strong>
+        <ul>
+          <li><em>Problem.</em> Part-aware generation needs to model both structure (which parts exist and where they sit) and geometry (what each part looks like). Prior systems either separate the two into a planner and a geometry model (losing joint conditioning) or interleave them ad hoc (making sequence modeling brittle).</li>
+          <li><em>Mechanism.</em> MegaParts serializes each object as a single structured token sequence: the object-level bounding box first, then per-part bounding boxes, then the VQ-tokenized part shape sequences, in a fixed schema. A large language model is trained on this schema with next-token prediction, so it learns the joint distribution over structure and geometry directly.</li>
+          <li><em>Why it works / why it beats prior.</em> The LLM head can condition per-part geometry on all preceding boxes and prior parts' geometry, and can decide part existence, placement, and shape in one coherent generative pass. Diffusion-based part-aware generators handle geometry well but need separate machinery for structure; this schema absorbs both into a single autoregressive loss.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; efficient long-context training strategy.</strong>
+        <ul>
+          <li><em>Problem.</em> Reaching sequence lengths up to <code>256k</code> during training is prohibitive under vanilla attention memory and vanilla data pipelines: activations blow up quadratically, and any single-sample long sequence stalls the batch it is in.</li>
+          <li><em>Mechanism.</em> The paper reports (without naming a specific attention variant in the abstract) an efficient long-context training pipeline that combines the adaptive-length tokenization from contribution&nbsp;1 (which keeps sequences short when parts are simple) with an unspecified training-time efficiency stack. The result is that objects with up to <code>300</code> parts and sequence lengths up to <code>256k</code> tokens fit into the training regime.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior autoregressive 3D generators cap at low part counts largely because their training cannot reach the required sequence lengths at all; the combination of a token-efficient tokenizer with a long-context-aware training stack pushes the reachable regime out by more than an order of magnitude.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Headline claim: MegaParts achieves higher mesh quality than baseline autoregressive and diffusion models on part-aware 3D generation. The paper is explicit that the win is not just scale-of-object; compressed discrete part tokens improve the <em>achievable fidelity</em> of generated geometry, not merely how many parts fit.</li>
+      <li>The abstract does not report specific numerical metrics (Chamfer distance, F-score, per-part IoU); those are in the paper body. Baselines the paper compares against are described as "baseline autoregressive and diffusion models" without naming a specific frontier text-to-3D system, so the comparison is to the part-aware-generation prior line rather than to general text-to-3D SOTA.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The abstract flags the token-efficient formulation as the driver of both the scale (300 parts / 256k tokens) and the fidelity improvement; ablation grids over the VQ codebook size, per-part token budget, and the long-context training-strategy components live in the paper body and appendix (6 pages).</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Project page at <a href="https://expmaster.github.io/megaparts_webpage">expmaster.github.io/megaparts_webpage</a>. The paper is under CC BY 4.0. Weight release and license terms are not stated in the arXiv abstract text; check the project page for the checkpoint status.</li>
+    </ul>
+
+    <h2 id="simpleopd"><a href="https://arxiv.org/abs/2608.14277">SimpleOPD: Simple Tokenizer-Agnostic On-Policy Distillation for Long-Context Reasoning</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-14</span>
+      <span>On-policy distillation &middot; Long-context reasoning &middot; Cross-tokenizer &middot; RL fine-tuning</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Haonan He, Haodi Lei, Yun Luo, Haoran Zhang, Shunkai Zhang, Yizhuo Li, Shengji Tang, Zhilin Wang, Runzhe Zhan, Lei Bai, Ganqu Cui, Fangchen Yu, Yafu Li, Peng Ye, Ning Ding, Yu Cheng (Shanghai AI Laboratory and collaborators; corresponding author Yu Cheng) introduce <strong>SimpleOPD</strong>, an on-policy distillation recipe designed for the specific case where the teacher is a long-context reasoning model and the student is a shorter-context model with a different tokenizer. arXiv:2608.14277 [cs.CL]; HF Daily 2026-08-17.</li>
+      <li>The concrete experimental setting is transferring proof-reasoning capability from <em>SU-01</em>, a long-context reasoning teacher, to short-context student models across several families (<em>Qwen3</em>, <em>Qwen3.5</em>, <em>Intern-S2</em>, <em>GLM-4.7</em>, <em>Gemma-4</em>), with mathematical proving as the primary target and science reasoning as the transfer probe.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; shared-text-space tokenizer-agnostic OPD.</strong>
+        <ul>
+          <li><em>Problem.</em> Standard on-policy distillation matches the student's next-token distribution to the teacher's next-token distribution at every position, using the teacher's tokenization as ground truth. When teacher and student have different tokenizers, "the same position" isn't well-defined: the teacher might tokenize <code>&int;</code> as two tokens where the student uses one, and per-token KL is not a meaningful loss.</li>
+          <li><em>Mechanism.</em> SimpleOPD runs the on-policy sampling and the distillation loss in a shared text space rather than in either tokenizer's token space. Both teacher and student re-tokenize the student's rollout. The distillation objective is applied only at positions where the student token and the teacher token cover <em>identical text spans</em>; positions where the tokenizations diverge (multi-token vs. single-token) are excluded from the loss. Positions where both tokenizers align contribute the standard on-policy distillation gradient.</li>
+          <li><em>Why it works / why it beats prior.</em> The alternative approaches in the cross-tokenizer distillation line either (a) retrain the student's embedding layer to the teacher's tokenizer, which is expensive and disrupts the student's existing capabilities, (b) use byte-level or character-level distillation, which throws away most of the token-level supervision, or (c) skip distillation and use RL only, which is sample-inefficient. Shared-text-space alignment keeps the loss on the aligned majority of tokens without touching the student's embedding table.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; student-reference KL loss.</strong>
+        <ul>
+          <li><em>Problem.</em> Distilling from a long-context reasoning teacher into a short-context student produces two failure modes: the student's generated chain of thought grows without bound (teacher habits push length up), and the student's distribution drifts too far from its initial policy, destabilizing training and pushing responses into the truncation regime.</li>
+          <li><em>Mechanism.</em> The training objective adds a KL penalty measured against the student's <em>own</em> initial policy (student reference) rather than against the teacher. This anchors the student to its own capability distribution and constrains how much its style and length can drift per gradient step.</li>
+          <li><em>Why it works / why it beats prior.</em> Standard on-policy distillation uses only teacher-to-student KL, which pulls the student toward teacher behavior indiscriminately. A student-reference KL is a regularizer specifically against the failure mode of dropping the student's own competence during distillation, and it is what lets length grow steadily rather than exploding.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; advantage masking on termination tokens.</strong>
+        <ul>
+          <li><em>Problem.</em> On-policy distillation with any RL-style advantage estimator gives large advantage magnitudes to whichever token happens to end a rollout &mdash; specifically the reasoning-terminator <code>&lt;/think&gt;</code> and the sequence-terminator <code>&lt;|im_end|&gt;</code>. Because these terminators appear at the end of successful rollouts, their advantages are systematically positive and their gradients push the student to emit them earlier. That collapses generations to premature termination and truncates the reasoning trace before it completes.</li>
+          <li><em>Mechanism.</em> SimpleOPD masks the advantage contribution of the termination tokens <code>&lt;/think&gt;</code> and <code>&lt;|im_end|&gt;</code> so their gradients do not push the student's distribution over when-to-terminate. The student learns from every other token in the rollout normally.</li>
+          <li><em>Why it works / why it beats prior.</em> Length regularization by post-hoc penalty (as in RLHF-style length shaping) fights the advantage signal on terminators directly and can undershoot or overshoot; advantage masking removes the pathological signal at its source without touching the rest of the objective.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Cross-family transfer: SimpleOPD improves mathematical reasoning &mdash; especially natural-language mathematical proving &mdash; on student models across five families: <em>Qwen3</em>, <em>Qwen3.5</em>, <em>Intern-S2</em>, <em>GLM-4.7</em>, and <em>Gemma-4</em>. The paper frames this as evidence the recipe is not tied to same-family teacher/student pairs.</li>
+      <li>Headline number: distilling into <em>Intern-S2-Preview</em> lifts <em>ProofBench</em> by <code>21.2</code> points to <code>55.2</code>, surpassing <em>Gemini-2.5-Pro</em> on that benchmark. Improvements also appear on <em>HLE</em> and <em>HiPhO</em>, which are science benchmarks outside the mathematical training domain, so the transferred capability is not narrowly the training distribution.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The abstract flags three orthogonal design choices that the paper argues are the delta over vanilla on-policy distillation &mdash; shared-text-space alignment, student-reference KL, and terminator advantage masking &mdash; each addressing a distinct failure mode (tokenizer mismatch, distribution drift, length explosion). Individual ablations of each component and their combinations are in the paper body.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="vibeworlding"><a href="https://arxiv.org/abs/2608.15265">VibeWorlding: Can Multimodal Agents Construct 3D Open Worlds End-to-End?</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-15</span>
+      <span>3D world generation &middot; Multimodal agents &middot; MCP tools &middot; RL post-training</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Yansong Ning, Jingwen Ye, Zhongkai Wu, Yang Sun, Yiqin Zhu, Xingyi Li, Weidong Zhang, Hao Liu (Tencent-affiliated author list per HF Daily; corresponding author Hao Liu) release <strong>VibeWorlding</strong>, a benchmark plus RL post-training framework for <em>vibe worlding agents</em>: multimodal LLM agents that construct an interactive 3D open world from a user query. arXiv:2608.15265 [cs.AI]; HF Daily 2026-08-18.</li>
+      <li>The framing is that prior 3D-world-generation evaluations use idealized short queries, which do not exercise the loop that a real vibe-worlding agent must run: infer user intent from an underspecified multimodal query, plan scene layout, invoke external 3D tools, look at the rendered image, and revise. VibeWorlding is a testbed for that full loop, plus a training recipe for closing the gap between open-source and closed-source multimodal LLMs on it.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; VWE-BENCH benchmark.</strong>
+        <ul>
+          <li><em>Problem.</em> Existing 3D generation benchmarks evaluate on short, prescriptive text queries and score against a target mesh or a target image. That does not measure any of the sub-skills of an interactive world-construction agent (intent inference from an ambiguous multimodal query, iterative tool use, layout reasoning), and it does not support open-ended queries with no unique ground truth.</li>
+          <li><em>Mechanism.</em> <em>VWE-BENCH</em> pairs <code>2,616</code> high-quality 3D assets and <code>323</code> human-annotated seed 3D worlds with <code>6,828</code> reverse-synthesized multimodal user queries. Queries are split into two evaluation modes: <em>verified</em> queries carry ground-truth target worlds and are scored by direct comparison; <em>unverified</em> queries carry no unique target and are scored by carefully designed rubrics that separate intent fulfillment from physical feasibility.</li>
+          <li><em>Why it works / why it beats prior.</em> The verified/unverified split lets the benchmark cover both closed-form queries (where ground truth exists) and open-form queries (where it does not) inside a single evaluation protocol. Reverse-synthesizing queries from seed worlds is what gets the query count to <code>6,828</code> without hand-authoring every one, while keeping each query answerable in principle.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; VibeWorlding-Gym: RL post-training environment.</strong>
+        <ul>
+          <li><em>Problem.</em> The frontier failure mode the paper diagnoses is not planning or intent inference &mdash; it is precise 3D-world editing. That failure mode is fundamentally interactive: the agent has to place, move, and edit assets, then look at the result and re-edit. It cannot be improved with static supervised fine-tuning; it needs an environment.</li>
+          <li><em>Mechanism.</em> <em>VibeWorlding-Gym</em> integrates two pieces: (a) a sandbox environment in which asset retrieval, editing, and image rendering are wrapped as <em>MCP tools</em>, so the agent invokes them through the same protocol it uses for any other tool, and (b) a rubric-based verifier that combines physical-feasibility checks with intent-fulfillment scoring, and serves as both the eval scorer and the RL reward function. Post-training uses joint multimodal RL over the (query, tool-trajectory, final-world) tuples with reward from the verifier.</li>
+          <li><em>Why it works / why it beats prior.</em> Wrapping the 3D toolset as MCP tools means any agent that already speaks MCP can plug in without protocol changes, and lets the same reward service score both open-source and closed-source models fairly during evaluation. Using the rubric verifier as both metric and reward closes the loop that separates most agentic evaluations from most agentic training pipelines.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Frontier baselines fall short: both <em>GPT-5.5</em> and <em>Qwen3.8-Max</em> reach below <code>60%</code> success rate on the VWE-BENCH agent task. The paper traces the failure to precise 3D-world editing rather than to planning or intent inference.</li>
+      <li>Post-training closes the gap: <em>VibeWorlder-8B</em> post-trained under VibeWorlding-Gym is comparable to the frontier closed MLLMs on VWE-BENCH; the flagship <em>VibeWorlder-30B-A3B</em> attains the top overall Pass@1 across all evaluated models. The abstract does not disaggregate the win into verified vs. unverified query performance; per-split numbers are in the paper body.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The abstract does not enumerate ablation axes; ablations over the rubric verifier composition (physical feasibility only vs. intent only vs. combined), over the MCP tool set, and over model size are in the paper body.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Availability: the paper's release trail (benchmark, gym, checkpoints) is not disambiguated in the arXiv abstract; the HF Daily submission channel indicates a Tencent-tagged release.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
