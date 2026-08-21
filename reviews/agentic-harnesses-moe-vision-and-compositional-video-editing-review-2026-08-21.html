@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agentic Harnesses, MoE Vision &amp; Compositional Video Editing Review &mdash; August 21, 2026 | Auto Lit Review</title>
+<meta name="description" content="Five Tier 2 frontier-lab papers surface in the 72-hour window ending 2026-08-21: Microsoft's Agent Lightning v1.0 lands the harnessed-agentic-RL paradigm as ~3,500 lines of code and pushes Qwen3.5-9B on SWE-bench Verified from 41.8% to 56.4% with 6K examples; Meta AI's MoE-ViE is a fine-grained mixture-of-experts CLIP-style vision encoder with an auxiliary-loss-free balancing variant, a specialized MoE kernel, and frame-level distillation, matching a SOTA encoder 1.7x its size at 76% of its latency; Alibaba/Qwen Business Unit's AVA-Encoder introduces agentic auto-encoding of films into a typed knowledge graph and textual-gradient policy pseudo-training; ByteDance Seed's StartupBench grounds an end-to-end agent benchmark in market-validated startup workflows on which the strongest general-purpose agent only completes ~30%; Tencent's CoinVE-200K ships a 1080p compositional video-editing dataset plus the 22B CoinVE-Edit model with region-disentangled attention over Wan2.1-T2V-14B and Qwen3-VL-8B-Instruct. No Tier 1 flagship launches in the window." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 21, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba</a>
+          <ul>
+            <li class="toc-h2"><a href="#ava-encoder">AVA-Encoder: Towards Agent-Native Video Representation Learning</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#bytedance-seed">ByteDance Seed</a>
+          <ul>
+            <li class="toc-h2"><a href="#startupbench">StartupBench: Benchmarking General-Purpose Agents on Market-Validated End-to-End Workflows</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#meta-superintelligence-labs">Meta Superintelligence Labs</a>
+          <ul>
+            <li class="toc-h2"><a href="#moe-vie">MoE-ViE: Mixture of Experts Vision Encoder for Efficient Image and Video Understanding</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#microsoft-ai">Microsoft AI</a>
+          <ul>
+            <li class="toc-h2"><a href="#agent-lightning-v1-0">Agent Lightning v1.0: Towards Harnessed Agentic RL</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#tencent">Tencent</a>
+          <ul>
+            <li class="toc-h2"><a href="#coinve-200k">CoinVE-200K: Compositional Instruction-Guided Video Editing Dataset &amp; CoinVE-Edit 22B</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 21, 2026</div>
+    <h1 class="page-title">Agentic Harnesses, MoE Vision &amp; Compositional Video Editing</h1>
+    <div class="page-meta">5 papers &middot; 5 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 72-hour window from 2026-08-19 to 2026-08-21 (extended past the usual 36-hour steady-state to cover the three days since the last review on 2026-08-18) surfaces no Tier 1 flagship model launches and five Tier 2 frontier-lab papers on the Hugging Face Daily selections for 2026-08-19 and 2026-08-20 (the 2026-08-21 page is empty at run time). Two are agent-training infrastructure: <strong>Microsoft AI</strong>'s <a href="https://arxiv.org/abs/2608.17528"><em>Agent Lightning v1.0</em></a> formalizes <em>harnessed agentic RL</em> &mdash; a paradigm in which the deploy-time harness owns the environment loop and the RL trainer only sees LLM request-response pairs &mdash; and ships a <code>~3,500</code>-line framework that improves <code>Qwen3.5-9B</code> on SWE-bench Verified from <code>41.8%</code> to <code>56.4%</code> with <code>6K</code> training examples; <strong>ByteDance Seed</strong>'s <a href="https://arxiv.org/abs/2608.17800"><em>StartupBench</em></a> is an end-to-end agent benchmark constructed from market-validated AI-startup product workflows on which the strongest general-purpose agent only completes <code>~30%</code>. Two are vision representation: <strong>Meta Superintelligence Labs</strong>'s <a href="https://arxiv.org/abs/2608.17402"><em>MoE-ViE</em></a> systematically studies MoE topologies for CLIP-style vision encoders and pairs fine-grained routing with an auxiliary-loss-free balancer, a specialized MoE kernel, and frame-level video distillation to match a SOTA encoder <code>1.7&times;</code> its size at <code>76%</code> of its latency; and <strong>Alibaba</strong> (Qwen Business Unit)'s <a href="https://arxiv.org/abs/2608.12313"><em>AVA-Encoder</em></a> auto-encodes films into a typed knowledge graph and reconstructs them, using reconstruction gaps as textual-gradient training signal for the encoding policy. The remaining Tier 2 is <strong>Tencent</strong>'s <a href="https://arxiv.org/abs/2608.17566"><em>CoinVE-200K</em></a>, a 1080p compositional instruction-guided video-editing corpus of <code>200K</code> pairs, its benchmark <em>CoinVE-Bench</em>, and a <code>22B</code> editor <em>CoinVE-Edit</em> built on <code>Wan2.1-T2V-14B</code> + <code>Qwen3-VL-8B-Instruct</code> that disentangles region-aware attention per editing instruction.</p>
+      <h3>Competitiveness</h3>
+      <p>None of the five papers ships a flagship generalist model &mdash; the day's substantive results are training-framework, encoder, dataset, and benchmark. The one paper with a headline general-agent number is <em>Agent Lightning v1.0</em>: its coding-agent RL recipe drives <code>Qwen3.5-9B</code> from <code>41.8%</code> to <code>56.4%</code> on SWE-bench Verified &mdash; a <code>+14.6</code>-point absolute gain from <code>6K</code> examples &mdash; landing meaningfully below the current SWE-Bench frontier held by the largest closed reasoning models (<code>Claude Opus 5</code> and <code>GPT-5.5</code> above <code>75%</code>, <code>Kimi K3</code> and <code>Qwen3.8-Max</code> above <code>70%</code>) but pulling a mid-scale open model into the neighborhood of much larger open baselines under modest compute. <em>StartupBench</em>'s scoreboard is a downward benchmark: with all evaluated frontier agents topping out near <code>30%</code> completion on market-validated workflows, the gap to product-grade autonomy remains large even with instruction-following and domain expertise being the named failure modes. <em>MoE-ViE</em>'s scoreboard is against CLIP-family encoders rather than a chat model: it matches a SOTA encoder <code>1.7&times;</code> its size at <code>76%</code> of its latency in zero-shot, and when aligned to an LLM it beats compared encoders on image and video benchmarks including those with up to <code>5&times;</code> more activated parameters. <em>AVA-Encoder</em> reports <code>+20.7</code> points over the strongest external baseline on its agentic video reconstruction benchmark and beats a human-tuned policy while using <code>74.3%</code> fewer system-prompt tokens. <em>CoinVE-200K</em>'s <em>CoinVE-Edit</em> is not compared against a closed frontier video editor in the abstract; the reported wins are on its own compositional benchmark <em>CoinVE-Bench</em>.</p>
+      <h3>New frontier releases</h3>
+      <p>No new Tier 1 flagship model launches. Four Tier 2 papers ship open artifacts: <em>Agent Lightning v1.0</em> at <a href="https://github.com/microsoft/agent-lightning"><code>microsoft/agent-lightning</code></a> with a reproducible coding-agent RL pipeline, <em>MoE-ViE</em> at <a href="https://github.com/facebookresearch/moe_vie"><code>facebookresearch/moe_vie</code></a>, <em>AVA-Encoder</em> as framework plus benchmark plus film KG dataset (release referenced in the paper), and <em>CoinVE-200K</em> at <a href="https://coinve200k.github.io">coinve200k.github.io</a> with dataset on Hugging Face and code on GitHub. No Tier 3 blog posts or engineering notes surfaced in the window.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="ava-encoder"><a href="https://arxiv.org/abs/2608.12313">AVA-Encoder: Towards Agent-Native Video Representation Learning</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-12</span>
+      <span>Video representation &middot; Knowledge graph &middot; Textual gradients &middot; Creative agents</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Chuyue Li, Jinpeng Yu, Haozhe Wang, Xueyun Tian, Zhijing Zhang, Bingnan Li, Shuqi Gu, Kan Ren, Jiaming Liu and Ruihua Hua (Qwen Business Unit, Alibaba, and collaborators; corresponding author Ruihua Hua) release <strong>AVA-Encoder</strong>, an Agentic Video Auto-Encoder that learns agent-native video representations by auto-encoding film into a typed knowledge graph and reconstructing it back to video. arXiv:2608.12313 [cs.CV], HF Daily 2026-08-19, submitted on the Qwen Business Unit HF org.</li>
+      <li>The problem framing: creative agents that generate video today have no structured representation of film that is both faithful to the source and directly editable by the agent. Raw pixel latents are opaque; caption strings lose scene structure; existing scene graphs miss modality assets. The paper's premise is that a representation an agent can query, edit, and reason over must jointly carry structured text, images, audio, and video, in a schema the model already knows how to manipulate.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; knowledge-graph auto-encoding of film.</strong>
+        <ul>
+          <li><em>Problem.</em> A video representation useful to a creative agent has to satisfy two conflicting requirements: it must be lossless enough that the source video can be reconstructed from it, and it must be structured enough that an agent can locate a specific shot, character, prop, or sound and modify it. Flat text descriptions and dense latents both fail the second requirement.</li>
+          <li><em>Mechanism.</em> AVA-Encoder maps each video to a knowledge-graph representation with three node families: <em>hierarchy nodes</em> (film &rarr; scenes &rarr; shots) and <em>state nodes</em> (per-shot state descriptions) hold structured text; a linked <em>asset layer</em> holds generated images, audio, and video clips. Typed edges preserve the relations among these text descriptions and modality assets, so an agent's query &mdash; "the prop the protagonist is holding in scene 3 shot 2" &mdash; resolves through the graph to the right asset. Reconstruction runs the KG back through a decoder that renders shot-level video from the linked assets and state text.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior structured video representations either serialize to plain text (asset relations are lost) or to a scene graph without a linked modality layer (the agent can query structure but not manipulate audio/image assets in-place). Typing the edges and factoring the graph into hierarchy, state, and assets keeps every level of granularity addressable and every asset editable in the modality the downstream generator needs. This is what makes the representation "agent-native": the operations an editing agent already emits &mdash; "swap this asset," "rewrite this state" &mdash; land on the schema directly.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; textual-gradient optimization from reconstruction differences.</strong>
+        <ul>
+          <li><em>Problem.</em> Training the encoding policy needs a differentiable signal, but the loss the paper cares about &mdash; the difference between the source video and the video reconstructed from the KG &mdash; is not straightforwardly differentiable with respect to the LLM prompt or the KG schema that produced it. Human labels are also expensive at film scale.</li>
+          <li><em>Mechanism.</em> AVA-Encoder computes reconstruction differences (measured by an agentic video reconstruction benchmark released with the paper), then expresses those differences as natural-language update directions &mdash; textual gradients &mdash; that specify what the encoding policy should have done differently. Two loops consume these signals: <em>Data-Independent Encoding Policy Pseudo-Training</em> in the outer loop updates the encoding-policy prompt / behavior across a corpus of films, and <em>Data-Dependent KG Representation Refinement</em> in the optional test-time inner loop refines the KG representation for a specific target film.</li>
+          <li><em>Why it works / why it beats prior.</em> Textual-gradient methods (in the style of DSPy / TextGrad) usually optimize a single prompt with respect to a scalar reward. Here the two-loop split lets the outer loop bake generic film-editing skill into the policy without depending on any particular target film's reconstruction, while the inner loop lets a deployment refine the KG for a specific film without retraining the encoder. That decoupling is what gives the abstract's <code>74.3%</code> system-prompt-token reduction over a human-tuned policy: the outer loop absorbs most of the skill that would otherwise have to be spelled out in-prompt.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Headline: on the released agentic video reconstruction benchmark AVA-Encoder improves by <code>20.7</code> percentage points over the strongest external baseline.</li>
+      <li>In the controlled policy-only setting, the pseudo-trained shot-level Agentic Video Encoder policy also outperforms a carefully human-tuned policy while using <code>74.3%</code> fewer system-prompt tokens &mdash; a joint quality and prompt-length win, not a Pareto trade-off.</li>
+      <li>Availability: the paper releases the full AVA-Encoder framework, the agentic video reconstruction benchmark, and the first dataset of high-quality film KG representations (release channels enumerated in the paper).</li>
+    </ul>
+
+    <h1 id="bytedance-seed">ByteDance Seed</h1>
+
+    <h2 id="startupbench"><a href="https://arxiv.org/abs/2608.17800">StartupBench: Benchmarking General-Purpose Agents on Market-Validated End-to-End Workflows</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-18</span>
+      <span>Agent benchmark &middot; End-to-end workflows &middot; Rubric evaluation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Liya Zhu, Xin Ma, Tao Liu, Haodong Wang, Ge Zhang, Jingzhe Ding et al., 37 authors (ByteDance Seed and collaborators; corresponding author Wenhao Huang), release <strong>StartupBench</strong>, an end-to-end agent benchmark whose tasks are drawn from market-validated AI-startup product workflows rather than researcher intuition. arXiv:2608.17800 [cs.AI], HF Daily 2026-08-19, on the ByteDance Seed HF org.</li>
+      <li>The framing: existing agent benchmarks (WebArena-style, SWE-bench-style, AgentBench-style) fix tasks up-front from what researchers guess is useful, and improvements on them may not generalize to what real users pay AI systems to do. StartupBench's premise is that AI startups that have achieved market adoption are a filter for "tasks with demonstrated practical demand," and that translating their production workflows into deliverable-oriented tasks yields a benchmark whose signal actually tracks deployment value.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; market-validated E2E workflow benchmark.</strong>
+        <ul>
+          <li><em>Problem.</em> A benchmark authored top-down from "capabilities researchers think agents should have" can miss the operational structure of tasks users actually pay to have completed &mdash; the multi-step deliverables, the domain-specific instructions, the tolerance for partial output. Progress on such benchmarks can saturate without moving the needle on deployment quality.</li>
+          <li><em>Mechanism.</em> The construction pipeline: (a) enumerate AI startups with demonstrated product adoption; (b) study each product's actual user workflows and the professional domains its users come from; (c) translate each workflow into a complete deliverable-oriented task (produce artifact X given brief Y under constraints Z), not a single tool call; (d) author a fine-grained rubric per task that captures the workflow's real requirements (format, correctness, coverage, tone), not a boolean pass/fail. Evaluation puts every model behind a unified agent harness so the number reflects the model, not the scaffold.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior benchmarks either use synthetic tasks (WebArena, MiniWoB) or curated developer tasks (SWE-bench). Neither samples from the operational-workflow distribution that AI-product usage actually follows. Using market adoption as a task-selection filter shifts the distribution to tasks that survived a real user-value test, and rubric-based scoring surfaces partial progress that boolean scoring erases &mdash; which the paper reports as substantial across models, so a <code>30%</code> completion rate coexists with much higher fractional progress and is informative about failure modes rather than opaque.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Headline: across the representative models the paper evaluates under its unified harness, the strongest agent completes only approximately <code>30%</code> of StartupBench tasks. Substantial partial progress is measurable across many tasks, so the gap is on the last-mile deliverable rather than on getting started.</li>
+      <li>Failure-mode analysis identifies <em>complex instruction following</em> (rubrics that combine multiple binding constraints) and <em>domain-specific expertise</em> (workflows in specialist professional domains) as the primary sources of failure.</li>
+      <li>Specific per-model breakdown (which frontier models, per-domain scores) is in the paper body; the abstract reports only the aggregate ceiling.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning: the paper argues StartupBench should be read as "an empirical measure of progress toward E2E completions of real-world user tasks" rather than a leaderboard-style capability benchmark; the intended use is diagnosing where general-purpose agents fall short of product-grade autonomy.</li>
+    </ul>
+
+    <h1 id="meta-superintelligence-labs">Meta Superintelligence Labs</h1>
+
+    <h2 id="moe-vie"><a href="https://arxiv.org/abs/2608.17402">MoE-ViE: Mixture of Experts Vision Encoder for Efficient Image and Video Understanding</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper (ECCV 2026)</span>
+      <span>arXiv</span>
+      <span>2026-08-18</span>
+      <span>Vision encoder &middot; MoE &middot; CLIP &middot; Auxiliary-loss-free balancing &middot; Frame distillation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Bonan Zhang, Shiyu Dong, Quan Hung Tran, Katharina Gschwind, Shuqi Yang, Sijia Chen, Adel Ahmadyan, Seungwhan Moon, Lu Zhang, Ahmed Kirmani, Babak Damavandi and Anuj Kumar (AI at Meta / Meta Superintelligence Labs) present <strong>MoE-ViE</strong>, a mixture-of-experts CLIP-style vision encoder family designed to scale encoder capacity without paying dense-scaling compute or latency. arXiv:2608.17402 [cs.CV]; accepted to ECCV 2026; code at <a href="https://github.com/facebookresearch/moe_vie"><code>facebookresearch/moe_vie</code></a>. HF Daily 2026-08-19.</li>
+      <li>The framing: MoE has been the dominant capacity-scaling recipe in LLMs (DeepSeek-V3, GLM-5, Kimi K3, Qwen3.8-Max), but the MoE design space for CLIP-style vision encoders was not systematically explored at SOTA scale. Dense vision-encoder scaling still incurs the full compute and inference-latency bill; the paper's premise is that fine-grained MoE topologies can close that gap.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; fine-grained MoE topology for CLIP-style vision encoders.</strong>
+        <ul>
+          <li><em>Problem.</em> Naively porting standard LLM-style MoE (a small number of large experts per FFN, coarse routing) to a vision encoder underuses the sparsity headroom: coarse routing does not exploit the patch-token diversity a vision encoder sees, and yields modest gains over dense scaling at SOTA.</li>
+          <li><em>Mechanism.</em> The paper sweeps the MoE topology axes systematically &mdash; number of experts, expert width, top-<em>k</em> routing granularity, layer placement &mdash; and lands on a fine-grained configuration (many smaller experts, finer routing) that consistently outperforms both dense and standard MoE counterparts across a range of encoder sizes.</li>
+          <li><em>Why it works / why it beats prior.</em> Vision patch tokens vary substantially in content (background, object edges, text, texture), so many narrow experts specialized per content type extract more signal from a fixed activated-parameter budget than a handful of wide experts. Standard LLM-style MoE assumes token-level linguistic variability that is denser than the vision-token distribution and thus over-provisions per expert; fine-grained MoE fits the vision case better.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; auxiliary-loss-free load balancing.</strong>
+        <ul>
+          <li><em>Problem.</em> Standard MoE trains with an auxiliary load-balancing loss to keep experts utilized, but that auxiliary term competes with the primary objective and can leave utilization uneven or hurt loss.</li>
+          <li><em>Mechanism.</em> MoE-ViE uses a balancing variant that does not add an auxiliary loss term &mdash; the balancing signal is applied via routing bias / gate adjustment (analogous to the DeepSeek-V3-style loss-free balancer) so that expert utilization is kept even without interfering with the primary CLIP objective.</li>
+          <li><em>Why it works / why it beats prior.</em> The auxiliary-loss approach couples two objectives with a hyperparameter (loss weight) that has to be tuned; too high hurts task loss, too low leaves imbalance. Adjusting the router's bias directly at the routing decision solves balance where the imbalance actually shows up, without pushing on the main gradient.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; specialized MoE kernel for inference latency.</strong>
+        <ul>
+          <li><em>Problem.</em> A fine-grained MoE inflates the count of kernel launches per token (one per expert selection) and multiplies memory traffic; naive kernels erase the FLOP savings from sparse activation with launch and memory overhead, so wall-clock inference latency ends up worse than the dense baseline.</li>
+          <li><em>Mechanism.</em> The paper ships a specialized MoE kernel that mitigates this inference latency overhead. Exact kernel details are in the paper body; the abstract commits to the outcome &mdash; the released encoder can be served at wall-clock latency the fine-grained MoE topology would otherwise not sustain.</li>
+          <li><em>Why it works / why it beats prior.</em> Fusing the expert dispatch and expert compute for many small experts avoids per-expert launches and interleaves memory transfers with compute; without this, the fine-grained topology is a training-time win only, and the latency claim in the abstract (matching a SOTA encoder <code>1.7&times;</code> its size at <code>76%</code> of its latency) does not hold in the wild.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 4 &mdash; frame-level distillation with a freezing mechanism.</strong>
+        <ul>
+          <li><em>Problem.</em> Extending an image encoder to video usually improves video benchmarks but degrades the image benchmarks the encoder was pretrained on, because video training data shifts the encoder's representation toward temporal / motion features and away from static object semantics.</li>
+          <li><em>Mechanism.</em> MoE-ViE distills at the frame level (each video frame is treated as a distillation target) paired with a novel freezing mechanism that keeps the components carrying image knowledge from drifting during video adaptation. The freezing is applied selectively; the abstract does not name which parameters or experts are frozen, but the design intent is that the video adaptation cannot backpropagate into the components that hold image capability.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior "image-then-video" recipes either full-finetune (losing image quality) or LoRA on video (limited video capacity). Frame-level distillation plus targeted freezing decouples the two capabilities: video training gets to update the parts that need to learn motion, while the image-capability substrate is protected by construction.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Zero-shot: MoE-ViE is pretrained across a range of sizes and every size consistently outperforms its dense counterpart. The largest MoE-ViE matches the zero-shot performance of a SOTA encoder <code>1.7&times;</code> its size, at <code>76%</code> of that encoder's latency.</li>
+      <li>Aligned with an LLM: MoE-ViE surpasses all compared encoders on image and video benchmarks, including encoders with up to <code>5&times;</code> more activated parameters. Specific per-benchmark numbers are in the paper body.</li>
+      <li>Availability: <a href="https://github.com/facebookresearch/moe_vie"><code>facebookresearch/moe_vie</code></a>.</li>
+    </ul>
+
+    <h1 id="microsoft-ai">Microsoft AI</h1>
+
+    <h2 id="agent-lightning-v1-0"><a href="https://arxiv.org/abs/2608.17528">Agent Lightning v1.0: Towards Harnessed Agentic RL</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-18</span>
+      <span>Agentic RL &middot; Harness &middot; SWE-bench &middot; Post-training framework</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Zhiyuan He, Siwei Zhang, Zhiwen Zhou, Yuqing Yang, Yu Kang, Yuge Zhang, Luna K. Qiu, Tin Yan Tsui, Jiahang Xu and Chong Luo (Microsoft; corresponding author Chong Luo) release <strong>Agent Lightning v1.0</strong>, a lightweight framework for what the paper coins <em>harnessed agentic RL</em>. arXiv:2608.17528 [cs.AI], 2026-08-18 submission; HF Daily 2026-08-19.</li>
+      <li>The framing: modern deployed agents run inside an <em>agent harness</em> that manages tools, context, and control flow (LangGraph, verl Uni-Agent, AReaL 2.0, slime, Polar, and the paper's own original Agent Lightning). If the harness is what actually runs at inference time, then post-training the agent's LLM without the harness in the loop optimizes against the wrong environment. Harnessed agentic RL puts the deploy-time harness in the training loop &mdash; the harness owns the environment interaction, the trainer only observes the LLM's request-response pairs &mdash; and Agent Lightning v1.0 is the reference implementation, plus a study of the technical challenges this creates.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; harnessed agentic RL paradigm and disaggregated architecture.</strong>
+        <ul>
+          <li><em>Problem.</em> Traditional agentic RL bakes the environment loop into the trainer: the RL framework calls the environment, receives observations, and steps the LLM. This tightly couples the training stack to the specific harness used at inference, and every new agent harness (each with its own tool-calling schema, memory manager, control flow) demands a bespoke integration.</li>
+          <li><em>Mechanism.</em> The prior work introduced a disaggregated architecture that decouples the two sides: the harness runs as it would in production and issues LLM calls through a proxied LLM endpoint. The trainer sits behind that endpoint. From the harness's point of view it is calling a normal LLM; from the trainer's point of view it observes only a stream of LLM request-response pairs. Any harness that speaks the LLM-endpoint protocol trains under the same code path. v1.0 formalizes this as the <em>harnessed agentic RL</em> paradigm, and the same design has since been adopted by <em>verl Uni-Agent</em>, <em>AReaL 2.0</em>, <em>slime</em>, and <em>Polar</em>.</li>
+          <li><em>Why it works / why it beats prior.</em> The invariant the paper enforces &mdash; the trainer's view is a sequence of LLM request-response pairs &mdash; is precisely the invariant across harnesses. Trainer-agnostic harness support falls out of it. It also makes the deployment / training gap small: the same harness that scores at inference is the one that generated the trajectories.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; treatment of request-response-only supervision.</strong>
+        <ul>
+          <li><em>Problem.</em> When the trainer only sees LLM request-response pairs (not the environment or the raw trajectory), a stack of concrete technical issues appears that traditional agentic RL sidesteps because it owns the loop: <em>retokenization</em> (each request is tokenized independently and their concatenation may not match the harness's runtime tokenization), <em>sample merging</em> (multi-turn traces are made of many request-response pairs that must be aggregated into a single training sample), <em>advantage calculation</em> (per-token vs. per-turn credit, and how to attribute reward across a sequence of harness calls), <em>loss normalization</em> (across turns of different lengths, and across samples containing different call counts), and <em>backend scheduling</em> (the proxy has to schedule inference against training I/O without stalling either side).</li>
+          <li><em>Mechanism.</em> Agent Lightning v1.0 is presented as a testbed for these five challenges. Each is a concrete design decision inside the <code>~3,500</code>-line framework; specific choices (which tokenizer normalization, which merging rule, which advantage formulation, which normalization scheme, which scheduler) are itemized in the paper body. The abstract emphasizes that these decisions substantially affect training stability and effectiveness, i.e. they are not implementation trivia.</li>
+          <li><em>Why it works / why it beats prior.</em> Making the invariant "trainer sees request-response pairs" the interface means these five issues are the whole surface area of harnessed agentic RL, and once solved once, they apply to every harness that plugs in. The paper positions the framework as reference-implementation-plus-testbed so that later systems (or successor frameworks) can substitute alternative solutions and compare.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; reproducible coding-agent RL pipeline.</strong>
+        <ul>
+          <li><em>Problem.</em> Published SWE-bench RL results are hard to reproduce because the environment (containers, tool stack, patch application, test harness) is not always released, and the RL recipe (reward shaping, on-policy vs. off-policy, rollouts per step) is often abbreviated.</li>
+          <li><em>Mechanism.</em> The paper ships a complete reproducible pipeline for coding-agent RL under Agent Lightning v1.0: the harness (tools, control flow), the training data, the RL loop, and the eval. The recipe drives <code>Qwen3.5-9B</code> on SWE-bench Verified from <code>41.8%</code> to <code>56.4%</code> using only <code>6K</code> training examples and modest compute.</li>
+          <li><em>Why it works / why it beats prior.</em> The <code>+14.6</code>-point absolute gain from <code>6K</code> examples is the paper's headline evidence that harnessed agentic RL is data-efficient when the deploy harness participates in training: gradients flow into behaviors the harness actually calls at inference, not proxies for them. Prior agentic RL results on coding often required larger data budgets or full-repo self-play to move the number, and were tied to a specific in-house harness.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Coding: <code>Qwen3.5-9B</code>, <code>41.8%</code> &rarr; <code>56.4%</code> on SWE-bench Verified with <code>6K</code> training examples and modest compute (<code>+14.6</code> points absolute).</li>
+      <li>Evaluation surface includes instruction-following and search agents in addition to coding; per-benchmark numbers on those two are in the paper body.</li>
+      <li>Framework: <code>~3,500</code> lines of code. Advertised property is arbitrary-harness support: the LLM-endpoint proxy protocol is the extension seam.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Availability: full workflow and training scripts released; the paper explicitly positions the release as reproducibility infrastructure for the harnessed agentic RL line of work.</li>
+      <li>Positioning against ecosystem: the paper claims the disaggregated LLM-endpoint approach it originated has since been picked up by <em>verl Uni-Agent</em>, <em>AReaL 2.0</em>, <em>slime</em>, and <em>Polar</em>, and frames v1.0 as the reference-implementation of the pattern rather than a new competing framework.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="coinve-200k"><a href="https://arxiv.org/abs/2608.17566">CoinVE-200K: A Large-Scale High-Quality Dataset for Compositional Instruction-Guided Video Editing</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-18</span>
+      <span>Video editing &middot; Compositional instructions &middot; Region attention &middot; Dataset &middot; Benchmark</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Fuchen Long, Cong Wang, Zitao Gao, Wenhao Zhong, Yu Cheng, Xiaolu Hou, Yan Li, Xiao Cao, Xinlong Sun, Xi Chen and Yu Liu (Tencent) release <strong>CoinVE-200K</strong>, a large-scale, high-quality dataset for compositional instruction-guided video editing; <strong>CoinVE-Bench</strong>, the paired benchmark; and <strong>CoinVE-Edit</strong>, a <code>22B</code> compositional video editor. arXiv:2608.17566 [cs.CV]; project page <a href="https://coinve200k.github.io">coinve200k.github.io</a>; dataset at <a href="https://huggingface.co/datasets/FireCRT/CoinVE-200K">huggingface.co/datasets/FireCRT/CoinVE-200K</a>; source at <a href="https://github.com/coinve200k/CoinVE-200K"><code>coinve200k/CoinVE-200K</code></a>. HF Daily 2026-08-19.</li>
+      <li>The framing: existing instruction-based video-editing datasets focus on a single editing operation per sample (change color, remove object, restyle). Real editing prompts are compositional &mdash; "put a hat on the person on the left, remove the car in the background, and stylize the whole thing as watercolor" &mdash; and require multiple intents to be jointly parsed and jointly executed on distinct regions of the same video, preserving irrelevant content and temporal coherence throughout.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; CoinVE-200K dataset construction pipeline.</strong>
+        <ul>
+          <li><em>Problem.</em> There is no public compositional video-editing corpus at the scale and resolution needed to train and evaluate compositional editors: existing datasets either give a single edit per sample or fail on temporal consistency / instruction faithfulness at 1080p and multi-second clips.</li>
+          <li><em>Mechanism.</em> CoinVE-200K contains 1080p video-editing pairs of up to <code>201</code> frames, with each sample carrying <code>2&ndash;5</code> atomic editing operations composed into a single instruction. Instructions target humans, objects, and backgrounds, and cover addition, removal, modification, and stylization. A dedicated generation-and-filtering pipeline enforces four axes at construction time: instruction faithfulness (the edited video actually reflects each atomic op), visual quality (no artifacts), temporal consistency (no flicker between edited and unedited regions), and compositional diversity (no over-representation of a small set of op combinations).</li>
+          <li><em>Why it works / why it beats prior.</em> Prior single-op datasets teach an editor to execute one intent at a time; a model trained on them at compositional test time must generalize compositionally with no supervision. Filtering compositional samples up-front on faithfulness, quality, consistency, and diversity gives the training signal the compositional structure directly, and the 1080p / <code>201</code>-frame scale removes the resolution and length gap between training data and real editing use.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; CoinVE-Bench evaluation surface.</strong>
+        <ul>
+          <li><em>Problem.</em> Compositional editing has no established benchmark that varies subject type, operation type, and instruction complexity together; scoring on single-op benchmarks masks the specific failure mode of compositional editors (correct on some atomic ops, wrong on others in the same sample, or global temporal breakage).</li>
+          <li><em>Mechanism.</em> CoinVE-Bench scores compositional-instruction video editing across three axes &mdash; subject (human / object / background), operation type (add / remove / modify / stylize), and instruction complexity (op count and dependence structure) &mdash; and reports the metrics the dataset filter itself uses: instruction following, compositional editing accuracy, visual quality, temporal consistency.</li>
+          <li><em>Why it works / why it beats prior.</em> Because the benchmark axes match the training-set filter axes, a per-axis score decomposes failure into "which subject, which op type, which complexity level" &mdash; the diagnostic granularity a compositional-editing paper actually needs.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; CoinVE-Edit and region-disentangled attention.</strong>
+        <ul>
+          <li><em>Problem.</em> A single global cross-attention between instruction text and video features cannot easily separate "put a hat on the left person" from "remove the car in the background" &mdash; both attend to the same latent frame, and their gradients interfere, so multi-region compositional edits leak into irrelevant content or into each other.</li>
+          <li><em>Mechanism.</em> CoinVE-Edit is <code>22B</code>, built on <code>Wan2.1-T2V-14B</code> as the video backbone and <code>Qwen3-VL-8B-Instruct</code> as the multimodal instruction encoder. Its region-disentangled attention splits the composite instruction into atomic-op sub-instructions and gives each one its own attention path over the corresponding region of the video features; irrelevant regions are protected from that path. The disentangled attentions are then fused into a single denoising step over the video latent.</li>
+          <li><em>Why it works / why it beats prior.</em> Disentangling attention by region avoids the interference that global cross-attention pays whenever two intents target different regions of the same video &mdash; each intent's gradient signal reaches only the region it edits, so preservation of irrelevant content and temporal coherence outside the edited regions follows almost by construction. The alternative (a compositional planner that runs edits sequentially) accumulates temporal-consistency error across passes; single-pass disentangled attention avoids that pileup.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>On CoinVE-Bench, CoinVE-Edit posts strong performance in instruction following, compositional editing accuracy, visual quality, and temporal consistency. Per-axis and per-baseline numbers are in the paper body; the abstract does not table them against a closed frontier video editor.</li>
+      <li>Dataset scale: <code>200K</code> pairs, 1080p, up to <code>201</code> frames per pair, <code>2&ndash;5</code> atomic ops per sample.</li>
+      <li>Availability: dataset on Hugging Face, code on GitHub, project page with samples.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
