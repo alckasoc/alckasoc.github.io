@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agentic Environments, 4D Humans &amp; Long-Context Serving Review &mdash; August 23, 2026 | Auto Lit Review</title>
+<meta name="description" content="Five Tier 2 frontier-lab papers from Google DeepMind, Ant Group and Tencent on programmable RL environments, VLM-guided VLA finetuning, 4D-consistent human video, group-identity image generation, and production block-sparse prefill." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">2026-08-23</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li><a href="#google-deepmind" class="toc-h1">Google DeepMind</a>
+          <ul>
+            <li><a href="#envharness" class="toc-h2">EnvHarness</a></li>
+            <li><a href="#eximo" class="toc-h2">EXIMO</a></li>
+          </ul>
+        </li>
+        <li><a href="#ant-group" class="toc-h1">Ant Group</a>
+          <ul>
+            <li><a href="#4danyone" class="toc-h2">4DAnyone</a></li>
+          </ul>
+        </li>
+        <li><a href="#tencent" class="toc-h1">Tencent</a>
+          <ul>
+            <li><a href="#witheveryone" class="toc-h2">WithEveryone</a></li>
+            <li><a href="#flashprefill-v2" class="toc-h2">FlashPrefill V2</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 23, 2026</div>
+    <h1 class="page-title">Agentic Environments, 4D Humans &amp; Long-Context Serving</h1>
+    <div class="page-meta">5 papers &middot; 3 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>No new Tier 1 flagship launches in the 36-hour window since the 2026-08-21 review; five Tier 2 frontier-lab papers appear on the Hugging Face Daily selection for 2026-08-21 (arXiv submission date 2026-08-20). Two are from <strong>Google DeepMind</strong> &mdash; <em>EnvHarness</em> (programmable component layer that reshapes any static verifier-backed environment, plus an <em>EnvRigger</em> synthesizer that diagnoses policy flaws from trajectories and writes harness components to target them) and <em>EXIMO</em> (three-stage <em>explore &rarr; imitate &rarr; optimize</em> finetuning for VLA policies, using a VLM planner to decompose long-horizon tasks and residual off-policy RL on top of a behaviour-cloned VLA). <strong>Ant Group</strong>'s <em>4DAnyone</em> identifies novel-view video diffusion for 4DGS as a <em>bounded-attention-context</em> problem and fixes both sides with <em>Reference Context Packing</em> (<code>O(1)</code> mixed-resolution reference cache) and <em>Target Context Routing</em> (denoise-schedule-aware target-view regrouping). <strong>Tencent</strong> contributes two: <em>WithEveryone</em> pushes identity-preserving image generation to <code>10</code> reference identities via addressed identity tokens plus a <em>Layout-Grounded ID Loss</em> that supervises on annotated face regions instead of embedding matching, and <em>FlashPrefill V2</em> productionizes block-sparse prefill attention with a mean-correction term, FP8/FA3/4-aligned kernels, and paged-KV / continuous-batching support in SGLang.</p>
+      <h3>Competitiveness</h3>
+      <p>All five entries sit strictly at the <em>component</em> level rather than repositioning the frontier: none contests <code>GPT-5.5</code>, <code>Claude Opus 5</code>, or <code>Gemini 3.7 Flash</code> on flagship benchmarks like SWE-bench Verified, LiveCodeBench, or HLE. Where they intersect known SOTA, they do so on scoped axes: <em>WithEveryone</em> beats <code>GPT-Image-2</code> on group-identity face similarity (<code>0.499</code> vs <code>0.462</code>) with an order-of-magnitude drop in copy-paste artifacts (<code>0.055</code> vs <code>0.169</code>) at <code>10</code>-identity scale; <em>FlashPrefill V2</em> claims up to <code>47.26&times;</code> and <code>27.19&times;</code> over FlashAttention-2 at <code>128K</code> context in FP8/BF16 on H20, and <code>30.49&times;</code> over an FA3/4-aligned dense baseline in FP8; <em>EnvHarness</em> reports up to <code>+9.0</code>pp on held-out instances with <code>9.8%</code> fewer execution steps versus both original environments and domain-specific environment-generation pipelines. Long-context serving throughput and 4DGS-quality novel-view synthesis remain the axes with real headroom, and both are represented in the day's contributions.</p>
+      <h3>New frontier releases</h3>
+      <p>No flagship model launches to report on 2026-08-22 or 2026-08-23. The most recent Tier 1 wave &mdash; <code>Gemini 3.7 Flash</code>, <code>Intern-S2-Preview</code>, and <code>DreamX-Phi-1</code> from the 2026-08-14 review, followed by <code>Qwen3.8 27B</code> and <code>GLM-5.3</code> from 2026-08-15 &mdash; still holds. Today's page is a research-only day.</p>
+    </section>
+
+    <h1 id="google-deepmind">Google DeepMind</h1>
+
+    <h2 id="envharness"><a href="https://arxiv.org/abs/2608.19880">EnvHarness: Awakening Static Worlds for Agent Learning</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-20</span>
+      <span>Agent RL, Environment Generation, Verifier-Preserving Wrappers</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Chengsong Huang, Zifeng Wang, Rujun Han et al. (Google DeepMind + collaborators). Positions the problem of RL agent training as one of <em>environment adaptation</em>, not policy-only optimization: hand-built environments are blind to the current policy's failure modes, and stay blind as the policy improves.</li>
+      <li>Two named contributions: <strong>EnvHarness</strong>, a programmable plug-in layer that wraps a static environment and reshapes its behaviour without touching underlying logic; and <strong>EnvRigger</strong>, a black-box synthesizer that produces harness components targeting flaws diagnosed from the current policy's execution trajectories, then validates them via fresh rollouts.</li>
+      <li>Reports up to <code>+9.0</code>pp on held-out instances against both original environments and domain-specific environment-generation pipelines, with <code>9.8%</code> fewer execution steps, across five benchmarks in four domains. Also delivers a superior optimization signal for downstream RL &mdash; enabling continuous, targeted co-evolution of policy and environment.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>EnvHarness &mdash; the mechanism.</strong>
+        <ul>
+          <li><em>Problem.</em> Prior environment-generation pipelines are domain-specific, need custom verifiers (often expensive or unreliable), and once written are themselves static &mdash; they don't co-evolve with the policy.</li>
+          <li><em>Mechanism.</em> A layer of plug-in components inserted at the standard environment interface (observation, action, reward, reset). Each component intercepts these calls to reshape the environment's <em>behaviour</em> (state exposure, action affordances, reward shaping, task setup) while the underlying verifier logic is left intact &mdash; every reshaped environment inherits the original correctness check, so the reward is still trustworthy.</li>
+          <li><em>Why.</em> Beats domain-specific environment generators on two axes at once: no per-domain pipeline to maintain, and reshaping stays valid because the verifier is preserved by construction. The alternative &mdash; regenerating whole environments from scratch every training iteration &mdash; is what makes prior methods brittle and expensive.</li>
+        </ul>
+      </li>
+      <li><strong>EnvRigger &mdash; the mechanism.</strong>
+        <ul>
+          <li><em>Problem.</em> Even with EnvHarness as a substrate, someone has to write the components. Doing this by hand doesn't scale, and doing it heuristically can't target the failure modes actually appearing in current rollouts.</li>
+          <li><em>Mechanism.</em> Treat the policy as a black box. Roll it out, observe execution trajectories, diagnose recurring flaws (stuck states, off-policy actions, reward hacking, spec ambiguities), then synthesize EnvHarness components that specifically stress those flaws &mdash; and validate the synthesized components by re-rolling out on the new wrapped environment before promoting them.</li>
+          <li><em>Why.</em> The synthesized components are grounded in observed failure modes rather than the environment designer's priors, and the validate-by-fresh-rollout gate blocks components that don't actually reshape behaviour or accidentally invalidate the verifier. This is what enables continuous policy&harr;environment co-evolution rather than a one-shot generation step.</li>
+        </ul>
+      </li>
+      <li>Standard-interface design means EnvHarness applies across diverse domains without domain-specific rewrites &mdash; the same wrapper machinery lands on all five evaluated benchmarks.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Five benchmarks across four domains. Headline numbers: up to <code>+9.0</code>pp accuracy on held-out instances vs. original environments <em>and</em> vs. domain-specific environment-generation baselines. Execution-step count on solved instances drops by <code>9.8%</code>.</li>
+      <li>Used as an optimization signal for RL fine-tuning, EnvHarness-shaped environments yield strictly better policies than either the static original or the domain-specific generated variants at matched compute &mdash; the paper frames this as evidence for targeted policy&harr;environment co-evolution.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Verifier-preservation is treated as a design invariant rather than an ablation knob &mdash; removing it collapses the trust-the-reward assumption and the shaped environment no longer generalizes to held-out instances.</li>
+      <li>EnvRigger's diagnose-then-synthesize loop is ablated against random component sampling; targeted synthesis is where the held-out gains concentrate.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning: this is the third-quarter-2026 continuation of the "environments as first-class training artifacts" thread that Microsoft AI's <em>Agent Lightning</em> (2026-08-21 review) and ByteDance Seed's <em>StartupBench</em> (2026-08-21 review) also inhabit &mdash; but EnvHarness is the first to make the environment itself programmable at the wrapper level under a preserved verifier, rather than reshaping only the training loop or the eval rubric.</li>
+    </ul>
+
+    <h2 id="eximo"><a href="https://arxiv.org/abs/2608.19891">EXIMO: VLM Guided Exploration of VLA Policies</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-20</span>
+      <span>VLA finetuning, VLM planner, residual off-policy RL</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Bhavya Sukhija, Oliver Groth, Mohit Shridhar, Tim Hertweck, Michael Bloesch, Markus Wulfmeier, Abbas Abdolmaleki, Martin Riedmiller (Google DeepMind). Directly targets the "finetune a billion-parameter VLA for a new manipulation task without recollecting teleoperation data" problem.</li>
+      <li>One named contribution: <strong>EXIMO</strong>, a three-stage pipeline &mdash; <em>Explore</em>, <em>Imitate</em>, <em>Optimize</em> &mdash; that couples a VLM planner to the VLA at data-collection time and layers residual off-policy RL on top of the imitation-trained student.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>EXIMO &mdash; the mechanism.</strong>
+        <ul>
+          <li><em>Problem.</em> Behaviour-cloning a large VLA on a new task needs hundreds of hours of teleoperation, which doesn't scale. Direct RL fine-tuning of a billion-parameter VLA is sample-inefficient on long-horizon tasks, and the VLA's size and architecture make on-policy RL doubly costly (large forward passes per rollout step, gradients through the whole VLA at every update).</li>
+          <li><em>Mechanism.</em> Three stages executed in order.
+            <ol>
+              <li><em>Explore.</em> Pair the VLA with a VLM planner. The VLM ingests the long-horizon instruction, decomposes it into shorter sub-instructions, and issues each sub-instruction to the VLA. The joint VLM+VLA system rolls out on the new task and produces an <em>orchestrated dataset</em> &mdash; trajectories that are shorter, more tractable, and directly aligned with the sub-task decomposition.</li>
+              <li><em>Imitate.</em> Finetune the VLA on the orchestrated data with standard behaviour cloning &mdash; giving a task-adapted starting policy without any human teleoperation collection.</li>
+              <li><em>Optimize.</em> Apply <em>residual off-policy RL</em> on top of the imitation-tuned VLA. Rather than training the full VLA on-policy, the residual head absorbs task-specific corrections and the buffer of orchestrated + on-task data is reused off-policy.</li>
+            </ol>
+          </li>
+          <li><em>Why.</em> The VLM shoulders long-horizon planning, so the VLA sees only short-horizon sub-tasks where behaviour cloning is data-efficient and where RL credit assignment is tractable. Residual off-policy RL avoids re-training the full VLA on-policy, which is the specific cost point that made prior VLA-RL work impractical. Beats prior VLA finetuning by ablating out each stage &mdash; each of the three is shown necessary.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Ablation over all three stages: removing any stage (Explore, Imitate, or Optimize) significantly hurts both sample efficiency and final task performance. The full three-stage EXIMO dominates on both axes.</li>
+      <li>Positioned against prior VLA finetuning approaches (behaviour cloning only, direct RL only, VLM-augmented BC without residual RL); reports significant improvements without publishing a headline single-number leaderboard in the abstract.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Same lab-lineage as prior DeepMind residual-RL and hierarchical-manipulation work (Riedmiller, Abdolmaleki, Wulfmeier); EXIMO reads as the VLA-scale continuation of that thread.</li>
+    </ul>
+
+    <h1 id="ant-group">Ant Group</h1>
+
+    <h2 id="4danyone"><a href="https://arxiv.org/abs/2608.20335">4DAnyone: Create Anyone in 4D from a Casual Monocular Video</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-20</span>
+      <span>4D Gaussian Splatting, Video Diffusion, Multi-View Consistency</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Yudong Jin, Tao Xie, Qihang Zhang, Zehong Shen, Zhen Xu, Yujun Shen, Hujun Bao, Xiaowei Zhou, Yinghao Xu (Ant Research + Zhejiang University collaborators). Reconstructs 4D humans from an uncalibrated monocular video by generating <em>reconstruction-grade</em> multiview-consistent videos and lifting them into 4D Gaussian Splatting (4DGS).</li>
+      <li>Two named contributions: <strong>Reference Context Packing (RCP)</strong> and <strong>Target Context Routing (TCR)</strong>, each addressing one side of a <em>bounded-attention-context</em> problem the authors identify in existing camera-controlled video diffusion models. Also ships the <strong>MVGameHuman</strong> dataset from an in-house game engine.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li>Framing: existing camera-controlled video diffusion synthesizes plausible novel-view videos, but the tens of target views 4DGS needs exceed the capacity of a single DiT forward pass. They must be split into groups, which exposes two coupled bottlenecks:
+        <ul>
+          <li><em>Reference-context bottleneck.</em> Conditioning on all previously generated views grows as <code>O(N)</code> tokens &mdash; cross-view appearance guidance weakens as the target set grows.</li>
+          <li><em>Target-context bottleneck.</em> Disjoint groups can't directly exchange information across groups, so global structural drift accumulates.</li>
+        </ul>
+      </li>
+      <li><strong>RCP &mdash; the mechanism.</strong>
+        <ul>
+          <li><em>Problem.</em> Growing reference context breaks cross-view appearance guidance at 4DGS-scale view counts.</li>
+          <li><em>Mechanism.</em> Compress the growing reference views into a <em>fixed-length</em>, mixed-resolution context cache. Recently added / most-informative references sit at higher resolution; older / redundant references are down-resolved and packed into the same slots. Reference-context complexity per denoising step becomes <code>O(1)</code> instead of <code>O(N)</code>.</li>
+          <li><em>Why.</em> Cross-view appearance guidance is preserved at a bounded compute budget; the model can synthesize the tens of target views 4DGS needs without the guidance signal decaying with <code>N</code>. Beats naive reference-truncation, which drops appearance detail rather than compressing it.</li>
+        </ul>
+      </li>
+      <li><strong>TCR &mdash; the mechanism.</strong>
+        <ul>
+          <li><em>Problem.</em> Disjoint target-view groups can't exchange information within a single DiT forward pass, so global structure drifts across the full 4DGS view set.</li>
+          <li><em>Mechanism.</em> Rotate target-view groupings across denoising steps as a function of the noise schedule. At <em>high-noise</em> steps (early denoising, where global structure is being resolved), the rotation shares context across groups so structure decisions are consistent. At <em>low-noise</em> steps (late denoising, where per-view details are sharpened), groupings stabilize so per-view details converge without cross-group interference.</li>
+          <li><em>Why.</em> Uses the denoising schedule itself as the routing signal &mdash; high-noise steps trade group-locality for global consistency, low-noise steps trade global consistency for detail sharpness. Fixes the drift that pure fixed-group denoising exhibits without paying for a monolithic all-views forward pass.</li>
+        </ul>
+      </li>
+      <li><strong>MVGameHuman dataset.</strong> Built in an in-house game engine to give paired multiview supervision at 4DGS scale. Combined at training time with light-stage data and in-the-wild video data for domain mix.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Evaluated on <em>DNA-Rendering</em> and <em>DyMVHumans</em>. Reports outperforming prior methods on both novel-view video quality and downstream 4DGS reconstruction, with robust in-the-wild generalization from casual monocular input.</li>
+      <li>Project page (with video results and source code): <a href="https://4danyone.github.io">4danyone.github.io</a>.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>RCP without TCR: reference guidance stays sharp but global structure drifts across groups. TCR without RCP: groups stay globally consistent but appearance guidance decays with <code>N</code>. Only the combination hits both axes.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="witheveryone"><a href="https://arxiv.org/abs/2608.20336">WithEveryone: Unified Planning and Identity Grounding for Group Image Generation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-20</span>
+      <span>Identity-preserving generation, Layout grounding, DiT training</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Hengyuan Xu, Qixun Wang, Yiji Cheng, Miles Yang, Zhao Zhong, Wei Cheng, Xingjun Ma, Yu-gang Jiang (Tencent Hunyuan + Fudan collaborators). Framework for generating group images with up to <code>10</code> reference identities.</li>
+      <li>Three named contributions: <em>addressed identity tokens</em>, <em>Layout-Grounded ID Loss</em>, and <em>ID Representation Forcing</em>. Ships identity-disjoint benchmark results against <code>GPT-Image-2</code>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Addressed identity tokens.</strong>
+        <ul>
+          <li><em>Problem.</em> Injecting many reference identities as a bag of embeddings loses the binding from a specific reference to a specific person and location in the target image.</li>
+          <li><em>Mechanism.</em> Each selected identity is injected into the DiT as an <em>addressed token</em>, then a structured identity&ndash;layout plan is predicted and rendered as a visual condition &mdash; effectively converting "which identity goes where" into a layout-grounded conditioning signal the diffusion model can attend to per token.</li>
+          <li><em>Why.</em> Explicit token addressing plus a rendered layout condition beats implicit binding through global cross-attention, which is what fails as identity count grows.</li>
+        </ul>
+      </li>
+      <li><strong>Layout-Grounded ID Loss.</strong>
+        <ul>
+          <li><em>Problem.</em> Standard identity losses match a predicted face embedding to the reference embedding &mdash; but during training the predicted image contains multiple noisy faces, so establishing the correspondence between predicted faces and intended references is itself unstable and error-prone.</li>
+          <li><em>Mechanism.</em> Use <em>annotated face regions</em> from the training data to supervise the intended identity directly at the intended pixel location. No embedding-based face-matching step at training time &mdash; the loss knows which face region is meant to be which identity because the layout supervises it.</li>
+          <li><em>Why.</em> Removes the failure mode where noisy face matching cross-wires two identities in the same image &mdash; the specific pathology behind copy-paste artifacts at high identity counts. Copy-paste artifact rate drops from <code>0.169</code> (<code>GPT-Image-2</code>) to <code>0.055</code>.</li>
+        </ul>
+      </li>
+      <li><strong>ID Representation Forcing.</strong>
+        <ul>
+          <li><em>Problem.</em> Even with layout grounding, the identity signal can degrade before image synthesis starts &mdash; the model can silently drop identities during planning.</li>
+          <li><em>Mechanism.</em> Train the model to predict a per-identity representation <em>before</em> image synthesis begins, forcing each identity to survive the planning stage as a first-class prediction target rather than a byproduct.</li>
+          <li><em>Why.</em> Directly attacks the "identity dropped in planning" mode; explains why the duplicate rate stays at <code>2.8%</code> at coverage <code>97.3%</code> of requested identities.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <table>
+      <thead>
+        <tr><th>Metric</th><th>GPT-Image-2</th><th>WithEveryone</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Face similarity (target-context)</td><td>0.462</td><td><strong>0.499</strong></td></tr>
+        <tr><td>Copy-paste artifact rate</td><td>0.169</td><td><strong>0.055</strong></td></tr>
+        <tr><td>Requested-identity coverage</td><td>&mdash;</td><td>97.3%</td></tr>
+        <tr><td>Duplicate rate</td><td>&mdash;</td><td>2.8%</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Identity-disjoint benchmark specifically constructed so face-copying from the reference cannot win &mdash; face similarity has to come from correct identity binding, not appearance leakage.</li>
+      <li>Scales to <code>10</code> reference identities in a single image.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Project page: <a href="http://doby-xu.github.io/WithEveryone/">doby-xu.github.io/WithEveryone</a>. Code repository announced at <code>github.com/Doby-Xu/WithEveryone</code>.</li>
+    </ul>
+
+    <h2 id="flashprefill-v2"><a href="https://arxiv.org/abs/2608.19758">FlashPrefill V2: Block-Sparse Prefill Attention for Long-Context LLM Serving</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-20</span>
+      <span>Long-context serving, Sparse attention, FA3/4-aligned kernels, SGLang</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Qihang Fan, Huaibo Huang, Zhiying Wu, Bingning Wang, Ran He (Tencent). Evolves the FlashPrefill prototype into a production-viable long-context serving kernel: block-sparse prefill attention with a mean-correction term, FA3/4-aligned FP8-capable kernels, and native paged-KV / continuous-batching support in SGLang.</li>
+      <li>Three named contributions: <em>mean correction term</em>, <em>FA3/4-aligned kernel redesign</em>, and <em>serving-stack integration</em>. Headline throughput: up to <code>47.26&times;</code> vs FA-2 at <code>128K</code> context (FP8), <code>27.19&times;</code> (BF16), and <code>30.49&times;</code> over an FA3/4-aligned dense baseline (FP8), on NVIDIA H20.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Mean correction term.</strong>
+        <ul>
+          <li><em>Problem.</em> FlashPrefill's original max-based dynamic thresholding for sparsity control leaves an approximation error that grows with sparsity &mdash; at extreme sparsity levels needed for real long-context serving the error becomes a performance-degradation cliff.</li>
+          <li><em>Mechanism.</em> Add a mean-based correction on top of max-based thresholding, effectively subtracting a moving-mean bias in the sparse-attention approximation so the residual error stays bounded even when the sparsity ratio is aggressive.</li>
+          <li><em>Why.</em> Lets the kernel stay usable at the sparsity ratios required for real workload throughput without dropping quality &mdash; the specific fragility that made FlashPrefill an algorithmic prototype rather than a serving component.</li>
+        </ul>
+      </li>
+      <li><strong>FA3/4-aligned kernel redesign.</strong>
+        <ul>
+          <li><em>Problem.</em> A prototype sparse-attention kernel that doesn't match FlashAttention-3/4's memory-access and pipelining conventions can't be dropped into a modern serving stack &mdash; and can't emit FP8 outputs at the quality LM quantization requires.</li>
+          <li><em>Mechanism.</em> Reimplement the sparse-attention operator with <em>PackGQA</em> memory access (grouped-query attention layout matching FA3/4), <em>warp specialization</em> (dedicated warps for load/compute/reduce), and <em>pingpong pipelining</em> (double-buffered producer&ndash;consumer between shared-memory tiles). Adds an FP8 code path aligned with FA3/4's numerics so integrated quantization is native.</li>
+          <li><em>Why.</em> Alignment means the sparse operator can substitute for the dense FA3/4 operator inside a serving stack without changing the surrounding memory layout. FP8 alignment is what makes the H20 throughput numbers land at practical quantization.</li>
+        </ul>
+      </li>
+      <li><strong>Serving-stack integration.</strong>
+        <ul>
+          <li><em>Problem.</em> Prefill attention that ignores paged KV cache or continuous batching can't be an attention backend for real inference frameworks &mdash; even a fast kernel is unusable if it forces the stack around it to serialize requests.</li>
+          <li><em>Mechanism.</em> Native paged-KV cache handling and continuous batching baked into the kernel, wired up as an SGLang attention backend so requests can share the KV budget and stream in and out per-token without pipeline stalls.</li>
+          <li><em>Why.</em> Turns a fast operator into a fast <em>backend</em>: the throughput numbers below are backend-level, not micro-benchmark, so they translate to actual served-token throughput.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <table>
+      <thead>
+        <tr><th>Setting (128K ctx, NVIDIA H20)</th><th>Speedup vs FlashAttention-2</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>FP8</td><td>up to 47.26&times;</td></tr>
+        <tr><td>BF16</td><td>up to 27.19&times;</td></tr>
+        <tr><td>FP8 vs FA3/4-aligned <em>dense</em> baseline</td><td>30.49&times;</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>H20 is called out as the widely deployed inference accelerator that grounds the numbers &mdash; the paper is explicit that this is the serving-relevant substrate, not a research-only GPU.</li>
+      <li>Mean correction is credited with keeping the quality degradation manageable at the extreme sparsity ratios the throughput numbers require &mdash; the two contributions are load-bearing together.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Continues the FlashPrefill lineage from the original algorithmic paper &mdash; positioning V2 as the production hand-off, not a re-derivation.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
