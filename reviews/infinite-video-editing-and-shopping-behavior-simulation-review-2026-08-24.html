@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Infinite Video Editing &amp; Shopping-Behavior Simulation Review &mdash; August 24, 2026 | Auto Lit Review</title>
+<meta name="description" content="Two Alibaba Tier 2 frontier-lab papers surface on the 36-hour Hugging Face Daily window ending 2026-08-24: InfinityEdit reframes video editing as an unbounded streaming problem and drops a three-attention Edit-Ignition adapter (HistCA + TempSA + EditCA) activated only in the chunk that carries an edit request; RecVerse targets faithful GUI-grounded shopping simulation with a memory-as-action hierarchical memory (working / episodic / preference) and trajectory-level RL over macro + micro + format rewards, beating STA by F1 +68%, HR +77%, HCO +41% and winning 92% of head-to-head human evaluations. No Tier 1 flagship launches in the window." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 24, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba</a>
+          <ul>
+            <li class="toc-h2"><a href="#infinityedit">InfinityEdit: Infinite Video Editing with a Lightweight Edit-Ignition Adapter</a></li>
+            <li class="toc-h2"><a href="#recverse">RecVerse: Towards Faithful Simulation of Human Shopping Behavior</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 24, 2026</div>
+    <h1 class="page-title">Infinite Video Editing &amp; Shopping-Behavior Simulation</h1>
+    <div class="page-meta">2 papers &middot; 1 lab &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window from 2026-08-23 to 2026-08-24 (steady-state, one day since the previous review) surfaces no Tier 1 flagship model launches and two Tier 2 frontier-lab papers on the Hugging Face Daily selection for 2026-08-24, both from <strong>Alibaba</strong>. <a href="https://arxiv.org/abs/2608.20910"><em>InfinityEdit</em></a> (Zhejiang University &amp; Alibaba Group) defines and attacks <em>infinite video editing</em>: given a preceding segment and an edit instruction that arrives mid-stream, produce the next segment as a faithful continuation, and stay stable as further edit instructions accumulate. The paper ships a lightweight <em>Edit-Ignition</em> adapter block with three attention modules &mdash; <em>HistCA</em>, <em>TempSA</em>, <em>EditCA</em> &mdash; inserted after every transformer layer of a frozen streaming backbone (<em>Helios</em>) and activated only in the chunk where an edit request arrives; subsequent chunks are handed back to the backbone with a reset anchor frame. <a href="https://arxiv.org/abs/2608.20707"><em>RecVerse</em></a> (Renmin University of China, UCAS, NUS, and Alibaba Group) targets faithful GUI-grounded simulation of multi-turn e-commerce shopping sessions with a screenshot-perceiving VLM agent, a cognitive-inspired hierarchical memory (<em>Working</em> / <em>Episodic</em> / <em>Preference</em>) with memory updates emitted as actions, and trajectory-level RL over macro action-type + micro intent + format rewards; the paper releases <em>USB</em> (User Simulation Benchmark) with <code>5,274</code> trajectories, <code>69,842</code> actions, <code>90,095</code> items across a <code>41 / 517 / 2,256</code>-node category tree, and <code>5,222</code> users.</p>
+      <h3>Competitiveness</h3>
+      <p>Neither paper ships a flagship generalist model &mdash; the day's substantive results are a video-editing adapter and an agent simulation framework. <em>InfinityEdit</em>'s scoreboard is against instruction-based video editors under VBench-style automatic metrics and VLM-as-judge scoring, plus a stability curve across accumulated editing rounds; the paper positions the method as the first that treats video editing as an unbounded continuation rather than a fixed-clip rewrite, so the meaningful comparison is against fixed-clip editors (e.g. <em>VAP</em>, CogVideoX-family editors) that cannot generate beyond their input window &mdash; a capability gap rather than a delta on a shared benchmark. Against the current SOTA text-to-video / editing stack (<code>Sora 3</code>, <code>Wan2.5</code>, <code>Veo 4</code>, <code>Kling 3</code>), the paper's contribution is orthogonal: it wraps a streaming generator without touching its weights, so its effective ceiling tracks whatever streaming backbone it is attached to. <em>RecVerse</em>'s scoreboard is over the released <em>USB</em> benchmark, on which it beats the strongest prior GUI-based simulator (<em>STA</em>) by <code>+68%</code> F1, <code>+77%</code> HR (hit rate), and <code>+41%</code> HCO (hierarchical category overlap), wins head-to-head human evaluation in <code>92%</code> of cases, and lands its behavior distribution in the paper's "high-fidelity" band while baselines cluster in over-active or over-passive zones. The results do not include a comparison to a closed frontier general-purpose GUI agent (e.g. <code>Claude Opus 5</code> as computer-use, <code>GPT-5.5</code>-Operator, <code>Qwen-UI-Agent</code>) &mdash; the target is user-simulation fidelity, not agent capability, so those numbers would not be commensurate.</p>
+      <h3>New frontier releases</h3>
+      <p>No new Tier 1 flagship model launches. Both Tier 2 papers ship open artifacts: <em>InfinityEdit</em> at <a href="https://github.com/YunzeTong/InfinityEdit"><code>YunzeTong/InfinityEdit</code></a> with a project page at <a href="https://yunzetong.github.io/InfinityEdit"><code>yunzetong.github.io/InfinityEdit</code></a>, and <em>RecVerse</em>'s <em>USB</em> benchmark with the framework (release channel referenced in the paper). No Tier 3 blog posts or engineering notes from frontier labs surfaced in the window.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="infinityedit"><a href="https://arxiv.org/abs/2608.20910">InfinityEdit: Infinite Video Editing with a Lightweight Edit-Ignition Adapter</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-21</span>
+      <span>Video editing &middot; Streaming diffusion &middot; Adapter &middot; Flow matching</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Yunze Tong, Mushui Liu, Canyu Zhao, Shiyi Zhang, Didi Zhu, Peng Zhang, Wanggui He, Jinlong Liu, Ying Chen, Hao Jiang, Pipei Huang and Bo Zheng (Zhejiang University and Alibaba Group; Alibaba on the corresponding-author side) release <strong>InfinityEdit</strong>, a lightweight adapter that equips a frozen streaming video generator with unbounded instruction-based editing ability. arXiv:2608.20910 [cs.CV], submitted 2026-08-21, 18 pages, HF Daily 2026-08-24 (#2 paper of the day). Code at <a href="https://github.com/YunzeTong/InfinityEdit"><code>YunzeTong/InfinityEdit</code></a>, project page at <a href="https://yunzetong.github.io/InfinityEdit"><code>yunzetong.github.io/InfinityEdit</code></a>.</li>
+      <li>The framing: existing instruction-based video editors are built for fixed temporal windows and align the edited video to a source clip frame-by-frame, so they are structurally unable to handle open-ended streams &mdash; e.g. restyling a live game stream or applying a camera move to an ongoing shot &mdash; where edits must extend to future frames as they arrive. The paper defines this new setting as <em>infinite video editing</em>: given a preceding segment and an edit request, generate the next segment that continues the stream while applying the edit; repeat for every incoming edit request without bound. Two challenges frame the design: the edited segment must be a <em>faithful continuation</em> rather than a frame-wise rewrite of a fixed source, and generation quality must remain stable as edits accumulate, since each generated segment becomes the history for the next.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; the <em>Edit-Ignition Adapter</em> (HistCA + TempSA + EditCA).</strong>
+        <ul>
+          <li><em>Problem.</em> Reusing a streaming video generator by just swapping the scene prompt fails: streaming generators are trained to continue the current video from its history, not to apply a specified relational edit; their history-anchoring mechanisms actively push against the edit ("keep the appearance consistent" and "restyle this scene" contradict each other). Full fine-tuning of the backbone would be costly and would risk degrading the generation prior, and prompt-only conditioning has no explicit path into the backbone's intermediate features where temporal cues live.</li>
+          <li><em>Mechanism.</em> InfinityEdit freezes all base weights of the streaming backbone (<em>Helios</em>, a diffusion-transformer streaming generator that denoises one chunk of <code>L</code> latent frames at a time, conditioned on a multi-scale history window with a clean anchor frame <code>x&#8320;</code>) and inserts one small adapter block after every transformer layer. The block reads the per-layer hidden states <code>H = [H<sub>hist</sub>; H<sub>cur</sub>]</code>, leaves <code>H<sub>hist</sub></code> unchanged, and refines <code>H<sub>cur</sub></code> in three stages, each an AdaLN-modulated residual: (1) <em>History Cross-Attention</em> (<em>HistCA</em>) &mdash; the leading <code>L<sub>a</sub></code> current-chunk frames attend into <code>H<sub>hist</sub></code>, anchoring the edited continuation to the pre-edit appearance without letting history dominate the whole chunk; (2) <em>Temporal Causal Self-Attention</em> (<em>TempSA</em>) &mdash; a causal mask on <code>H<sub>cur</sub></code> allows temporal cues to flow only from earlier frames to later ones inside the chunk, so the edit propagates forward rather than reaching back; (3) <em>Edit Cross-Attention</em> (<em>EditCA</em>) &mdash; the edit instruction tokens <code>c<sub>edit</sub></code> attend into <code>H<sub>cur</sub></code>, injecting the edit request directly into intermediate features instead of relying on the top-level scene prompt. Each residual is scaled by AdaLN modulation <code>m<sub>&sigma;</sub>(&middot;) = (1 + s<sub>&sigma;</sub>) &odot; (&middot;) + b<sub>&sigma;</sub></code> conditioned on the diffusion noise level.</li>
+          <li><em>Why it works / why it beats prior.</em> Full fine-tuning of a streaming backbone for edits both erodes the generation prior and disturbs the history-anchoring machinery that makes streaming stable. Prompt-only conditioning leaves the edit hoping to reach intermediate features through the prompt-embedding pathway. The three-stage adapter separates the three jobs the edit needs done: <em>HistCA</em> injects the source appearance into the chunk (faithful continuation), <em>TempSA</em> enforces the direction of propagation (edit spreads forward, not backward), and <em>EditCA</em> injects the instruction where it can actually modulate features. Because the block adds only residuals gated by AdaLN, the frozen backbone's outputs remain reachable when the modulation is zero &mdash; this is what makes it safe to switch the adapter on and off between chunks in the inference pipeline.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; data collection pipeline for infinite video editing.</strong>
+        <ul>
+          <li><em>Problem.</em> The training signal the adapter needs is a triple of (source clip that acts as history, edit instruction, target continuation that both continues the source and applies the edit). No existing dataset provides this shape, and manually authoring is not scalable.</li>
+          <li><em>Mechanism.</em> The paper builds the corpus in three steps. Source videos <code>V<sub>pcd</sub></code> are sampled from <em>UltraVideo</em> and resized to a fixed resolution and frame count. A pool of basic edit types is drawn from VAP's representative cases and used to construct concrete edit instructions <code>c<sub>edit</sub></code>. Target videos <code>V<sub>tgt</sub></code> are synthesized with the image-to-video model <code>Wan2.2-I2V-A14B</code> conditioned on an edited first frame plus <code>c<sub>edit</sub></code>. A post-processing pass filters the triples so that (a) the edit is actually applied in the target, and (b) unaffected entities remain consistent with the source.</li>
+          <li><em>Why it works / why it beats prior.</em> Because the targets are model-generated from an edited anchor frame, the pipeline scales to arbitrary edit types the underlying I2V model supports; because unrelated content is preserved by seeding on the source's frame, the resulting triples train the adapter to <em>continue</em> the source (not rewrite it) &mdash; matching the deployment condition where the source is the streaming history and the target is what comes next.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; training recipe: flow-matching objective, history corruption, mixture-Gaussian noise sampling, two-phase curriculum.</strong>
+        <ul>
+          <li><em>Problem.</em> Naive training of a chunk-level editor produces exposure bias &mdash; at training time the history is clean ground-truth frames, at inference time the history is the previous adapter output, which contains its own artifacts. The distribution mismatch compounds over rounds and the stream degrades. On top of that, a uniform noise-level schedule wastes capacity on regimes that do not matter for edit quality.</li>
+          <li><em>Mechanism.</em> (i) Flow matching supervises the adapter to predict the chunk's flow field at noise level <code>&sigma;</code>; (ii) <em>History Corruption for Exposure-Bias Mitigation</em> perturbs the history <code>H<sub>hist</sub></code> during training with a controlled noise schedule that mimics the artifact distribution of adapter outputs, so training-time and inference-time history match; (iii) <em>Mixture-Gaussian Sampling of Noise Levels</em> replaces uniform noise-level sampling with a mixture whose modes concentrate around the noise levels where edit fidelity is most sensitive; (iv) a <em>Two-Phase Curriculum</em> trains first for uniform coverage across noise levels (the adapter learns to handle every regime) and then for detail refinement (the adapter is specialized on low-noise regimes that carry fine-grained appearance).</li>
+          <li><em>Why it works / why it beats prior.</em> Chunk-level video editors trained purely on clean history look fine for one edit and drift over many because their inference-time inputs are out-of-distribution. Corrupting the training history closes the loop. The mixture noise sampler and two-phase curriculum together push the adapter's capacity toward the noise levels that actually decide whether an edit is faithful, which is where uniform sampling under-invests.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 4 &mdash; infinite inference pipeline (First-Chunk Ignition, low-noise fine-detail sampling, history-window sliding with anchor reset).</strong>
+        <ul>
+          <li><em>Problem.</em> Even with a good per-chunk edit block, running the adapter continuously across all future chunks would (a) accumulate edit-adapter artifacts turn over turn, (b) shift the anchor frame far from the original stream so long-range appearance drifts, and (c) burn the backbone's own infinite-generation ability. What is needed is a scheme that <em>applies the edit exactly where it arrives</em> and lets the backbone carry the stream forward.</li>
+          <li><em>Mechanism.</em> The inference pipeline has three components. <em>First-Chunk Ignition and Backbone Continuation</em>: the adapter is switched on only for the chunk in which the edit request arrives (the "ignition" chunk); subsequent chunks are generated by the original frozen backbone with the ignition chunk's output taking the role of the new anchor frame &mdash; a reset that hands the stream back to the backbone in-distribution. <em>Low-Noise Sampling for Fine-Detail Completion</em>: at low noise levels the sampler concentrates additional steps on detail refinement, using the noise-level-sampler mode the mixture-Gaussian training put weight on. <em>History-Window Sliding and Anchor Resetting for Infinite Editing</em>: as the stream progresses, the multi-scale history window slides forward and the anchor frame is periodically reset to the most recent ignition output, so long-range appearance is re-grounded and the stream can carry unboundedly many edits without state accumulation.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior editors either edit the whole clip in place (no continuation) or apply the edit at every chunk (drift + backbone override). The ignition-then-backbone split gives the edit exactly one chance to reshape the stream, then defers to the backbone's stability mechanism &mdash; which is exactly what preserves both <em>faithful continuation</em> and <em>infinite-round stability</em>, the paper's two stated challenges.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Experimental setting: the base backbone is <em>Helios</em>; the evaluation covers (a) VBench-style automatic metrics, (b) VLM-as-judge evaluation, (c) stability across editing rounds (an unbounded-editing curve, distinct from single-edit quality), and (d) qualitative and long-video editing case studies. Baselines are instruction-based video editors that operate under the fixed-window in-place assumption.</li>
+      <li>Headline claims from the abstract and paper structure: <em>InfinityEdit</em> faithfully continues the stream under each edit and stays stable over unbounded edit sequences &mdash; the paper's central contribution is a capability (infinite editing) that prior fixed-window editors cannot produce at all, on top of which quantitative wins on the shared VBench-style metrics are reported.</li>
+      <li>Section 6.4 covers a long-video editing setting, targeted at exercising the sliding history window and repeated anchor reset from the inference pipeline.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The paper's ablation matrix is organised around the four named contributions above. The adapter's three attention paths (<em>HistCA</em>, <em>TempSA</em>, <em>EditCA</em>) are individually removed to check that each carries the load the mechanism section attributes to it. The training-recipe components (history corruption, mixture-Gaussian noise sampling, two-phase curriculum) are ablated against a uniform-noise, clean-history baseline. The inference-pipeline components (first-chunk ignition versus always-on adapter, anchor reset versus static anchor) are compared to isolate the source of the stability gain across rounds. Specific per-ablation numbers are in the paper body; the abstract commits only to the aggregate outcomes.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Code: <a href="https://github.com/YunzeTong/InfinityEdit"><code>YunzeTong/InfinityEdit</code></a>. Project page: <a href="https://yunzetong.github.io/InfinityEdit"><code>yunzetong.github.io/InfinityEdit</code></a>. The image-to-video model used for target synthesis is <code>Wan2.2-I2V-A14B</code>; the streaming backbone the adapter is trained on top of is <em>Helios</em>.</li>
+    </ul>
+
+    <h2 id="recverse"><a href="https://arxiv.org/abs/2608.20707">RecVerse: Towards Faithful Simulation of Human Shopping Behavior</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-21</span>
+      <span>Agent simulation &middot; GUI agents &middot; Hierarchical memory &middot; Trajectory-level RL</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Jiakai Tang, Yan Mi, Jing Yu, Yang Zhang, See-Kiong Ng, Qi Cao, Fei Sun, Xu Chen, Wen Chen, Jian Wu, Han Zhu and Bo Zheng (Renmin University of China, UCAS, National University of Singapore, and Alibaba Group; Bo Zheng and Han Zhu on the Alibaba side) release <strong>RecVerse</strong>, a GUI-grounded shopping-simulation agent, together with <strong>USB</strong> (User Simulation Benchmark), an interactive e-commerce GUI trajectory dataset for multi-turn user simulation. arXiv:2608.20707 [cs.CL], submitted 2026-08-21, HF Daily 2026-08-24.</li>
+      <li>The framing: faithful user simulators underpin offline evaluation, counterfactual analysis, and RL-based recommender training without burning online A/B traffic, but current LLM/VLM shopping simulators fail on two axes. <em>Memory Challenge</em>: a real shopping session spans dozens of pages, and existing agents either discard long-range observation histories (losing the evolving user state) or concatenate them (overwhelming the context window and even degrading simulation quality). <em>Optimization Challenge</em>: current user simulators are supervised with imitation or step-level rewards on logged actions, and the resulting sessions display unrealistic patterns &mdash; over-exploration or excessive passivity &mdash; that per-step supervision cannot detect or correct because the failure is a distributional property of the whole trajectory.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; cognitive-inspired hierarchical memory with memory-as-action.</strong>
+        <ul>
+          <li><em>Problem.</em> A shopping session runs across dozens of pages of screenshot observations. Fitting the raw stream into the context window either forces a truncation (which erases the user's evolving state) or a full concatenation (which drives the context past the point where the simulator degrades). Fixed summarisation schedules do not know which observations matter for the current decision, so useful evidence gets summarised away.</li>
+          <li><em>Mechanism.</em> RecVerse splits the agent's memory into three cognitively-motivated tiers, each with its own retention rule. <em>Working Memory</em> is a FIFO buffer of the most recent raw screenshots plus the current session mindset, giving the model direct short-term visual context. <em>Episodic Memory</em> is a session-level textual trace of in-session events (page transitions, item interactions, search reformulations), retaining structured what-happened information after the raw pixels have rolled out of working memory. <em>Preference Memory</em> is a distilled, long-horizon description of the user's intent (category interests, price sensitivity, purchase readiness) that survives across the whole simulation. Crucially, memory updates are treated as first-class <em>actions</em> emitted by the agent alongside its GUI actions &mdash; the agent chooses when to write to episodic memory, when to update preference memory, and what to include, and those choices are trained by RL rather than hand-coded.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior GUI simulators either use flat memory (all past observations concatenated, hitting the context ceiling) or a fixed summariser schedule (summariser triggered every <code>N</code> steps regardless of relevance). The three-tier decomposition matches the retention structure of the underlying task: recent visual detail is needed for the next click, session-level events are needed to reason about drift, and long-term preferences are needed to keep the whole simulation intent-consistent. Because memory writes are RL-scored actions, the agent learns to store the observations that turned out to matter for the trajectory-level reward &mdash; there is no fixed compression policy to over- or under-fit against.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; trajectory-level RL with macro + micro + format rewards.</strong>
+        <ul>
+          <li><em>Problem.</em> Per-step imitation rewards reproduce logged noise: they push the simulator to match each click, so an over-active real user in the training log begets an over-active simulator, and the model has no way to represent the distributional constraint "real users click roughly this often." Similarly, per-step semantic rewards cannot see whether the whole session was intent-consistent &mdash; a sequence of individually-plausible clicks can add up to a session that no real user would run.</li>
+          <li><em>Mechanism.</em> RecVerse is optimised with trajectory-level RL that scores entire sessions on three axes. A <em>macro</em> reward aligns the agent's action-type distribution over the trajectory (fraction of clicks vs searches vs scrolls vs add-to-cart) to the real user distribution, so over-exploration and over-passivity get penalised at the trajectory level rather than one step at a time. A <em>micro</em> reward uses a three-tier category tree (<code>41</code> top-level, <code>517</code> mid-level, <code>2,256</code> leaf categories in USB) to score whether the item categories the agent interacts with across the session are semantically consistent with the target user's intent &mdash; dense signal because the tree gives partial credit for right-branch-wrong-leaf misses. A <em>format</em> reward keeps the agent's structured outputs valid so RL does not implicitly optimise for malformed but reward-friendly responses.</li>
+          <li><em>Why it works / why it beats prior.</em> Trajectory-level scoring is what lets the agent be graded on distributional properties (action-type mix, intent consistency) rather than on per-step matches. The category-tree structure of the micro reward turns intent alignment into a dense signal instead of a boolean one, which is what makes trajectory-level RL trainable at scale without a critic that saturates.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; USB (User Simulation Benchmark).</strong>
+        <ul>
+          <li><em>Problem.</em> Prior GUI/agent benchmarks (WebArena-family, Mind2Web-family) either target agent capability or short-horizon web navigation, not multi-turn shopping-session fidelity, and lack the per-user intent annotations needed for a distributional evaluation of a simulator. Without such a benchmark, there is no ground on which to compare user simulators against real users at the trajectory level.</li>
+          <li><em>Mechanism.</em> USB is an interactive e-commerce GUI trajectory dataset for multi-turn user simulation with <code>5,274</code> trajectories, <code>69,842</code> actions, <code>90,095</code> items, a <code>41 / 517 / 2,256</code>-node category tree, and <code>5,222</code> users. It is designed to expose the two failure modes named in the paper (memory blow-up over long sessions, distributional drift under step-level rewards) and to score simulators via macro action-type alignment, micro intent alignment against the category tree, and a hierarchical category-overlap (HCO) metric that credits partial category match.</li>
+          <li><em>Why it works / why it beats prior.</em> The scale plus the category-tree structure is what makes the benchmark usable as an RL signal source, not only as an eval &mdash; the same tree that grades a simulator drives its micro reward. Positioning USB as the first interactive GUI benchmark supporting multi-turn agentic RL means the benchmark and the training substrate are the same artifact, which the paper argues is why the trajectory-level RL result is even reachable.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Headline against the strongest prior GUI baseline (<em>STA</em>): F1 improves by <code>+68%</code>, hit rate (HR) by <code>+77%</code>, hierarchical category overlap (HCO) by <code>+41%</code>. In head-to-head human evaluation, RecVerse beats STA in <code>92%</code> of cases.</li>
+      <li>Behavioural-fidelity zoning: the paper places every evaluated simulator in a behaviour-distribution plane defined by activity level. Baselines cluster in either the <em>over-active</em> zone (simulated sessions with implausibly many clicks / searches) or the <em>over-passive</em> zone (near-zero interaction). Only RecVerse falls inside the paper's <em>high-fidelity</em> band, which is defined by matching the action-type distribution of real users within a tolerance.</li>
+      <li>Ablation observations reported in the paper: removing memory-as-action (fixed summariser instead) recovers baselines' memory blow-up; removing the macro reward pushes RecVerse back into the over-active or over-passive zones depending on the training-log skew; removing the micro reward collapses intent consistency. Specific numbers per ablation are in the paper body.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning: the paper argues that user simulators should be graded distributionally, not per-click, and that memory should be optimised as a control problem the agent solves &mdash; not as a fixed pipeline component. The USB release is offered as the substrate for both.</li>
+      <li>Deployment framing: the intended downstream use is offline evaluation of recommendation policies and RL training of recommenders on simulated shopping traffic, without burning online A/B budget on unstable policies.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
