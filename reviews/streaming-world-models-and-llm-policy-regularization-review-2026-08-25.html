@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Streaming World Models &amp; LLM Policy Regularization Review &mdash; August 25, 2026 | Auto Lit Review</title>
+<meta name="description" content="Two Alibaba Tier 2 frontier-lab papers on the 36-hour Hugging Face Daily window ending 2026-08-25. ReWorld resolves the control/memory tension in interactive world models via mixed per-head attention windows plus random head routing, a bounded pose-indexed landmark bank, and chunk-drop training on Wan2.2-TI2V-5B. ERPO moves RL post-training regularization to the input side with a Query-KL term whose gradient flows only through query likelihood, preserving response-side exploration; drops into GRPO/PPO/REINFORCE without extra forward passes." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 25, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba</a>
+          <ul>
+            <li class="toc-h2"><a href="#reworld">ReWorld: An Interactive World Model with Long-Horizon Memory</a></li>
+            <li class="toc-h2"><a href="#erpo">Beyond the Stability&ndash;Exploration Dilemma: Environmental Regularization for LLM Policy Optimization</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 25, 2026</div>
+    <h1 class="page-title">Streaming World Models &amp; LLM Policy Regularization</h1>
+    <div class="page-meta">2 papers &middot; 1 lab &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window from 2026-08-24 to 2026-08-25 (steady-state, one day since the previous review) surfaces no Tier 1 flagship model launches and two Tier 2 frontier-lab papers on the Hugging Face Daily selection for 2026-08-25, both from <strong>Alibaba</strong>, both submitted on arXiv 2026-08-24. <a href="https://arxiv.org/abs/2608.23565"><em>ReWorld</em></a> (TongyiLab and HKUST(GZ); project done during an internship at Alibaba) attacks the structural tension in interactive world models &mdash; control wants a short attention horizon, memory wants an unbounded one &mdash; by <em>splitting</em> the two during training and <em>bounding</em> both at inference: mixed per-head attention windows on the <code>Wan2.2-TI2V-5B</code> backbone (<code>18</code> local heads over <code>w=12</code> latent frames, <code>6</code> global heads over the full causal history) cycle through a fixed pool of <code>12</code> random six-head partitions every optimiser step (<em>random head routing</em>), aged chunks consolidate into a bounded pose-indexed <em>landmark bank</em> (<code>|M|&le;30</code>) held under a fixed <code>B=12</code> KV budget, and <em>chunk-drop training</em> masks a random half of past chunks at every step so the sparse deployment cache is in-distribution. Four-step DMD LoRA distillation (rank <code>128</code>) delivers real-time <code>704&times;1280</code> streaming with best-in-class <code>11.95&deg;</code> rotation error against six recent world models. <a href="https://arxiv.org/abs/2608.23311"><em>ERPO</em></a> (EMNLP 2026 main; code at <a href="https://github.com/alibaba/ERPO"><code>alibaba/ERPO</code></a>) argues the current Policy-KL-vs-drop-Policy-KL bind is the wrong axis and moves regularization to the <em>input</em> side: a <em>Query-KL</em> (QKL) term bounds the drift of the policy-induced query distribution from its pre-RL reference, and a <em>dataset-static reference-derived per-query weight</em> biases each per-query update toward queries typical under the reference &mdash; the QKL gradient flows strictly through query likelihood, so the response-side exploration budget is preserved. ERPO plugs into <code>GRPO</code>/<code>PPO</code>/<code>REINFORCE</code> without additional forward passes and beats standard Policy-KL on six mathematical reasoning benchmarks under high-temperature decoding and long-horizon training.</p>
+      <h3>Competitiveness</h3>
+      <p>Neither paper ships a flagship generalist model; the day's substantive results are an interactive world model and an RL post-training regularizer. <em>ReWorld</em>'s scoreboard is under a three-axis protocol covering action following, long-horizon recall, and video quality, against six recent interactive world models. It reports the best control fidelity (<code>11.95&deg;</code> rotation error and the best camera-motion consistency) and the best generation quality, and on minute-long out-and-back rollouts (<code>64</code>s, <code>384</code> latents) its fixed <code>12</code>-chunk cache regenerates the starting view where a sliding window has long evicted the evidence and full-KV attention runs out of memory. The comparison peer set is the recent open interactive-world-model wave (HY-World 1.5, LongLive-2.0-family, pose-conditioned autoregressive video generators); against the closed streaming stack (<code>Genie 3</code>-class, <code>Sora 3</code> video-continuation) the paper's contribution is orthogonal &mdash; it wraps <code>Wan2.2-TI2V-5B</code> without touching backbone weights beyond a LoRA, so its ceiling tracks whatever streaming backbone it is attached to. <em>ERPO</em>'s scoreboard is over six mathematical reasoning benchmarks with high-temperature-decoding stability curves and long-horizon-training runs. As a replacement for the Policy-KL term, its natural peer is the standard <code>GRPO</code>/<code>PPO</code> stack (with or without KL) that has dominated 2026-vintage RL post-training pipelines (Qwen3.5/3.8 family, GLM-5.x, Intern-S2-Preview); the paper positions the win as fewer stability blowups plus better accuracy at the same compute, not as topping a leaderboard number in absolute terms.</p>
+      <h3>New frontier releases</h3>
+      <p>No new Tier 1 flagship model launches. Both Tier 2 papers ship open artifacts: <em>ReWorld</em> at <a href="https://github.com/zhifeichen097/ReWorld"><code>zhifeichen097/ReWorld</code></a> with a project page at <a href="https://zhifeichen097.github.io/ReWorld/"><code>zhifeichen097.github.io/ReWorld</code></a>, and <em>ERPO</em> at <a href="https://github.com/alibaba/ERPO"><code>alibaba/ERPO</code></a>. No Tier 3 blog posts or engineering notes from frontier labs surfaced in the window.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="reworld"><a href="https://arxiv.org/abs/2608.23565">ReWorld: An Interactive World Model with Long-Horizon Memory</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-24</span>
+      <span>World models &middot; Streaming video &middot; Long-horizon memory &middot; Attention routing &middot; LoRA distillation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Zhifei Chen, Luozhou Wang, Guibao Shen, Dongyu Yan, Shuai Yang, Tianshuo Xu, Yihua Du, Wei Wang, Tianyi Gui, Lianghua Huang and Yingcong Chen (HKUST(GZ) and ATH, Alibaba; project done during an internship at Alibaba) release <strong>ReWorld</strong>, an action-controllable streaming world model built on the <code>Wan2.2-TI2V-5B</code> video diffusion backbone. arXiv:2608.23565v1 [cs.AI], submitted 2026-08-24, HF Daily 2026-08-25. Code at <a href="https://github.com/zhifeichen097/ReWorld"><code>zhifeichen097/ReWorld</code></a>, project page at <a href="https://zhifeichen097.github.io/ReWorld/"><code>zhifeichen097.github.io/ReWorld</code></a>.</li>
+      <li>The framing: an interactive world model must simultaneously follow the user's actions, remember the places it has already shown, and keep streaming in real time &mdash; and the three requirements pull against each other. Control wants a short attention window (the current scene plus the current command sits inside a short recent context); memory wants an unbounded one (retrieval can only be learned if distant content is visible in the attention window). When the abilities are trained together on shared heads, adding direct action injection lifts every control metric but drops revisit fidelity. At deployment there is a second bind: an unbounded KV cache exhausts device memory before the horizons at which spatial memory is actually tested, so the cache must be bounded &mdash; and any bounded cache is a sparse, non-contiguous history that standard teacher forcing has never trained the backbone to read.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; MRoPE (Memory-RoPE): pose-indexed attention as implicit spatial memory.</strong>
+        <ul>
+          <li><em>Problem.</em> Standard RoPE indexes attention by time and space, so a location revisited after a long detour is, positionally, just a distant timestamp &mdash; retrieval has to be inferred from content alone, which is exactly the regime where content signals are weakest.</li>
+          <li><em>Mechanism.</em> Each latent frame <code>f</code> carries a relative camera-to-world pose <code>P<sub>f</sub> &isin; SE(3)</code> (anchored to the first frame), collapsed to a 12-D descriptor <code>c<sub>f</sub> = [vec(R<sub>f</sub>); t<sub>f</sub>]</code>. A zero-initialised MLP maps this descriptor to a phase offset <code>&delta;<sub>f</sub></code> that rides on top of RoPE for both queries and keys within the same attention pass: <code>&#x71;&#x303; = RoPE(q)&middot;e<sup>i&delta;<sub>f(q)</sub></sup></code>, <code>&#x6B;&#x303; = RoPE(k)&middot;e<sup>i&delta;<sub>f(k)</sub></sup></code>, so <code>&lang;&#x71;&#x303;,&#x6B;&#x303;&rang; &prop; e<sup>i(&delta;<sub>f(q)</sub>&minus;&delta;<sub>f(k)</sub>)</sup></code> and attention depends on pose <em>difference</em> rather than temporal distance. Zero-initialised <code>SE(3)</code> residuals on values and outputs (<code>v&#x303; = v + W<sub>v</sub>(P<sub>f</sub><sup>&minus;1</sup>&#x2218;v)</code>, <code>out = W<sub>o</sub>y + W<sub>p</sub>(P<sub>f</sub>&#x2218;y)</code>) complete the conditioning.</li>
+          <li><em>Why it works / why it beats prior.</em> Similar viewpoints are pulled together no matter how far apart in time, so the cache acts as an implicit spatial memory addressable by pose proximity. Unlike two-pass designs (HY-World 1.5, E-PRoPE) that add a separate camera-aware attention pass and either double attention FLOPs or add a reduced-token pass, MRoPE uses pose as a <em>retrieval index</em> in the existing pass: cost is one small MLP plus two linears, and the attention kernel, mask layout, and per-head windows stay untouched &mdash; which is what lets the mixed-window / random-routing recipe below plug in without kernel changes. MRoPE alone gives strong revisit memory but imprecise control, which is the gap the next mechanism fills.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; direct action injection via Pl&uuml;cker ray maps.</strong>
+        <ul>
+          <li><em>Problem.</em> Pose-indexed retrieval addresses cached content by pose difference but does not <em>command</em> the next chunk's camera; leaving control to inferred pose is imprecise, especially for out-of-distribution moves.</li>
+          <li><em>Mechanism.</em> The commanded pose of each latent frame is expanded into a Pl&uuml;cker ray map: every spatial position receives the 6-D coordinates <code>[d, o&times;d]</code> of its viewing ray under that pose (direction <code>d</code>, camera centre <code>o</code>, expressed in the same first-frame basis as the MRoPE poses). An MLP projects the map to model width and adds token-wise to the patch embeddings at the transformer input. The two channels now split roles cleanly: the ray map tells each token of the <em>current</em> chunk where its camera should look, and MRoPE poses tell attention where every <em>cached</em> token was seen.</li>
+          <li><em>Why it works / why it beats prior.</em> Direct action injection is the standard control lever in the interactive-world-model literature (HY-World, GameNGen-derived stacks); the twist is that <em>combining</em> it with MRoPE on the same heads makes the action signal crowd out pose-keyed retrieval &mdash; control improves, long-horizon memory degrades. The paper's next mechanism is what makes the pairing usable.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; mixed per-head attention windows with random head routing.</strong>
+        <ul>
+          <li><em>Problem.</em> Control and memory need <em>different</em> windows to be learned &mdash; control needs the short window it will actually see at deployment, memory can only train under a long window because a model that cannot see the far past has nothing to retrieve from &mdash; but a fixed per-head split of "long" and "short" heads is unusable at inference because the full history is gone and every head reads the same bounded cache. A fixed partition trains heads to depend on windows that deployment cannot provide.</li>
+          <li><em>Mechanism.</em> Every training iteration exposes the backbone to both windows at once. Of <code>H=24</code> attention heads per block, <code>18</code> are <em>local</em> and attend to only the last <code>w=12</code> latent frames (three chunks); the remaining <code>|G|=6</code> are <em>global</em> and attend over the full causal history &mdash; a <code>1:3</code> global-to-local budget. To keep this workable at deployment, the assignment of which heads are global is <em>routed</em>: a fixed pool of <code>|P|=12</code> random six-head global sets is drawn, and every optimiser step switches to the next set in the pool. Every head thus spends steps in both roles. At inference the training-time per-head split is dropped: all heads attend over the bounded cache.</li>
+          <li><em>Why it works / why it beats prior.</em> Because a head is <em>local</em> on most steps, the control it learns must be complete within the short window &mdash; so retrieval keeps living in whichever heads currently see far, but no head specialises in a long window. The recipe makes a testable prediction: swapping cache-compression policies at inference should leave control error unchanged (verified in Sec. 4.5). This is the axis on which ReWorld improves over unified-attention interactive world models: instead of trying to make one attention window serve both jobs, it trains the model to be indifferent to which heads are picked to see far, so bounded-cache deployment does not disturb action following.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 4 &mdash; landmark consolidation and pose retrieval under a bounded KV budget.</strong>
+        <ul>
+          <li><em>Problem.</em> The KV cache grows linearly with the rollout horizon; at 720p an unbounded cache exhausts device memory well before minute-long horizons. Sliding-window caches simply forget; mean-pool compression keeps the whole history at degraded fidelity but blurs recognisable landmarks; retrieval-free static banks do not adapt to what the current pose actually needs.</li>
+          <li><em>Mechanism.</em> ReWorld separates <em>write</em> from <em>read</em>. On the write side, aged chunks are admitted selectively into a bounded landmark bank <code>M</code> (<code>|M|&le;K=30</code>) at full resolution &mdash; no pooling, merging, or token-level pruning. Admission uses an <em>odometer rule</em>: a chunk aging out of the recent window is stored only if the camera has travelled at least a stride <code>&delta;</code> (in median step lengths) since the <em>last stored</em> landmark. Crucially, the rule measures distance travelled &mdash; never whether a place is already banked &mdash; so a revisit pass is stored just like the first visit; gating against the whole bank would discard exactly the chunk a later revisit needs (paper reports only ~<code>64%</code> far-revisit coverage under that variant). When the bank is full, each admission evicts the member most redundant in pose space (nearest-neighbour minimum), and the first two members are never evicted since the earliest region tends to be revisited across the longest gaps. On the read side, the active set at chunk <code>k</code> is <code>C<sub>k</sub> = {1}<sub>sink</sub> &cup; {k&minus;5,&hellip;,k&minus;1}<sub>recent</sub> &cup; T<sub>k</sub><sub>retrieved</sub></code> with <code>|T<sub>k</sub>|=6</code> and <code>|C<sub>k</sub>|=B=12</code>; the six landmarks nearest the current camera pose enter as <code>T<sub>k</sub></code> and are read through MRoPE. Device memory stays at <code>O(B)</code> chunks regardless of rollout length; the full bank lives in pinned host memory with landmark transfers overlapping denoising on a separate stream.</li>
+          <li><em>Why it works / why it beats prior.</em> Consolidation trades <em>coverage</em> for <em>quality</em>: keep few chunks, keep them intact, keep them diverse. The odometer admission rule, redundancy-based eviction, and pose-proximity retrieval together turn the KV cache into a spatial map indexed by camera pose, so long-range revisits address the right chunk directly rather than having to reconstruct scene state from a lossy summary.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 5 &mdash; chunk-drop training for sparse-cache robustness.</strong>
+        <ul>
+          <li><em>Problem.</em> The consolidation cache above hands the model a sparse, non-contiguous subset of its history at inference, whereas standard teacher forcing conditions every denoising query on a contiguous, complete causal prefix. The train/test gap manifests as blur and drift the moment chunks are evicted.</li>
+          <li><em>Mechanism.</em> For a training clip of <code>L=12</code> chunks, the sink chunk is always kept and five further survivors are drawn at random at every optimiser step, so each step exposes the model to a random half of its history (<code>6</code> of <code>12</code> chunks). The attention mask is restricted accordingly: the query for chunk <code>z<sub>k</sub></code> attends only to the clean keys of surviving earlier chunks and its own chunk, and <em>queries are never dropped</em>, so every chunk still receives its denoising loss. The keep-set is resampled independently at every step and broadcast so all data- and sequence-parallel ranks apply an identical mask.</li>
+          <li><em>Why it works / why it beats prior.</em> The spliced caches produced by the landmark policy are now in-distribution rather than an OOD input the backbone has never seen. Combined with pose-indexed attention (which makes any retrieved chunk still addressable regardless of temporal distance), chunk-drop training is what lets the same set of weights serve both the multi-step training regime and the sparse-cache streaming regime without an inference-time distribution shift.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 6 &mdash; metric-scale-aligned eight-source data engine with palindrome augmentation.</strong>
+        <ul>
+          <li><em>Problem.</em> A world model needs a single physical action scale so that the same commanded action moves the camera the same distance in every source &mdash; otherwise the model learns a per-source action calibration and generalisation collapses. Estimated poses (VIPE, MegaSaM) are defined only up to scale; engine poses differ in units. On top of that, memory training requires <em>revisit evidence</em> &mdash; scenes where the same place is seen twice from the same pose &mdash; which normal trajectories rarely provide.</li>
+          <li><em>Mechanism.</em> Eight sources make up <code>220,724</code> pose-annotated clips: two Unreal-Engine renders (<em>UE control</em> <code>95,895</code> clips, <em>UE expansion</em> <code>42,536</code>), three real-world (DL3DV <code>29,864</code>, RealEstate10K <code>12,065</code>, Sekai real-walking-hq <code>14,730</code>), three game (game-roaming across <code>79</code> games <code>18,387</code>, OmniWorld-Game <code>5,629</code>, Sekai game-walking <code>1,618</code>). A curation funnel drops clips moving too fast or too slow to align on-screen speed. Per-source translations are then rescaled by a single divisor <code>&sigma;<sub>s</sub> = med<sub>s</sub>[&#x2016;&Delta;t&#x2016;] / med<sub>UE</sub>[&#x2016;&Delta;t&#x2016;]</code> with the UE anchor <code>med<sub>UE</sub>[&#x2016;&Delta;t&#x2016;] = 0.3667</code>, and all sources are unified to camera-to-world matrices in a common camera basis. For memory supervision, with probability <code>0.2</code> on the two UE sources the training window is replaced by a <em>palindrome</em> &mdash; a random half of the window concatenated with its temporal reverse &mdash; injecting explicit revisit evidence that long-horizon spatial memory training needs. Training mixture ends at <code>63%</code> UE, <code>26%</code> real, <code>11%</code> game.</li>
+          <li><em>Why it works / why it beats prior.</em> UE trajectories are drawn from six planned modes with a control mode that anchors each path at two points of interest and fills the segment with direction-balanced random motion, so backward, strafing and diagonal moves are sampled as evenly as forward &mdash; the paper explicitly attributes action-following accuracy as much to this trajectory design as to the model, since forward-biased footage gives little supervision for rarer directions. Palindromes give the retrieval mechanism a supervision signal that ordinary linear trajectories cannot provide.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 7 &mdash; real-time distillation with a plug-in DMD LoRA.</strong>
+        <ul>
+          <li><em>Problem.</em> A multi-step diffusion streaming generator is not real time. Full-backbone step distillation would replace the model and risk drifting control off the ray-map path; consistency-model-style distillation is known to introduce artefacts.</li>
+          <li><em>Mechanism.</em> The multi-step model is the teacher and the student is the <em>same backbone, frozen</em>, plus a rank-<code>128</code> LoRA on attention and feed-forward layers &mdash; the LoRA is the only thing trained (the DMD critic is also a LoRA over the frozen weights). Training follows distribution-matching distillation with self-forcing rollouts: the student streams chunks from its own KV cache, just as at deployment, so distillation needs only text prompts &mdash; no video. Prompts are <code>248K</code> generic long captions extended from VidProM. The action and pose injection path carries <em>no</em> LoRA, so control is untouched by distillation. One backbone thus has two modes: adapter off is the original multi-step model, adapter on streams in real time at <code>4</code> denoising steps. The <code>2.6</code> GB adapter transfers across base checkpoints, re-distilling in <code>2k</code>&ndash;<code>4k</code> steps.</li>
+          <li><em>Why it works / why it beats prior.</em> Confining distillation to a LoRA keeps the multi-step operating point intact and localises the deployment latency win to a pluggable component. Because the action/pose path is outside the LoRA, control quality carries over from the multi-step teacher rather than being learned by a small student from scratch. Self-forcing on the student's own KV stream removes the exposure-bias gap that hurts autoregressive video distillation.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.23565v1/figures/wanworld_framework.png" alt="ReWorld overall framework" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). Overview of ReWorld. Left: a metric-aligned data pipeline places UE, real-world and game footage on one physical action scale and injects revisit supervision via palindrome routes. Middle: teacher-forcing training with a DMD LoRA trained alongside; control (action injection, local short-window heads) and memory (MRoPE pose-indexed attention, global long-window heads) are decoupled, and the partition into global/local heads is switched every step through a fixed pool of random partitions. Right: at inference a fixed cache budget holds a sink chunk, pose-retrieved landmarks, and a recent window; aged chunks are consolidated into a bounded landmark bank and retrieved by pose proximity upon revisits.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.23565v1/figures/wanworld_routing.png" alt="Mixed per-head attention windows routed from a pattern pool" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 3 (from the paper). Left: local heads attend to the last <code>w=12</code> frames (reactive control); global heads attend to the full causal history (long-range memory). Right: each optimizer step switches to the next of <code>|P|=12</code> random head partitions, so neither ability binds to particular heads.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.23565v1/figures/wanworld_consolidation.png" alt="Memory consolidation under a fixed KV budget" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 4 (from the paper). Memory consolidation under a fixed KV budget. Left: at inference the cache holds one sink, six pose-retrieved landmarks and five recent chunks (<code>B=12</code>); a chunk aging out of the recent window is consolidated into the bounded landmark bank (kept sparse and diverse) and re-enters the cache when the camera returns nearby. Right: chunk-drop training randomly masks past chunks at every step, so such sparse caches are in-distribution.</figcaption>
+    </figure>
+
+    <h3>Data pipeline</h3>
+    <ul>
+      <li>Eight-source joint corpus of <code>220,724</code> pose-annotated clips, three groups: UE-rendered (control + expansion, produced by an automated UE service across <code>337</code> environments with NavMesh-based trajectory planning), real-world (DL3DV, RealEstate10K, Sekai real-walking-hq), game (game-roaming across <code>79</code> games, OmniWorld-Game, Sekai game-walking). Each clip is stored as RGB video, per-frame camera trajectory, and text caption; UE control clips additionally carry per-frame action labels.</li>
+      <li>Trajectory design for the UE control set: six planned modes at constant mode-specific speed; the control mode anchors each trajectory at two points of interest and fills the path between them with randomised motion segments so backward, strafing and diagonal motion are sampled as evenly as forward motion &mdash; a data-side answer to the direction bias that limits action-following accuracy in real footage.</li>
+      <li>Curation funnel: <code>110,204 &rarr; 95,895</code> UE control clips (splitting, speed filter, captioning, darkness/wall filter); expansion set <code>47,726 &rarr; 42,536</code>; game-roaming curated from <code>494.7</code> hours across <code>168</code> games down to <code>18,387</code> clips from <code>79</code> games.</li>
+      <li>Metric-scale alignment: single divisor per source against the UE anchor at <code>med<sub>UE</sub>[&#x2016;&Delta;t&#x2016;] = 0.3667</code>; all sources unified to camera-to-world matrices in a common camera basis.</li>
+      <li>Sampling: <code>63%</code> UE, <code>26%</code> real, <code>11%</code> game at clip level; each dataset access draws a random <code>189</code>-frame window resampled to <code>24</code> fps (&asymp;<code>8</code>s = one training window); palindrome augmentation applied with probability <code>0.2</code> on the two UE sources.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Setup: two-stage training on <code>Wan2.2-TI2V-5B</code> &mdash; 480p (<code>384&times;640</code>) pre-training then 720p (<code>704&times;1280</code>) warm-start with interpolated spatial RoPE. Each training window covers <code>L=12</code> latent chunks with <code>H=24</code> heads split into <code>|G|=6</code> global + <code>18</code> local (window <code>w=12</code>), cycling through the <code>|P|=12</code>-partition pool. Chunk-drop keeps sink + <code>5</code> random survivors. Deployed inference: 4-step DMD-distilled LoRA (rank <code>128</code>, block size <code>16</code>, single-rollout student) on EMA weights, CFG scale <code>1</code>, per-head windows dropped &mdash; all heads read the bounded <code>B=12</code> cache. Landmark bank capped at <code>|M|&le;K=30</code>.</li>
+      <li>Three-axis evaluation protocol: (a) camera controllability, (b) long-horizon memory (out-and-back revisit under bounded cache), (c) general video generation quality. Baseline set: six recent interactive world models covering pose-conditioned autoregressive video generators and streaming world-model stacks.</li>
+      <li>Headline numbers from the abstract: best control fidelity of any evaluated system at <code>11.95&deg;</code> rotation error and the best camera-motion consistency; the best generation quality on the shared video-quality track. On minute-long out-and-back rollouts (<code>64</code>s, <code>384</code> latents), the fixed <code>12</code>-chunk cache regenerates the starting view &mdash; at rollout lengths where a sliding window has long evicted the evidence and full-KV attention runs out of memory.</li>
+      <li>Streaming output at <code>704&times;1280</code> (720p) across photorealistic, game-style, and stylised worlds.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Control&ndash;memory decoupling: adding direct action injection on top of MRoPE alone improves every control metric but drops revisit fidelity when both signals share every head &mdash; the motivating measurement for the mixed-window routing recipe. Under the mixed-window routing, control error is stable when cache-compression policy is swapped at inference (the paper's stated testable prediction).</li>
+      <li>Training recipe and cache policy: the deployment landmark policy is compared against four alternatives under identical budget <code>B=12</code> &mdash; unbounded full-KV (undeployable upper bound), sliding-window cache with sink (forgetting baseline), mean-pooled compression of aged chunks, and a retrieval-free static bank of six pose-deduplicated landmarks attended in full. The paper reports the landmark-consolidation policy dominates the deployable alternatives on the memory axis while matching them on control error, with far-revisit coverage sensitive to the choice of admission rule (odometer distance vs global gating).</li>
+      <li>MRoPE vs two-pass baselines: the design comparison table sites MRoPE at time+space+pose in one attention pass with a small MLP + two linears extra cost, against HY-World 1.5 (temporal RoPE + separate camera-aware pass, &asymp;<code>2&times;</code> attention FLOPs) and E-PRoPE (separate reduced-token camera pass, ~<code>4.5&times;</code> fewer tokens for the second pass); MRoPE alone yields strong revisit memory but imprecise control, motivating the paired action injection channel.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Code: <a href="https://github.com/zhifeichen097/ReWorld"><code>zhifeichen097/ReWorld</code></a>. Project page (with rollout videos): <a href="https://zhifeichen097.github.io/ReWorld/"><code>zhifeichen097.github.io/ReWorld</code></a>. Backbone: <code>Wan2.2-TI2V-5B</code>. Development route (AR-training the base model, then plugging in a step-distilled LoRA) follows the LongLive-2.0 pattern. License CC BY 4.0.</li>
+    </ul>
+
+    <h2 id="erpo"><a href="https://arxiv.org/abs/2608.23311">Beyond the Stability&ndash;Exploration Dilemma: Environmental Regularization for LLM Policy Optimization</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-24</span>
+      <span>RL post-training &middot; Policy optimization &middot; KL regularization &middot; GRPO/PPO/REINFORCE</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Xianlei Zhou, Xiangdi Meng, Yu He, Tianyu Qi, Shuyan Guan, Xianli Zhang, Jian Zhang, Xin Li, Qika Lin and Jun Liu (Alibaba) release <strong>ERPO</strong> (<em>Environment-Regularized Policy Optimization</em>), a drop-in replacement for the Policy-KL regularizer in RL post-training pipelines. arXiv:2608.23311v1 [cs.CL], submitted 2026-08-24, accepted to EMNLP 2026 main conference. Code at <a href="https://github.com/alibaba/ERPO"><code>alibaba/ERPO</code></a>.</li>
+      <li>The framing: policy optimization for LLMs currently mediates the stability&ndash;exploration trade-off through an action-side Policy-KL regularizer, and practitioners are stuck in a double bind &mdash; keeping Policy-KL constrains response behaviour and consumes the action-side exploration budget, while dropping it (as several recent GRPO variants do) leaves optimization without an explicit drift control and blows up under high-temperature decoding or long-horizon training. ERPO argues this is the wrong axis: the drift that matters most is not the response distribution's drift, it is the drift of the <em>query</em> distribution induced by the current policy from its pre-RL reference distribution, which under standard PO is unchecked.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; Query-KL (QKL) regularizer.</strong>
+        <ul>
+          <li><em>Problem.</em> The Policy-KL term supervises the response side, which is exactly the side one wants to leave free for exploration; but with no regularizer the query distribution the policy actually sees during training drifts away from the pre-RL reference as easy or reward-friendly queries dominate. Long-horizon training and high-temperature decoding are precisely the regimes where this unchecked drift shows up as instability.</li>
+          <li><em>Mechanism.</em> ERPO adds a Query-KL term that bounds the distance between the current-policy-induced query distribution and a pre-RL reference query distribution. Crucially the QKL gradient flows <em>strictly through the query likelihood</em>: the response score function used by policy-gradient estimators (<code>GRPO</code>/<code>PPO</code>/<code>REINFORCE</code>) does <em>not</em> appear in the QKL term, so QKL exerts no direct gradient pressure on the response distribution.</li>
+          <li><em>Why it works / why it beats prior.</em> Because the regularization pressure lives on the input side, the response-side exploration budget is preserved &mdash; the trade-off the Policy-KL term forces is dissolved rather than balanced. ERPO plugs into GRPO/PPO/REINFORCE pipelines without additional forward passes, so the compute profile is unchanged relative to the KL-free baseline.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; dataset-static reference-derived per-query weight.</strong>
+        <ul>
+          <li><em>Problem.</em> Bounding the query distribution alone is not enough &mdash; per-query updates still weight the queries as they arrive under the drifting policy, so easy or reward-friendly queries can dominate every gradient step. What is needed is a per-query weight that says: "under the reference, this query would have been sampled this often, so weight its update accordingly."</li>
+          <li><em>Mechanism.</em> ERPO computes a per-query weight up front from the reference distribution &mdash; static across training, keyed to the dataset &mdash; and biases each per-query update toward queries typical under the reference. Because the weight is precomputed and dataset-static, it adds no online overhead.</li>
+          <li><em>Why it works / why it beats prior.</em> Weighting per query is a distributional correction that per-response methods (importance sampling on responses, off-policy corrections) cannot supply, because the drift being corrected lives at the query level. Making the weight reference-derived and dataset-static removes the estimator's variance and keeps the correction well-defined even under long-horizon training regimes where an online estimate would drift.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Benchmarks: six mathematical reasoning benchmarks. Comparison is against the standard <code>GRPO</code>/<code>PPO</code>/<code>REINFORCE</code> stack with the conventional Policy-KL term (kept and dropped variants). Headline outcomes reported in the abstract: ERPO replaces the Policy-KL regularizer while achieving effective control over query distribution drift, delivering stronger accuracy and substantially more stable behaviour under (a) high-temperature decoding and (b) long-horizon training &mdash; the two regimes where dropping Policy-KL is known to destabilise policy optimization. Specific per-benchmark numbers are in the paper body.</li>
+      <li>Compute and pipeline compatibility: no additional forward passes vs the KL-free baseline, so the intervention is a drop-in swap at the loss level rather than a new training loop.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The paper's abstract commits only to the aggregate claims (stronger accuracy, more stable behaviour under high-temperature decoding and long-horizon training); specific ablation numbers isolating the QKL term vs the per-query weight and Policy-KL kept-vs-dropped are in the paper body. The natural axes are: (a) QKL only vs QKL + reference-derived per-query weight, (b) ERPO vs Policy-KL vs no KL under varying decoding temperature, (c) ERPO vs baselines across training horizon length.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning: the paper argues that the field's framing of a stability&ndash;exploration <em>dilemma</em> is an artifact of the KL being on the wrong side of the objective; environmental (input-side) regularization dissolves the dilemma rather than balancing it, and does so at zero extra forward-pass compute. That framing is what makes the mechanism a drop-in for GRPO/PPO/REINFORCE recipes rather than a competing algorithm.</li>
+      <li>Availability: code at <a href="https://github.com/alibaba/ERPO"><code>alibaba/ERPO</code></a>. EMNLP 2026 main conference acceptance.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
