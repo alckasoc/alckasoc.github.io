@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mobile Planner Benchmarks &amp; Behavioral Densing Laws Review &mdash; August 26, 2026 | Auto Lit Review</title>
+<meta name="description" content="Two Tier 2 frontier-lab papers on the 36-hour Hugging Face Daily window ending 2026-08-26. MobilePA-Bench (Alibaba Tongyi-MAI) is an interactive, stateful, tool-centric benchmark for mobile planning agents across 13 functional domains, 212 realistic mobile tools, and three advanced dimensions (sub-agent collaboration, memory usage, skill usage). User Behavioral Densing Law (Ant Group / Alipay) derives a quantitative log-linear relationship between input data size and minimum sufficient tokenization capacity for billion-scale user representation learning, and proposes ALGN, an adaptive variable-length tokenization method." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 26, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba</a>
+          <ul>
+            <li class="toc-h2"><a href="#mobilepa-bench">MobilePA-Bench: Benchmarking Mobile Planner Agents on Complex Real-World Tasks</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#ant-group">Ant Group</a>
+          <ul>
+            <li class="toc-h2"><a href="#densing-law">Towards a Densing Law for User Representation Learning at Billion-Scale Capacity</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 26, 2026</div>
+    <h1 class="page-title">Mobile Planner Benchmarks &amp; Behavioral Densing Laws</h1>
+    <div class="page-meta">2 papers &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-08-26 (steady-state, one day since the previous review) surfaces no Tier 1 flagship model launches and two Tier 2 frontier-lab papers on the Hugging Face Daily selection, both submitted to arXiv on 2026-08-24 by two sister labs in the Alibaba / Ant Group cluster. <a href="https://arxiv.org/abs/2608.23035"><em>MobilePA-Bench</em></a> (Alibaba Tongyi-MAI) argues that mobile agent evaluation has forked into two blind spots &mdash; GUI-only benchmarks that ignore background tool-use and long-horizon planning, and static function-calling benchmarks that check name-matching against a frozen API list without live state &mdash; and closes both with an interactive, stateful sandbox that maintains live application databases across <code>13</code> functional domains and <code>212</code> realistic mobile tools; it evaluates a central planning agent along <em>sub-agent collaboration</em>, <em>memory usage</em>, and <em>skill usage</em>, and reports sharp performance drops under strict tool ordering, permission limits, and unexpected runtime errors. <a href="https://arxiv.org/abs/2608.23392"><em>Towards a Densing Law for User Representation Learning at Billion-Scale Capacity</em></a> (Ant Group, on the billion-scale Alipay corpus) starts from an observed diminishing-return wall for raw-text behavioural input at billion-scale and derives the <em>User Behavioral Densing Law</em>: an approximately linear relationship between the logarithms of minimum sufficient tokenization capacity and input data size (in tokens), with a slope that varies systematically with the tokenization method and the data source. It uses the law to design <code>ALGN</code>, an adaptive variable-length tokenization method for user behaviour, and reports gains over existing baselines across sources, tokenizers, and downstream tasks.</p>
+      <h3>Competitiveness</h3>
+      <p>Neither paper is a generalist-model release, so the comparison surface is method-vs-method rather than SOTA-leaderboard. MobilePA-Bench&rsquo;s peer group is the recent 2026 agent-benchmark wave &mdash; <em>Thinkingbox-Bench</em> (Microsoft, 507 policy-conditioned business workflows on MCP-compatible tool sessions), the AppWorld/AppBench line of stateful app-API benchmarks, and the GUI-agent line (AndroidWorld, Mobile-Bench, MobileAgent-v3); it distinguishes itself by pairing an executable sandbox with three additional evaluation dimensions (sub-agent, memory, skill) that GUI-only and static-function benchmarks omit. The reported finding &mdash; that even frontier LLMs remain unreliable in mobile settings and degrade sharply under strict tool ordering, permission limits, and unexpected runtime errors &mdash; is consistent with the recent Thinkingbox result on business workflows (best model <code>65.36%</code> pass@1 falling to <code>25.25%</code> pass<sup>20</sup> on <code>507</code> tasks) and the broader pattern where <code>GPT-5.6 Luna</code>, <code>Claude Opus 5</code>, and open-weight peers (<code>Kimi K3</code>, <code>Qwen3.8-27B</code>, <code>GLM-5.3</code>, <code>DeepSeek-V4-Flash</code>) all show large pass@1 &rarr; pass<sup>k</sup> gaps once execution is stateful. The Densing Law paper does not enter the RL-post-training or agent-benchmark boards at all; it targets the scaling-law literature (Chinchilla-style compute-optimality; the 2024&ndash;2026 <em>densing-law</em> line on parameter&ndash;capability compression) and the industrial-recommendation stack (RecSys/CIKM-adjacent user-representation models), and the natural comparison is against fixed-length behavioural tokenizers (BPE-on-events, HSTU-style item-id tokenization, learned discrete VAEs) under the same billion-scale Alipay corpus.</p>
+      <h3>New frontier releases</h3>
+      <p>No new Tier 1 flagship model launches surfaced in the window. Both Tier 2 papers ship open artifacts: MobilePA-Bench positions itself as both a diagnostic benchmark and an interactive foundation for agentic reinforcement learning (executable sandbox with live application databases, evidence-based verification), and the Densing Law paper releases the <code>ALGN</code> adaptive variable-length tokenizer. No Tier 3 blog posts or engineering notes from frontier labs surfaced in the window.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="mobilepa-bench"><a href="https://arxiv.org/abs/2608.23035">MobilePA-Bench: Benchmarking Mobile Planner Agents on Complex Real-World Tasks</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-24</span>
+      <span>Agent benchmarks &middot; Mobile agents &middot; Tool use &middot; Planning &middot; Interactive sandbox</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Yi Zhu, Xiongwei Wu, Qiyi Wang, Tingyu Qu, Jiajun Liu, Sihan Cao, Long Chen, Weigao Sun, Feida Zhu, Yiran Zhong, Steven Hoi et al. (Alibaba Tongyi-MAI, the mobile-AI subgroup of Tongyi Lab) release <strong>MobilePA-Bench</strong>, an interactive, stateful, tool-centric benchmark for evaluating the tool-calling and planning abilities of mobile planner agents. arXiv:2608.23035v1 [cs.AI], submitted 2026-08-24, on the Hugging Face Daily selection for 2026-08-25.</li>
+      <li>The framing: two existing benchmark families each have a blind spot. GUI-centric benchmarks test surface-level screen manipulation but overlook background tool-use and long-horizon planning; static function-calling benchmarks rely on offline API-signature matching that is detached from real runtime constraints (permission scopes, tool ordering, transient failures, live state). MobilePA-Bench replaces both with an executable sandbox that maintains live application databases and returns structured feedback so that success is measured against observed state transitions rather than string-matched call transcripts.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; interactive, stateful, tool-centric mobile sandbox.</strong>
+        <ul>
+          <li><em>Problem.</em> On mobile, the tools a planner has to orchestrate are a mixture of GUI actions, background system APIs, and third-party app calls; a benchmark that hard-codes the expected sequence, or that scores against a static function-signature list, cannot distinguish agents that produce a plausible-looking call from agents that actually change the world in the correct way. Without live state, effects like &ldquo;the calendar event now exists,&rdquo; &ldquo;the message was actually sent,&rdquo; or &ldquo;the permission dialog was granted the correct scope&rdquo; cannot be verified.</li>
+          <li><em>Mechanism.</em> MobilePA-Bench runs on an executable sandbox that hosts <code>13</code> functional domains and <code>212</code> realistic mobile tools with live application databases. Each tool invocation mutates real backing state; each attempt is evaluated by evidence-based verification over that state (whether the expected records exist, whether unintended writes occurred, whether the response actually references the correct retrieved facts) rather than by name-matching against a golden call sequence. The sandbox returns structured feedback that the agent can consume mid-trajectory.</li>
+          <li><em>Why it works / why it beats prior.</em> By moving evaluation from surface transcripts to persistent state, the benchmark scores end-to-end task completion. Agents that produce clean-looking tool calls but leave the wrong state, extra state, or missing state fail; this is exactly the failure mode that GUI-only and static-function benchmarks miss. The stateful sandbox also decouples evaluation from any single agent stack &mdash; a planner that decomposes into sub-agents, a planner that emits shell-like skill invocations, and a planner that drives raw GUI clicks are all scored on the same downstream state.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; three planner-agent evaluation axes beyond basic tool-calling.</strong>
+        <ul>
+          <li><em>Problem.</em> Function-calling accuracy alone does not predict whether an agent can run a real mobile copilot workload &mdash; users delegate compound tasks (&ldquo;book me a flight, notify the calendar, notify the group chat&rdquo;) that hit sub-agent orchestration, cross-session memory, and pre-packaged skills. Prior mobile benchmarks score isolated calls and miss the composition.</li>
+          <li><em>Mechanism.</em> Beyond basic tool-use, MobilePA-Bench evaluates the central planner along three additional dimensions: (i) <em>Sub-agent collaboration</em>: decomposing a complex user request and delegating specialised subtasks to capable sub-agents; (ii) <em>Memory usage</em>: recalling stored memories, user profiles, and past preferences to resolve <em>implicit</em> requests (references to entities never named in the current turn); (iii) <em>Skill usage</em>: invoking pre-packaged composite skills instead of planning every step from scratch when a matching skill exists. Each dimension has its own task pool and evidence-based checks; task-specific executable checks accept valid trajectories while rejecting wrong, missing, or extra effects.</li>
+          <li><em>Why it works / why it beats prior.</em> Splitting evaluation along these axes attributes failures. A model that scores well on basic tool-use but collapses under sub-agent collaboration is failing at planning, not at tool call formatting; a model that scores well on skill usage but poorly on memory usage exposes a specific gap that a targeted training recipe can address. The alternative &mdash; one bulk pass/fail number &mdash; conflates all three failure modes, which is the axis on which MobilePA-Bench improves over static function-calling and GUI-only benchmarks.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; strict runtime perturbations (tool ordering, permission limits, unexpected errors).</strong>
+        <ul>
+          <li><em>Problem.</em> Real mobile environments enforce tool ordering (some calls only make sense after prior state exists), permission scopes (some tools return partial data when permission is limited), and transient failures. A benchmark that runs each task in a clean, fully-permissioned, error-free environment overstates agent reliability.</li>
+          <li><em>Mechanism.</em> The benchmark injects strict tool-ordering constraints, permission-scope limits, and unexpected runtime errors, and re-scores agents under those perturbations. Results show current frontier LLMs remain unreliable in mobile settings and drop sharply under each of these conditions.</li>
+          <li><em>Why it works / why it beats prior.</em> Directly measuring the delta between clean-environment and perturbed-environment success rates isolates the robustness gap that would otherwise only show up in production incidents. Because the sandbox is stateful, the perturbations compose with the evidence-based verification &mdash; a permission-scoped tool call that returns partial data and an agent that acts on the partial data as if it were complete is caught by the state check even when the tool call itself looks well-formed.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Task pool: <code>13</code> functional domains, <code>212</code> realistic mobile tools, executable sandbox with live application databases and structured feedback. Scoring: task-specific executable checks that accept valid trajectories while rejecting wrong, missing, or extra effects.</li>
+      <li>Headline finding: current frontier LLMs remain unreliable in mobile settings. Performance drops sharply under strict tool ordering, permission limits, and unexpected runtime errors. The paper positions this as evidence that clean-environment pass rates on prior mobile benchmarks over-report deployable reliability by conflating tool-call-plausibility with state-change correctness.</li>
+      <li>Cross-benchmark context: the pattern (frontier models with adequate clean-environment scores collapsing once environment perturbations or long-horizon state are introduced) is consistent with the Thinkingbox result on business workflows (best model <code>65.36%</code> pass@1 &rarr; <code>25.25%</code> pass<sup>20</sup> on <code>507</code> policy-conditioned workflows) and with the failure-mode signature reported in the recent stateful-tool-use line.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning: MobilePA-Bench is pitched as both (a) a practical diagnostic benchmark for mobile planner agents and (b) an interactive foundation for agentic reinforcement learning &mdash; the same stateful sandbox that scores an agent can serve as an RL environment for training one. This is the same framing pattern as Thinkingbox (&ldquo;sandbox and benchmark&rdquo;) and the Kimi K3-vintage agent RL environments.</li>
+      <li>Coverage: <code>13</code> functional domains span messaging, calendar/contacts, media, navigation, retail-adjacent categories, and system-level tools; <code>212</code> tools are described as realistic in the sense of matching the shape of live mobile APIs rather than synthetic function signatures.</li>
+    </ul>
+
+    <h1 id="ant-group">Ant Group</h1>
+
+    <h2 id="densing-law"><a href="https://arxiv.org/abs/2608.23392">Towards a Densing Law for User Representation Learning at Billion-Scale Capacity</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-08-24</span>
+      <span>Scaling laws &middot; User representation &middot; Tokenization &middot; Recommender models &middot; Alipay</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Bin Dou, Junru Zhang, Zhaoyi Yuan, Wuliang Huang, Letian Gong, Baokun Wang, Huan Li, Yu Cheng, Weiqiang Wang (Ant Group, on the billion-scale Alipay dataset) release a <strong>28-page, 13-figure technical report</strong> proposing the <em>User Behavioral Densing Law</em> and an accompanying adaptive variable-length tokenizer <code>ALGN</code>. arXiv:2608.23392v1 [cs.IR], submitted 2026-08-24, on the Hugging Face Daily selection for 2026-08-25.</li>
+      <li>The framing: industrial user representation is scaled by growing three axes &mdash; user count, behavioural sequence length, and model size. At billion-scale capacity, feeding raw text user behaviour into the encoder hits diminishing returns; switching to tokenized behaviour restores sustained gains, but there is no quantitative rule for how the <em>tokenization configuration</em> should be co-scaled with the input data size. The paper&rsquo;s claim is that this rule exists, is empirically log-linear, and can be used to pick a minimum-sufficient tokenizer configuration for a given data budget instead of over-provisioning it.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; the User Behavioral Densing Law.</strong>
+        <ul>
+          <li><em>Problem.</em> Raw-text user-behaviour input scales poorly at billion-user capacity: gains from adding more raw behavioural tokens diminish sharply, so the marginal token adds no representation quality. Prior scaling analyses (Chinchilla-style compute-optimal, and the 2024&ndash;2026 densing-law line on parameter&ndash;capability compression) do not specify the tokenizer axis, so practitioners either over-provision tokenizer capacity (wasting representation slots) or under-provision it (leaving quality on the table).</li>
+          <li><em>Mechanism.</em> The paper runs a pilot billion-scale Alipay-corpus study comparing raw and tokenized scaling, then, through combined theoretical analysis and systematic experiments, derives the <em>densing</em> pattern: the logarithm of the <em>minimum sufficient tokenization capacity</em> is approximately linear in the logarithm of input data size (measured in tokens). The <em>slope</em> of that line is not universal: it varies systematically with the tokenization method and the data source, and that variation is attributed to differences in representation-space redundancy and intra-source uniqueness (a source whose events collapse to few equivalence classes needs less tokenization capacity per additional token than a source with many distinct atomic events).</li>
+          <li><em>Why it works / why it beats prior.</em> A log-linear rule turns tokenizer selection into a two-parameter fit per (method, source) pair &mdash; the slope explains how much capacity a new token buys, the intercept anchors the starting point &mdash; so a practitioner can predict the minimum tokenizer configuration for a given target data scale rather than searching over configurations at every scale. This is the axis on which the paper improves over prior densing-law work: prior work compressed model size against downstream capability but did not include the input-side representation (tokenization) as a co-scaled variable.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; ALGN: adaptive variable-length tokenization for user behaviour.</strong>
+        <ul>
+          <li><em>Problem.</em> Fixed-length behavioural tokenizers (BPE-on-events, item-id tokenization) allocate the same number of code slots to every user regardless of how much idiosyncratic behaviour that user actually exhibits, so users at the sparse tail waste capacity while users at the dense head starve for it. The Densing Law makes this concrete: since minimum-sufficient tokenization capacity is a function of input token count, the tokenizer should adapt <em>per-sequence</em>, not sit at a globally fixed budget.</li>
+          <li><em>Mechanism.</em> <code>ALGN</code> is a variable-length behavioural tokenizer whose code allocation grows with the sequence in the shape prescribed by the Densing Law &mdash; long, information-dense behavioural traces receive more codes than short or repetitive ones, along the log-linear axis identified in the law. The tokenizer is used as the front-end of the same billion-scale user-representation encoder trained on the Alipay corpus.</li>
+          <li><em>Why it works / why it beats prior.</em> Capacity allocation matches the theoretical minimum-sufficient curve rather than sitting above or below it uniformly; the paper reports that <code>ALGN</code> outperforms existing baselines across diverse data sources, tokenization methods, and downstream tasks. The pipeline advantage &mdash; law-derived, then engineered &mdash; is what makes the tokenizer generalise: the same slope-and-intercept relationship holds across sources, so the same adaptive rule transfers without per-source retuning.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Pilot study: raw vs tokenized scaling comparison on the billion-scale Alipay dataset. Raw-text behavioural input exhibits diminishing gains with larger scale; tokenized input delivers sustained gains at the same scale. This is the empirical wall the law is built to explain.</li>
+      <li>Law fit: an approximately linear relationship between <code>log(minimum sufficient tokenization capacity)</code> and <code>log(input data size in tokens)</code>. The slope varies systematically with tokenization method and data source; the paper attributes slope differences to representation-space redundancy and intra-source uniqueness.</li>
+      <li>Downstream: <code>ALGN</code>, the law-derived adaptive variable-length tokenizer, outperforms existing baselines across diverse data sources, tokenization methods, and downstream tasks. The scope of &ldquo;diverse&rdquo; is stated at the abstract level of &ldquo;across sources / methods / tasks&rdquo;; the 28-page technical report contains the per-source, per-task numerical breakdown across <code>13</code> figures.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Slope decomposition by tokenization method and data source: the paper documents how slope differences correlate with representation-space redundancy (higher redundancy &rarr; flatter slope, since additional tokens buy less capacity) and intra-source uniqueness (more unique atomic events &rarr; steeper slope). This is the empirical hook that lets the Densing Law transfer from Alipay-scale to other corpora without a full re-fit &mdash; only the two per-(method, source) parameters need re-estimation.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>The report is 28 pages / 13 figures / cs.IR; positioning is against the recommender-systems scaling literature and the 2024&ndash;2026 densing-law line rather than against LLM-vintage compute-optimality curves. The user-side signal &mdash; behavioural events on a payments/lifestyle platform at Alipay scale &mdash; is a distinct data regime from web text, and the paper argues that this regime is where the tokenizer axis becomes the bottleneck rather than model size or sequence length.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const t = document.getElementById('themeToggle');
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  t.addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', cur);
+    localStorage.setItem('theme', cur);
+  });
+</script>
+</body>
+</html>
