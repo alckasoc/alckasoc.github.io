@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Harness Optimization, Search Agent Co-Evolution &amp; Multimodal Embeddings Review &mdash; August 27, 2026 | Auto Lit Review</title>
+<meta name="description" content="Three Tier 2 frontier-lab papers on the 36-hour Hugging Face Daily window ending 2026-08-27. AutoSaddler (Microsoft) formulates harness optimization as offline mini-batch learning with a Diagnosis-Patch / Reflection / Evolution loop over EvoDAG memory, reporting +9.0/+9.6/+10.0pp on GAIA2, SWE-Bench Pro, and Terminal-Bench 2.0 with 10x fewer traces than Meta-Harness. CAFE (Tencent LLM Department with Fudan University) couples a shared-parameter search agent with a critic under Comparative Feedback Estimate reward shaping and rollout-derived preference optimization. WeMM-Embedding (Tencent WeChat Vision) is a 2B/4B/9B universal multimodal embedding family on Qwen3.5 taking MMEB-v2 to a new SOTA of 80.6." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 27, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#microsoft">Microsoft</a>
+          <ul>
+            <li class="toc-h2"><a href="#autosaddler">AutoSaddler: Automatic Harness Optimization with Durable Updates from Agent Execution Traces</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#tencent">Tencent</a>
+          <ul>
+            <li class="toc-h2"><a href="#cafe">CAFE: Self-Improving Search Agents Need Co-Evolving Feedback</a></li>
+            <li class="toc-h2"><a href="#wemm-embedding">WeMM-Embedding: WeChat Multi-Modal Embedding Technical Report</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 27, 2026</div>
+    <h1 class="page-title">Harness Optimization, Search Agent Co-Evolution &amp; Multimodal Embeddings</h1>
+    <div class="page-meta">3 papers &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-08-27 (steady-state, one day since the previous review) surfaces no Tier 1 flagship model launches and three Tier 2 frontier-lab papers on the Hugging Face Daily selection for 2026-08-26. <a href="https://arxiv.org/abs/2608.23041"><em>AutoSaddler</em></a> (Microsoft) formulates automatic harness optimization as an offline mini-batch learning problem over the joint (prompt, tool, middleware) parameter space and iterates a Diagnosis-Patch, Reflection, and Evolution loop over an EvoDAG evolution graph, using the Claude Agent SDK to instantiate the three agents; it reports <code>+9.0</code>pp on GAIA2, <code>+9.6</code>pp on SWE-Bench Pro, and <code>+10.0</code>pp on Terminal-Bench 2.0 over their default harnesses, and exceeds the strongest automated baseline by <code>+7.4</code>, <code>+4.4</code>, and <code>+6.7</code>pp respectively while consuming roughly <code>10&times;</code> fewer optimization traces than Meta-Harness. <a href="https://arxiv.org/abs/2608.24794"><em>CAFE</em></a> (Tencent LLM Department, in collaboration with Fudan University; on <code>Qwen2.5-7/3B-Instruct</code>) makes a single shared-parameter model alternate between a search-agent role and a critic role that produces in-trajectory feedback; a Comparative Feedback Estimate (CFE) prompt-level call&minus;skip reward, feedback-aware advantage shaping across pre-call / call / post-call token spans, and offline Rollout-Derived Preference Optimization (RDPO) together let the two roles co-evolve. It beats the strongest RL-based search baseline by <code>+2.1</code> EM and <code>+1.3</code> F1 on average across seven agentic search benchmarks, holds gains on all six out-of-domain sets, and drops answer-level hallucinations from <code>17.6%</code> to <code>12.6%</code>. <a href="https://arxiv.org/abs/2608.24053"><em>WeMM-Embedding</em></a> (Tencent WeChat Vision) is a <code>2B</code>/<code>4B</code>/<code>9B</code> universal multimodal embedding family on the natively multimodal <code>Qwen3.5</code> backbones trained through a large-scale alignment stage and a curated refinement stage; the <code>9B</code> variant reaches a new MMEB-v2 SOTA of <code>80.6</code> (leaderboard status 2026-08-24), the <code>2B</code> variant already surpasses the previously leading <code>8B</code> open baseline, and the family is deployed across WeChat Channels, Official Accounts, Moments, and e-commerce.</p>
+      <h3>Competitiveness</h3>
+      <p>None of the three papers is a generalist-model release, so the comparison surface is method-vs-method or benchmark-vs-leaderboard. AutoSaddler's peer group is the recent auto-harness line &mdash; <em>GEPA</em> (prompt-only textual gradients), <em>Meta-Harness</em> (harness-as-code, Claude Agent SDK), and the recent contemporaneous wave on observability-driven evolution, diagnosis-and-weakness-guided repair, Bayesian configuration search, and joint harness&ndash;weight optimization; the paper explicitly attributes the win to combining in-depth diagnosis, structured intervention over prompt/tool/middleware patch types, and generalization-aware selection rather than any single component. Its base harnesses are the default GAIA2 ReAct agent, <em>SWE-agent</em> on SWE-Bench Pro, and <em>Terminus 2</em> on Terminal-Bench 2.0, all with <em>Claude Opus 4.6</em> as the underlying LLM. CAFE positions itself against the outcome-supervised search-agent line &mdash; <em>Search-R1</em>, <em>R1-Search</em>, and the recent finer-grained credit work (information gain, confidence change, local state comparison) &mdash; and against the in-context feedback line (<em>Reflexion</em>, <em>Self-Refine</em>, <em>CRITIC</em>), arguing that co-evolving a learned critic rather than using a frozen prompted one is what carries the transfer to all six OOD sets; the reported hallucination drop (<code>17.6%&rarr;12.6%</code>) is a direct hallucination-mitigation number rather than a rollout-quality proxy. WeMM-Embedding directly enters the universal multimodal-embedding leaderboards: on MMEB-v2 the <code>9B</code> variant tops the official 2026-08-24 leaderboard at <code>80.6</code> ahead of all listed open-source and proprietary systems, on the Gemini Embedding 2 cross-modal retrieval suite the <code>2B</code> variant compares favorably with leading proprietary models, and the family delivers gains on a <code>26</code>-task in-house benchmark plus consistent improvements across <code>14</code> WeChat online A/B tests. Reference frontier peers on the current leaderboards include <em>Gemini Embedding 2</em>, <em>NV-Embed-v2</em>-vintage MLLM embeddings, and prior <code>8B</code>-class open baselines. Across the three papers the pattern is consistent with the wider 2026 signal: harness engineering, learned critics, and Qwen3.5-family MLLM backbones continue to unlock large point gains on established benchmarks while the underlying decoder weights stay frozen.</p>
+      <h3>New frontier releases</h3>
+      <p>No new Tier 1 flagship model launches surfaced in the window. All three Tier 2 papers ship open artifacts: AutoSaddler releases code and a project site at <code>aka.ms/AutoSaddler-website</code>; CAFE ships the training pipeline (Fudan / Tencent LLM Dept collaboration); WeMM-Embedding releases the <code>2B</code>/<code>4B</code>/<code>9B</code> weights and code at <code>github.com/Tencent/WeMM-Embedding</code> and <code>huggingface.co/collections/tencent/wemm-embedding</code>. No Tier 3 blog posts or engineering notes from frontier labs surfaced in the window.</p>
+    </section>
+
+    <h1 id="microsoft">Microsoft</h1>
+
+    <h2 id="autosaddler"><a href="https://arxiv.org/abs/2608.23041">AutoSaddler: Automatic Harness Optimization with Durable Updates from Agent Execution Traces</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-24</span>
+      <span>Agent harnesses &middot; Auto-optimization &middot; Long-horizon agents &middot; GAIA2 &middot; SWE-Bench Pro</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Sungho Park, Wonjoong Kim, Rongyuan Tan, Jue Zhang, Wook-Shin Han, Pengfei Gao, Chanyoung Park, Yongqiang Yao, Rao Fu, Elsie Nallipogu, Qingwei Lin, Saravan Rajmohan, Dongmei Zhang (Microsoft, with internship affiliations at KAIST, SUSTech, and POSTECH; corresponding authors at Microsoft). arXiv:2608.23041v1 [cs.AI], 44 pages / 15 figures, submitted 2026-08-24, on the Hugging Face Daily selection for 2026-08-26.</li>
+      <li>The framing: LLM agent reliability on long-horizon tasks depends heavily on the surrounding <em>harness</em> (prompts + tool configurations + runtime control logic), but harness design remains a manual and expensive search. AutoSaddler recasts it as an offline learning problem &mdash; iteratively update the harness from failure signals over mini-batches of training tasks &mdash; and instantiates the loop with three session-scoped agents built on the Claude Agent SDK (CA-SDK). Base harnesses used at eval: default ReAct on GAIA2, <em>SWE-agent</em> on SWE-Bench Pro, <em>Terminus 2</em> on Terminal-Bench 2.0; underlying LLM: <em>Claude Opus 4.6</em>.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.23041v1/main_figure_revised.png" alt="AutoSaddler iterative optimization loop overview" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). AutoSaddler iterative optimization loop: the current harness is tested on a mini-batch, diagnosed and patched, verified, then reflected upon to write lessons into EvoDAG, which guides the next-harness evolution.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; formulate harness optimization as offline mini-batch learning over textual harness parameters.</strong>
+        <ul>
+          <li><em>Problem.</em> Prior automated-harness work either optimizes prompts only (GEPA-style textual gradients) or edits the harness end-to-end with an unstructured coding-agent loop (Meta-Harness). The first misses tools and middleware; the second lacks explicit control over generalization, so patches overfit to the trajectories they were derived from. Neither treats the harness as a parameter <code>&theta;</code> that gets updated by mini-batch signals with a dev-set selection rule.</li>
+          <li><em>Mechanism.</em> AutoSaddler defines the harness parameter as <code>&theta; = (&theta;<sub>prompt</sub>, &theta;<sub>tool</sub>, &theta;<sub>middleware</sub>) &isin; &Theta;</code>, partitions tasks into <code>D<sub>train</sub></code>/<code>D<sub>dev</sub></code>/<code>D<sub>test</sub></code>, and at each iteration <code>n</code> (i) evaluates the current harness on a mini-batch <code>B<sub>n</sub></code>, (ii) runs Diagnosis-Patch to derive a structured patch <code>&Delta;&theta;<sub>n</sub></code> against failure traces, (iii) verifies mini-batch improvement <code>&Jcirc;<sub>B<sub>n</sub></sub>(H'<sub>n</sub>)&gt;&Jcirc;<sub>B<sub>n</sub></sub>(H<sub>n</sub>)</code>, (iv) if accepted, further evaluates <code>H'<sub>n</sub></code> on <code>D<sub>dev</sub></code> for generalization. After the rollout budget is exhausted the framework returns the dev-max candidate and evaluates once on test.</li>
+          <li><em>Why it works / why it beats prior.</em> Treating textual harness edits under the same train / dev / test discipline as ordinary machine learning gives explicit control over the overfitting axis; the mini-batch update, the mini-batch verifier, and the dev-set generalization check play the roles of forward, backward, and validation in standard mini-batch SGD, except that "backprop" is realized by the Diagnosis-Patch textual-gradient step. GEPA operates only over prompts and Meta-Harness treats the whole harness as free-form code without an explicit generalization guard; AutoSaddler beats both because targeting the joint (prompt, tool, middleware) space is broader than prompt-only, and the dev-set generalization guard prevents unbounded editing from collapsing onto a single trajectory.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; Diagnosis-Patch Session with a structured patch taxonomy and Phased Patch Scheduling.</strong>
+        <ul>
+          <li><em>Problem.</em> Long-horizon agent traces do not fit in an LLM context window, and diagnosis without evidence collapses to shallow reflection. Simultaneously, an unconstrained editor produces a wide, sparsely useful patch distribution &mdash; many patches touch orthogonal harness components and cannot be attributed to a specific failure mode.</li>
+          <li><em>Mechanism.</em> The Diagnosis-Patch Agent (on CA-SDK) is given the failure trace plus the harness codebase; structured guidance lets it progressively retrieve relevant trace details, mitigating the long-context problem. It identifies the suspected root cause, considers alternative hypotheses, and produces a structured patch <code>&Delta;&theta;<sub>n</sub></code> under a fixed taxonomy: Prompt Patch (Rule Addition / Rule Modification), Tool Patch (New Tool Addition / Argument Modification / Implementation Fix / Tool Description Fix), Middleware Patch (PreToolUse Hook / Infrastructure Change / Agent Loop Logic Change). Subtypes are further grouped into <em>Capability</em> patches (execution / orchestration edits) and <em>Steering</em> patches (textual edits only). Phased Patch Scheduling runs Capability first, Steering second &mdash; the same shape as a learning-rate schedule in standard training.</li>
+          <li><em>Why it works / why it beats prior.</em> Grounding diagnosis in the actual traces (rather than in surface reflection) is what turns "the run failed" into "the run failed because tool X's argument scope was too permissive." A fixed taxonomy over three harness components makes each patch attributable and comparable across iterations. Phasing Capability before Steering avoids the failure mode where a Steering patch masks a Capability bug and prevents the harder fix. Meta-Harness and GEPA lack both the taxonomy and the phase schedule.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; Reflection Session and Evolution Session on EvoDAG for durable, generalization-aware updates.</strong>
+        <ul>
+          <li><em>Problem.</em> A one-shot patch that improves the current mini-batch may regress on a later one; a linear chain of edits also drops useful components once a superseding edit is written. Prior harness search does not maintain the population of prior harnesses in a form the optimizer can revisit and recombine.</li>
+          <li><em>Mechanism.</em> After each patch, the Reflection Agent compares pre- and post-patch behavior on the same mini-batch and categorizes each outcome as <em>fixed</em>, <em>regressed</em>, <em>still-failing</em>, or <em>still-passing</em>; category-specific self-reflection prompts elicit lessons about why the patch was effective, which failure patterns it addressed, why regressions occurred, or why the patch was insufficient. Lessons are stored as node-level attributes in <em>EvoDAG</em>, a directed acyclic graph <code>&Gscr;=(V,E)</code> where nodes are previously explored harnesses annotated with lessons and performance signals, and edges are the concrete diffs <code>&Delta;&theta;</code>. The Evolution Session then instructs the Evolution Agent to synthesize the next harness <code>H<sub>n+1</sub></code> by composing elements from any subset of prior harnesses, guided by the accumulated lessons &mdash; a merge operation analogous to evolutionary crossover.</li>
+          <li><em>Why it works / why it beats prior.</em> EvoDAG turns the optimization trajectory from a chain into a graph, so the optimizer can escape local optima by recombining components from different lineages; the reflection categories give the recombination signal (a "regressed" case flags which component <em>not</em> to keep). Linear chains (GEPA-style) cannot recover discarded but useful edits, and Meta-Harness's unstructured coding-agent loop lacks the cross-lineage merge operator.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Benchmarks and base harnesses: GAIA2 (default ReAct), SWE-Bench Pro (SWE-agent), Terminal-Bench 2.0 (Terminus 2). Data splits enforce cross-task-group generalization &mdash; e.g. on SWE-Bench Pro, training is on qutebrowser, dev is on Vuls and NodeBB, test is on Ansible, Flipt, and Element-web. Metric: Pass@1, mean &plusmn; standard deviation over three test runs.</li>
+      <li>Headline gains over base harness: <code>+9.0</code>pp on GAIA2, <code>+9.6</code>pp on SWE-Bench Pro, <code>+10.0</code>pp on Terminal-Bench 2.0. Gains over the strongest automated baseline (GEPA or Meta-Harness, whichever is stronger on that benchmark): <code>+7.4</code>pp, <code>+4.4</code>pp, <code>+6.7</code>pp respectively.</li>
+      <li>GAIA2 test Pass@1 across three evaluated Universes (avg):
+        <ul>
+          <li>Default Agent (Manual): <code>53.0 &plusmn; 15</code></li>
+          <li>GEPA (Auto): <code>54.6 &plusmn; 25</code></li>
+          <li>Meta-Harness (Auto): <code>53.2 &plusmn; 22</code></li>
+          <li>AutoSaddler: reported to reach the best average across the three Universes.</li>
+        </ul>
+      </li>
+      <li>Efficiency on GAIA2 dev: AutoSaddler reaches <code>72.3%</code> dev accuracy with <code>~1,000</code> total task executions, while GEPA and Meta-Harness saturate at <code>64.6%</code> and <code>61.5%</code> respectively despite consuming <code>~2,800</code> task executions; on rollouts leveraged for optimization, AutoSaddler hits its best after <code>147</code> traces, roughly <code>10&times;</code> fewer than Meta-Harness's <code>1,400</code>.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>RQ1 &mdash; in-depth diagnosis vs shallow reflection: removing the evidence-grounded diagnosis step (retrieval over the trace + harness codebase) degrades root-cause identification and downstream patch usefulness; qualitative case studies attribute the gap to the ability to follow long-horizon causal chains rather than reflect on surface symptoms.</li>
+      <li>RQ2 &mdash; structured intervention vs unconstrained editing: restricting the patch space to the fixed prompt / tool / middleware taxonomy improves patch diversity per accepted update and reduces regressions; unconstrained editing tends to concentrate patches on prompts and misses tool and middleware fixes.</li>
+      <li>RQ3 &mdash; generalization-aware selection vs trajectory-specific repair: dropping the dev-set generalization guard collapses gains &mdash; patches that improve the mini-batch fail to transfer to the dev distribution; the guard is what prevents overfitting to the observed training samples.</li>
+      <li>Additional appendix analyses (in the 44-page report): robustness to optimization stochasticity, robustness to training-distribution shift, cross-model transferability to a weaker agent backbone, patch durability, optimization efficiency on Terminal-Bench 2.0, end-to-end cost characterization (optimizer-side vs task-agent evaluation cost), and a search-trajectory visualization plus a catalog of discovered patches on GAIA2 and Terminal-Bench 2.0.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Implementation: Diagnosis-Patch, Reflection, and Evolution agents all instantiated via Claude Agent SDK. Base LLM at eval: Claude Opus 4.6. Project site and code: <code>aka.ms/AutoSaddler-website</code>. The appendix formalizes AutoSaddler as mini-batch learning over textual harness parameters &mdash; mapping Diagnosis-Patch-Verification to backprop-under-textual-gradients and mapping EvoDAG + Evolution to the optimizer update &mdash; and discusses where the analogy holds and where it breaks.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="cafe"><a href="https://arxiv.org/abs/2608.24794">CAFE: Self-Improving Search Agents Need Co-Evolving Feedback</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-25</span>
+      <span>Agentic RL &middot; Search agents &middot; Critic co-evolution &middot; GRPO &middot; Preference optimization</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Boyang Liu, Senjie Jin, Peixin Wang, Zhangyue Yin, Yibo Wang, Yuhao Zhou, Xinbing Liang, Shizheng Zhu, Yuhui Wang, Jingqi Tong, Zhiheng Xi, Jiazheng Zhang, Clive Bai, Clarenceai, Blaze Chen, Tao Gui, Qi Zhang, Xuanjing Huang (Fudan University with LLM Department, Tencent; Tencent-affiliated co-authors on <code>@tencent.com</code>). arXiv:2608.24794v1 [cs.AI], submitted 2026-08-25, on the Hugging Face Daily selection for 2026-08-26.</li>
+      <li>The framing: outcome-supervised search agents learn <em>when</em> and <em>how</em> to retrieve external evidence, but their terminal task reward cannot localize an in-flight directional error or redirect an ongoing trajectory. Prior in-context feedback methods (<em>Reflexion</em>, <em>Self-Refine</em>, <em>CRITIC</em>) return post-hoc critiques from prompted rather than trained models. CAFE makes corrective feedback a <em>learned</em> in-trajectory intervention emitted by a critic role that shares parameters with the agent, and alternates online agent-role updates with offline critic-role refinement so the two capabilities co-evolve. Backbone: <code>Qwen2.5-7/3B-Instruct</code>. Teacher for SFT bootstrap: <em>Kimi-K2.5</em>.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.24794v1/main_figure_0813.png" alt="CAFE overview: one shared model as agent and critic" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). CAFE. One shared model serves as agent and critic. CFE shapes request returns from the call&ndash;skip gap; advantage shaping weights tokens before and after feedback. RDPO updates the critic from prefix-matched pairs mined from recent rollouts.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; In-Trajectory Feedback Interaction with a Role-Conditioned Agent&ndash;Critic Model.</strong>
+        <ul>
+          <li><em>Problem.</em> In long-horizon search, an early directional error compounds silently &mdash; the trajectory begins correctly but ends in failure and the terminal reward cannot say where. In-context feedback that could redirect the active trajectory is missing from outcome-supervised agents, and maintaining a separate critic model incurs substantial overhead.</li>
+          <li><em>Mechanism.</em> The agent's action space is augmented with an optional <code>&lt;request_feedback&gt;</code> action. When emitted at intermediate history <code>h<sub>i,t</sub></code>, the same shared-parameter model is invoked in the critic role <code>q<sup>C</sup><sub>&theta;</sub>(&middot; | h<sub>i,t</sub>)</code> to generate feedback <code>f<sub>i,t</sub></code>; that feedback is appended to the context and control returns to the agent role <code>&pi;<sup>A</sup><sub>&theta;</sub></code>, which continues the rollout from the augmented history. The two roles remain distinct at inference time but share a common backbone. The pair is bootstrapped via <em>Bootstrapping Feedback-Conditioned Search</em>: failed base-agent trajectories are diagnosed by <em>Kimi-K2.5</em> which identifies the earliest turn where the trajectory becomes erroneous or ceases to make progress; the correct-so-far prefix is preserved, a <code>&lt;request_feedback&gt;</code> is inserted, and a teacher-generated feedback plus a feedback-conditioned continuation reach the correct final answer. Only actually-repaired trajectories are retained as SFT data.</li>
+          <li><em>Why it works / why it beats prior.</em> Sharing parameters between agent and critic sidesteps the frozen-critic misalignment problem &mdash; as the agent's failure distribution shifts through training, the critic's judgment shifts with it. Bootstrapping from the base agent's <em>own</em> failure prefixes (rather than pure teacher rollouts) means SFT teaches the model to request, generate, and use feedback at states its own policy actually visits &mdash; the classic failure of pure teacher-imitation baselines like Reflexion is that the critique states are off-policy.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; Comparative Feedback Estimate reward and Feedback-Aware Advantage Shaping (online RL).</strong>
+        <ul>
+          <li><em>Problem.</em> With feedback as an optional intervention, the terminal outcome does not reveal (a) whether a request was beneficial (a rescued trajectory and a flawless one both look like reward-<code>1</code>) or (b) how credit should be split across the pre-request prefix (which drove the search off course) and the post-feedback continuation (which repaired it). Vanilla GRPO assigns one advantage <code>A<sub>i</sub></code> to every trainable token in a rollout, which rewards the misbehaving prefix as much as the recovery.</li>
+          <li><em>Mechanism.</em> Two additions to the standard GRPO pipeline. (i) <em>CFE reward</em>: within a prompt-level rollout group <code>&Gscr;<sub>x</sub></code>, split rollouts into call group (<code>C<sub>i</sub>=1</code>, feedback requested) and skip group (<code>C<sub>i</sub>=0</code>); the prompt-level empirical success gap <code>&ucirc;(x) = mean(r | call) &minus; mean(r | skip)</code> is used as the estimated feedback utility. The CFE-shaped reward is <code>R<sup>CFE</sup><sub>i</sub> = r<sub>i,task</sub> + &beta;C<sub>i</sub>u<sub>i</sub> &minus; &gamma;[n<sub>fb,i</sub>&minus;1]<sub>+</sub></code>, penalising only requests beyond the first. (ii) <em>Feedback-aware advantage shaping</em>: trainable agent tokens in each requesting rollout are split at the first request into <code>T<sup>pre</sup><sub>i</sub></code> / <code>T<sup>call</sup><sub>i</sub></code> / <code>T<sup>post</sup><sub>i</sub></code>. With clipped prompt-level gap <code>g<sub>i</sub>=clip(u<sub>i</sub>,0,b)</code>, when <code>A<sub>i</sub>&gt;0</code> and <code>g<sub>i</sub>&gt;0</code>, the pre-request tokens receive <code>max(A<sub>i</sub>&minus;&lambda;g<sub>i</sub>,0)</code>, the call tokens receive <code>A<sub>i</sub></code>, and the post-feedback tokens receive <code>A<sub>i</sub>+&lambda;g<sub>i</sub></code>. Observation and feedback tokens are excluded from the policy loss.</li>
+          <li><em>Why it works / why it beats prior.</em> The call-vs-skip gap gives an on-policy, per-prompt estimate of feedback utility without a separate value head, so the agent learns to request feedback exactly when the prompt-level distribution says it helps. Splitting the advantage into pre / call / post spans stops the standard-GRPO failure where reinforcing a rescued rollout rewards the flawed behavior the agent had to abandon: the reweighting subtracts credit from the misbehaving prefix and adds it to the recovery. The clipping (<code>g<sub>i</sub>&isin;[0,b]</code>) and the "apply only when <code>A<sub>i</sub>&gt;0</code>" gate bound the influence so it never dominates the task reward.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; Rollout-Derived Preference Optimization (offline critic) and iterative co-evolution.</strong>
+        <ul>
+          <li><em>Problem.</em> The critic's supervision cannot come from ground-truth feedback labels (there are none), and terminal-outcome supervision for the critic is confounded by both the search prefix and the agent's subsequent actions; a static critic misaligns with the agent as the agent's failure distribution shifts.</li>
+          <li><em>Mechanism.</em> RDPO mines matched successful and unsuccessful trajectories from the latest online rollouts and forms preference pairs whose <em>prefix is identical</em> up to the request turn &mdash; so the pair differs only by the feedback generated and its downstream continuation. Standard preference-optimization then updates the critic role toward feedback that leads to the successful continuation and away from feedback that leads to failure. CAFE alternates online agent-role RL with offline critic-role RDPO on the latest rollouts.</li>
+          <li><em>Why it works / why it beats prior.</em> Prefix matching is the specific device that removes the search-prefix confound &mdash; whatever the pre-request behavior was, both trajectories share it. Alternating agent- and critic-role updates keeps the critic aligned with the current agent's failure distribution; one-sided ablations show that improving only the agent or only the critic eventually plateaus, whereas alternating updates continues to improve performance. Frozen-critic baselines (prompted reflection methods) cannot track the shifting failure distribution.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Backbones: <code>Qwen2.5-7B-Instruct</code> and <code>Qwen2.5-3B-Instruct</code>. Evaluation: seven agentic SearchQA benchmarks plus BrowseComp-Plus.</li>
+      <li>Headline: at the <code>7B</code> scale, CAFE achieves the strongest average performance among competing RL-based search methods, outperforming the strongest baseline by <code>+2.1</code> EM and <code>+1.3</code> F1. Gains transfer robustly to the <code>3B</code> scale.</li>
+      <li>Out-of-domain generalization: gains are consistent across all six out-of-domain benchmarks.</li>
+      <li>Answer-level hallucination: average rate drops from <code>17.6%</code> to <code>12.6%</code> &mdash; a direct measurement of factual failure mode rather than a proxy metric.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Component ablations (online): removing the CFE reward (feedback term or repeat penalty) or the feedback-aware advantage shaping degrades performance; the two mechanisms are complementary and needed for the reported gain.</li>
+      <li>Component ablations (offline): removing RDPO or replacing prefix-matched preference pairs with terminal-outcome preference pairs increases variance and cuts the average benchmark score, consistent with the paper's confounding argument.</li>
+      <li>Co-evolution schedule: one-sided ablations (only agent updates or only critic updates) plateau after a few iterations; alternating agent-then-critic updates continues to improve, empirically motivating the co-evolution framing.</li>
+      <li>Additional analyses (from the appendix TOC): model-size ablation, detailed hallucination results, iteration-schedule ablation, and results on BrowseComp-Plus.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning: CAFE separates itself from the finer-grained credit line (information gain, confidence change, local state comparison) which is <em>evaluative</em> (assigns credit retrospectively) rather than <em>instructive</em> (redirects the active trajectory). It also separates itself from Reflexion / Self-Refine / CRITIC by making the critic a trained shared-parameter role rather than a frozen prompted model. The Fudan / Tencent collaboration credentials the practical deployment reading (LLM Department, Tencent Inc. per author email affiliations).</li>
+    </ul>
+
+    <h2 id="wemm-embedding"><a href="https://arxiv.org/abs/2608.24053">WeMM-Embedding: WeChat Multi-Modal Embedding Technical Report</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-08-25</span>
+      <span>Multimodal embeddings &middot; MMEB-v2 SOTA &middot; Qwen3.5 backbone &middot; WeChat deployment &middot; MRL</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Junjie Zhou, Ke Mei, Lei Li, Tianyi Wang, Fengyun Rao, Jing Lyu (WeChat Vision, Tencent Inc.). arXiv:2608.24053v1 [cs.CV], submitted 2026-08-25, on the Hugging Face Daily selection for 2026-08-26.</li>
+      <li>The framing: universal multimodal embeddings anchor retrieval, recommendation, classification, and agentic pipelines; WeMM-Embedding ships a family of MLLM-based universal embedding models at <code>2B</code>, <code>4B</code>, and <code>9B</code> that supports text, images, videos, visual documents, and arbitrarily interleaved multimodal inputs with flexible output dimensions via Matryoshka Representation Learning. Training is two-stage: large-scale multi-task alignment, then curated fine-tuning with graded relevance supervision, hard-negative enrichment, and cross-scale distillation. All variants are natively multimodal <code>Qwen3.5</code>-backbone based.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; unified pair-based training format with duplicate-aware masking.</strong>
+        <ul>
+          <li><em>Problem.</em> The training corpus fuses weakly supervised web pairs, caption pairs, retrieval pairs, classification pairs, multimodal QA pairs, and graded-relevance pairs across text, image, video, and interleaved inputs; if these heterogeneous supervision signals are folded into contrastive learning without a common format, near-duplicate sources or targets across tasks become in-batch false negatives.</li>
+          <li><em>Mechanism.</em> Every example is expressed as <code>z<sub>i</sub>=(I<sub>i</sub>, q<sub>i</sub>, c<sub>i</sub>, &Nscr;<sub>i</sub>, y<sub>i</sub>)</code>: instruction, source, positive target, optional hard-negative set, optional graded relevance score. Each batch is drawn from a single dataset (keeping task definition consistent). Contrastive loss <code>&Lscr;<sub>CL</sub></code> is InfoNCE with a <em>duplicate-aware mask</em> <code>M<sub>i,j,c</sub></code> that zeros out any in-batch candidate whose source is near-duplicate to <code>q<sub>i</sub></code> (<code>s(q<sub>i</sub>,q<sub>j</sub>)&gt;&tau;<sub>dup</sub></code>) or whose target is near-duplicate to <code>c<sup>+</sup><sub>i</sub></code>; graded-relevance batches use a score-gap-weighted CoSENT-style ranking objective. Temperature <code>&tau;</code> is learnable.</li>
+          <li><em>Why it works / why it beats prior.</em> The unified format lets task-specific batches be interleaved through the same multi-task pipeline without post-hoc reformatting per task, and the duplicate-aware mask is what prevents the shared-target-space collapse (e.g. classification datasets where many sources map to the same label). Prior MLLM-embedding pipelines (E5-V-style, MMRet-style, plain NV-Embed-vintage MLLM embedders) do not maintain a per-example mask that catches near-duplicates on both source and target sides.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; Semantic-ID-guided resampling for the curated stage.</strong>
+        <ul>
+          <li><em>Problem.</em> The large-scale collection covers broad domains but its semantic distribution is skewed toward frequent patterns; retraining on it directly over-samples the head of the distribution and starves rare-but-informative semantic regions.</li>
+          <li><em>Mechanism.</em> Semantic IDs (three-level residual k-means quantizer on intermediate-checkpoint embeddings) are derived per source&ndash;target pair. Assignment density at each codebook level is used as a resampling weight: pairs mapped to densely populated codes are down-sampled, pairs mapped to sparsely populated codes are retained at higher rates. The result is a curated corpus about <code>1/10</code> the raw size with improved semantic balance. An MLLM filter refines textual descriptions and drops mismatched pairs; hard negatives are synthesized (LLM-generated for text targets; intermediate-checkpoint retrieval for image and video targets), and a reranker assigns fine-grained relevance scores on a smaller subset.</li>
+          <li><em>Why it works / why it beats prior.</em> A three-level RQ-KMeans code captures nested semantic structure without collapsing to a single flat cluster; using code density as a resampling signal without enforcing full uniformity avoids overshooting the rare tail. Uniform-sampling and IDF-style reweighting baselines do not condition on multi-level codebook density, so they either flatten the distribution too aggressively or preserve the head skew.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; two-stage training with Matryoshka Representation Learning, reranker supervision, and cross-scale embedding distillation.</strong>
+        <ul>
+          <li><em>Problem.</em> A single embedding size fits some downstream constraints and not others (retrieval indexes at different byte budgets, on-device inference); training separate models per size wastes compute. A single-stage recipe cannot simultaneously give broad multi-task alignment and fine-grained relevance on hard negatives; a small model trained in isolation cannot inherit the discrimination structure of a larger sibling.</li>
+          <li><em>Mechanism.</em> Input encoding appends a dedicated <code>&lt;embedding&gt;</code> token whose final-layer hidden state (L2-normalized) is the output representation; multiple <code>&lt;embedding&gt;</code> tokens can be inserted (e.g. one after video, one at end for video-only and joint video-text representations in a single forward pass). MRL supports flexible dimensions from a single training run by retaining the first <code>d</code> dimensions and renormalising, with predefined supported dimensions <code>&Dscr;<sub>MRL</sub></code>. Stage 1 trains on several hundred million pairs with InfoNCE plus CoSENT for graded relevance. Stage 2 fine-tunes on the curated corpus with graded relevance and hard negatives, adds reranker supervision (fine-grained ordinal scoring on a subset), and applies cross-scale embedding distillation from the <code>9B</code> teacher into the <code>2B</code>/<code>4B</code> students.</li>
+          <li><em>Why it works / why it beats prior.</em> MRL delivers all supported dimensions from one forward pass, avoiding per-dimension retraining. Splitting alignment and refinement across two stages matches the pattern that yielded the largest gains in prior embedding-scale reports (E5, BGE, mmE5); adding reranker supervision on top of contrastive gives the model an ordinal signal contrastive-only training cannot express. Cross-scale distillation is what lets the <code>2B</code> variant already surpass the previously leading <code>8B</code> open baseline &mdash; the <code>2B</code> student inherits discrimination structure from the <code>9B</code> teacher rather than re-learning it end-to-end.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>MMEB-v2 overall score (official leaderboard status as of 2026-08-24): <code>WeMM-Embedding-9B = 80.6</code>, ranking first ahead of all listed open-source and proprietary models; the compact <code>2B</code> variant already surpasses the previously leading <code>8B</code> open-source baseline.</li>
+      <li>Cross-modal retrieval suite (12-dataset, from Gemini Embedding 2 report): the <code>2B</code> model compares favorably with leading proprietary models.</li>
+      <li>Text and agent-centric tasks: Section 4.1.2 reports text-retrieval and agent-centric downstream numbers alongside the general multimodal representation numbers.</li>
+      <li>In-house evaluation: substantial gains on a <code>26</code>-task in-house benchmark spanning WeChat product surfaces.</li>
+      <li>Online A/B: consistent improvements across <code>14</code> online A/B tests; deployed at scale across WeChat Channels, Official Accounts, Moments, and e-commerce services.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>MRL analysis (Section 4.4.1): dimensions supported by MRL retain performance under prefix truncation and re-normalization; a single training run yields all supported sizes without a large gap to per-dimension retraining.</li>
+      <li>Stage-1 design analysis (Section 4.4.2): studies of contribution from unified pair-based format, duplicate-aware masking, and CoSENT-style ranking on graded pairs.</li>
+      <li>Cumulative Stage-2 analysis (Section 4.4.3): incremental contribution of Semantic-ID-guided resampling, MLLM quality refinement, hard-negative construction, reranker supervision, and cross-scale distillation, layered one at a time onto the Stage-1 checkpoint.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Release: model weights and code at <code>github.com/Tencent/WeMM-Embedding</code> and the Hugging Face collection at <code>huggingface.co/collections/tencent/wemm-embedding</code>. Positioning: MLLM-based universal multimodal embedding, natively multimodal <code>Qwen3.5</code> backbone, first-place on MMEB-v2 as of 2026-08-24, deployment-proven across WeChat product surfaces. Correspondence: <code>fengyunrao@tencent.com</code>.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const t = document.getElementById('themeToggle');
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  t.addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', cur);
+    localStorage.setItem('theme', cur);
+  });
+</script>
+</body>
+</html>
