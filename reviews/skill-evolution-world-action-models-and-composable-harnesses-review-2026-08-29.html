@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Skill Evolution, World-Action Models &amp; Composable Agent Harnesses Review &mdash; August 29, 2026 | Auto Lit Review</title>
+<meta name="description" content="Three Tier 2 frontier-lab papers on the 36-hour Hugging Face Daily window ending 2026-08-29. DeepSeek-AI + Peking formalize revertible effects and reactive coeffects into the Cordis meta-framework for self-evolving harnesses. Google Research introduces WikiSkill, a three-layer knowledge architecture that co-evolves a persistent wiki with agent skills and beats Trace2Skill / EvoSkill / SkillOpt across five benchmarks and five models. Tencent LIGHTSPEED / Fudan / Tsinghua introduce GameWAM, the first World-Action Model for native closed-loop gameplay and GUI control, and uncover the Low-Frequency Action Source Imprinting (LASI) failure mode." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 29, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#deepseek">DeepSeek</a>
+          <ul>
+            <li class="toc-h2"><a href="#cordis">A Programming Paradigm for Spatiotemporal Composability</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#google">Google</a>
+          <ul>
+            <li class="toc-h2"><a href="#wikiskill">WikiSkill: Compiling Agent Experience into Persistent Knowledge for Skill Evolution</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#tencent">Tencent</a>
+          <ul>
+            <li class="toc-h2"><a href="#gamewam">GameWAM: A World Action Model for Video Games</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 29, 2026</div>
+    <h1 class="page-title">Skill Evolution, World-Action Models &amp; Composable Agent Harnesses</h1>
+    <div class="page-meta">3 papers &middot; 3 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-08-29 (steady state, two days since the previous review) surfaces no Tier 1 flagship model launches and three Tier 2 frontier-lab papers spanning the Hugging Face Daily selections for 2026-08-27 and 2026-08-28. <a href="https://arxiv.org/abs/2608.25512"><em>A Programming Paradigm for Spatiotemporal Composability</em></a> (Yifan Shi, Wei Zhang and Tianyi Cui at Peking University and <strong>DeepSeek-AI</strong>) lifts effect and coeffect calculi from static type theory into runtime mechanisms, formalizing revertible effects and reactive coeffects and unifying them into a single context type; the discipline is implemented in <em>Cordis</em>, a meta-framework that provides effect tracking, coeffect resolution, and a declarative component loader with hot module replacement targeting self-evolving agent harnesses. <a href="https://arxiv.org/abs/2608.27454"><em>WikiSkill</em></a> (<strong>Google Research</strong>) co-evolves a persistent knowledge base with the active skill set through a three-layer <code>raw/</code> / <code>wiki/</code> / <code>skills/</code> workspace and an orchestrated loop of Inference Agent rollouts, Wiki Maintainer pattern consolidation, and Wiki-Informed Skill Proposer updates with validation gating; on five benchmarks (LiveMath, SealQA, SpreadsheetBench, OfficeQA, ALFWorld) with five models (<code>Qwen-3.5-4B</code>, <code>Qwen-3.5-9B</code>, <code>Qwen-3.6-27B</code>, <code>Gemma-4-31B-It</code>, <code>Gemini-3.5-Flash</code>), WikiSkill beats every Trace2Skill / EvoSkill / SkillOpt configuration on the macro average, taking Gemini-3.5-Flash from <code>49.5</code> (no skill) to <code>68.1</code> and Qwen-3.6-27B from <code>39.4</code> to <code>63.3</code>. <a href="https://arxiv.org/abs/2608.26200"><em>GameWAM</em></a> (Fudan University, <strong>Tencent LIGHTSPEED</strong>, and Tsinghua Shenzhen International Graduate School) is, to the authors' knowledge, the first World-Action Model for native closed-loop gameplay and GUI control: parallel Video DiT and Action DiT under block-causal conditioning jointly generate future visual observations and executable keyboard-mouse trajectories with flow matching, block-cycle control decouples <code>P</code>-step prediction from short <code>E</code>-step execution (<code>E&lt;P</code>), and hierarchical cross-cycle history carries persistent long-horizon context. On Minecraft Universe (MCU) and ViZDoom the model shows competitive closed-loop performance with fewer executed native actions than the compared agents, and the paper uncovers <em>Low-Frequency Action Source Imprinting</em> (LASI), a source-sensitivity failure mode of generative control.</p>
+      <h3>Competitiveness</h3>
+      <p>None of the three papers is a generalist-model release, so the comparison surface is method-vs-method and benchmark-vs-baseline rather than leaderboard-vs-leaderboard. The Cordis paper positions itself against the effect-system tradition (algebraic effects and handlers, capability calculi, coeffect systems), and against ad-hoc plugin runtimes that either forbid unloading or leak side effects across component boundaries; its rationale for beating both is that lifting classical effect and coeffect concepts to <em>runtime</em> mechanisms &mdash; revertible effects and reactive coeffects &mdash; yields an observational-equivalence property under which distinct components can interleave without disturbing one another, and Cordis operationalizes this with a declarative component loader with configuration reconciliation and hot module replacement. WikiSkill's peer group is the recent experience-driven skill-evolution line (<em>Trace2Skill</em>, <em>EvoSkill</em>, <em>SkillOpt</em>), all of which share a rollout &rarr; trace analysis &rarr; skill proposal &rarr; validation-gating loop; WikiSkill wins in <strong>every</strong> model-benchmark configuration on the macro average, taking a 5-benchmark average from <code>49.5</code> to <code>68.1</code> on Gemini-3.5-Flash (<code>+18.6</code>pp), from <code>39.4</code> to <code>63.3</code> on Qwen-3.6-27B (<code>+23.9</code>pp), and from <code>41.3</code> to <code>54.9</code> on Gemma-4-31B (<code>+13.6</code>pp), and it also shows that skills evolved by a stronger backbone transfer to and can outperform self-evolved skills on a weaker one. GameWAM's peer group is the game-agent / game-world-model line: instruction-conditioned policies (<em>VPT</em>, <em>STEVE-1</em>, <em>OpenHA</em>, <em>Game-TARS</em>, <em>Lumine</em>) and interactive game world models (<em>Genie</em>, <em>DIAMOND</em>, <em>DreamZero</em>). GameWAM argues that jointly generating visual futures and native actions with a shared block-causal backbone, rather than mapping context to actions or generating visual futures from supplied actions, is what unifies the two families; the closed-loop evidence is competitive task success on both MCU and ViZDoom while executing fewer native actions than the compared agents in every Minecraft category. Reference frontier peers on live leaderboards continue to include <em>GPT-5.6</em>, <em>Claude Opus 4.7</em>, <em>Gemini 3.7 Flash</em>, <em>DeepSeek-V4</em>, and <em>Qwen3.8-Max</em>; none is the target of these papers directly, but the WikiSkill and Cordis results reinforce that agent-side plumbing (skills, harnesses, effect systems) continues to unlock large point gains on established agentic benchmarks while the underlying decoder weights stay frozen.</p>
+      <h3>New frontier releases</h3>
+      <p>No new Tier 1 flagship model launches surfaced in the window. All three Tier 2 papers ship open artifacts or accompanying pages: Cordis is described as a meta-framework with core library and declarative component loader (paper only, no code URL in the abstract); WikiSkill is a research report with detailed experimental protocol; GameWAM releases a project page at <code>yunncheng.github.io/GameWAM</code>. No Tier 3 blog posts or engineering notes from frontier labs surfaced in the window.</p>
+    </section>
+
+    <h1 id="deepseek">DeepSeek</h1>
+
+    <h2 id="cordis"><a href="https://arxiv.org/abs/2608.25512">A Programming Paradigm for Spatiotemporal Composability</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-26</span>
+      <span>Programming languages &middot; Effect systems &middot; Agent harnesses &middot; Runtime composability</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Yifan Shi (Peking University; DeepSeek-AI), Wei Zhang (Peking University), Tianyi Cui (DeepSeek-AI). arXiv:2608.25512v1 [cs.PL], 92 pages / 1 figure / 2 tables, submitted 2026-08-26.</li>
+      <li>The framing: modern software &mdash; plugin systems, hot-reload runtimes, and especially self-evolving agent harnesses that continually patch tools, prompts, and middleware &mdash; needs a formal account of dynamic composition. The paper identifies two orthogonal axes: <strong>temporal composability</strong> (a component's side effects can be fully reverted upon removal) and <strong>spatial composability</strong> (a component can declare and reactively manage inter-component dependencies). Both axes are handled by lifting classical effect and coeffect concepts from static type theory into runtime mechanisms.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; revertible effects for temporal composability.</strong>
+        <ul>
+          <li><em>Problem.</em> Existing effect calculi (algebraic effects, capability-based effect systems) reason about which effects a computation performs but do not give the runtime a mechanism to <em>undo</em> them. Consequently plugin systems that mutate global context (register a route, install a handler, attach a middleware) leak partial state when a plugin is unloaded, breaking hot module replacement and self-evolving harnesses that must retract a bad patch.</li>
+          <li><em>Mechanism.</em> Every context transformation is required to carry an <em>inverse</em> that the runtime holds. Formally each effect emits a paired forward and reverse rewriting of the effect context; the runtime records these on component activation and applies the inverses in reverse order on deactivation. The property is <em>local</em> to a single component: revertibility is proved for one component at a time and then extended to whole systems through metatheory.</li>
+          <li><em>Why it works / why it beats prior.</em> Because revertibility is enforced at the effect boundary rather than reconstructed from logs or snapshots, unloading a component restores exactly the prior context up to observational equivalence. Compared to snapshot-and-rollback runtimes, the state cost is proportional to the effects actually performed, not the whole world; compared to pure algebraic-effect systems that only <em>describe</em> effects, revertible effects give the runtime a legal action to take on unload.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; reactive coeffects for spatial composability.</strong>
+        <ul>
+          <li><em>Problem.</em> A component depends on context that other components install &mdash; a middleware may require the presence of an auth capability, a tool may require a certain configuration key. Without a runtime discipline, components activate before their dependencies exist and either crash, silently no-op, or install fallback state that later collides with the real dependency.</li>
+          <li><em>Mechanism.</em> Every component carries a <em>coeffect specification</em> describing what it requires of the ambient context. On every context change the runtime classifies the new context against the specification and drives <em>activation</em> when requirements become satisfied and <em>deactivation</em> when they become unsatisfied. As with revertible effects the property is local to one component; activation and deactivation are the only points at which the component's revertible effects run.</li>
+          <li><em>Why it works / why it beats prior.</em> Turning dependency management from imperative wiring into declarative coeffect classification decouples the two directions of composability: the component says <em>what</em> it needs, the runtime decides <em>when</em> to activate it. Prior plugin loaders (or manual harness code) mix activation ordering with dependency semantics, so any evolution of the ordering can silently break previously working plugins.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; the context paradigm and the calculus of dynamic composition.</strong>
+        <ul>
+          <li><em>Problem.</em> Effects and coeffects have historically lived in separate systems and separate contexts; when they mix, cross-component interaction can violate either revertibility or reactivity because the two contexts drift apart.</li>
+          <li><em>Mechanism.</em> The effect context and the coeffect context are unified into a single context type, and every effect and every coeffect is mediated through it. The mediation is proved to induce an observational equivalence under which the effects of distinct components interleave without disturbing one another, and the calculus of dynamic composition lifts this per-component property to a whole system of interleaved components.</li>
+          <li><em>Why it works / why it beats prior.</em> A single unified context is the smallest interface across which revertibility and reactivity can be jointly enforced; distinct contexts would require synchronization at every interaction. The observational-equivalence result is what makes it safe to add, remove, and swap components at runtime &mdash; the same guarantee that hot module replacement and self-evolving harnesses need but rarely prove.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 4 &mdash; Cordis meta-framework.</strong>
+        <ul>
+          <li><em>Problem.</em> A calculus without a runtime cannot serve a harness that needs to hot-swap a middleware while a rollout is in flight.</li>
+          <li><em>Mechanism.</em> Cordis provides (i) a core library with effect tracking and coeffect resolution matching the calculus, and (ii) a declarative component loader with <em>configuration reconciliation</em> and <em>hot module replacement</em>. The loader treats a target set of components as a declarative goal and drives the runtime toward that goal by activating, deactivating, and swapping components under the coeffect and revertible-effect discipline.</li>
+          <li><em>Why it works / why it beats prior.</em> Because activation and swap paths are the same paths under which the calculus proves observational equivalence, the reconciliation loop cannot leak state or race with dependency wiring. Prior hot-reload runtimes (e.g. Vite / Metro / Webpack HMR) do not target the effect algebra of long-lived agent harnesses and rely on developer discipline to keep swaps clean.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>The paper is a programming-languages contribution rather than a benchmarked ML paper. Metatheory results establish that (a) revertible effects give temporal composability for a single component, (b) reactive coeffects give spatial composability for a single component, and (c) the context paradigm carries both from a component to a system of interleaved components under an observational equivalence.</li>
+      <li>The Cordis implementation supplies the artifact side: core library plus declarative component loader with configuration reconciliation and hot module replacement. No standard benchmark numbers are reported (the paper is 92 pages with 1 figure and 2 tables, consistent with a PL semantics contribution).</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Categorized on arXiv as Programming Languages (cs.PL) and Software Engineering (cs.SE); ACM classes D.2.11 (Software Architectures), D.3.1 (Formal Definitions and Theory), D.3.3 (Language Constructs and Features).</li>
+      <li>Motivation explicitly names self-evolving agent harnesses as a target: the paper frames modern harnesses (patchable prompts, tool sets, and middleware) as the concrete instance of dynamic composition that today's plugin infrastructure fails to serve.</li>
+    </ul>
+
+    <h1 id="google">Google</h1>
+
+    <h2 id="wikiskill"><a href="https://arxiv.org/abs/2608.27454">WikiSkill: Compiling Agent Experience into Persistent Knowledge for Skill Evolution</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-27</span>
+      <span>Skill evolution &middot; Agent experience &middot; Persistent knowledge base &middot; Cross-model transfer</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Liyan Tang, Cyrus Rashtchian, Chun-Sung Ferng, Andrew Tomkins, Da-Cheng Juan, Tu Vu (all Google Research; Tu Vu also Virginia Tech; corresponding: <code>lytang@google.com</code>, <code>ttvu@google.com</code>). arXiv:2608.27454v1 [cs.AI], submitted 2026-08-27, on the Hugging Face Daily selection for 2026-08-28.</li>
+      <li>The framing: skills that package procedural knowledge and workflows can extend an LLM agent's capabilities, and recent work automatically <em>discovers</em> such skills from execution experience. But the insights that guide skill development stay scattered across optimization histories &mdash; the next iteration cannot systematically reuse a lesson learned two iterations ago. WikiSkill introduces a persistent wiki that co-evolves with the skill set and compounds knowledge across iterations, and validates on five benchmarks and five models.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.27454v1/wikiskill-diagram.png" alt="WikiSkill three-layer knowledge architecture and evolutionary loop" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). Three-layer WikiSkill architecture &mdash; immutable Raw Layer, persistent Wiki Layer, active Skills Layer &mdash; and the evolutionary loop of Inference Agent rollouts, Wiki Maintainer consolidation, and Wiki-Informed Skill Proposer updates with gating and rollback.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; Three-Layer Knowledge Architecture (<code>raw/</code>, <code>wiki/</code>, <code>skills/</code>).</strong>
+        <ul>
+          <li><em>Problem.</em> Prior skill-evolution frameworks fold every piece of accumulated knowledge into the active skill set. This forces a single artifact to serve two conflicting purposes &mdash; be compact enough for the Inference Agent to load and follow, and be exhaustive enough for future proposers to reason over the whole optimization history. In practice the skills either bloat or drop insights.</li>
+          <li><em>Mechanism.</em> WikiSkill separates the workspace into three layers. The <em>Raw Layer</em> stores immutable, step-by-step execution traces <code>&tau;<sub>i</sub> &isin; T<sub>train,k</sub></code> for iteration <code>k</code>; only the Maintainer and Proposer read it. The <em>Wiki Layer</em> is a persistent, append-only knowledge base <code>W<sub>k</sub></code> that consolidates recurring patterns and factual observations from traces across all iterations. The <em>Skills Layer</em> is the active skill set <code>S<sub>k</sub> = {s<sub>1</sub>,&hellip;,s<sub>M</sub>}</code> &mdash; each skill is a directory with a SKILL.md that carries frontmatter metadata (unique name, concise description) plus procedural instructions and applicability conditions. Only the Skills Layer is injected into the Inference Agent at run time.</li>
+          <li><em>Why it works / why it beats prior.</em> Splitting immutable evidence, accumulated knowledge, and executable skills into distinct artifacts lets each carry its natural cost profile: raw traces stay large but read-only, the wiki grows monotonically but is not part of the runtime prompt, and skills stay small and executable. Prior work (Trace2Skill, EvoSkill, SkillOpt) folds these into one file family, so a lesson that isn't yet worth a skill has nowhere to live and is lost by the next iteration.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; Wiki Maintainer: pattern consolidation.</strong>
+        <ul>
+          <li><em>Problem.</em> Raw traces are noisy: individual failures may or may not generalize; a single trace can look like a bug or like a pattern. A skill proposer that reads raw traces directly overfits to individual episodes.</li>
+          <li><em>Mechanism.</em> Between rollouts, the Wiki Maintainer reads the new traces and consolidates them into the wiki: it drafts and merges pages on recurring failure modes, environment quirks, tool-call idioms, and validated procedures. The wiki accumulates and reorganizes across iterations, and the same maintainer can refactor prior entries when a new trace clarifies an earlier hypothesis.</li>
+          <li><em>Why it works / why it beats prior.</em> By interposing a compression step between raw evidence and skill proposals, the Proposer sees a distilled, cross-iteration view of what the agent has learned. This is the mechanism that carries the +5&ndash;24pp macro gains reported in Section 4. Ablations (Section 5.1) confirm that removing wiki access drops the framework close to the SkillOpt baseline &mdash; the persistent wiki is <em>the</em> critical component, not just an accessory.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; Wiki-Informed Skill Proposer, gating, and rollback.</strong>
+        <ul>
+          <li><em>Problem.</em> A skill update that improves the current mini-batch may regress on held-out tasks; without a gate the skill set drifts under noise.</li>
+          <li><em>Mechanism.</em> The Skill Proposer reads the wiki (not the raw traces directly for the update rule) and proposes updates to the Skills Layer under a ReAct mechanism. Every candidate <code>S<sub>k+1</sub></code> is validation-gated against <code>T<sub>val,k</sub></code>; on score degradation the change is rolled back and <code>S<sub>k+1</sub> = S<sub>k</sub></code>. The wiki <code>W<sub>k</sub></code> persists regardless &mdash; even if the skill update rolls back, the consolidated lesson stays available for later iterations.</li>
+          <li><em>Why it works / why it beats prior.</em> Separating skill gating (revertible) from wiki accumulation (monotonic) means a proposal that fails validation still contributes evidence to the wiki for a later, better proposal &mdash; a lesson that Trace2Skill / EvoSkill / SkillOpt discard when they roll back an unhelpful edit.</li>
+        </ul>
+      </li>
+      <li><strong>Interesting empirical finding.</strong> Wiki access for the Inference Agent <em>during evolution</em> degrades final skill quality (Section 5.1) &mdash; if the agent can read the wiki at rollout time, the resulting skills over-rely on it and don't stand on their own. The design decision is therefore to restrict wiki access to the Maintainer and Proposer, and let only the Skills Layer reach the Inference Agent.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Benchmarks (five): <em>LiveMathematicianBench</em> (LiveMath) for math reasoning, <em>SealQA</em> for web search, <em>SpreadsheetBench</em> (SpreadSheet) for spreadsheet manipulation, <em>OfficeQA</em> for long-context document QA, and <em>ALFWorld</em> for interactive embodied tasks. Models (five): <code>Qwen-3.5-4B-Instruct</code>, <code>Qwen-3.5-9B-Instruct</code>, <code>Qwen-3.6-27B</code>, <code>Gemma-4-31B-It</code>, and <code>Gemini-3.5-Flash</code>. Baselines: <em>Trace2Skill</em>, <em>EvoSkill</em>, <em>SkillOpt</em>, plus a no-skill baseline.</li>
+      <li>Main results (higher is better):
+        <table>
+          <thead>
+            <tr><th>Model</th><th>Method</th><th>LiveMath</th><th>SealQA</th><th>SpreadSheet</th><th>OfficeQA</th><th>ALFWorld</th><th>Avg</th></tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="5">Qwen-3.5-4B</td><td>No skill</td><td>29.1</td><td>32.5</td><td>14.6</td><td>30.2</td><td>24.4</td><td>26.2</td></tr>
+            <tr><td>Trace2Skill</td><td>31.5</td><td>37.6</td><td>17.5</td><td>31.0</td><td>42.8</td><td>32.1</td></tr>
+            <tr><td>EvoSkill</td><td>41.7</td><td>37.3</td><td>18.6</td><td>29.5</td><td>41.5</td><td>33.7</td></tr>
+            <tr><td>SkillOpt</td><td>48.7</td><td>33.3</td><td>14.0</td><td>34.5</td><td>45.3</td><td>35.2</td></tr>
+            <tr><td><strong>WikiSkill</strong></td><td><strong>49.7</strong></td><td><strong>39.4</strong></td><td><strong>21.1</strong></td><td>28.5</td><td><strong>53.7</strong></td><td><strong>38.5</strong></td></tr>
+            <tr><td rowspan="5">Qwen-3.5-9B</td><td>No skill</td><td>28.2</td><td>26.3</td><td>24.3</td><td>35.9</td><td>34.7</td><td>29.9</td></tr>
+            <tr><td>Trace2Skill</td><td>33.1</td><td>36.9</td><td>26.5</td><td>38.4</td><td>48.8</td><td>36.7</td></tr>
+            <tr><td>EvoSkill</td><td>58.1</td><td>34.5</td><td>35.4</td><td>34.9</td><td>48.5</td><td>42.3</td></tr>
+            <tr><td>SkillOpt</td><td>48.7</td><td>29.4</td><td>29.0</td><td>38.0</td><td>55.7</td><td>40.2</td></tr>
+            <tr><td><strong>WikiSkill</strong></td><td>56.3</td><td><strong>43.1</strong></td><td>33.6</td><td><strong>40.5</strong></td><td><strong>63.4</strong></td><td><strong>47.4</strong></td></tr>
+            <tr><td rowspan="5">Qwen-3.6-27B</td><td>No skill</td><td>33.9</td><td>27.5</td><td>40.8</td><td>42.1</td><td>52.8</td><td>39.4</td></tr>
+            <tr><td>Trace2Skill</td><td>36.3</td><td>37.3</td><td>53.3</td><td>54.3</td><td>55.5</td><td>47.3</td></tr>
+            <tr><td>EvoSkill</td><td>57.3</td><td>32.9</td><td>59.5</td><td>52.5</td><td>64.2</td><td>53.3</td></tr>
+            <tr><td>SkillOpt</td><td>51.9</td><td>34.5</td><td>53.2</td><td>54.8</td><td>59.2</td><td>50.7</td></tr>
+            <tr><td><strong>WikiSkill</strong></td><td><strong>61.9</strong></td><td><strong>41.6</strong></td><td><strong>81.7</strong></td><td>53.7</td><td><strong>77.6</strong></td><td><strong>63.3</strong></td></tr>
+            <tr><td rowspan="5">Gemma-4-31B</td><td>No skill</td><td>33.9</td><td>30.6</td><td>48.3</td><td>43.3</td><td>50.4</td><td>41.3</td></tr>
+            <tr><td>Trace2Skill</td><td>32.3</td><td>37.7</td><td>58.5</td><td>43.2</td><td>57.2</td><td>45.8</td></tr>
+            <tr><td>EvoSkill</td><td>29.8</td><td>38.4</td><td>56.4</td><td>39.9</td><td>52.6</td><td>43.4</td></tr>
+            <tr><td>SkillOpt</td><td>40.1</td><td>36.1</td><td>63.1</td><td>44.4</td><td>61.9</td><td>49.1</td></tr>
+            <tr><td><strong>WikiSkill</strong></td><td><strong>56.7</strong></td><td><strong>41.2</strong></td><td><strong>68.0</strong></td><td>44.2</td><td><strong>64.4</strong></td><td><strong>54.9</strong></td></tr>
+            <tr><td rowspan="5">Gemini-3.5-Flash</td><td>No skill</td><td>33.0</td><td>29.4</td><td>50.5</td><td>48.6</td><td>85.9</td><td>49.5</td></tr>
+            <tr><td>Trace2Skill</td><td>41.9</td><td>44.3</td><td>56.0</td><td>50.0</td><td>85.9</td><td>55.6</td></tr>
+            <tr><td>EvoSkill</td><td>44.6</td><td>43.6</td><td>55.4</td><td>51.2</td><td>85.9</td><td>56.1</td></tr>
+            <tr><td>SkillOpt</td><td>49.7</td><td>28.2</td><td>66.1</td><td>49.8</td><td>85.9</td><td>55.9</td></tr>
+            <tr><td><strong>WikiSkill</strong></td><td><strong>72.6</strong></td><td><strong>44.7</strong></td><td><strong>76.6</strong></td><td><strong>60.7</strong></td><td>85.9</td><td><strong>68.1</strong></td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>WikiSkill wins the macro average on every one of the five models. Best absolute lift over the no-skill baseline is <code>+23.9</code>pp on Qwen-3.6-27B (39.4 &rarr; 63.3), and best absolute lift over the strongest prior skill-evolution baseline is <code>+10.0</code>pp on Qwen-3.6-27B (SkillOpt 50.7 &rarr; WikiSkill 63.3).</li>
+      <li>Cross-model skill transfer (Section 4.2.2): evolved skills transfer across model families &mdash; skills evolved on a stronger backbone can outperform self-evolved skills on a weaker one. Transferability tracks whether the skills capture general procedures rather than model-specific workarounds, and utility of transferred skills also tracks the inference model's ability to execute them.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><em>Persistent wiki knowledge is critical.</em> Section 5.1 shows that dropping the wiki collapses WikiSkill's gains &mdash; the framework degrades toward the SkillOpt baseline. This is the ablation that isolates the paper's core mechanism from the shared skill-evolution loop.</li>
+      <li><em>Wiki access for the Inference Agent during evolution degrades final skill quality.</em> If the Inference Agent can also read the wiki at rollout time, the resulting skills lean on it rather than standing alone, and skill quality drops at deployment. The design decision restricts wiki access to the Maintainer and Proposer.</li>
+      <li><em>Skill refinement continues throughout evolution.</em> Qualitative analysis (Section 5.2) shows WikiSkill continuously accumulates wiki patterns while producing concise skills, and skill refinement does not saturate early.</li>
+      <li><em>Skill evolution complements model scaling.</em> The macro-average gain from WikiSkill is not uniform across model sizes; the larger open backbones benefit more, and smaller models with skills can match substantially larger models without them (e.g. Qwen-3.5-9B WikiSkill 47.4 &gt; Qwen-3.6-27B no-skill 39.4).</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Categorized on arXiv as cs.AI and cs.CL; released under CC BY 4.0.</li>
+      <li>Related work positioned against experience-driven skill evolution (Trace2Skill, EvoSkill, SkillOpt) and skill-augmented / self-improving agents; explicitly focuses comparisons on dedicated skill-evolution frameworks rather than general prompt-optimizers like <em>GEPA</em>.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="gamewam"><a href="https://arxiv.org/abs/2608.26200">GameWAM: A World Action Model for Video Games</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-25</span>
+      <span>World-action models &middot; Game agents &middot; Flow matching &middot; Block-causal DiT &middot; Minecraft &middot; ViZDoom</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Yuncheng Guo (Fudan University), Zhanqiu Zhang (<strong>LIGHTSPEED</strong>, Tencent), Yiwen Guo (Independent Researcher), Weijia Li (Tsinghua Shenzhen International Graduate School). Corresponding authors as marked. arXiv:2608.26200v1 [cs.AI], 44 pages / 23 figures / 7 tables, submitted 2026-08-25, on the Hugging Face Daily selection for 2026-08-28. Project page: <code>yunncheng.github.io/GameWAM</code>.</li>
+      <li>The framing: game agents map visual and task context to actions but do not model how the world will look after each action; interactive game world models predict visual futures but require an external policy to supply actions. World-Action Models (WAMs) unify these two objectives, but existing WAMs have mostly been demonstrated in tabletop or bounded indoor robot manipulation. GameWAM is presented as the first WAM for <em>native closed-loop gameplay and GUI control</em> under rapidly changing first-person observations, persistent world state, and heterogeneous native controls.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2608.26200v1/gamewam_overall_framework.png" alt="GameWAM parallel Video and Action DiTs with block-causal interaction and gameplay/GUI-specific action generation" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). Parallel Video DiT and Action DiT jointly model future observations and native actions with block-causal interaction and gameplay/GUI-specific action generation.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; joint world-action modelling with parallel Video DiT and Action DiT under block-causal conditioning.</strong>
+        <ul>
+          <li><em>Problem.</em> A single unified denoiser for both pixels and native actions has to trade capacity between two different signals with different statistics and different time scales, and it cannot cleanly express the conditional dependency that action <code>a<sub>t</sub></code> depends on observation <code>o<sub>t</sub></code> while <code>o<sub>t+1</sub></code> depends on <code>a<sub>t</sub></code>.</li>
+          <li><em>Mechanism.</em> GameWAM uses two parallel diffusion transformers &mdash; a <em>Video DiT</em> that generates future visual observations and an <em>Action DiT</em> that generates keyboard-mouse actions &mdash; jointly trained with flow matching under a block-causal attention mask that enforces the observation-action dependency along the block axis. Continuous and discrete action dimensions are jointly predicted by the Action DiT and reduced separately in the loss (<code>L<sub>a</sub> = &lambda;<sub>cont</sub>L<sub>a</sub><sup>cont</sup> + &lambda;<sub>disc</sub>L<sub>a</sub><sup>disc</sup></code>) so that neither dominates. The composite objective is <code>L = &lambda;<sub>v</sub>L<sub>v</sub> + &lambda;<sub>a</sub>L<sub>a</sub> + &lambda;<sub>m</sub>L<sub>mode</sub> + &lambda;<sub>h</sub>L<sub>hist</sub></code>.</li>
+          <li><em>Why it works / why it beats prior.</em> Separating pixels and actions into two DiTs with a shared block-causal backbone gets the best of both prior families: visual prediction supplies dynamics-aware supervision to the policy branch (as in WAMs), while a dedicated Action DiT preserves the fine temporal and metric structure that a single video-token stream washes out. Purely visual-future world models (Genie, DreamZero) cannot serve as task policies, and prior action-only game agents (Game-TARS, Lumine) do not gain the dynamics-supervision signal.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; native-action gameplay/GUI mode routing with mode-specific distributions.</strong>
+        <ul>
+          <li><em>Problem.</em> Gameplay and GUI interaction share the same physical channels (keyboard, mouse) but have very different action statistics &mdash; gameplay mixes concurrent discrete keys, continuous camera motion, and sparse mouse events; GUI reuses the same channels for cursor motion, clicks, scrolling, and shortcuts. Treating them as one undifferentiated distribution mixes incompatible camera and cursor statistics.</li>
+          <li><em>Mechanism.</em> At each action step, GameWAM predicts a gameplay/GUI mode <code>&rho;<sub>&tau;</sub></code>, and a learned per-action router selects between gameplay-specific and GUI-specific action-flow predictions inside a shared Action-DiT flow. The two regimes use separate normalization for their distinct control distributions while retaining the same underlying physical controls. Mode routing is supervised via masked binary cross-entropy <code>L<sub>mode</sub></code>.</li>
+          <li><em>Why it works / why it beats prior.</em> Explicit per-step mode routing lets the same physical action space carry two conditional distributions without cross-contamination, which unified single-distribution models cannot express. Compared to prior separate-model GUI agents, the shared backbone keeps the world-modelling signal aligned with gameplay control.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; block-cycle control (predict <code>P</code>, execute <code>E&lt;P</code>) with hierarchical cross-cycle history.</strong>
+        <ul>
+          <li><em>Problem.</em> Recent embodied WAMs use temporal subsampling to control video-token cost, but coarse temporal resolution can miss rapid ego-motion, transient targets, and brief interaction events. Denser sampling captures these changes but under fixed token and cache budgets covers less interaction time. In chunk-wise autoregressive WAMs like DreamZero, extending the plan to recover look-ahead also lengthens the committed action span and delays feedback from updated observations.</li>
+          <li><em>Mechanism.</em> Each planning unit predicts <code>P</code> actions but commits only an <code>E</code>-step execution block, with <code>E &lt; P</code>, before observing and replanning. During training, overlapping <code>P</code>-step plans are anchored every <code>E</code> steps so that supervision extends beyond each execution block while reusing the same <code>E</code>-spaced temporal organization. Across cycle boundaries, a bounded within-cycle KV cache is combined with a <em>hierarchical cross-cycle memory</em>: recent executed observations remain explicitly represented, while older information is compressed into a multi-slot long-term history with learned slot and level embeddings (equation (9) in the paper: <code>M<sub>c+1</sub> = LN[M<sub>c</sub> + g<sub>c</sub> &odot; (Attn(M<sub>c</sub>, S&#x0304;<sub>c</sub>, S&#x0304;<sub>c</sub>) &minus; M<sub>c</sub>)]</code>). A history regularization loss <code>L<sub>hist</sub></code> predicts the current clean visual feature from persistent history to keep the compressed representation informative.</li>
+          <li><em>Why it works / why it beats prior.</em> Decoupling <em>prediction</em> horizon from <em>commitment</em> horizon lets the model exploit long look-ahead in the loss without lengthening the committed action span at inference; the hierarchical memory keeps persistent multi-cycle conditioning under a fixed KV budget. DreamZero's finite block chain accumulates KV until it resets, so subsequent chains lack persistent access to earlier executed observations; GameWAM's hierarchical history survives that reset.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 4 &mdash; Low-Frequency Action Source Imprinting (LASI).</strong>
+        <ul>
+          <li><em>Problem.</em> Generative control models that sample from a shared action source are typically assumed to be roughly source-agnostic under fixed conditioning &mdash; the sampled action distribution is shaped by the conditioning, not by the low-frequency structure of the source itself.</li>
+          <li><em>Mechanism.</em> Controlled frequency-domain interventions on the sampled action source (extended LASI analysis in Appendix D.5: frequency decomposition, donor / zeroing / source-space controls, single-forward source transfer, model-path amplification, closed-loop alignment / accumulation / resampling) reveal that low-frequency components of the source systematically steer coarse generated camera motion under fixed conditioning, and reuse across replanning steps can accumulate this into persistent directional bias &mdash; including repeated in-place rotation.</li>
+          <li><em>Why it works / why it beats prior.</em> The finding is a diagnostic rather than a fix. It identifies a source-sensitivity failure mode that ordinary source-dependent sampling does not predict, and gives frequency-domain interventions as the tool for detecting it in future generative control models.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Closed-loop benchmarks: <em>Minecraft Universe</em> (MCU) with over <code>800</code> tasks split into Embodied, GUI, and Combat categories (metrics: Steps &darr;, ASR Mini &uarr; on the Mini subset averaged over 10 runs per task, ASR All &uarr; over all tasks averaged over 5 runs per task); and the four-map <em>ViZDoom</em> suite evaluated by average episode reward.</li>
+      <li>Baselines on MCU include instruction-conditioned policies (<em>VPT</em>, <em>STEVE-1</em>, others) and game world models / policies with and without game-scale policy pretraining. GameWAM achieves competitive closed-loop performance on both MCU and ViZDoom; on Minecraft it does so with fewer executed native actions than the compared agents across <strong>all</strong> evaluated task categories (Embodied, GUI, Combat), joint control effectiveness and interaction efficiency.</li>
+      <li>Concrete Minecraft comparison from Table 1: <em>VPT</em> baseline reaches <code>10.1 &plusmn; 3.6</code> ASR-Mini on Embodied at <code>377</code> steps and <code>0.7 &plusmn; 0.1</code> ASR-Mini on GUI at <code>398</code> steps; GameWAM's headline claim is competitive success at lower step counts across all categories (the full grid in the paper reports SOTA on multiple metric-category cells).</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><em>Cross-modal masking.</em> Appendix D.2 studies masking configurations for control, world modelling, and inference efficiency; the block-causal joint objective is what carries the joint gain.</li>
+      <li><em>Training scale and token consumption.</em> Appendix D.1 shows the scaling behaviour of the joint objective under increased tokens.</li>
+      <li><em>Cross-game zero-shot transfer.</em> Appendix D.4 evaluates zero-shot transfer to <em>VoxeLibre</em>, testing whether the WAM captures action-conditioned dynamics rather than Minecraft-specific artefacts.</li>
+      <li><em>Qualitative rollouts.</em> Appendix D.3 catalogues six Minecraft scenarios (local exploration, extended continuous interaction, long-horizon pursuit of a resilient moving target, underwater dynamics, precise crafting-grid placement, recovery from intermediate placement error) and four ViZDoom scenarios (Battle 1 reactive combat, Battle 2 health-aware recovery, frontal defense line, Defend the Center multi-directional response).</li>
+      <li><em>Extended LASI analysis.</em> Appendix D.5 details frequency decomposition, within-condition source association, donor / zeroing / source-space controls, frequency selectivity, single-forward source transfer, model-path amplification, closed-loop alignment, and closed-loop accumulation / source resampling.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Categorized on arXiv as cs.AI, cs.CV, and cs.LG. 44 pages / 23 figures / 7 tables.</li>
+      <li>The LASI failure mode is offered as a diagnostic contribution the field can use to audit other generative controllers, not a fix &mdash; the paper flags it and points at the frequency-domain intervention toolkit rather than resolving it in-model.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
