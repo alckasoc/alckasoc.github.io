@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Relightable PBR 3D Asset Generation Review &mdash; August 30, 2026 | Auto Lit Review</title>
+<meta name="description" content="One Tier 2 frontier-lab paper on the 36-hour Hugging Face Daily window ending 2026-08-30. Apple's Luce unifies geometry and PBR materials in a voxelized multimodal Gaussian cloud with dedicated Gaussian primitives per PBR modality, a structured latent VAE, and a rectified-flow transformer with multi-layer DINOv2 conditioning; on Toys4K it reaches FID 20.99 (best baseline 29.22), and it introduces tangent-space normal map transfer that lifts mesh normal PSNR from 29.5 to 33.0 dB at zero polygon cost." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 30, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#apple">Apple</a>
+          <ul>
+            <li class="toc-h2"><a href="#luce">Luce: Relightable Gaussians for 3D Asset Generation</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 30, 2026</div>
+    <h1 class="page-title">Relightable PBR 3D Asset Generation</h1>
+    <div class="page-meta">1 paper &middot; 1 lab &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-08-30 (steady state, one day since the previous review) surfaces one Tier 2 frontier-lab paper after deduplication against the last two reviews &mdash; a very quiet window in which most of the strongest Hugging Face Daily 2026-08-29 candidates (WeMM-Embedding, AutoSaddler, CAFE) were already covered in the 2026-08-27 review. <a href="https://arxiv.org/abs/2608.23943"><em>Luce</em></a> (<strong>Apple</strong>: Mayank Singh, Michele Stoppa, Alvise Memo, Rui Yu, Harsha Kalli, Srimanth Gunturi, Muhammad Ahmed Riaz, Behrooz Shahsavari, Waleed Abdulla, David E. Jacobs) proposes a multimodal PBR Gaussian representation that gives each occupied voxel three <em>independent</em> Gaussian sets &mdash; albedo <code>G<sup>alb</sup></code>, metallic-roughness <code>G<sup>mr</sup></code>, and surface normal <code>G<sup>nor</sup></code> &mdash; each with its own positions, scales, rotations, and opacities, so the three modalities can concentrate primitives where <em>their</em> detail is richest rather than competing for a shared layout. A structured latent VAE (<em>SLatVAE</em>) compresses this cloud into a compact per-voxel latent by trading spatial resolution for per-voxel Gaussian density; a rectified-flow transformer (<em>SLatFlow</em>) generates the latent from a single image, conditioned on multi-layer DINOv2 features (layers 6, 12, 18, 24) rather than a single deep layer; and tangent-space normal map transfer bakes decoded normal Gaussians onto the extracted mesh as tangent-space normals. On Toys4K single-image-to-3D generation Luce GS reaches FID <code>20.99</code> against TRELLIS 2's <code>29.22</code> and LiTo's <code>29.76</code> (both &gt;<code>8</code> FID worse); on a 130-image AI-generated-image benchmark from Gemini 3.1 Flash Image, Luce GS improves CLIP alignment to <code>0.8519</code> vs. the best baseline TRELLIS GS <code>0.8299</code>. The tangent-space normal map transfer lifts mesh normal PSNR from <code>29.5</code> to <code>33.0</code> dB &quot;at zero polygon-count cost.&quot;</p>
+      <h3>Competitiveness</h3>
+      <p>Luce's peer group is the recent structured-latent generative 3D line &mdash; TRELLIS, TRELLIS 2, LiTo, 3DTopia-XL &mdash; and, more broadly, per-Gaussian PBR generators (TexGaussian, RelitLRM, MGM, MatSpray). The paper's argument for beating them has three prongs, each attached to a named mechanism. First, per-modality Gaussian sets vs. a single shared set (or PBR attributes attached to a single Gaussian cloud) let woodgrain-rich albedo and near-uniform normals not fight for the same primitives &mdash; the FID advantage on Toys4K comes from this decomposition. Second, multi-layer DINOv2 conditioning (early spatial + deep semantic) vs. single-layer conditioning preserves the legible text, logos, and inscriptions that other image-to-3D systems distort; the same ablation reports FID <code>20.99</code> vs. <code>25.21</code> and CLIP <code>0.8519</code> vs. <code>0.8081</code> on the AI-image benchmark. Third, tangent-space normal map transfer decouples normal frequency from mesh resolution: because Luce's normal Gaussians are supervised against the <em>effective</em> normals produced by baked authored normal maps, they carry sub-voxel surface detail that the mesh cannot represent, and baking them as tangent-space maps improves mesh normal PSNR from <code>29.5</code> to <code>33.0</code> dB. Reference frontier peers on live 3D-generation leaderboards continue to include TRELLIS 2 (Microsoft) and Hunyuan3D 2.1 (Tencent), neither of which decomposes appearance into independent PBR-modality Gaussian sets; TRELLIS 2's <code>7.48B</code> parameter count and <code>176.72</code>s inference time also sit above Luce GS's <code>4.48B</code>/<code>42.20</code>s.</p>
+      <h3>New frontier releases</h3>
+      <p>No Tier 1 flagship model launches surfaced in the window. The Tier 2 paper is Apple's <em>Luce</em>, arXiv 2026-08-25; the paper is a technical report (27 pages, 19 figures, 5 tables) without a code URL in the abstract. Several Hugging Face Daily 2026-08-29 candidates from other frontier labs (Tencent WeChat Vision's WeMM-Embedding, Microsoft's AutoSaddler, Tencent Hunyuan / Fudan's CAFE) were dedup-eliminated against the 2026-08-27 review, and the 2026-08-29 review already covered DeepSeek's Cordis, Google's WikiSkill, and Tencent LIGHTSPEED's GameWAM.</p>
+    </section>
+
+    <h1 id="apple">Apple</h1>
+
+    <h2 id="luce"><a href="https://arxiv.org/abs/2608.23943">Luce: Relightable Gaussians for 3D Asset Generation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-25</span>
+      <span>Image-to-3D generation &middot; PBR &middot; Gaussian splatting &middot; Rectified flow &middot; Relighting</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Mayank Singh, Michele Stoppa, Alvise Memo, Rui Yu, Harsha Kalli, Srimanth Gunturi, Muhammad Ahmed Riaz, Behrooz Shahsavari, Waleed Abdulla, David E. Jacobs &mdash; all <strong>Apple</strong>. arXiv:2608.23943v1 [cs.CV], 27 pages, 19 figures, 5 tables, submitted 2026-08-25.</li>
+      <li>The framing: high-fidelity image-to-3D generation needs a representation that captures geometry <em>and</em> physically based rendering (PBR) materials &mdash; albedo, metallic-roughness, surface normals &mdash; so the asset can be relit under a novel environment map and dropped into standard rendering pipelines. Prior structured-latent generators either bake lighting into the representation (TRELLIS-style DINOv2-feature voxels, appearance-only Gaussian splatting variants) or attach PBR attributes as a single per-Gaussian bundle (TRELLIS 2's mesh-centric O-Voxels, TexGaussian's mesh-conditioned attachments), forcing every material modality onto one primitive layout.</li>
+      <li>Luce introduces four contributions: (i) a multimodal PBR Gaussian representation with per-modality Gaussian sets; (ii) a unified latent (SLatVAE) that jointly encodes geometry and all material modalities; (iii) multi-layer DINOv2 image conditioning; (iv) tangent-space normal map transfer that bakes decoded normal Gaussians onto the extracted mesh as tangent-space normal maps.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; Multimodal PBR Gaussian representation with per-modality independent Gaussian sets.</strong>
+        <ul>
+          <li><em>Problem.</em> Attaching PBR attributes (albedo, metallic-roughness, normal) as extra channels on a single per-Gaussian bundle forces all three modalities to share one geometric layout &mdash; positions, scales, rotations, opacities. But polished wood needs dense albedo Gaussians for woodgrain while its normals are nearly smooth; brushed metal needs dense metallic-roughness and normal Gaussians for scratches over nearly uniform albedo. A shared layout wastes primitives where they're not needed and starves modalities where they are.</li>
+          <li><em>Mechanism.</em> Each occupied voxel <code>i</code> carries three independent Gaussian sets &mdash; <code>G<sub>i</sub><sup>alb</sup></code>, <code>G<sub>i</sub><sup>mr</sup></code>, <code>G<sub>i</sub><sup>nor</sup></code> &mdash; each with its own <code>(&bull;<sub>ij</sub><sup>m</sup>: p, s, q, o, c)</code>. The per-voxel bundle is <code>F<sub>i</sub> = {G<sub>i</sub><sup>m</sup>}<sub>m&isin;{alb,mr,nor}</sub></code>. Each modality is splatted independently via standard 3DGS alpha-compositing to per-pixel <code>&bull;</code> (albedo <code>a</code>, metallic <code>&kappa;</code>, roughness <code>&alpha;</code>, normal <code>n</code>, opacity <code>o</code>); normals are renormalized to unit length after compositing. Shading uses split-sum image-based lighting with the Cook&ndash;Torrance microfacet BRDF: <code>L<sub>o</sub><sup>IBL</sup>(&omega;<sub>o</sub>) &approx; (1-&kappa;)a/&pi;&sdot;E(n) + L<sub>pref</sub>(r,&alpha;)&sdot;[F<sub>0</sub>A(&mu;<sub>o</sub>,&alpha;) + B(&mu;<sub>o</sub>,&alpha;)]</code> with <code>F<sub>0</sub> = (1-&kappa;)&sdot;0.04 + &kappa;&sdot;a</code>. Unlike original 3DGS the representation stores <em>no</em> spherical harmonics; view-dependent shading is produced analytically through PBR compositing.</li>
+          <li><em>Why it works / why it beats prior.</em> Per-modality independence lets each modality allocate primitives where <em>its</em> detail lives, so woodgrain and smooth-normals no longer compete. The FID advantage on Toys4K (<code>20.99</code> vs. TRELLIS 2's <code>29.22</code>) tracks this: prior single-bundle PBR (TRELLIS 2) and appearance-only Gaussian splatting (TRELLIS) both bake either lighting or a shared layout into the representation, and the FID gap widens exactly on assets where the modalities have different frequency structure.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; SLatVAE: structured latent VAE that trades spatial resolution for per-voxel Gaussian density.</strong>
+        <ul>
+          <li><em>Problem.</em> The raw multimodal Gaussian cloud <code>&#x1D4B1;</code> is high-dimensional and sparsely structured. Modeling it directly with a generative model is computationally expensive; but downsampling the voxel grid without compensation drops surface detail below what the PBR shading can carry.</li>
+          <li><em>Mechanism.</em> The SLatVAE encoder <code>&#x2130;</code> is a sparse transformer with shifted-window attention that downsamples the voxel grid from resolution <code>d</code> to a coarser <code>d&prime; &lt; d</code>, producing <code>z = &#x2130;(&#x1D4B1;) &isin; &#x211D;<sup>N<sub>v</sub><sup>d&prime;<sup>3</sup></sup> &times; C</sup></code>. The decoder <code>&#x1D49F;</code> runs at the coarser latent resolution for efficiency and <em>offsets</em> the lost spatial resolution by predicting more Gaussians per voxel per modality. Training is end-to-end with a rendering-based reconstruction loss (as in TRELLIS): decoded Gaussians are differentiably rendered per modality against the ground-truth intrinsic images, with a KL prior and light regularizers on scale and opacity.</li>
+          <li><em>Why it works / why it beats prior.</em> The per-voxel-density trade-off keeps the latent small enough to diffuse cheaply while still reconstructing sub-voxel material and geometric detail. Compared to keeping the full <code>d</code>-resolution grid, generating in <code>d&prime;</code> is what makes rectified-flow generation tractable at the reported inference times (Luce GS: <code>42.20</code>s on H100).</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; Multi-layer DINOv2 image conditioning.</strong>
+        <ul>
+          <li><em>Problem.</em> Conditioning on a single deep DINOv2 layer gives good semantics but discards the early-layer spatial patterns (fine text, logos, inscriptions) that dense-prediction tasks &mdash; and, the paper argues, 3D generation &mdash; benefit from. Deep-only conditioning shows up as distorted or unreadable surface text on generated assets.</li>
+          <li><em>Mechanism.</em> Features from multiple DINOv2 layers (in the reported configuration: layers 6, 12, 18, 24) are concatenated and projected into the conditioning space: <code>h = W<sub>proj</sub>[f<sub>&ell;<sub>1</sub></sub>; f<sub>&ell;<sub>2</sub></sub>; &hellip;; f<sub>&ell;<sub>L</sub></sub>] + b<sub>proj</sub></code>. The projected features are injected through cross-attention into the SLatFlow DiT-style transformer that generates the SLatVAE latent, sample by sample, at every active voxel.</li>
+          <li><em>Why it works / why it beats prior.</em> Early-layer DINOv2 features carry fine spatial structure; deep-layer features carry semantics. Fusing them lets the generator propagate high-frequency image detail through the flow to the rendered 3D surface. The ablation isolates the effect: multi-layer conditioning reaches Toys4K FID <code>20.99</code> and AI-image CLIP <code>0.8519</code>, while single-layer (layer 24 only) gets <code>25.21</code> and <code>0.8081</code>.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 4 &mdash; Tangent-space normal map transfer.</strong>
+        <ul>
+          <li><em>Problem.</em> Mesh extraction from a voxel grid bounds geometric frequency by the grid resolution, leaving sub-voxel surface features (engravings, fabric weaves, embossed text) unrepresented in the extracted geometry alone. Normal maps are the standard remedy in real-time rendering, but a generative pipeline that produces only meshes has no direct source for the normal-map texels.</li>
+          <li><em>Mechanism.</em> Because Luce's normal Gaussians <code>G<sup>nor</sup></code> are decoupled from the mesh, they are supervised against the <em>effective</em> normals used for rendering &mdash; that is, the perturbed geometric normals after applying the authored normal map &mdash; so at training time they learn surface orientation at a frequency finer than the mesh can represent. At inference, the decoded normal Gaussians are expressed in the mesh's local tangent frame to produce a tangent-space normal map on the UV-parameterized surface. The final mesh carries four texture maps: diffuse (albedo), metallic, roughness, and tangent-space normal.</li>
+          <li><em>Why it works / why it beats prior.</em> Tangent-space transfer preserves high-frequency surface detail at a resolution far beyond the mesh geometry, at zero polygon-count cost &mdash; mesh normal PSNR improves from <code>29.5</code> to <code>33.0</code> dB (Sec.&nbsp;4.3). Prior GS-based methods tie per-Gaussian normals to the reconstructed surface (flattened-Gaussian shortest axis or depth-derived pseudo-normals), so they cannot carry sub-mesh normal detail; TexGaussian and TRELLIS 2 attach PBR attributes to per-vertex or per-voxel primitives with the same limitation.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Training set: <code>~500K</code> PBR-filtered assets from Objaverse and Objaverse-XL plus a <code>158K</code>-asset PBR subset of TexVerse. Preprocessing renders each asset from 150 uniformly distributed cameras at <code>1024&times;1024</code>; per-modality 3DGS is fit independently and voxelized onto a <code>128<sup>3</sup></code> sparse grid with <code>K = 8</code> Gaussians per voxel per modality.</li>
+      <li>Generation benchmarks: <em>Toys4K</em> (<code>N = 412</code>) with FID/KID on Inception and DINO backbones, plus CLIP, SigLIP2, ULIP, Uni3D-L alignment; and a 130-image benchmark of AI-generated images from <em>Gemini 3.1 Flash Image</em>, prompted to be diverse and detail-rich (text, logos, mixed materials).</li>
+      <li>Headline table (best in bold; times on a single H100):
+        <table>
+          <thead>
+            <tr><th>Method</th><th>Params (B)</th><th>Time (s)</th><th>Toys4K FID &darr;</th><th>Toys4K KID &darr;</th><th>Toys4K CLIP &uarr;</th><th>AI-imgs CLIP &uarr;</th><th>AI-imgs SigLIP2 &uarr;</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>TRELLIS GS</td><td>1.70</td><td>29.56</td><td>30.75</td><td>0.212</td><td>0.8898</td><td>0.8299</td><td>0.8339</td></tr>
+            <tr><td>TRELLIS mesh</td><td>1.80</td><td>50.86</td><td>32.39</td><td>0.263</td><td>0.8829</td><td>0.8000</td><td>0.7958</td></tr>
+            <tr><td>3DTopia-XL</td><td>1.02</td><td>25.65</td><td>83.23</td><td>2.726</td><td>0.7644</td><td>0.6481</td><td>0.6458</td></tr>
+            <tr><td>TRELLIS 2</td><td>7.48</td><td>176.72</td><td>29.22</td><td>0.165</td><td>0.8895</td><td>0.8110</td><td>0.8166</td></tr>
+            <tr><td>LiTo</td><td>1.84</td><td>76.41</td><td>29.76</td><td>0.208</td><td>0.8909</td><td>0.8234</td><td>0.8240</td></tr>
+            <tr><td><strong>Luce GS</strong></td><td>4.48</td><td>42.20</td><td><strong>20.99</strong></td><td><strong>0.033</strong></td><td><strong>0.9062</strong></td><td><strong>0.8519</strong></td><td><strong>0.8508</strong></td></tr>
+            <tr><td>Luce mesh (no tangent normal)</td><td>4.58</td><td>148.13</td><td>25.04</td><td>0.102</td><td>0.8990</td><td>0.8505</td><td>0.8466</td></tr>
+            <tr><td>Luce mesh (with tangent normal)</td><td>4.58</td><td>159.16</td><td>21.10</td><td>0.042</td><td>0.9072</td><td>0.8508</td><td>0.8465</td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>Toys4K: Luce GS reaches the lowest FID (<code>20.99</code>), improving on the strongest baseline TRELLIS 2 (<code>29.22</code>) by <code>&gt;8</code> FID and on LiTo (<code>29.76</code>) by <code>&gt;8.5</code> FID. Luce's KID drops to <code>0.033</code>, an order of magnitude below TRELLIS 2 (<code>0.165</code>) and TRELLIS GS (<code>0.212</code>).</li>
+      <li>AI-generated-image benchmark: Luce GS leads CLIP (<code>0.8519</code>) and SigLIP2 (<code>0.8508</code>) over the best baseline TRELLIS GS (<code>0.8299</code> and <code>0.8339</code>). The mesh variants also lead on the mesh-only ULIP and Uni3D-L metrics.</li>
+      <li>Tangent-space normal map transfer contributes both to mesh geometry (FID <code>25.04</code> &rarr; <code>21.10</code> once tangent normals are baked on) and to mesh normal PSNR (<code>29.5</code> &rarr; <code>33.0</code> dB) with the same polygon count.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><em>Multi-layer vs. single-layer DINOv2 conditioning.</em> Layers 6/12/18/24 concatenated vs. layer 24 only: Toys4K FID <code>20.99</code> vs. <code>25.21</code>; AI-image CLIP <code>0.8519</code> vs. <code>0.8081</code> (Appendix B). The multi-layer conditioning is what preserves legible surface text and logos in Fig.&nbsp;4.</li>
+      <li><em>Tangent-space normal map transfer on/off.</em> On the mesh path, tangent normal baking cuts FID from <code>25.04</code> to <code>21.10</code> and raises mesh normal PSNR from <code>29.5</code> to <code>33.0</code> dB &mdash; the mechanism for &quot;high-frequency surface detail at zero polygon-count cost.&quot;</li>
+      <li><em>Per-modality decomposition.</em> The qualitative comparison against TRELLIS 2's mesh-centric single-bundle PBR (Fig.&nbsp;5) documents where the decomposition helps: distorted surface text on TRELLIS 2 / LiTo / TRELLIS becomes legible on Luce because albedo Gaussians can concentrate where woodgrain / print / logos need them without stealing from the normal or metallic-roughness modalities.</li>
+      <li><em>Efficiency envelope.</em> Luce GS is the fastest sub-<code>50</code>s method that also leads FID; TRELLIS 2 at <code>7.48B</code> parameters and <code>176.72</code>s inference sits both larger and slower with worse FID (<code>29.22</code>) and CLIP.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Categorized on arXiv as cs.CV, cs.AI, cs.GR. arXiv perpetual non-exclusive license.</li>
+      <li>No public code URL in the abstract; project artifacts are the paper itself, its 19 figures, and the benchmark of 130 AI-generated images from Gemini 3.1 Flash Image referenced in Appendix F.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>

@@ -36,6 +36,13 @@
       <!-- REVIEW_LIST_START -->
             <ul class="review-list">
         <li class="review-item">
+          <span class="date">August 30, 2026</span>
+          <div>
+            <h2><a href="reviews/relightable-pbr-3d-asset-generation-review-2026-08-30.html">Relightable PBR 3D Asset Generation</a></h2>
+            <p>Quiet 36-hour window ending 2026-08-30: after deduplication against the 2026-08-27 and 2026-08-29 reviews (which together already covered <em>WeMM-Embedding</em>, <em>AutoSaddler</em>, <em>CAFE</em>, <em>Cordis</em>, <em>WikiSkill</em>, and <em>GameWAM</em>), one Tier 2 frontier-lab paper remains. <strong>Apple</strong>'s <em>Luce</em> introduces a multimodal PBR Gaussian representation with per-modality independent Gaussian sets (albedo <code>G<sup>alb</sup></code>, metallic-roughness <code>G<sup>mr</sup></code>, surface normal <code>G<sup>nor</sup></code>) per voxel &mdash; each with its own positions, scales, rotations, and opacities so woodgrain-rich albedo and near-uniform normals don't compete for the same primitives; a SLatVAE that downsamples the voxel grid and compensates with more Gaussians per voxel per modality; multi-layer DINOv2 conditioning (layers 6/12/18/24) injected via cross-attention into a rectified-flow SLatFlow transformer that preserves legible text and logos on the generated surface; and tangent-space normal map transfer that supervises normal Gaussians against the effective (perturbed) normals so their frequency exceeds the mesh, then bakes them as tangent-space maps on the extracted mesh. On Toys4K, Luce GS reaches FID <code>20.99</code> against TRELLIS 2 <code>29.22</code> and LiTo <code>29.76</code> (both <code>&gt;8</code> FID worse) and KID <code>0.033</code> vs. TRELLIS 2 <code>0.165</code>; on a 130-image benchmark of Gemini 3.1 Flash Image outputs, Luce GS leads CLIP <code>0.8519</code> vs. TRELLIS GS <code>0.8299</code>; and tangent-space normal map transfer lifts mesh normal PSNR from <code>29.5</code> to <code>33.0</code> dB at zero polygon-count cost.</p>
+          </div>
+        </li>
+        <li class="review-item">
           <span class="date">August 29, 2026</span>
           <div>
             <h2><a href="reviews/skill-evolution-world-action-models-and-composable-harnesses-review-2026-08-29.html">Skill Evolution, World-Action Models &amp; Composable Agent Harnesses</a></h2>
