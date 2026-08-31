@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fine-grained RL Credit Assignment and Long-Tail Knowledge Probing Review &mdash; August 31, 2026 | Auto Lit Review</title>
+<meta name="description" content="Three Tier 2 frontier-lab papers from the 36-hour Hugging Face Daily window ending 2026-08-31. Ant Group's Rubric-to-Code Credit Assignment (RCCA) trains Ling-RCCA-Flash to 76.19 on ArtifactsBench, surpassing GPT-5 by 3.64 points, by aligning rubric-level attributions to responsible token spans; Tencent's ContextPilot introduces context-aware partial rollout and snapshot-level credit assignment for proactive context management; Tencent's ElephantBench probes epistemic myopia on long-tail divergent knowledge across 32 LLMs, where the strongest model recovers both accounts on only 52.4% of 1,094 questions." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">August 31, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#ant-group">Ant Group</a>
+          <ul>
+            <li class="toc-h2"><a href="#rcca">Rubric-to-Code Credit Assignment for Reinforcement Learning</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#tencent">Tencent</a>
+          <ul>
+            <li class="toc-h2"><a href="#contextpilot">ContextPilot: Teaching Agents for Proactive Context Management via Fine-grained RL</a></li>
+            <li class="toc-h2"><a href="#elephantbench">Blind Men and the Elephant: Probing the Epistemic Myopia of LLMs under Long-Tail Divergent Knowledge</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; August 31, 2026</div>
+    <h1 class="page-title">Fine-grained RL Credit Assignment and Long-Tail Knowledge Probing</h1>
+    <div class="page-meta">3 papers &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-08-31 (steady state, one day since the previous review) surfaces three Tier 2 frontier-lab papers after deduplication &mdash; a coherent slice of the same problem seen from two angles: <em>where does the training signal go?</em> and <em>what does the trained model actually know?</em> On the training-signal side, <strong>Ant Group</strong>'s <a href="https://arxiv.org/abs/2608.27906"><em>Rubric-to-Code Credit Assignment</em></a> (Rui Jin, Jikai Chen, Yihan Chen, Hao Zhou, Demin Zhu, Kaichen Yang, Dong Wang, Chenyi Zhuang) and <strong>Tencent</strong>'s <a href="https://arxiv.org/abs/2608.28476"><em>ContextPilot</em></a> (Zhuoshi Pan, Qizhi Pei, Junru Lu, Honglin Lin, H. Vicky Zhao, Di Yin, Xing Sun) both argue that plain GRPO&rsquo;s trajectory-level scalar reward is too coarse: RCCA localizes the reward at the token span responsible for each functional rubric failure, and ContextPilot re-estimates each intermediate context-editing action&rsquo;s advantage from the reward distribution of its downstream branches. Trained on Ant Group&rsquo;s <code>Ling-3.0-Flash</code>, RCCA lifts <code>MiniAppBench</code> from <code>9.05</code> to <code>41.25</code> (<code>+32.20</code>) and reaches <code>76.19</code> on <code>ArtifactsBench</code>, <code>+3.64</code> above GPT-5. ContextPilot pairs an extended toolset (planning, long-term memory, soft context offloading) with context-aware partial rollout that spends more of the <code>N=128</code>-snapshot budget branching off the most sensitivity-scored context-management calls, then computes each snapshot&rsquo;s advantage by averaging rewards across all completions that pass through it. On the <em>what does the model know</em> side, <strong>Tencent</strong>&rsquo;s <a href="https://arxiv.org/abs/2608.28478"><em>ElephantBench</em></a> (Zhuoshi Pan, Junru Lu, Yan Qian, H. Vicky Zhao, Di Yin, Xing Sun) constructs an auditable graph-based probe of <code>1,094</code> multi-account questions from a low-exposure web corpus; across 32 LLMs the strongest model recovers <em>both</em> divergent accounts on only <code>52.4%</code> of questions.</p>
+      <h3>Competitiveness</h3>
+      <p>None of the three is a flagship model release; they are post-training and evaluation work. The point of comparison for RCCA is the current interactive-web-app SOTA on ArtifactsBench, where the paper reports the <code>Ling-RCCA-Flash</code> checkpoint (a rubric-RL fine-tune of <code>Ling-3.0-Flash</code>) at <code>76.19</code>, above the previous top score of GPT-5 by <code>3.64</code> points; on the harder MiniAppBench (functional-rubric web apps), the same checkpoint reaches <code>41.25</code>, matching Claude Opus 4.5 for a much smaller MoE. The relevant contrast for ContextPilot is proactive-context-management peers &mdash; StateLM, MemAct, AgentFold, Sculptor, ReSum, SUPO &mdash; where ContextPilot claims consistent gains over StateLM on Qwen3-8B/14B and Gemma4-E4B-it across NovelQA, <code>&infin;</code>Bench En.MC, LongMemEval-S, and BrowseComp+, and over ReSum/SUPO on GAIA, BrowseComp, BrowseComp-ZH, and xBench-DeepSearch. ElephantBench&rsquo;s comparison is across 32 open- and closed-weight LLMs on its own multi-account recall metric; the striking result is that scaling model size and inference-time reasoning improve per-account recall but do not close the <code>~47.6</code>-point gap between best single-account recall and complete divergent-account recall &mdash; even at the frontier. Reference frontier peers on the coding side remain GPT-5, Claude Opus 4.5, and Gemini 3 Pro / 3.7 Flash on ArtifactsBench; on the deep-search side, WebSailor-7B and WebExplorer-8B are the base agents ContextPilot fine-tunes.</p>
+      <h3>New frontier releases</h3>
+      <p>No Tier 1 flagship model launches surfaced in the window. RCCA ships a released fine-tune (<code>Ling-RCCA-Flash</code>, derived from Ant Group / BaiLing&rsquo;s <code>Ling-3.0-Flash</code>) but treats it as a demonstration of the training recipe rather than a flagship. All three papers submitted to arXiv on 2026-08-28: <em>Rubric-to-Code Credit Assignment for Reinforcement Learning</em> (Ant Group, arXiv:2608.27906), <em>ContextPilot</em> (Tencent Youtu Lab / Tsinghua / Shanghai AI Lab, arXiv:2608.28476, accepted to EMNLP 2026 Main Track), and <em>Blind Men and the Elephant / ElephantBench</em> (Tencent Youtu Lab / Tsinghua, arXiv:2608.28478). Both Tencent papers share the same corresponding-author pair (Di Yin, Xing Sun) and first-author (Zhuoshi Pan) at Tsinghua/Tencent Youtu Lab.</p>
+    </section>
+
+    <h1 id="ant-group">Ant Group</h1>
+
+    <h2 id="rcca"><a href="https://arxiv.org/abs/2608.27906">Rubric-to-Code Credit Assignment for Reinforcement Learning</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-28</span>
+      <span>Post-training &middot; RL &middot; GRPO &middot; Credit assignment &middot; Code generation &middot; Web apps</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Rui Jin, Jikai Chen, Yihan Chen, Hao Zhou, Demin Zhu, Kaichen Yang, Dong Wang, Chenyi Zhuang &mdash; <strong>Ant Group</strong> (the Ling / BaiLing model family). arXiv:2608.27906v1 [cs.AI], submitted 2026-08-28.</li>
+      <li>The framing: interactive web-application generation is not conventional code completion. A single natural-language request expands into many <em>user-facing functional requirements</em> (a Save button that writes to localStorage, a filter that hides completed rows, a modal that closes on Escape), and each requirement is realized by a localized region of the emitted HTML/CSS/JS &mdash; a specific event handler, a specific state update, a specific DOM fragment, a specific CSS selector. Standard GRPO collapses per-rubric functional pass/fail into a single sequence-level scalar and applies the same advantage uniformly to every generated token, so a broken Save-button handler and a correct modal share the same signal. Credit assignment collapses.</li>
+      <li>The paper introduces <em>Rubric-to-Code Credit Assignment</em> (RCCA): a rubric-first training pipeline plus a hierarchical reward that decomposes failures into format &rarr; source-code &rarr; runtime &rarr; functional strata, plus an evaluator-side attribution step that aligns each rubric&rsquo;s pass/fail text to the responsible code span and its generated tokens. Trained on Ant Group&rsquo;s <code>Ling-3.0-Flash</code>, the resulting <code>Ling-RCCA-Flash</code> reaches <code>41.25</code> on <em>MiniAppBench</em> (a <code>+32.20</code>-point lift over the base model, slightly above Claude Opus 4.5) and <code>76.19</code> on <em>ArtifactsBench</em>, <code>+3.64</code> above the prior top-of-leaderboard GPT-5.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; Rubric-first task construction.</strong>
+        <ul>
+          <li><em>Problem.</em> RL over open-ended web-app generation needs a reward, but a scalar &ldquo;does the app work&rdquo; label is either binary and sparse (most partially-correct rollouts get <code>0</code>) or an LLM-judge score that hides which specific piece failed. Neither exposes what a policy-gradient update should credit.</li>
+          <li><em>Mechanism.</em> Each training task is built around an explicit list of user-facing functional rubrics (e.g., &ldquo;clicking Save persists the current list to localStorage&rdquo;, &ldquo;empty-input Add is rejected with an inline error&rdquo;). At rollout time, the generated HTML/CSS/JS is executed and each rubric is checked independently, producing a per-rubric pass/fail vector rather than a single number. The scalar reward the policy sees at the trajectory level is a weighted aggregate of the rubric outcomes; the per-rubric outcomes are kept for the localized credit step below.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior code-RL work (e.g., unit-test-driven GRPO on competitive-programming problems, or ArtifactsBench-style LLM-judge RL) either scores whole programs against opaque tests or collapses judge critique into one number. Explicit rubrics turn functional quality into an ordered, per-requirement label that can then be routed to specific code spans &mdash; the prerequisite for the localized credit signal.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; Hierarchical reward: format &rarr; source-code &rarr; runtime &rarr; functional.</strong>
+        <ul>
+          <li><em>Problem.</em> If a rollout crashes at the parse stage, the model doesn&rsquo;t need a functional-behavior signal &mdash; it needs to learn to emit parseable code first. Mixing all failure modes into a single scalar makes the earliest-stage errors (format, syntax) share bandwidth with the latest-stage ones (rubric-specific behavior), so the gradient wastes capacity chasing subtle rubric misses in trajectories that don&rsquo;t even parse.</li>
+          <li><em>Mechanism.</em> Rewards are staged: (i) <em>format</em> reward penalizes malformed tags / missing sections; (ii) <em>source-code</em> reward penalizes syntax errors caught before execution; (iii) <em>runtime</em> reward penalizes uncaught exceptions during headless-browser execution; (iv) <em>functional</em> reward is the per-rubric outcome vector from the rubric-check pipeline. Lower stages gate the higher ones: a format failure zeros the source-code / runtime / functional contributions for that rollout.</li>
+          <li><em>Why it works / why it beats prior.</em> Stage-gating focuses the update on the earliest failure mode, so the policy learns to clear each stage before receiving signal from the next &mdash; the same reason curriculum RL beats flat-reward RL on multi-stage tasks. Baseline GRPO with a single ArtifactsBench-judge scalar shares bandwidth across all stages; the ablation section reports the hierarchical variant is what unlocks the ArtifactsBench gains over the SFT baseline (<code>+4.48</code>).</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; Attribution alignment: rubric text &rarr; responsible code spans &rarr; generated tokens.</strong>
+        <ul>
+          <li><em>Problem.</em> Even with per-rubric outcomes, standard GRPO still spreads each rubric&rsquo;s advantage uniformly over every token in the trajectory. A failed Save-button rubric shouldn&rsquo;t upweight or downweight tokens inside an unrelated CSS block; but without a mechanism to say <em>which tokens implement Save</em>, the signal is diluted.</li>
+          <li><em>Mechanism.</em> For each rubric, an evaluator LLM produces a textual attribution &mdash; a short paragraph identifying the code region responsible for that rubric&rsquo;s pass/fail. RCCA aligns that attribution back to concrete character spans in the generated file (event handler, selector, function body), then to the token indices those spans occupy in the rollout. The rubric&rsquo;s scalar reward becomes a token-level advantage that is non-zero only on those aligned tokens; other tokens keep the trajectory-level baseline. Optimization proceeds as GRPO with this localized advantage.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior localized-credit approaches for code (e.g., token-level PPO with sparse execution rewards) rely on program traces to attribute credit and only cover code that actually executed. Attribution alignment goes through the <em>rubric</em>, so it credits code whose <em>presence</em> mattered (a missing event handler is diagnosable even though no tokens executed). The result is a signal that pushes the specific tokens that made a specific requirement pass or fail, exactly what the token-uniform-advantage baseline in GRPO discards.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Base model: <code>Ling-3.0-Flash</code> (Ant Group / BaiLing family). Fine-tuned model: <code>Ling-RCCA-Flash</code> (SFT warm-up + RCCA RL).</li>
+      <li>Headline benchmarks:
+        <table>
+          <thead>
+            <tr><th>Model</th><th>MiniAppBench &uarr;</th><th>ArtifactsBench &uarr;</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Ling-3.0-Flash (base)</td><td>9.05</td><td>&mdash;</td></tr>
+            <tr><td>Ling-3.0-Flash + SFT (no RCCA)</td><td>&mdash;</td><td>71.71</td></tr>
+            <tr><td>Claude Opus 4.5</td><td>~41</td><td>&mdash;</td></tr>
+            <tr><td>GPT-5 (prior ArtifactsBench top)</td><td>&mdash;</td><td>72.55</td></tr>
+            <tr><td><strong>Ling-RCCA-Flash</strong></td><td><strong>41.25</strong></td><td><strong>76.19</strong></td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>MiniAppBench (functional-rubric web-app generation): <code>Ling-RCCA-Flash</code> reaches <code>41.25</code>, a <code>+32.20</code>-point absolute lift over the base <code>Ling-3.0-Flash</code> (<code>9.05</code>) and slightly above Claude Opus 4.5. The scale of the gain tracks the paper&rsquo;s core claim: functional rubrics are what standard RL leaves on the table.</li>
+      <li>ArtifactsBench (official leaderboard setting, LLM-judge on artifact quality): <code>76.19</code>, a <code>+4.48</code>-point lift over the SFT-only variant (<code>71.71</code>) and <code>+3.64</code> above GPT-5&rsquo;s prior top score (<code>72.55</code>). The ArtifactsBench lift argues the RCCA signal transfers beyond the specific rubrics used at training time &mdash; implementation-level habits generalize.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The paper attributes the ArtifactsBench <code>+4.48</code> gain over the SFT baseline to the token-localized attribution step; removing it and using a rubric-averaged scalar advantage collapses the gain back toward the SFT baseline. This is the mechanism-level check for the &ldquo;attribution alignment&rdquo; contribution.</li>
+      <li>Removing the hierarchical reward staging (single flat aggregate reward over format+syntax+runtime+function) degrades MiniAppBench substantially, matching the failure mode the hierarchy is designed to prevent: early-stage errors and late-stage rubric misses fight for the same gradient bandwidth.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Categorized on arXiv as cs.AI. Non-exclusive distribution license.</li>
+      <li>The abstract references <code>Ling-RCCA-Flash</code> as a trained model but does not publish a release URL in the abstract or comments; expect a Hugging Face drop under the Ant Group / <code>inclusionAI</code> org following the pattern of prior Ling checkpoints.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="contextpilot"><a href="https://arxiv.org/abs/2608.28476">ContextPilot: Teaching Agents for Proactive Context Management via Fine-grained RL</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-28</span>
+      <span>Post-training &middot; RL &middot; GRPO &middot; Agentic context management &middot; Long-horizon reasoning &middot; EMNLP 2026</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Zhuoshi Pan, Qizhi Pei, Junru Lu, Honglin Lin, H. Vicky Zhao, Di Yin, Xing Sun &mdash; <strong>Tsinghua University</strong>, <strong>Tencent Youtu Lab</strong>, <strong>Shanghai AI Lab</strong>. Corresponding authors: H. Vicky Zhao, Xing Sun. arXiv:2608.28476v1 [cs.CL], submitted 2026-08-28. Accepted to EMNLP 2026 Main Track. Code, model, and project at <a href="https://tencent.github.io/ContextPilot">tencent.github.io/ContextPilot</a>.</li>
+      <li>The framing: long-horizon ReAct-style agents accumulate every reasoning step, tool call, and tool response into a monotonically growing context. Passive management (rule-based truncation or summarization) can&rsquo;t adapt across scenarios; proactive management &mdash; letting the model itself decide when and how to edit its context via tools &mdash; is more flexible but still bottlenecked by three specific limitations: (i) the standard proactive toolset is only <em>search, delete, summarize</em>, missing planning, long-term memory, and adaptive compression; (ii) RL fine-tuning of context-editing behavior treats every context-editing action as equally worth exploring, even though different tools cause very different downstream success variance; (iii) the trajectory-level reward is copy-pasted onto every intermediate context-editing snapshot regardless of that snapshot&rsquo;s actual downstream value.</li>
+      <li>ContextPilot ships three named contributions matching those three limitations: an <em>extended toolset</em> (planning, long-term structured memory, soft context offloading), <em>context-aware partial rollout</em> that allocates the sampling budget to the highest-sensitivity context-editing actions, and <em>fine-grained snapshot-level credit assignment</em> that scores each intermediate snapshot by the mean reward of its downstream branches instead of the terminal trajectory&rsquo;s reward.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; Extended context-management toolset.</strong>
+        <ul>
+          <li><em>Problem.</em> Existing proactive managers (Sculptor, StateLM, MemAct) equip the agent with a narrow set of edit primitives: <code>searchContext</code>, <code>deleteContext</code>, <code>summarizeContext</code>. That&rsquo;s enough to shrink the context but not enough to <em>organize</em> it: agents can&rsquo;t plan globally before acting, can&rsquo;t maintain structured entity-event memory across scattered fragments, and can&rsquo;t offload history in a form they can search later.</li>
+          <li><em>Mechanism.</em> The toolset is extended along four axes on top of StateLM&rsquo;s base tools: (i) <em>Perception &amp; Planning</em> &mdash; <code>analyzeText</code>, <code>checkBudget</code>, <code>plan</code>; (ii) <em>Information Retrieval</em> &mdash; <code>buildIndex</code>, <code>searchContext</code>, <code>readChunk</code>, <code>readMultiChunks</code>; (iii) <em>Memory Management</em> &mdash; <code>note</code>, <code>updateNote</code>, <code>readNote</code>, plus new <code>memorize</code> / <code>updateMemory</code> / <code>readMemory</code> that extract structured entities, timestamps, and event episodes with edges between related items (readMemory returns the target memory <em>and its graph neighbors</em>); (iv) <em>Context Offloading</em> &mdash; <code>deleteContext</code>, <code>summarizeContext</code>, plus new <code>compressContext</code> (LLMLingua-2 lightweight compression) and <code>foldHistory</code> (discards all history, replaces it with a searchable keyword index that <code>searchContext</code> can query back later). <code>memorize</code>, <code>updateMemory</code>, and the offloading tools count as &ldquo;context-editing&rdquo; and segment the trajectory into snapshots at their invocation.</li>
+          <li><em>Why it works / why it beats prior.</em> Search + delete + summarize alone can shrink but not reorganize. The added planning tools let the agent commit to a strategy before spending its budget; the graph-structured memory lets multi-fragment reasoning happen against a persistent object rather than repeated re-reads; <code>foldHistory</code> is a reversible compression &mdash; keywords survive so the agent can pull details back on demand &mdash; where prior <code>deleteContext</code> is destructive. Ablation Section 5.4 (&ldquo;Tool design&rdquo;) reports removing any of the three new categories degrades average score on long-context QA.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; Context-aware partial rollout for sensitivity-weighted exploration.</strong>
+        <ul>
+          <li><em>Problem.</em> Trajectory-level GRPO samples <code>N</code> full rollouts uniformly across all decision points, but the pilot study (Fig. 2, Qwen3-8B on NovelQA) shows different context-management tools produce wildly different downstream success-rate variance. Uniform rollouts under-explore the highest-leverage decisions.</li>
+          <li><em>Mechanism.</em> For each context-management action <code>a<sup>cm</sup><sub>t</sub></code>, compute a sensitivity score <code>&#x1D4AE;(a<sup>cm</sup><sub>t</sub>) = &alpha; &sdot; &Delta;C<sup>cm</sup><sub>t</sub> + &beta; &sdot; &Delta;H<sup>cm</sup><sub>t</sub></code>, where <code>&Delta;C<sup>cm</sup><sub>t</sub></code> is the fractional context-length change caused by the action and <code>&Delta;H<sup>cm</sup><sub>t</sub></code> is the change in the average per-token entropy of the <code>k</code> tokens generated <em>after</em> the resulting observation, relative to the entropy of the first <code>k</code> tokens of the trajectory (the initial-query state, not the previous step &mdash; because the goal is to detect uncertainty shifts induced by tool use, not local wiggle). Budget: <code>N=128</code> snapshots per query, seeded by <code>8</code> trajectory-level rollouts that yield up to <code>M=64</code> snapshots; the remaining <code>N&minus;M</code> snapshots are drawn by re-sampling continuations starting from the parent nodes of the top-sensitivity-scored context-management actions in the trajectory-level rollouts.</li>
+          <li><em>Why it works / why it beats prior.</em> ARPO-style partial rollout, from which ContextPilot inherits the idea, allocates extra exploration to high-entropy tokens. ContextPilot adapts it specifically for context management: <em>context-length</em> change is a domain-appropriate proxy for &ldquo;how much this action rewrote the state,&rdquo; and initial-entropy reference (rather than adjacent-step) singles out actions that produce big uncertainty jumps from the initial query. The uniform-rollout baseline in the ablation section &mdash; &ldquo;RL training design&rdquo; &mdash; underperforms exactly on the hardest long-context QA queries where the model needs to branch differently after big context-edit events.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; Fine-grained snapshot-level credit assignment.</strong>
+        <ul>
+          <li><em>Problem.</em> Prior snapshot-based training (Sculptor, StateLM) sets the reward of every intermediate snapshot equal to the terminal trajectory&rsquo;s reward. A correct final answer credits every intermediate context-edit that led to it, including the redundant retrievals; a wrong final answer punishes every intermediate context-edit including the reasonable ones. The pilot case study (Fig. 3, StateLM-8B on BrowseComp+) shows correct answers routinely come from &ldquo;weak&rdquo; context-management chains and wrong ones from disciplined chains &mdash; so trajectory-level rewards reinforce the wrong behaviour.</li>
+          <li><em>Mechanism.</em> Trajectory reward for a terminal snapshot: <code>R(S<sub>M</sub>) = R<sub>out</sub> + R<sub>fmt</sub> + R<sub>pen</sub></code> (outcome vs. ground truth, format parseability, penalties for invalid tool calls and context-length overruns). Intermediate snapshot reward: <code>R(S<sub>i</sub>) = (1/|&#x1D4AF;(S<sub>i</sub>)|) &Sigma;<sub>T&isin;&#x1D4AF;(S<sub>i</sub>)</sub> R(T)</code>, averaging over the set of terminal trajectories that pass through <code>S<sub>i</sub></code>. Advantages are then group-normalized within all snapshots for the same query (<code>&#x1D4A2;={S<sup>(j)</sup><sub>t</sub>}</code>) and plugged into the GRPO objective, each snapshot treated as an independent sample. Appendix A provides the variance-reduction argument.</li>
+          <li><em>Why it works / why it beats prior.</em> The mean-of-descendants estimator is a Monte-Carlo value estimate of the intermediate snapshot &mdash; unbiased in the limit and lower-variance than the copy-the-terminal-reward baseline whenever different branches disagree. Combined with sensitivity-weighted partial rollout, the high-sensitivity snapshots get more descendants and therefore lower-variance value estimates. This is what lets the trajectory-branching evidence in the pilot study (Fig. 2) actually feed the policy gradient.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Base models: Qwen3-8B, Qwen3-14B, Gemma4-E4B-it (long-context QA); WebSailor-7B, WebExplorer-8B (deep search). SFT data: PublicDomain split of NovelQA + NarrativeQA train; RL data: LongBench-v2 train (QA) / 1K OpenSeeker samples (deep search). Training framework: <code>verl</code>.</li>
+      <li>Long-context QA benchmarks: NovelQA (Copyright split), <code>&infin;</code>Bench En.MC, LongMemEval-S, BrowseComp+. Deep search: GAIA text-only (103 examples), BrowseComp, BrowseComp-ZH, xBench-DeepSearch. Multiple-choice benchmarks use exact match; the rest use LLM-as-a-Judge.</li>
+      <li>Reference results from the paper&rsquo;s Table 2 (long-context QA, prior work rows carried from the StateLM paper): Qwen3.5-397B-A17B (no tools) scores <code>80.55</code> average across the four benchmarks; the same model with the ContextPilot toolset prompt-only reaches <code>87.16</code>. Prior smaller RL-trained agents: RL-MemoryAgent-7B (<code>60.24</code> / <code>62.45</code> / <code>40.60</code> on NovelQA / <code>&infin;</code>Bench / LongMemEval-S), RL-MemoryAgent-14B (<code>78.86</code> / <code>74.24</code> / <code>59.00</code>), ReadAgent-8B (<code>16.38</code> / <code>24.02</code> / <code>0.00</code>). ContextPilot rows on Qwen3-8B / Qwen3-14B / Gemma4-E4B-it consistently outperform StateLM on the same base with a more compact working context (per the paper&rsquo;s claim; full numbers in Table 2/3 in the arXiv PDF).</li>
+      <li>Deep search: ContextPilot on WebSailor-7B and WebExplorer-8B beats ReSum and SUPO on GAIA, BrowseComp, BrowseComp-ZH, and xBench-DeepSearch. The &ldquo;stronger performance with a more compact working context&rdquo; framing is the paper&rsquo;s consistent finding across both task families.</li>
+      <li>Rollout budget at RL: <code>N=128</code> snapshots per query, seeded by <code>8</code> trajectory rollouts giving up to <code>M=64</code> snapshots; partial rollouts fill the remaining budget. Trajectories are capped at <code>8</code> snapshots. Inference limits: <code>30K</code> input, <code>2K</code> generation.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><em>Tool design ablation.</em> Removing the newly-introduced planning, long-term memory, or soft-offloading tool categories individually each degrades average score, confirming that search+delete+summarize alone is insufficient for the harder benchmarks.</li>
+      <li><em>RL training design ablation.</em> Removing context-aware partial rollout (uniform trajectory-level rollouts only) or removing fine-grained snapshot credit assignment (trajectory reward copied to intermediate snapshots) each degrades performance; both together underperform ContextPilot by a larger margin than either alone. Appendix H reports additional RL ablation.</li>
+      <li><em>Token efficiency.</em> ContextPilot achieves the stronger scores with a smaller average working-context footprint than baselines; the token-efficiency analysis (Section 5.3) shows RL reshapes tool-use strategy toward earlier compression and more selective retrieval, and that improved tool-use correctness and task success rise together.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Categorized on arXiv as cs.CL. CC BY 4.0 license.</li>
+      <li>Project: <a href="https://tencent.github.io/ContextPilot">tencent.github.io/ContextPilot</a>. Code: <a href="https://github.com/Tencent/ContextPilot">github.com/Tencent/ContextPilot</a>. Model checkpoints: Hugging Face collection <code>panzs19/contextpilot</code>.</li>
+    </ul>
+
+    <h2 id="elephantbench"><a href="https://arxiv.org/abs/2608.28478">Blind Men and the Elephant: Probing the Epistemic Myopia of LLMs under Long-Tail Divergent Knowledge</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-08-28</span>
+      <span>Evaluation &middot; Benchmark &middot; Closed-book QA &middot; Long-tail knowledge &middot; Epistemic recall</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Zhuoshi Pan, Junru Lu, Yan Qian, H. Vicky Zhao, Di Yin, Xing Sun &mdash; <strong>Tsinghua University</strong>, <strong>Tencent Youtu Lab</strong>. Same corresponding-author pair (Di Yin, Xing Sun) and lead author (Zhuoshi Pan) as ContextPilot. arXiv:2608.28478v1 [cs.CL], submitted 2026-08-28. 10 pages, 10 figures, 1 table, under review.</li>
+      <li>The framing: factual-QA benchmarks assume every question has one canonical answer, so a model that recalls one plausible account looks &ldquo;correct&rdquo; even when the training corpus contained multiple divergent accounts and the model quietly dropped the others. That single-answer framing obscures whether LLMs actually <em>retain</em> the divergent long-tail knowledge or silently converge to the dominant account. The paper introduces <em>ElephantBench</em>, a closed-book knowledge probe of <code>1,094</code> questions where the ground-truth answer is a <em>set</em> of accounts recovered from a low-exposure web corpus.</li>
+      <li>Headline finding across 32 models: the strongest model recovers <em>both</em> divergent accounts on only <code>52.4%</code> of questions, and on nearly all of the remaining questions recalls one account but omits the other &mdash; a specific failure mode the paper calls &ldquo;epistemic myopia.&rdquo; Scaling parameters and inference-time reasoning improves per-account recall but does not close the gap to complete recall.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; Graph-based auditable benchmark construction pipeline.</strong>
+        <ul>
+          <li><em>Problem.</em> Handwriting divergent-account questions from scratch is unscalable, and mining web QA sites biases toward high-exposure canonical facts. The evaluator also needs to <em>prove</em> that the multi-account structure is real, not an artifact of scraping.</li>
+          <li><em>Mechanism.</em> The pipeline (i) retrieves related documents from a low-exposure web corpus (limiting the odds any single source dominates); (ii) constructs a knowledge graph over the entities and claims in the retrieved documents and identifies naturally occurring disagreements &mdash; nodes where multiple source documents assert incompatible values for the same relation; (iii) converts each disagreement into a multi-account QA record whose answer is the <em>set</em> of asserted values, each paired with its originating source; (iv) verifies every candidate answer against its originating document and additional authoritative public sources; (v) sends the surviving records to human annotators for review. The result is 1,094 questions with a full source-provenance trail per answer &mdash; the &ldquo;auditable&rdquo; property.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior long-tail knowledge benchmarks (PopQA, EntityQuestions, LongFact) surface rare-but-canonical facts and score models on a single answer. ElephantBench is the first that operationalizes <em>divergence itself</em> as the target: a model can get a question &ldquo;partially right&rdquo; on it, and the grading metric distinguishes single-account recall from complete divergent-account recall. Because the pipeline is graph-driven and source-anchored, questions can be added cheaply as new disagreements are discovered in the corpus, and any grader dispute can be re-litigated against the recorded source documents.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; Multi-account recall metric and 32-model evaluation.</strong>
+        <ul>
+          <li><em>Problem.</em> Standard exact-match / F1 metrics reward returning the dominant account and ignore the other. The evaluation needs to separately measure single-account recall (does the model know <em>anything</em>?) from complete-account recall (does it know both / all?).</li>
+          <li><em>Mechanism.</em> Grading is closed-book: no retrieval, no tools, prompts elicit &ldquo;list all accounts&rdquo; answers, and each response is scored per-account against the source-verified set. Reported metrics separate (a) any-account recall from (b) complete-set recall. The paper runs the probe across 32 open- and closed-weight LLMs spanning parameter sizes and inference-time reasoning budgets, and also runs corpus-side analysis correlating each account&rsquo;s exposure count in the pretraining-scale web corpus with the model&rsquo;s recall of that account.</li>
+          <li><em>Why it works / why it beats prior.</em> The two-recall decomposition is the mechanism that reveals epistemic myopia: without it, the same <code>52.4%</code> complete-recall model looks fine on any single-answer benchmark. Cross-model, cross-scale evaluation makes the failure a structural claim rather than a model-specific fluke.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Benchmark size: <code>1,094</code> questions, each with 2 or more distinct source-verified accounts, drawn from a low-exposure web corpus with human annotator review.</li>
+      <li>Coverage: <code>32</code> LLMs evaluated, spanning open- and closed-weight, parameter scales, and inference-time reasoning modes.</li>
+      <li>Headline number: the strongest evaluated model reaches only <code>52.4%</code> complete divergent-account recall. On &ldquo;nearly all remaining questions&rdquo; the same model recalls one account but omits the other &mdash; the epistemic-myopia failure mode. Any-account recall is substantially higher than complete-account recall across every model tested.</li>
+      <li>Scaling analysis: increasing model size and inference-time reasoning budget both improve any-account recall <em>and</em> complete recall, but the gap persists at the largest / most-reasoning-capable frontier models. The paper&rsquo;s reading: parametric memory converges toward the dominant account rather than storing both.</li>
+      <li>Corpus-exposure analysis: complete recall correlates positively with the exposure count of the <em>minority-side</em> account in the pretraining-scale corpus. Where the minority account appears more often (still less than the dominant), the model retains both; where minority exposure collapses, the model drops the minority even when the majority-side signal is strong.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>The paper positions ElephantBench as a reproducible probe for diagnosing epistemic myopia in parametric memory, and the graph-based pipeline as a scalable recipe to turn any long-tail corpus into source-traceable knowledge probes without hand-writing questions.</li>
+      <li>Under review; code at <a href="https://github.com/Tencent/ElephantBench">github.com/Tencent/ElephantBench</a>.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
