@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Qwen-Drive-1.0 &amp; UI-Venus-2 Launches Review &mdash; September 3, 2026 | Auto Lit Review</title>
+<meta name="description" content="Two Tier 1 foundation-model launches and one Tier 2 competitive-programming milestone from the 36-hour window ending 2026-09-03. Alibaba's Qwen-Drive-1.0-4B is the first vision-language foundation model for autonomous driving to unify 3D perception, driving VQA, and motion planning within a single unchanged Qwen3.5-4B backbone; Ant Group's UI-Venus-2 (9B/27B) foundation GUI agent scales mobile/web/desktop coverage with trace- and sample-level RL verification; NVIDIA's Nemotron-3-Ultra-CC becomes the first AI system to outscore the top human contestant on an IOI problem set, scoring 535.4/600 at IOI 2026 above the 498.27 top-human score." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">September 3, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba (Qwen)</a>
+          <ul>
+            <li class="toc-h2"><a href="#qwen-drive-1-0">Qwen-Drive-1.0: An Initial Step towards a Vision-Language Foundation Model for Autonomous Driving</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#ant-group">Ant Group</a>
+          <ul>
+            <li class="toc-h2"><a href="#ui-venus-2">UI-Venus-2 Technical Report</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#nvidia">NVIDIA</a>
+          <ul>
+            <li class="toc-h2"><a href="#nemotron-3-cc">Post-Training Language Models for Gold-Medal Performance in Coding Competitions</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; September 3, 2026</div>
+    <h1 class="page-title">Qwen-Drive-1.0 &amp; UI-Venus-2 Launches</h1>
+    <div class="page-meta">3 papers &middot; 3 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-09-03 (steady state, three days since the last review) surfaces two Tier 1 foundation-model launches and one Tier 2 post-training milestone after deduplication. <strong>Alibaba (Qwen)</strong> ships <a href="https://arxiv.org/abs/2609.00111"><em>Qwen-Drive-1.0</em></a> (Xin Zhou, Zongchuang Zhao, Zhibo Yang, Mingsheng Li, Humen Zhong, Shuai Bai, Du Chu, Ruizhe Chen, Zhaohai Li, Jun Tang, Qiuyue Wang, Mingkun Yang, Jiazhao Zhang, Dayiheng Liu, Dingkang Liang, Xiang Bai), claimed as the first vision-language foundation model for autonomous driving that keeps a pretrained VLM (<code>Qwen3.5-4B</code>) architecturally intact while attaching an external BEV perception head (3D detection, occupancy, map segmentation) and a Planning Expert (flow-matching trajectory generation). <strong>Ant Group</strong>'s Venus Team ships <a href="https://arxiv.org/abs/2609.00028"><em>UI-Venus-2</em></a> (Venus Team &mdash; 30 named authors including Zhuohan Cai, Haoxing Chen, Jianguo Li, Changhua Meng, Weiqiang Wang), a general-purpose GUI-agent foundation released at 9B and 27B (initialized from <code>Qwen3.5-9B</code> and <code>Qwen3.6-27B</code>) that jointly scales the executable environment pool to 170+ mobile apps plus native desktop OS and introduces a two-level RL verifier (trace-level SGV with visual keypoints, sample-level pre-execution correctness). On the post-training side, <strong>NVIDIA</strong>'s <a href="https://arxiv.org/abs/2609.02849"><em>Post-Training Language Models for Gold-Medal Performance in Coding Competitions</em></a> (Aleksander Ficek, Sean Narenthiran, Mehrzad Samadi, Somshubra Majumdar, Boris Ginsburg) delivers a specialized pipeline that trains <code>Nemotron-3-Nano-CC</code> (30B-A3B) with SFT + GRPO and <code>Nemotron-3-Ultra-CC</code> (550B-A55B) with SFT only, and pairs both with a new closed-loop inference strategy called <em>GenCorrect</em>; during IOI 2026, Competition <code>Ultra-CC</code> scored <code>535.4/600</code> under the same time, submission and internet-access constraints as human contestants &mdash; above the gold threshold of <code>361.12</code> and above the top human contestant's <code>498.27</code>, the first AI system to outscore the highest human on any IOI problem set.</p>
+      <h3>Competitiveness</h3>
+      <p>Qwen-Drive-1.0's competition is the current generation of camera-only end-to-end driving VLA models. Its BEV perception head reaches <code>43.95 mAP</code> and <code>60.99</code> map mIoU on nuScenes and <code>43.45 mAP</code> and <code>71.27</code> map mIoU on OpenScene &mdash; competitive with common vision-based 3D detectors while attached to a 4B general-purpose VLM, and reporting a Predictive Driver Model Score of <code>90.7</code> on NAVSIM and Rater Feedback Score of <code>7.91</code> on WOD-E2E test. The relevant peers on the driving-VLA side are the DriveVLM / EMMA / Waymo-VLM family and the recently released <code>Xiaomi GUI 0</code>-style multimodal drivers; on the general-VLM-preservation axis, the base <code>Qwen3.5-4B</code>. UI-Venus-2's benchmark contrast is with the current strong GUI-agent baselines on <code>MobileWorld</code> (GUI-only success on 117 tasks, 50-step budget), <code>WebVoyager</code> (595-task refreshed split), <code>Odysseys</code> (200 rubric-scored tasks), <code>VenusBench-CAPTCHA</code> (219 examples, micro Pass@1), and <code>VenusBench-GD</code>; the paper positions UI-Venus-2-27B and UI-Venus-2-9B as almost state-of-the-art at their scale against selected strong baselines including the earlier UI-Venus-1.5 line and comparable Qwen3-family agents. Nemotron-3-CC's benchmark peers are the current competitive-programming frontier: <code>DeepSeek-V4-Flash</code>, <code>DeepSeek-V4-Pro</code>, <code>GLM-5.2</code>, <code>gpt-oss-120b</code>, <code>Qwen3.6-35B-A3B</code>, <code>Nemotron-Cascade-2-30B-A3B</code>, and the base Nemotron-3 Nano / Ultra. On IOI 2025 Score@1, Nemotron-3-Ultra-CC reaches <code>50.7%</code> and Nano-CC <code>48.5%</code>; GLM-5.2 remains the top base model at <code>66.0%</code>. But GenCorrect concentrates test-time compute into the 50-submission IOI budget, taking Ultra-CC from <code>343.9</code> after round 1 to <code>502.0</code> after round 5, with Nano-CC reaching <code>468.2</code> above the IOI 2025 gold threshold of <code>438.3</code>. The competition-adapted Ultra-CC then delivered <code>535.4</code> at IOI 2026, above top human <code>498.27</code>.</p>
+      <h3>New frontier releases</h3>
+      <p>Two Tier 1 flagships in-window. <strong>Qwen-Drive-1.0-4B</strong> (Alibaba / Qwen, arXiv:2609.00111, submitted 2026-08-31; weights on <a href="https://huggingface.co/Qwen/Qwen-Drive-1.0-4B">Hugging Face</a> and <a href="https://modelscope.cn/models/Qwen/Qwen-Drive-1.0-4B">ModelScope</a>; code at <a href="https://github.com/QwenLM/Qwen-Drive-1.0">github.com/QwenLM/Qwen-Drive-1.0</a>) is the first camera-only VLA-style foundation model in the Qwen family targeting autonomous driving. <strong>UI-Venus-2-9B</strong> and <strong>UI-Venus-2-27B</strong> (Ant Group / Venus Team, arXiv:2609.00028, submitted 2026-08-27; code at <a href="https://github.com/inclusionAI/UI-Venus">github.com/inclusionAI/UI-Venus</a>, weights at <a href="https://huggingface.co/collections/inclusionAI/ui-venus">huggingface.co/collections/inclusionAI/ui-venus</a>, project at <a href="https://ui-venus.github.io/UI-Venus-2">ui-venus.github.io/UI-Venus-2</a>) extend the UI-Venus family beyond mobile and web into desktop OS. NVIDIA's Nemotron-3-CC pair (Nano-CC 30B-A3B, Ultra-CC 550B-A55B, competition checkpoint promised for release in NeMo-Skills) is announced as a specialized post-training result on top of the earlier Nemotron-3 base models and so is scored as Tier 2 rather than a Tier 1 flagship.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba (Qwen)</h1>
+
+    <h2 id="qwen-drive-1-0"><a href="https://arxiv.org/abs/2609.00111">Qwen-Drive-1.0: An Initial Step towards a Vision-Language Foundation Model for Autonomous Driving</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-08-31</span>
+      <span>Autonomous driving &middot; VLA &middot; BEV perception &middot; Flow matching &middot; RL &middot; Multi-view</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Xin Zhou, Zongchuang Zhao, Zhibo Yang, Mingsheng Li, Humen Zhong, Shuai Bai, Du Chu, Ruizhe Chen, Zhaohai Li, Jun Tang, Qiuyue Wang, Mingkun Yang, Jiazhao Zhang, Dayiheng Liu, Dingkang Liang, Xiang Bai &mdash; <strong>Qwen Team</strong> (Alibaba) with Huazhong University of Science and Technology. arXiv:2609.00111v1 [cs.CV], submitted 2026-08-31. Weights on Hugging Face at <a href="https://huggingface.co/Qwen/Qwen-Drive-1.0-4B">Qwen/Qwen-Drive-1.0-4B</a>; code at <a href="https://github.com/QwenLM/Qwen-Drive-1.0">QwenLM/Qwen-Drive-1.0</a>.</li>
+      <li>The framing: the dominant recipe for driving VLAs is to take a general VLM and continue-train it on driving VQA. Two failures result. First, textual VQA does not directly constrain 3D layout, depth, or occupancy, so a fluent scene description can hide 3D imprecision. Second, extensive driving adaptation triggers catastrophic forgetting of the general knowledge the VLM was pretrained for &mdash; and modern production vehicles are consolidating cockpit and driving stacks onto one compute platform, so the same model must retain dialogue, instruction-following, and open-ended visual understanding to serve both domains within one budget.</li>
+      <li>Qwen-Drive-1.0 &mdash; announced as the first vision-language foundation model for autonomous driving that unifies 3D perception, driving VQA, and motion planning in a single unmodified VLM &mdash; addresses both by keeping the pretrained architecture intact and adding two external modules: a BEV perception head that acts as an explicit, inspectable 3D probe, and a Planning Expert that generates future ego trajectories via flow matching against cached VLM keys and values. A staged four-stage training recipe uses both driving and general-purpose vision-language supervision to acquire driving-specific competence while preserving broad VLM capability.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; Unified VLM + external BEV perception head as a 3D probe.</strong>
+        <ul>
+          <li><em>Problem.</em> A VQA-only adapted VLM has no mechanism forcing its representations to encode metric 3D geometry: text tokens can describe "a truck to the right" without ever pinning down its 3D box, and evaluators cannot directly grade the underlying spatial estimate. Ablating the head-only setting (Stage 1) confirms pretrained VLM features do not readily expose 3D structure.</li>
+          <li><em>Mechanism.</em> Two feature streams per view are read out of the shared pathway: <code>F_i^v</code> from the vision encoder (low-level appearance) and <code>F_i^m</code> from the corresponding image tokens after they traverse the full VLM (broader scene semantics). A depth-based lift-splat-shoot view transform predicts a per-pixel categorical distribution over <code>N_d</code> depth bins without depth supervision and pushes <code>F_i^v</code> along camera rays into a 3D voxel volume <code>V</code>. A feature-pyramid + query-based BEV transformer aggregates <code>F_i^m</code> onto a BEV plane, initialized from the height-collapsed volume. The resulting ego-frame feature <code>B</code> feeds three heads &mdash; a DETR-style deformable-attention decoder for 3D detection, a shallow 3D UNet for semantic occupancy, and a UNet-style head for map segmentation. Perception losses backprop through <code>F_i^m</code>, providing a second gradient path to the vision encoder alongside the direct route through <code>F_i^v</code>. Joint objective: <code>L_perc = L_det + L_occ + L_map</code>, with <code>L_occ</code> combining a 100&times; focal, MonoScene geo/sem scene-class-affinity terms, and Lov&aacute;sz-softmax.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior driving VLAs like DriveVLM express 3D awareness only through text tokens; there is nothing in the loss that penalizes 3D wrongness. The BEV head is the loss surface that forces the shared representations to expose 3D structure directly, and because it is a probe it also gives a numerical answer to "does this VLM actually encode 3D geometry?" A gain from head-only (Stage 1) to joint-trained (Stage 2) quantifies how much the shared pathway has adapted, and the paper reports competitive numbers (43.95 mAP on nuScenes) without breaking the VLM architecture, so it can also serve cockpit VQA and instruction-following on the same weights.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; Planning Expert with flow matching over cached VLM KV.</strong>
+        <ul>
+          <li><em>Problem.</em> Adding a planner to a VLM usually means either autoregressively decoding waypoint tokens (slow, brittle for long horizons, and coupled to text-generation dynamics) or bolting on a full separate planning transformer that ignores VLM context. Neither uses the pretrained VLM representations efficiently, and neither offers a clean way to trade recorded imitation supervision for closed-loop task rewards later.</li>
+          <li><em>Mechanism.</em> A 32-layer diffusion transformer (~1.1B params, 1024 hidden) predicts 50-waypoint 5-second trajectories at 10 Hz using flow matching with <code>x</code>-parameterization (predicts the clean endpoint, not the flow velocity). Trajectory tokens combine a noisy waypoint with an encoding of the historical ego trajectory. The VLM alternates gated linear attention with grouped-query softmax attention; the Planning Expert caches keys (after RoPE) and values from the eight softmax-attention layers, so each block of four Expert layers is conditioned on one shared KV cache. At each layer the Expert concatenates cached KV with trajectory KV for joint attention. Shared adaptive layer normalization injects flow time, navigation instruction, and current ego state. Inference is a 10-step Euler solver over the induced flow velocity. Training objective: <code>L_plan = L_fm + 2e-4 L_delta1 + 2e-5 L_delta2</code>, where the two Huber terms penalize first- and second-order temporal differences to suppress waypoint jitter and abrupt acceleration.</li>
+          <li><em>Why it works / why it beats prior.</em> Endpoint parameterization is the concrete design decision: it estimates the clean trajectory directly and is less sensitive to sensor noise across the four heterogeneous training sources (nuScenes, OpenScene, NAVSIM, PhysicalAI-AV, WOD-E2E), which each have different ego-motion distributions and different noise characteristics. Prior diffusion-planners typically predict the velocity or noise, both of which amplify low-SNR annotations. KV caching keeps the VLM frozen at inference and reduces the planner to a lightweight expert, so the same forward pass through Qwen3.5-4B answers a VQA question <em>and</em> conditions the trajectory rollout.</li>
+        </ul>
+      </li>
+    </ul>
+    <figure>
+      <img src="https://arxiv.org/html/2609.00111v1/qwendrive_overview.png" alt="Unified architecture of Qwen-Drive-1.0 for 3D perception, VQA, and motion planning." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). Unified Qwen-Drive-1.0 architecture. Shared Qwen3.5-4B vision encoder and VLM support text generation; the external BEV perception head and Planning Expert produce geometric predictions and future ego trajectories.</figcaption>
+    </figure>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li>Base model: <code>Qwen3.5-4B</code>, the natively multimodal Qwen VLM. Architecture is kept unchanged &mdash; view and frame tags are ordinary vocabulary tokens; no new special tokens or architectural modifications for driving inputs. Input serialization is task-dependent: frame-major for VQA (all views at timestep 0, then all views at timestep 1), view-major for planning (all timesteps for FRONT VIEW, then all timesteps for FRONT RIGHT VIEW). View-major puts consecutive observations of the same view adjacent, exposing temporal variation within a view &mdash; important for control in dynamic environments.</li>
+      <li>Stage 1 (perception head pretraining): freeze vision encoder and VLM; optimize only the newly initialized BEV perception head with <code>L_perc</code>. The view transform, BEV transformer, and task decoders learn to construct and decode an ego-frame representation before joint adaptation.</li>
+      <li>Stage 2 (perception + VQA joint training): jointly optimize BEV head, vision encoder, and VLM. Each minibatch mixes perception samples (<code>L_perc</code>) with vision-language samples (<code>L_ntp</code>); inactive branches receive dummy inputs and are masked out of the loss to keep the distributed computation graph consistent. The BEV head runs at <code>20&times;</code> the VLM's learning rate so the task-specific module adapts more rapidly during joint training. General-purpose vision-language data is mixed in specifically to preserve broad visual understanding and instruction-following.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li>Stage 3 (Planning Expert pretraining, produces <code>Qwen-Drive-1.0-SFT</code>): freeze vision encoder and VLM, train only the Planning Expert. Mixture contains samples both with and without a textual planning reason; both types supervise only future trajectories through <code>L_plan</code>, with no text-generation objective at this stage. Freezing the conditioning representations separates trajectory learning from any drift in VLM behavior.</li>
+      <li><strong>Named contribution 3 &mdash; Stage 4 RL: converting deterministic flow into a stochastic policy in a low-frequency subspace.</strong>
+        <ul>
+          <li><em>Problem.</em> Imitation via <code>L_plan</code> reproduces one recorded future per scene. But (i) a recorded trajectory is only one of many acceptable futures &mdash; other safe behaviors get penalized, and (ii) trajectory regression does not directly capture collision avoidance, drivable-area compliance, progress, or human-preference agreement, which are what the eval metrics (PDMS, Rater Feedback) actually score. A vanilla policy gradient can't help either, because once the initial noise is drawn the 10-step Euler integration is fully deterministic and defines no transition likelihood to differentiate.</li>
+          <li><em>Mechanism.</em> Share the initial trajectory noise within each rollout group and inject stochastic transitions only over the final three Euler steps <code>W = {7, 8, 9}</code> with per-step standard deviation <code>&sigma; = 0.03</code>. Restrict the perturbation to the first <code>M = 6</code> orthonormal cosine modes over the <code>N = 50</code> future waypoints (matrix <code>&Phi;</code>, <code>&Phi;^T &Phi; = I_M</code>) so that samples look like coherent shifts and bends rather than pointwise oscillation. Sample <code>Z_k</code> standard Gaussian and update <code>&tau;^(k+1) = &mu;^(k) + &sigma;_k &Phi; Z_k</code>. The transition mean adds an approximate restoring score correction derived from the Gaussian conditional implied by the linear interpolation path. Evaluate the log-likelihood surrogate in the low-dim mode basis rather than in full trajectory space. For each scene, sample <code>G = 8</code> reasoning traces from the frozen VLM, each conditioning one Planning Expert rollout; compute group-relative advantages (GRPO-style) and optimize a discounted policy gradient with <code>&gamma; = 0.6</code>, so credit is concentrated on the transitions closest to the emitted trajectory.</li>
+          <li><em>Why it works / why it beats prior.</em> Independent per-waypoint Gaussian noise produces high-frequency jitter, and comparing rollouts under jitter is not comparing driving quality &mdash; it's comparing which noise draw happened to land on a metric-friendly waypoint. Low-frequency cosine perturbations produce coherent maneuvers a reward can score. Restricting stochasticity to the final three integration steps concentrates exploration where perturbations translate most directly into output changes (earlier ones are attenuated by subsequent integration), and the restoring score correction keeps the perturbed paths near the pretrained flow's high-probability region so RL doesn't destroy imitation. Multi-source reward normalization &mdash; PDMS for NAVSIM, Rater Feedback for WOD-E2E, plus a shared displacement term &mdash; lets a single policy learn from three benchmark reward definitions at once (15K NAVSIM navtrain scenes balanced across navigation commands + 15K PhysicalAI-AV + 479 WOD-E2E rater-preference scenarios).</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>3D perception:
+        <table>
+          <thead>
+            <tr><th>Dataset</th><th>mAP &uarr;</th><th>Map mIoU &uarr;</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>nuScenes</td><td>43.95</td><td>60.99</td></tr>
+            <tr><td>OpenScene</td><td>43.45</td><td>71.27</td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>Motion planning (as reported):
+        <ul>
+          <li>NAVSIM Predictive Driver Model Score (PDMS): <code>90.7</code>.</li>
+          <li>Waymo Open Dataset E2E (WOD-E2E) test-split Rater Feedback Score: <code>7.91</code>.</li>
+          <li>Closed-loop driving: "promising potential" in AlpaSim.</li>
+        </ul>
+      </li>
+      <li>Driving scene understanding: significantly surpasses the base <code>Qwen3.5-4B</code> on driving VQA. On general VQA the paper reports preserving general capability under the staged recipe, which is the paper's cockpit-driving-integration argument.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Head-only Stage 1 (VLM frozen) yields limited perception numbers; Stage 2 joint training with unfrozen VLM is what unlocks the reported mAP/mIoU. The gap is the direct empirical statement that pretrained VLM features do not by themselves expose enough 3D structure &mdash; you have to adapt the shared pathway with an explicit 3D loss for it to appear.</li>
+      <li>General vision-language mixing in Stage 2 is the mechanism the paper credits for mitigating catastrophic forgetting; the ablation compares mixed against driving-only Stage 2.</li>
+      <li>Endpoint (<code>x</code>-prediction) vs. velocity/noise-prediction for the Planning Expert: endpoint is chosen for robustness to sensor noise across heterogeneous ego-trajectory sources.</li>
+      <li>Low-frequency mode restriction (<code>M = 6</code>): compared against per-waypoint independent Gaussian noise, low-frequency perturbation is what produces coherent driving-quality-comparable maneuvers under the reward.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>Safety enters through the Stage 4 reward channels themselves (collision avoidance, drivable-area compliance, progress, and rater agreement are the terms the RL is asked to optimize). The paper positions this as "explicit modeling of what plans are actually judged on" rather than as a separate safety filter.</li>
+      <li>Named as "an initial step" in the title; the paper does not claim closed-loop deployment readiness beyond AlpaSim, and open-loop / pseudo-closed-loop / closed-loop numbers are reported as "highly competitive" rather than best-in-class.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Weights: <a href="https://huggingface.co/Qwen/Qwen-Drive-1.0-4B">Qwen/Qwen-Drive-1.0-4B</a> on Hugging Face and <a href="https://modelscope.cn/models/Qwen/Qwen-Drive-1.0-4B">Qwen/Qwen-Drive-1.0-4B</a> on ModelScope.</li>
+      <li>Code: <a href="https://github.com/QwenLM/Qwen-Drive-1.0">github.com/QwenLM/Qwen-Drive-1.0</a>.</li>
+      <li>arXiv listing: cs.CV.</li>
+    </ul>
+
+    <h1 id="ant-group">Ant Group</h1>
+
+    <h2 id="ui-venus-2"><a href="https://arxiv.org/abs/2609.00028">UI-Venus-2 Technical Report</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report</span>
+      <span>arXiv</span>
+      <span>2026-08-27</span>
+      <span>GUI agent &middot; Foundation model &middot; Mobile / Web / Desktop &middot; RL verification &middot; MOPD distillation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Venus Team &mdash; <strong>Ant Group</strong>: 30 named contributors including Zhuohan Cai, Haoxing Chen, Jiaxuan Chen, Weizhi Chen, Zhangxuan Gu, Yuan Guo, Jianguo Li, Runze Li, Changhua Meng, Weiqiang Wang, Hang Yan, Beitong Zhou. arXiv:2609.00028v1 [cs.AI], submitted 2026-08-27. Code at <a href="https://github.com/inclusionAI/UI-Venus">inclusionAI/UI-Venus</a>; weights at <a href="https://huggingface.co/collections/inclusionAI/ui-venus">huggingface.co/collections/inclusionAI/ui-venus</a>; project at <a href="https://ui-venus.github.io/UI-Venus-2">ui-venus.github.io/UI-Venus-2</a>.</li>
+      <li>The framing: GUI agents keep improving on grounding and navigation benchmarks, but real-world deployment stalls on three concrete failures that benchmark-oriented evaluation masks. (i) Environment coverage is narrow &mdash; agents trained on a few apps and English-only ecosystems fall over on multilingual mobile apps, dynamic websites, and full desktop OS. (ii) Task construction is brittle &mdash; generated task queries commonly reference unsupported functions, ambiguous goals, or unverifiable outcomes, so trajectories drift or become unrecoverable. (iii) Reward verification is unreliable &mdash; a coarse "did the final screen look right" judge misses process-level failures, over-credits partial progress, and exposes reward channels the policy can hack.</li>
+      <li>UI-Venus-2 is announced as a general-purpose foundation GUI agent for mobile, web, and desktop that jointly scales all three dimensions: environment pool (170+ multilingual mobile apps &mdash; 100+ Chinese, 70+ English &mdash; plus native desktop OS), a deep-research-driven task-construction pipeline whose queries are grounded in verified application capabilities, and a two-level verification pipeline (trace-level SGV + sample-level pre-execution correctness) that supplies reliable RL reward.</li>
+    </ul>
+
+        <figure>
+      <img src="https://arxiv.org/html/2609.00028v1/venus2_page1_v9_leaderboard.png" alt="UI-Venus-2 benchmark leaderboard vs. strong baselines on MobileWorld, WebVoyager, Odysseys, VenusBench-CAPTCHA, and VenusBench-GD." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). UI-Venus-2 (9B and 27B) vs. selected strong baselines on the five headline GUI-agent benchmarks.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>Model initialization: <code>Qwen3.5-9B</code> for UI-Venus-2-9B and <code>Qwen3.6-27B</code> for UI-Venus-2-27B, giving strong priors in visual understanding, multimodal reasoning, and instruction following. Task-family mixture at training time: Grounding, CAPTCHA, Mobile, Web, and Computer &mdash; deliberately complementary (grounding provides fine-grained spatial perception; CAPTCHA is controlled, verifiable interaction supervision; Mobile/Web/Computer are the primary navigation sources).</li>
+      <li>Action space is extended over UI-Venus-1.5 with desktop-specific primitives added for OS-use instructions.</li>
+      <li>Interaction paradigm: unified closed-loop reasoning-action &mdash; observe rendered interface, interpret visual context, translate high-level intent into an executable action, incorporate environmental feedback into the next decision.</li>
+    </ul>
+
+        <figure>
+      <img src="https://arxiv.org/html/2609.00028v1/figures/main_2.png" alt="UI-Venus-2 system overview: task generation and trajectory collection across mobile, browser, and computer environments." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). Task generation and trajectory collection pipeline for UI-Venus-2. Diverse tasks form a multi-domain task pool; interaction trajectories are collected across mobile, browser, and computer environments.</figcaption>
+    </figure>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li>Three-stage recipe on top of the UI-Venus-1.5 backbone: (I) multimodal mid-training; (II) offline RL per domain; (III) multi-teacher on-policy distillation (MOPD).</li>
+      <li>Stage I (multimodal mid-training): large-scale mixture dominated by Mobile, Web, and OS navigation trajectories. Task queries mix curated-seed conditioning with more open generation to balance realism, linguistic diversity, and task coverage. Trajectories are validated by a human-plus-discriminator pipeline that combines human inspection with automated trajectory-level assessment to filter invalid, ambiguous, or low-quality interactions.</li>
+      <li>Web collection specifics: 4,000+ domains across 19 categories, seeded from public browser-agent benchmarks and Tranco rankings; Kimi 2.6 scores domains on dynamicity, interactivity, content richness, and visual quality; execution uses real Chrome via a 15-action Playwright interface. 45,000 tasks are additionally seeded from <code>InSTA-150k-v3</code>, prioritizing entries with rich success criteria. Domain-specific sanitization removes redundant waits, opposite-direction scrolling, and cyclic action patterns; recoverable errors are preserved to enrich failure-mode coverage.</li>
+      <li>Computer-use specifics: each task is serialized as a <em>TaskSpec</em> containing a controlled desktop snapshot, setup ops, required files/services, source provenance, and outcome evaluator. Materialization plan provisions workspace and warm-up; fixture fingerprints deduplicate environments and detect hidden-answer leakage; preflight checks validate initial state integrity. Long-horizon tasks are split into subgoals with independent artifacts and completion checks &mdash; a verified exit state from one segment seeds the next segment's collection, with accepted prefixes replayed to preserve context.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li><strong>Named contribution 1 &mdash; Deep-research capability catalog for grounded task construction.</strong>
+        <ul>
+          <li><em>Problem.</em> Task generators that hallucinate app functions produce tasks that can't execute; the trajectory-collection loop then wastes rollouts on unrecoverable failures. Static, hand-written seed lists don't scale to 170+ apps.</li>
+          <li><em>Mechanism.</em> A cold-start Deep Research pass aggregates evidence from official documentation, help pages, user discussions, common workflows, and historical tasks, and distills them into an app-specific capability catalog. Each entry records a function's signature, required objects and preconditions, compatible neighbors, and current task coverage. Once rollouts begin, the catalog is dynamically updated with observed page states, UI control constraints, entity validations, and failure cases &mdash; those runtime observations govern the sampling distribution for subsequent generation rounds. A validity gate rejects tasks that reference unsupported functions, ambiguous goals, missing dependencies, or unverifiable outcomes before execution.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior task-construction pipelines either seed from human-written prompts (doesn't scale) or ask an LLM to invent tasks from a natural-language app description (references functions the app doesn't have, or references them incorrectly). Grounding the generator in an evidence-derived catalog that is continually updated from actual rollout observations keeps queries executable and shifts the sampling distribution toward under-explored capabilities and previously-failing scenarios, so the pipeline autonomously fills coverage gaps over iterations rather than repeating easy tasks.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; Two-level trajectory verification: trace-level SGV + sample-level pre-execution correctness.</strong>
+        <ul>
+          <li><em>Problem.</em> Rule-based evaluators are precise on file/config outcomes but fail on open-ended GUI tasks where success is semantic. A single VLM-as-judge on the final screen is too coarse: it confuses partial progress with completion, misses process-level failures, and its single judgment can be gamed by a policy that learns superficial signals.</li>
+          <li><em>Mechanism.</em> <em>Semantic Guided Verification (SGV)</em> operates on the full trace regardless of self-declared success or failure. Five stages: (1) extract verifiable completion keypoints from the task objective; (2) segment the trajectory into fixed-size windows and overlay red markers on click (CLK) actions in screenshots for visual grounding; (3) make parallel VLM judgments on which keypoints are satisfied within each window, accumulating process-level evidence; (4) apply hard rules to unambiguous samples and route ambiguous cases to a multimodal final judgment that integrates termination signals, behavioral statistics, and window-level keypoint evidence; (5) aggregate judgments from multiple heterogeneous models via voting to reduce single-judge bias. Sample-level verification runs at each step, assessing individual action correctness <em>before execution</em>, enabling step-wise supervision and real-time intervention.</li>
+          <li><em>Why it works / why it beats prior.</em> Two axes of resolution that a single final-state judge doesn't have. Trace-level SGV catches "task looked done but the agent skipped a required substep" &mdash; the keypoint-window structure gives process-level evidence rather than end-state pattern matching. Sample-level pre-execution verification produces dense per-step reward that RL can credit, replacing the sparse binary trajectory reward. Multi-judge voting is a direct anti-reward-hacking measure: exploiting a single judge's bias no longer wins if a majority vote is required. The paper reports both levels feed back into upstream task generation to improve data quality at scale, so verification errors become catalog updates.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 3 &mdash; Multi-teacher On-policy Distillation (MOPD) with structured action-aware supervision and teacher-side hints.</strong>
+        <ul>
+          <li><em>Problem.</em> Stage II produces domain-specialized experts (Grounding, CAPTCHA, Mobile, Web, Computer) trained independently. Merging them by weight interpolation or standard distillation loses the specialization; vanilla on-policy distillation applies uniform token-level supervision that treats a long reasoning trace and the short executable action span the same &mdash; but the action is the only interface to the environment, and an error in that short span invalidates an otherwise coherent response.</li>
+          <li><em>Mechanism.</em> Teachers score trajectories the student itself sampled. Supervision is conditioned on action correctness with the action-type / parameters dependency baked in: (a) if the complete action is correct, distillation signal is suppressed &mdash; nothing to correct; (b) if the action type is right but parameters wrong, supervision is strengthened over the action span; (c) if the action type is wrong, type tokens are emphasized and downstream parameter tokens are masked, because parameter semantics depend on type (e.g. an incorrectly predicted <code>Scroll</code> makes its parameters semantically irrelevant, whereas a <code>Click</code> with the wrong coordinates is still correctable). Teacher-side action-type conditioning: the correct action-type hint is appended to the teacher prompt &mdash; but crucially never to the student prompt, and unavailable at inference. It modulates only how the teacher scores student-sampled tokens. Token-level distillation advantage is the stop-gradient log-ratio of teacher-with-hint vs. student log-probs. The teacher does not generate its own response; it evaluates the student's trajectory only.</li>
+          <li><em>Why it works / why it beats prior.</em> Vanilla OPD would put most of its bandwidth on the long reasoning span, which is far larger than the action span but is not what the environment sees. Structured action-aware weighting concentrates the update where a token error changes environment state, and the type-first / parameter-second treatment respects the action's internal grammar &mdash; supervising parameters under a wrong type would push the model toward a schema that can never fire correctly. Teacher-side hints leak no information to the student (student prompt and inference procedure are unchanged) but sharpen the teacher's per-token distribution over the target action, producing a cleaner distillation gradient without changing the deployed model's inputs.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Evaluation covers mobile, web, and computer-use settings across navigation, grounding, and CAPTCHA solving. Figure 1 of the paper compares UI-Venus-2-27B and UI-Venus-2-9B against selected strong baselines on:
+        <ul>
+          <li><strong>MobileWorld</strong> &mdash; GUI-only success rate on 117 tasks with a 50-step budget.</li>
+          <li><strong>WebVoyager</strong> &mdash; refreshed 595-task split.</li>
+          <li><strong>Odysseys</strong> &mdash; average rubric score over 200 tasks.</li>
+          <li><strong>VenusBench-CAPTCHA</strong> &mdash; micro Pass@1 over 219 examples.</li>
+          <li><strong>VenusBench-GD</strong> &mdash; English-instruction micro-average accuracy.</li>
+        </ul>
+      </li>
+      <li>Result framing (from the paper's own reporting): UI-Venus-2 achieves "almost state-of-the-art performance among models of comparable scale" across these benchmarks, positioned as a highly capable yet computationally efficient open-source foundation.</li>
+      <li>End-to-end autonomy specifically requires handling CAPTCHAs on login/registration/workflow gates; UI-Venus-2 treats this as a first-class capability rather than an add-on filter, which the paper credits with unblocking downstream state coverage during trajectory collection (a verification gate that stalls the agent stops any rollout that would follow from that state).</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The paper reports domain-catalog-driven task construction reduces the fraction of unexecutable / ambiguous / unverifiable tasks entering the trajectory-collection stage relative to seed-only generation; the exact fraction depends on the domain.</li>
+      <li>Ablations on the MOPD action-aware weighting are the mechanism-level check on named contribution 3: uniform token-level distillation degrades multi-domain integration relative to the structured (action-type first, parameters second, complete-action-correct suppressed) variant.</li>
+      <li>Verification-side ablation: removing multi-judge voting or the keypoint decomposition in SGV degrades RL-signal quality; the paper positions the two together as reducing reward-hacking susceptibility relative to a single-judge final-state check.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>Safety-aware mechanisms are integrated into the closed-loop reasoning-action framework specifically to ensure controlled execution of <em>consequential actions</em> (payments, deletions, permission grants, and similar). The paper positions this as necessary because expanding capability without matching control raises the blast radius of a wrong action.</li>
+      <li>CAPTCHA capability is intentionally framed as unblocking data scaling (verification gates that stall trajectory collection block downstream states), rather than as a bypass tool.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Full-parameter weights and evaluation infrastructure released. Model collection: <a href="https://huggingface.co/collections/inclusionAI/ui-venus">huggingface.co/collections/inclusionAI/ui-venus</a>. Code: <a href="https://github.com/inclusionAI/UI-Venus">github.com/inclusionAI/UI-Venus</a>. Project: <a href="https://ui-venus.github.io/UI-Venus-2">ui-venus.github.io/UI-Venus-2</a>.</li>
+      <li>arXiv listing: cs.AI (cross-listed cs.CL / cs.CV / cs.LG).</li>
+    </ul>
+
+    <h1 id="nvidia">NVIDIA</h1>
+
+    <h2 id="nemotron-3-cc"><a href="https://arxiv.org/abs/2609.02849">Post-Training Language Models for Gold-Medal Performance in Coding Competitions</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-02</span>
+      <span>Post-training &middot; SFT &middot; GRPO &middot; Test-time compute &middot; Competitive programming &middot; IOI 2026</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Aleksander Ficek, Sean Narenthiran, Mehrzad Samadi, Somshubra Majumdar, Boris Ginsburg &mdash; <strong>NVIDIA</strong>. arXiv:2609.02849v1 [cs.LG], submitted 2026-09-02. CC-BY-4.0. NeMo-Skills release promised for the competition <code>Ultra-CC</code> checkpoint with runnable inference and evaluation recipes.</li>
+      <li>The framing: competitive programming (IOI, ICPC) is a strong reasoning + coding stress test, but prior gold-medal claims mix closed proprietary systems, specialized models, and simultaneous changes across data, post-training, model scale, and inference-time compute &mdash; leaving individual component contributions unattributed. The paper isolates them via a controlled pipeline: 22,000 curated problems, DeepSeek-V4-Flash teacher-generated reasoning traces (1.2M for Nano, 477,642 for Ultra), long-context SFT, GRPO RL with executable rewards, and a new inference strategy (GenCorrect). The headline is that at IOI 2026, run prospectively under the same time, submission, and internet-access constraints as human contestants, the competition-adapted Ultra-CC scored <code>535.4/600</code> &mdash; above the gold threshold of <code>361.12</code> and above the top human contestant's <code>498.27</code>. First AI system on record to outscore the highest-scoring human on any IOI problem set.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li>Data curation: 22,000 problems from 16 regional and international competition families over two decades plus online platforms. Automated pipeline packages each problem into an executable evaluation environment (statement, constraints, test cases, auxiliary files, reference solutions) and keeps only environments whose verdicts are consistent across reference and generated solutions. IOI 2025, ICPC 2025, and LiveCodeBench Pro problems are excluded and deduplicated from SFT and RL data. IOI 2026 is a strictly prospective evaluation &mdash; the system ran before IOI 2026 problems were publicly released.</li>
+      <li>Supervised fine-tuning: DeepSeek-V4-Flash generates 1.2M reasoning traces for Nano and 477,642 for Ultra, with more generations allocated to difficult problems and with self-improvement traces (teacher refines a previously generated solution) included so the model sees the iterative refinement behavior GenCorrect will later use. Nano fine-tunes for three epochs, Ultra for one epoch, at global batch size 64 and sequence packing up to 262K tokens. Ultra initializes from its RLVR-teacher checkpoint.</li>
+      <li>Reinforcement learning (Nano only, because RL at Ultra's scale exceeds the compute budget): after filtering for reliable and fast environments, RL corpus is 3,219 problems split at the parent-problem level into 2,847 train / 372 val (no subtask leakage). NeMo RL + GRPO. Each step samples 16 rollouts for each of 64 prompts at temperature 1.0 &mdash; 1,024 rollouts total. Generated C++17 solutions compile and execute; terminal reward is 1 for full credit, 0 otherwise. Token-level clipped policy-gradient objective, no reference-policy KL penalty. Final checkpoint selected exclusively on held-out validation.</li>
+      <li><strong>Named contribution 1 &mdash; GenCorrect: closed-loop test-time compute with cluster-then-refine.</strong>
+        <ul>
+          <li><em>Problem.</em> Best-of-N parallel sampling is wasteful under a tight submission budget (IOI is 50 submissions per problem) &mdash; most of the N candidates are near-duplicates, and the model has no way to use partial-credit feedback across rounds. Prior gold-medal systems either divided problems into subtasks and attacked each independently or relied on massive parallel sampling; both leave information on the table.</li>
+          <li><em>Mechanism.</em> Five rounds; each round: (i) <em>Generation</em> &mdash; generate up to 200 candidate solutions in parallel and compile locally; round 1 uses only the problem statement, later rounds additionally condition on prior-round solutions and evaluator feedback. (ii) <em>Diversity selection</em> &mdash; after filtering invalid outputs, initialize a center set <code>C</code> via a score-blind local heuristic <code>Q(c)</code> and iteratively select the candidate farthest from existing centers: <code>c_next = argmax min[1 - sim(c, z)]</code>, up to <code>K = 10</code> centers; assign every candidate to its nearest center; pick the highest-<code>Q</code> candidate per cluster as the representative. (iii) <em>Execution</em> &mdash; submit the 10 representatives; for IOI, feedback is per-subtask scores. All filtering and selection for the current round happen before those scores are observed. (iv) <em>Refinement</em> &mdash; accumulate the best subtask scores <code>A_r(t) = max(A_{r-1}(t), max_c s_t(c))</code> with <code>A_0(t) = 0</code>; the next round conditions on the accumulated per-subtask score vector and three complementary references chosen to preserve solved subtasks, target remaining gaps, and maintain diversity.</li>
+          <li><em>Why it works / why it beats prior.</em> Diversity selection before submission means the 10 submissions are almost never near-duplicates &mdash; every subtask feedback is informative for a substantively different solution family. The accumulated per-subtask maximum means the model always builds on its best current standing, so a later round that regresses on one subtask still keeps prior partial credit. Giving the model all subtasks at once (rather than dividing) lets it decide which to work on, leading to substantially fewer necessary generations per problem than prior subtask-splitting approaches. Five rounds &times; 10 submissions exactly matches the IOI 50-submission-per-problem limit, so no compute is spent that the competition rules would prevent using.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution 2 &mdash; Competition-specific adaptations for IOI 2026 (expanded final-round, GLM-5.2 SFT data, NVFP4 quantization).</strong>
+        <ul>
+          <li><em>Problem.</em> A single live run &mdash; no retries. Standard GenCorrect saturates before round 5, so re-running the same 200-generation procedure wastes the final round; and Ultra at BF16 can't produce enough candidates within the 5-hour competition window.</li>
+          <li><em>Mechanism.</em> Three targeted changes. (a) SFT teacher choice: GLM-5.2 vs. DeepSeek-V4-Flash as SFT teacher were compared on IOI 2025. GLM-5.2 scored higher (<code>66.0%</code> vs. <code>55.3%</code>) with shorter outputs (85,927 vs. 120,456 mean tokens); the advantage transfers &mdash; GLM-5.2-trained Ultra-CC scores <code>59.4%</code> and 84,244 tokens vs. DeepSeek-V4-Flash-trained Ultra-CC's <code>50.7%</code> and 89,626 tokens. GLM-5.2 selected. (b) Expanded final-round: rounds 1&ndash;4 keep 200 generations / 10 submissions; round 5 expands to 1,000 generations while keeping the 10-submission cap. Selection over the 1,000 pool is execution-based, adapted from GenCluster &mdash; prompt the model to produce 50 test-input generators plus validators, filter until 100 valid inputs remain, execute every compiled candidate on them, prompt the model to write a subtask-aware scoring script, rank candidates, submit the top 10. (c) NVFP4 quantization: post-training quantization with NVIDIA Model Optimizer's NVFP4 recipe, calibrated on 1,000 32,768-token sequences from the SFT mixture. Live config: NVFP4 + FP8 KV cache + prefix caching off + MTP 5, giving <code>52.8%</code> Score@1 at <code>736.8 tokens/s/GPU</code> &mdash; 6.6 percentage points below BF16 baseline but <code>3.7&times;</code> the throughput. Live deployment used up to 760 NVIDIA GB300 GPUs.</li>
+          <li><em>Why it works / why it beats prior.</em> Ultra-CC saturates the standard round-5 procedure on IOI 2025, so an additional 200-gen round would return diminishing partial credit. Expanding the final round to 1,000 generations and using an execution-based selector (test inputs generated + validated by the model, real execution on those inputs, and a model-written subtask-aware ranker) makes better use of the single live attempt's compute. GLM-5.2's higher accuracy at lower token count directly enlarges the candidate pool reachable within the 5-hour window &mdash; a shorter teacher trace is worth more than a slightly-more-accurate long trace under a fixed time budget. NVFP4 with MTP 5 nearly doubles throughput vs. the matched BF16-KV baseline while losing only 0.6 percentage points of Score@1, which is what enables the enlarged round-5 pool at all.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Main single-sample results on IOI 2025 Score@1, ICPC 2025 Pass@1, and LiveCodeBench Pro Pass@1 (IOI normalized as percentage of 600):
+        <table>
+          <thead>
+            <tr><th>Model</th><th>IOI 2025 Score@1</th><th>ICPC 2025 Pass@1</th><th>LCB Pro Pass@1</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Nemotron-3-Nano-30B-A3B (base)</td><td>21.7%</td><td>16.9%</td><td>17.6%</td></tr>
+            <tr><td>Nemotron-Cascade-2-30B-A3B</td><td>37.2%</td><td>42.0%</td><td>45.6%</td></tr>
+            <tr><td>gpt-oss-120b</td><td>40.7%</td><td>45.8%</td><td>66.4%</td></tr>
+            <tr><td>Qwen3.6-35B-A3B</td><td>40.8%</td><td>32.0%</td><td>58.4%</td></tr>
+            <tr><td>Nemotron-3-Ultra-550B-A55B (base)</td><td>45.5%</td><td>54.0%</td><td>72.6%</td></tr>
+            <tr><td>DeepSeek-V4-Flash</td><td>55.3%</td><td>65.8%</td><td>69.5%</td></tr>
+            <tr><td>DeepSeek-V4-Pro</td><td>56.8%</td><td>69.6%</td><td>78.2%</td></tr>
+            <tr><td>GLM-5.2</td><td>66.0%</td><td>65.7%</td><td>83.8%</td></tr>
+            <tr><td><strong>Nemotron-3-Nano-CC</strong></td><td><strong>48.5%</strong></td><td><strong>51.0%</strong></td><td><strong>71.6%</strong></td></tr>
+            <tr><td><strong>Nemotron-3-Ultra-CC</strong></td><td><strong>50.7%</strong></td><td><strong>57.4%</strong></td><td><strong>74.5%</strong></td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>SFT gains for Nano-CC over three epochs: IOI Score@1 <code>21.7% &rarr; 47.3%</code>, ICPC Pass@1 <code>16.9% &rarr; 46.7%</code>, LCB Pro Pass@1 <code>17.6% &rarr; 70.7%</code>. Most gains occur in epoch one; saturating by epoch three. Ultra-CC with a single SFT epoch on 477,642 examples improves IOI <code>45.5% &rarr; 50.7%</code>, ICPC <code>54.0% &rarr; 57.4%</code>, LCB Pro <code>72.6% &rarr; 74.5%</code> &mdash; smaller absolute gains than Nano's SFT because Ultra starts higher.</li>
+      <li>RL gains for Nano-CC over the third-epoch SFT checkpoint: IOI <code>46.7% &rarr; 48.5%</code>, ICPC <code>47.3% &rarr; 51.0%</code>, LCB Pro <code>70.7% &rarr; 71.6%</code>. Modest &mdash; the paper attributes this to the strong SFT initialization (binary-reward GRPO learns only from prompts whose rollout group contains both successes and failures, so RL targets capabilities near the model's frontier) plus long-horizon credit assignment (rollouts up to 255K tokens receive only a terminal execution reward).</li>
+      <li>GenCorrect gains across five rounds on IOI 2025:
+        <ul>
+          <li>Nano-CC: <code>360.6 &rarr; 468.2</code> (+107.6), crossing the gold threshold of <code>438.3</code> after round 4.</li>
+          <li>Ultra-CC: <code>343.9 &rarr; 502.0</code> (+158.1), crossing the gold threshold after round 3.</li>
+          <li>Ultra-CC starts below Nano-CC in round 1 but finishes <code>33.8</code> points ahead after round 5. Ultra-CC's Score@200 (505) exceeds Nano-CC's (461) by 44 raw IOI points, versus a Score@1 gap of only 13 points &mdash; parallel sampling and iterative refinement magnify Ultra-CC's advantage.</li>
+        </ul>
+      </li>
+      <li>ICPC 2025 GenCorrect: Nano-CC 8.6 &rarr; 9.4 problems solved, matching the fourth-place gold team after round 2. Ultra-CC 9.0 &rarr; 9.6, reaches nine solved one round earlier than Nano-CC. Both plateau faster than on IOI because ICPC binary feedback carries less refinement information than IOI subtask scores.</li>
+      <li>IOI 2026 live result: Competition Ultra-CC scored <code>535.4/600</code>, exceeding the gold threshold by <code>174.3</code> points and the top human contestant by <code>37.1</code> points. Post-competition independent runs of the standard five-round GenCorrect pipeline give a mean of <code>521.72</code> with an observed range of <code>495.0&ndash;545.8</code>; the live result is <code>13.68</code> points above the mean and within the observed range &mdash; consistent with the intended benefit of the competition-specific adaptations rather than variance-only luck.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>SFT-only Ultra-CC (478k samples, 1 epoch) exceeds Nano-CC (3 epochs &times; 1.2M samples + RL) on all three benchmarks &mdash; when scale and inference cost aren't constraints, adapting a stronger base with limited SFT beats extensive post-training of a smaller base.</li>
+      <li>RL initialization ablation: starting RL from the base Nano checkpoint yields <code>21.7% &rarr; 24.9%</code> in 30 steps &mdash; measurable but far below SFT-then-RL. From SFT epoch 1, 2, 3, RL after 30 steps reaches <code>43.0%, 47.1%, 48.7%</code> respectively &mdash; RL does not substitute for SFT capability, but stacks cleanly on top.</li>
+      <li>Teacher-choice ablation (Table 2, IOI 2025 Score@1 / mean gen length): GLM-5.2 vs. DeepSeek-V4-Flash as teacher; GLM-5.2 wins on both accuracy and brevity, and the ranking persists after Ultra-CC SFT. Selecting the SFT teacher for the live run is done exclusively on this development-set comparison.</li>
+      <li>Quantization ablation (Table 3, IOI 2025 Score@1 / throughput):
+        <table>
+          <thead>
+            <tr><th>Precision</th><th>KV cache</th><th>Prefix</th><th>MTP</th><th>Score@1</th><th>Tok/s/GPU</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>BF16</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>59.4%</td><td>199.1</td></tr>
+            <tr><td>NVFP4</td><td>FP8</td><td>Off</td><td>5</td><td>52.8%</td><td>736.8</td></tr>
+            <tr><td>NVFP4</td><td>BF16</td><td>Off</td><td>5</td><td>52.7%</td><td>741.9</td></tr>
+            <tr><td>NVFP4</td><td>BF16</td><td>On</td><td>5</td><td>52.9%</td><td>698.5</td></tr>
+            <tr><td>NVFP4</td><td>BF16</td><td>On</td><td>Off</td><td>53.5%</td><td>345.9</td></tr>
+          </tbody>
+        </table>
+      </li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>The IOI 2026 evaluation is a prospective single-run measurement under live competition conditions; post-competition mean of <code>521.72</code> across five independent standard-pipeline runs (range <code>495.0&ndash;545.8</code>) contextualizes the <code>535.4</code> live number, but the "first AI system to outscore the top human at IOI" claim rests on that single live attempt.</li>
+      <li>RL was applied only to Nano because Ultra-scale RL exceeded compute budget; the extent to which the Ultra-CC IOI 2026 result would improve with RL is unmeasured.</li>
+      <li>The ICPC and IOI plateau behaviors imply GenCorrect's gains depend on how informative per-submission feedback is: subtask scores (IOI) support more refinement rounds than pure binary verdicts (ICPC).</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>The paper promises release of the competition Nemotron-3-Ultra-CC checkpoint together with runnable inference and evaluation recipes in NeMo-Skills.</li>
+      <li>arXiv listing: cs.LG (cross-listed cs.AI / cs.CL / cs.MA / cs.SE). CC-BY-4.0.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
