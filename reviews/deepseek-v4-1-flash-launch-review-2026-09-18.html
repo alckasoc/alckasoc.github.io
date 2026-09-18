@@ -25,11 +25,22 @@
         <li class="toc-h1"><a href="#microsoft">Microsoft</a>
           <ul>
             <li class="toc-h2"><a href="#when2think">When2Think: Learning Difficulty-Aware Length Control for Efficient Hybrid Reasoning Models</a></li>
+            <li class="toc-h2"><a href="#programdistill">ProgramDistill: From Interactive Web Apps to Verifiable Reference-Guided SWE Tasks</a></li>
           </ul>
         </li>
         <li class="toc-h1"><a href="#nvidia">NVIDIA</a>
           <ul>
             <li class="toc-h2"><a href="#sol-pi">SoL-Pi: Recursively Scaling Auto-Research Loops for Efficient Agent Harness</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#shanghai-ai-lab">Shanghai AI Laboratory</a>
+          <ul>
+            <li class="toc-h2"><a href="#sp3o">Rethinking Critic Learning in PPO: Understanding and Mitigating Value Flattening</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#tencent">Tencent</a>
+          <ul>
+            <li class="toc-h2"><a href="#wevisdoc">WeVisDoc: From Coverage to Capability for Robust End-to-End Document Parsing</a></li>
           </ul>
         </li>
       </ul>
@@ -39,12 +50,12 @@
   <main>
     <div class="eyebrow">Review &middot; September 18, 2026</div>
     <h1 class="page-title">DeepSeek-V4.1-Flash Launch</h1>
-    <div class="page-meta">3 papers &middot; 3 labs &middot; auto-generated</div>
+    <div class="page-meta">6 papers &middot; 5 labs &middot; auto-generated</div>
 
     <section id="tldr" class="tldr">
       <h2>TL;DR</h2>
       <h3>Focus</h3>
-      <p>The 36-hour window ending 2026-09-18 (steady state, 15 days since the last review after a quiet stretch) surfaces one Tier 1 flagship model launch and two Tier 2 efficiency-oriented research papers after deduplication. <strong>DeepSeek</strong> releases <a href="https://arxiv.org/abs/2609.19969"><em>DeepSeek-V4.1-Flash</em></a>, a 552B backbone multimodal Mixture-of-Experts trained on 45T tokens with a native <code>1M</code> context, whose main architectural bet is the Causal Encoder-Decoder (CED) plus Compressed Sparse Attention 2 (CSA2) plus FP4 KV caching stack, which together cut the global KV cache footprint to <code>890</code> bytes per token, roughly <code>1/4</code> of DeepSeek-V4-Flash and about <code>1/437</code> of DeepSeek-V1. <strong>Microsoft</strong>'s Jaejun Shim, HyunJin Kim, Young Jin Kim, and JinYeong Bak ship <a href="https://arxiv.org/abs/2609.19671"><em>When2Think</em></a>, a post-training framework for hybrid reasoning models built around Instance-level Difficulty-Aware Control (IDAC), a critic-free reward-shaping mechanism that leverages pre-computed accuracy and token-usage statistics to teach the model when to invoke System 2 reasoning versus a direct System 1 answer. <strong>NVIDIA</strong>'s Song Han group publishes <a href="https://arxiv.org/abs/2609.20519"><em>SoL-Pi</em></a>, a set of four coding-agent harness mechanisms discovered by recursively scaling auto-research loops across diverse rollout environments and cutting recorded token traffic <code>44.7%</code>-<code>49.0%</code> on EdgeBench while matching the Pi harness's task-completion rate on <code>GPT-5.6 Sol</code> and <code>Opus 5</code>.</p>
+      <p>The 36-hour window ending 2026-09-18 (steady state, 15 days since the last review after a quiet stretch) surfaces one Tier 1 flagship model launch and two Tier 2 efficiency-oriented research papers after deduplication. <strong>DeepSeek</strong> releases <a href="https://arxiv.org/abs/2609.19969"><em>DeepSeek-V4.1-Flash</em></a>, a 552B backbone multimodal Mixture-of-Experts trained on 45T tokens with a native <code>1M</code> context, whose main architectural bet is the Causal Encoder-Decoder (CED) plus Compressed Sparse Attention 2 (CSA2) plus FP4 KV caching stack, which together cut the global KV cache footprint to <code>890</code> bytes per token, roughly <code>1/4</code> of DeepSeek-V4-Flash and about <code>1/437</code> of DeepSeek-V1. <strong>Microsoft</strong>'s Jaejun Shim, HyunJin Kim, Young Jin Kim, and JinYeong Bak ship <a href="https://arxiv.org/abs/2609.19671"><em>When2Think</em></a>, a post-training framework for hybrid reasoning models built around Instance-level Difficulty-Aware Control (IDAC), a critic-free reward-shaping mechanism that leverages pre-computed accuracy and token-usage statistics to teach the model when to invoke System 2 reasoning versus a direct System 1 answer. <strong>NVIDIA</strong>'s Song Han group publishes <a href="https://arxiv.org/abs/2609.20519"><em>SoL-Pi</em></a>, a set of four coding-agent harness mechanisms discovered by recursively scaling auto-research loops across diverse rollout environments and cutting recorded token traffic <code>44.7%</code>-<code>49.0%</code> on EdgeBench while matching the Pi harness's task-completion rate on <code>GPT-5.6 Sol</code> and <code>Opus 5</code>. A supplementary merge pass on 2026-09-18 adds three more Tier 2 papers from HF Daily 2026-09-17 that fell inside the 36-hour window: <strong>Microsoft Research</strong>'s <a href="https://arxiv.org/abs/2609.18805"><em>ProgramDistill</em></a>, a reference-guided SWE benchmark whose <code>mine-craft-patch</code> pipeline auto-constructs <code>4,063</code> tasks across <code>26</code> applications by factorizing working web apps into replay-verifiable behaviors; <strong>Shanghai AI Laboratory</strong>'s <a href="https://arxiv.org/abs/2609.18708"><em>SP<sup>3</sup>O</em></a>, which diagnoses <em>Value Flattening</em> in standard PPO critics and mitigates it by supervising the value loss on only a few well-separated intermediate states per response; and <strong>Tencent</strong>'s <a href="https://arxiv.org/abs/2609.20423"><em>WeVisDoc</em></a>, a two-stage document parser (coverage-broadening Stage I &rarr; cluster-diagnostic Stage II) that ranks first on OmniDocBench v1.6 (<code>95.38</code>) and across the three PureDocBench tracks.</p>
       <h3>Competitiveness</h3>
       <p>On base-model benchmarks reported in the paper's Table 1, DeepSeek-V4.1-Flash-Base matches or exceeds DeepSeek-V4-Pro-Base (1.6T backbone, 49B activated) while activating only <code>8B</code> parameters at prefill and <code>16B</code> at decode from a <code>552B</code> backbone: <code>MMLU-Pro</code> <code>74.1</code> vs. <code>73.5</code> for V4-Pro, <code>HumanEval</code> Pass@1 <code>79.4</code> vs. <code>76.8</code>, <code>BigCodeBench</code> Pass@1 <code>60.6</code> vs. <code>59.2</code>, <code>GSM8K</code> <code>93.0</code> vs. <code>92.6</code>. Multimodal scores land at <code>MMMU-Pro</code> <code>56.5</code>, <code>DocVQA</code> LLM-Judge <code>95.6</code>, <code>CVBench</code> <code>77.9</code>. The paper positions the post-trained model as on par with closed-source frontier models on <code>Terminal-Bench 2.1</code>, <code>DeepSWE v1.1</code>, and <code>AutomationBench</code>, and comparable to <code>Kimi-K3</code> and DeepSeek-V4-Pro on math and competitive programming, but reports a residual gap versus giant models on <code>Terminal-Bench 4.0</code> and multimodal frontier systems. When2Think's peers are the current sample-efficient reasoning line: length-penalty SFT, uniform routing baselines, and compressed-CoT approaches. When2Think delivers <code>+10.0%</code> Pass@3 on <code>AIME24</code> with <code>27.9%</code> fewer tokens and <code>40.0%</code> Pass@3 on <code>AIME25</code>, above compression and routing-only baselines. SoL-Pi's peers are the native Codex, Claude Code and Pi harnesses on <code>GPT-5.6 Sol</code> and <code>Opus 5</code>; SoL-Pi matches Pi's Pass@1 on the 51-task EdgeBench evaluation while reducing recorded token traffic <code>44.7%</code>-<code>49.0%</code> and API cost by about one third, yielding an estimated <code>$8.75</code>-<code>$13.50</code> hourly saving relative to native Codex and Claude Code harnesses and <code>$4.36</code>-<code>$5.71</code> relative to Pi.</p>
       <h3>New frontier releases</h3>
@@ -245,6 +256,43 @@
       <li>Because the method avoids a learned critic and an online reference model, it is a strictly lighter post-training recipe than critic-based PPO or KL-controlled RL with a live reference-model query loop.</li>
     </ul>
 
+    <h2 id="programdistill"><a href="https://arxiv.org/abs/2609.18805">ProgramDistill: From Interactive Web Apps to Verifiable Reference-Guided SWE Tasks</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-16</span>
+      <span>Coding agents &middot; Benchmark &middot; Software engineering &middot; Behavior discovery &middot; Reference-guided tasks</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Jeonghye Kim, Minseon Kim, Young Jin Kim, Matheus Pereira, Marc-Alexandre C&ocirc;t&eacute;, Alessandro Sordoni, Xingdi Yuan, Zhengyan Shi. Microsoft Research. arXiv:2609.18805v1 [cs.SE], submitted 2026-09-16; posted to Hugging Face Daily on 2026-09-17.</li>
+      <li>Framing: existing coding-agent benchmarks specify desired behavior through natural-language issues or instructions, but in practical web development the specification often <em>is</em> a working reference application, and the agent must discover behavior by interacting with it and re-implement that behavior in an incomplete codebase. ProgramDistill introduces a benchmark whose task instances are constructed automatically from fully functional reference applications rather than authored by humans.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; mine-craft-patch pipeline for reference-guided SWE task construction.</strong>
+        <ul>
+          <li><em>Problem.</em> Human-authored SWE benchmarks are expensive to scale and hard to control for difficulty; without a gold behavior anchor, verifying that the agent has actually reproduced the intended feature (not a superficially similar substitute) requires bespoke test cases per task.</li>
+          <li><em>Mechanism.</em> Factorize a functional reference application into features at multiple granularities. Each feature is associated with a <em>replayable behavior</em>: a script that, executed against the reference codebase, exercises the feature end-to-end. A gold patch defines exactly the code that implements the feature, so any candidate patch can be verified by replaying the behavior on the candidate codebase and checking whether it produces the reference outcome. The mine-craft-patch pipeline discovers <code>1,975</code> replay-verified behaviors across <code>26</code> applications and constructs <code>4,063</code> tasks with no human labeling. Two evaluation regimes: <em>full-application reconstruction</em>, where the agent must produce cumulative workflows spanning many features, and <em>partial-application reconstruction</em>, where the agent starts from an incomplete codebase and must restore missing features to specified depth.</li>
+          <li><em>Why it works / why it beats prior.</em> Verification via behavior replay against a gold patch is objective and reproducible, whereas issue/instruction-based benchmarks depend on hand-written unit tests that leak intent or fail to cover corner cases. Because task construction is fully automated, the pipeline scales to thousands of tasks and enables controlled difficulty by varying feature granularity, restoration depth, and cumulative-workflow length.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Evaluates nine frontier coding agents. On cumulative workflows in full-application reconstruction, <code>GPT-6 Astra</code> reaches <code>49.2%</code> success and <code>Claude Opus 5</code> reaches <code>28.8%</code>.</li>
+      <li>Partial-application reconstruction: success drops from <code>100%</code> to <code>64.0%</code> and from <code>96%</code> to <code>32%</code> as restoration depth increases from <code>1</code> to <code>8</code>, giving a controlled difficulty axis for diagnosing agent failure modes as the amount of missing code grows.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>The paper frames ProgramDistill as a natural basis for curriculum-based training as well as evaluation, because task difficulty is dialed by construction (granularity, depth, workflow length) rather than by post-hoc filtering.</li>
+    </ul>
+
+
     <h1 id="nvidia">NVIDIA</h1>
 
     <h2 id="sol-pi"><a href="https://arxiv.org/abs/2609.20519">SoL-Pi: Recursively Scaling Auto-Research Loops for Efficient Agent Harness</a></h2>
@@ -293,6 +341,84 @@
       <li>The harness-layer framing is deliberately model-agnostic: mechanisms selected under recursive self-improvement transfer across coding-agent backbones, so the same SoL-Pi harness applies to both <code>GPT-5.6 Sol</code> and <code>Opus 5</code> in the paper's reported numbers.</li>
       <li>Project artifacts: NVlabs project page and GitHub repo above.</li>
     </ul>
+
+    <h1 id="shanghai-ai-lab">Shanghai AI Laboratory</h1>
+
+    <h2 id="sp3o"><a href="https://arxiv.org/abs/2609.18708">Rethinking Critic Learning in PPO: Understanding and Mitigating Value Flattening</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-16</span>
+      <span>RL for LLMs &middot; PPO &middot; Critic learning &middot; Value function &middot; Sparse supervision</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Yizhuo Li, Jianhao Yan, Yun Luo, Zhi Wang, Futing Wang, Rong-Xi Tan, Kanghui Tian, Ganqu Cui, Ning Ding, Peilin Zhao, Yafu Li, Yu Cheng. Shanghai AI Laboratory (with collaborators). arXiv:2609.18708v1 [cs.LG], submitted 2026-09-16; posted to Hugging Face Daily on 2026-09-17.</li>
+      <li>Framing: PPO for LLM post-training relies on a learned critic to estimate state values and cut policy-gradient variance. The paper identifies a systematic failure mode of that critic under standard PPO training on long response trajectories, names it, and proposes a sparse-supervision fix.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Value Flattening diagnosis + SParse Proximal Policy Optimization (SP<sup>3</sup>O).</strong>
+        <ul>
+          <li><em>Problem.</em> Under standard PPO, ground-truth state values (estimated from many Monte Carlo continuations at each intermediate state) change sharply across adjacent intermediate states, but the learned critic's predictions remain comparatively flat &mdash; hence <em>Value Flattening</em>. The paper reproduces the effect in a controlled FrozenLake environment and shows it becomes more pronounced as the state space grows, which then biases downstream advantage estimates and destabilizes the policy update.</li>
+          <li><em>Mechanism.</em> Theoretical and empirical analyses relate Value Flattening to two coupled effects: an implicit variance penalty in the standard MSE critic loss (which biases the critic toward predictions with lower variance across nearby states), and redundant updates from temporally correlated intermediate states with similar gradients (which further pull the critic toward a locally flat solution). SP<sup>3</sup>O applies the critic value loss to only a few well-separated intermediate states in each response, rather than to every token or every step. Even with as few as <code>3</code> supervised states per response, the two effects are mitigated: the variance-penalty bias shrinks and gradient redundancy across correlated states is removed.</li>
+          <li><em>Why it works / why it beats prior.</em> Standard PPO critic training implicitly rewards flatness because dense per-state supervision averages out sharp transitions and stacks near-collinear gradients from correlated states. Sparse, well-separated supervision decouples the update signals so each supervised state's target actually pulls the critic toward the true value, restoring the sharp differences the vanilla critic loses. Because the correction is a change to which states receive the value loss &mdash; not a new loss, architecture, or reference model &mdash; it drops into existing PPO recipes.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Experiments on <code>Qwen3-Base</code>. SP<sup>3</sup>O with only three supervised states per response mitigates Value Flattening and consistently improves the learned policy across model sizes and evaluation suites reported in the paper.</li>
+      <li>Controlled FrozenLake experiments confirm the diagnosis: the gap between Monte Carlo state values and critic predictions grows with the state space under vanilla PPO, and shrinks under SP<sup>3</sup>O.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>The paper's main contribution is diagnostic as much as methodological: it identifies Value Flattening as an important yet overlooked failure mode of standard critic learning in PPO, and shows that a simple sparse supervision strategy is sufficient to correct it &mdash; without introducing a new loss family, a live reference model, or a change of RL algorithm.</li>
+    </ul>
+
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="wevisdoc"><a href="https://arxiv.org/abs/2609.20423">WeVisDoc: From Coverage to Capability for Robust End-to-End Document Parsing</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-17</span>
+      <span>Document parsing &middot; Multimodal &middot; Data-centric training &middot; Diagnostic probing &middot; Degradation synthesis</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Hao Yu, Kang Liu, Linnan Zhao, Jiabo Zhan, Chong Sun, Chen Li, Jing Lyu. Tencent. arXiv:2609.20423v1 [cs.CV], submitted 2026-09-17; posted to Hugging Face Daily on 2026-09-18.</li>
+      <li>Framing: document parsing turns document images into structured content and must remain reliable across diverse layouts and acquisition conditions, but training corpora skew toward common document types and clean digital pages. Simply expanding coverage does not tell the model <em>which</em> weaknesses to fix. WeVisDoc is a two-stage data-centric framework that first broadens coverage and then diagnoses residual failures within fixed clusters to guide targeted follow-up data construction.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Two-stage data-centric framework (coverage &rarr; capability).</strong>
+        <ul>
+          <li><em>Problem.</em> Coverage-only scaling of parser training data still leaves the model weak on rare layouts and degraded acquisition conditions, and the parser's residual errors are not directly observable per document class. Without a diagnostic, the next round of data collection tends to over-invest in already-easy clusters.</li>
+          <li><em>Mechanism.</em> <em>Stage I:</em> broaden semantic, structural, and appearance coverage through heterogeneous data plus structure-preserving degradation synthesis (perturbing appearance while keeping the underlying structure intact so structural supervision remains valid). <em>Stage II:</em> use a held-out probe to measure the Stage I parser's residual errors <em>within fixed visual-structural clusters</em>. These per-cluster diagnostics drive two follow-up moves: (a) targeted construction of new training data for the specific clusters where errors concentrate, and (b) reallocation of the target-token budget toward those clusters. The parser is then retrained under the reweighted mixture.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior data-centric parser training either scales coverage uniformly (which under-invests in the hard tails) or relies on aggregate metrics (which hide cluster-specific weaknesses). Diagnosing within fixed visual-structural clusters gives a direct, per-cluster error signal that can be spent on data construction where it will move the metric, and reallocating the target-token budget lets the model spend more capacity on the residual-error clusters without changing the parser architecture.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>WeVisDoc-4B reaches an Overall score of <code>95.38</code> on OmniDocBench v1.6 and a mean Overall of <code>75.54</code> across the three PureDocBench tracks, ranking first among the compared end-to-end parsers in all four settings.</li>
+      <li>Stage II improves Overall scores over Stage I for both the <code>2B</code> and <code>4B</code> models on both benchmarks. Larger gains on the degraded PureDocBench tracks, including a <code>+4.03</code>-point gain for the <code>4B</code> model on the Real Degraded track &mdash; consistent with the framing that Stage II diagnoses concentrate residual errors in the hard tails.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Stage I &rarr; Stage II improvement across model size (<code>2B</code> and <code>4B</code>) and benchmark isolates the contribution of the diagnostic-guided second stage from the coverage-broadening first stage. The larger Stage II delta on degraded tracks specifically supports the mechanism claim: per-cluster diagnostics steer the reallocation toward degraded clusters, which is where Stage I is weakest.</li>
+    </ul>
+
 
   </main>
 </div>
