@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>On-Policy Distillation Diagnostics Review &mdash; September 19, 2026 | Auto Lit Review</title>
+<meta name="description" content="A quiet 36-hour window ending 2026-09-19 with no Tier 1 flagship launches; two Tier 2 frontier-lab papers dissect what actually breaks in on-policy distillation and agent SFT. Microsoft's When EOS Tokens Disagree traces length inflation in OPD to termination-token mismatch and shows that a semantic EOS aggregation fixes it across Qwen3, Llama 3.2 and Gemma 3. Amazon's ActObs supervises environment-observation tokens during agent SFT, keeping consequence prediction in the base model and lifting GRPO pass@k on Terminal-Bench 2.0 and aider-polyglot." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">September 19, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#amazon">Amazon</a>
+          <ul>
+            <li class="toc-h2"><a href="#actobs">ActObs: Don't Mask the Environment</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#microsoft">Microsoft</a>
+          <ul>
+            <li class="toc-h2"><a href="#eos-tokens-disagree">When EOS Tokens Disagree</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; September 19, 2026</div>
+    <h1 class="page-title">On-Policy Distillation Diagnostics</h1>
+    <div class="page-meta">2 papers &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-09-19 (steady state, one day after yesterday's DeepSeek-V4.1-Flash launch review) surfaces no additional Tier 1 flagship launches, and dedup against the 2026-09-18 page removes the already-covered DeepSeek/Microsoft/NVIDIA/Shanghai AI Lab/Tencent entries. Two Tier 2 frontier-lab papers survive dedup, both diagnosing failure modes in the on-policy training recipes that now dominate post-training. <strong>Microsoft</strong>'s Xuchao Zhang and Chetan Bansal, with co-authors at UNC Chapel Hill and BYU, publish <a href="https://arxiv.org/abs/2609.20511"><em>When EOS Tokens Disagree</em></a>, an on-policy-distillation (OPD) study that traces the length-inflation pathology reported across recent OPD work to <em>termination-token mismatch</em> between base students and post-trained teachers, and shows that treating functionally equivalent EOS tokens as a single semantic <code>stop</code> action fixes it across Qwen3, Llama 3.2 and Gemma 3. <strong>Amazon</strong>'s Rashmi Gangadharaiah group ships <a href="https://arxiv.org/abs/2609.20715"><em>Don't Mask the Environment</em></a>, introducing <code>ActObs</code>, which extends agent-SFT loss to environment-observation tokens (not just agent-authored actions) so the policy internalizes action consequences before GRPO; the two recipes are indistinguishable after SFT but diverge sharply after GRPO on Terminal-Bench 2.0 and generalize to unseen aider-polyglot code-editing tasks.</p>
+      <h3>Competitiveness</h3>
+      <p>Neither paper produces a new frontier model, so competitiveness is measured against the current OPD/agent-RL literature rather than closed-source leaders. Microsoft's semantic EOS correction is a peer of length-penalty SFT, DAPO-style stopping-set enforcement, and reverse-KL-motivated regularization; unlike those, the correction targets probability-level mismatch and is representation-independent, so it works even when student and teacher share an identical declared EOS set but distribute their learned stopping mass across different tokens within it (Gemma 3 case). Under vanilla OPD, Qwen3-1.7B-Base's native <code>&lt;|endoftext|&gt;</code> probability collapses from roughly <code>0.8</code> to near zero while <code>&lt;|im_end|&gt;</code> gets approximately <code>10&#8722;11</code> student mass; the semantic correction keeps stopping mass high, brings response length back near the teacher reference on the same prompts and prevents the DAPO-under-TTRL clipping cascade. Amazon's <code>ActObs</code> peers are the standard agent-SFT + GRPO pipelines that mask environment tokens; on Qwen3-4B, GRPO from <code>ActObs</code> beats action-only pass@k at every evaluated sampling budget on Terminal-Bench 2.0, on Qwen3-8B trades some pass@1 reliability for <code>+3.4 pp</code> pass@16 and solves more distinct tasks, and cross-transfers <code>+4.2 pp</code> pass@1 at 4B on aider-polyglot code editing. These are not results at the DeepSeek-V4.1-Flash / <code>GPT-5.6</code> / <code>Opus 5</code> scale, but both papers directly inform the OPD and agent-RL recipes those systems ship, and both isolate mechanisms (probability-level termination collapse, one-sided SFT gradient specialization) that transfer to any post-training stack using the same components.</p>
+      <h3>New frontier releases</h3>
+      <p>None in-window. Yesterday's Tier 1 (DeepSeek-V4.1-Flash, arXiv:2609.19969, submitted 2026-09-17) is already covered on the 2026-09-18 review page and is deduped here. No new frontier-lab model weights, technical report submissions or launch blog posts crossed the 36-hour bar.</p>
+    </section>
+
+    <h1 id="amazon">Amazon</h1>
+
+    <h2 id="actobs"><a href="https://arxiv.org/abs/2609.20715">Don't Mask the Environment: Observation Supervision Changes How Agents Explore Under RL</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-17</span>
+      <span>Agent SFT &middot; GRPO &middot; Observation supervision &middot; Exploration &middot; Terminal-Bench</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Juzheng Zhang, Disha Makhija, Manoj Ghuhan Arivazhagan, Vinayshekhar Bannihatti Kumar, Rashmi Gangadharaiah (Amazon). arXiv:2609.20715v1 [cs.LG / cs.AI / cs.CL], submitted 2026-09-17. 29 pages, 9 figures, 11 tables. Posted on Hugging Face Daily 2026-09-18.</li>
+      <li>The framing: an agent trajectory is a token sequence of interleaved agent actions and environment observations. Standard agent SFT applies cross-entropy loss only to agent-authored action tokens, using the observation tokens as context but not as prediction targets. The question is whether that masking convention actually produces the best initialization for the subsequent RL stage, or whether extending supervision to the observation tokens the trajectory already contains does more useful work.</li>
+      <li><code>ActObs</code>: joint action-and-observation SFT loss. The policy still emits only actions at deployment, but at training time it is also asked to predict the next environment observation given its prior actions. Deployed cost is unchanged: no new tokens in the sequence, no extra forward passes, no new parameters, no new trajectory data. What changes is the loss mask and, downstream, what GRPO starts from.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; ActObs (joint action + observation SFT).</strong>
+        <ul>
+          <li><em>Problem.</em> Standard agent SFT applies loss only to <code>&lt;action&gt;</code> tokens in the trajectory, so the environment-observation gradient is discarded even though observations are already present as context. Downstream GRPO from that initialization has to discover consequence prediction (what happens after each action) from a sparse per-trajectory scalar reward, which is precisely the credit-assignment regime GRPO handles worst.</li>
+          <li><em>Mechanism.</em> Compute cross-entropy loss over both agent-action tokens and environment-observation tokens in the same trajectory sequence. At deployment, the policy is still queried only for action tokens (observations are supplied by the environment), so no inference cost is added; at training, the observation-token gradient shapes the residual stream to model action &rarr; next-observation transitions. The subsequent RL stage is unchanged: standard GRPO on Qwen3-4B and Qwen3-8B with per-trajectory scalar reward, no auxiliary loss, no reward shaping, no additional data.</li>
+          <li><em>Why it works / why it beats prior.</em> The authors' gradient decomposition shows that action tokens and observation tokens receive gradients whose action-space vs. observation-space components rapidly become orthogonal in ordinary agent SFT. Under action-only supervision the model's ability to predict environment observations degrades <em>below</em> the base model, because the residual observation gradient goes unopposed and drifts. Joint supervision keeps both components on-policy, so the SFT initialization preserves consequence prediction and enters GRPO with a policy that already models what its actions will do. Higher retained entropy during RL and less total policy movement follow from this initialization, so the final policy stays closer to its SFT starting point instead of collapsing onto a narrow deterministic action distribution.</li>
+        </ul>
+      </li>
+      <li>Applied at agent SFT before GRPO on Qwen3-4B and Qwen3-8B. Trajectories are sourced from the standard Terminal-Bench 2.0 SFT distribution; RL uses per-trajectory scalar reward from environment success.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>After SFT alone, <code>ActObs</code> and the action-only baseline are indistinguishable on downstream metrics; the divergence is entirely GRPO-driven.</li>
+      <li><strong>Terminal-Bench 2.0 (in-distribution).</strong> On Qwen3-4B, GRPO from <code>ActObs</code> beats its action-only counterpart at every evaluated sampling budget (higher pass@k for all reported k). On Qwen3-8B, pass@1 reliability drops slightly relative to action-only, but pass@16 increases by <code>+3.4 pp</code> and <code>ActObs</code> solves more distinct tasks overall.</li>
+      <li><strong>aider-polyglot (out-of-distribution code editing).</strong> Tasks unseen during both SFT and RL. Qwen3-4B: <code>+4.2 pp</code> pass@1 for <code>ActObs</code>-initialized GRPO over action-only.</li>
+      <li><strong>Policy-dynamics side effects.</strong> <code>ActObs</code> retains more entropy during RL while requiring less total policy movement, and the final policy stays closer to its SFT initialization than the action-only baseline's final policy stays to its own initialization.</li>
+      <li>Consequence-prediction diagnostic: under action-only SFT, next-observation prediction loss on held-out trajectories rises above the base model's, i.e. training explicitly makes the model worse at predicting the environment. Under <code>ActObs</code>, next-observation prediction loss stays at or below the base model's.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>SFT gradient-alignment analysis: cosine similarity between action-token and observation-token gradient projections falls rapidly under action-only training, i.e. the two heads specialize on disjoint subspaces of the residual stream; under joint supervision the specialization is prevented.</li>
+      <li>The RL benefit does not come from more data, more parameters, longer sequences, or more forward passes &mdash; the trajectory tokens are the ones already present. This makes the intervention a drop-in replacement for the standard loss mask in agent-SFT pipelines.</li>
+      <li>Pass@1 vs. pass@k trade-off: at Qwen3-8B, <code>ActObs</code> is not free &mdash; some pass@1 reliability is exchanged for wider pass@k coverage. The authors position this as the expected consequence of retaining exploration; users optimizing single-shot deterministic pipelines may prefer the action-only baseline.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Limitations noted: results are demonstrated on Qwen3 base models at 4B and 8B, on two agentic benchmarks. Scaling to larger backbones and to non-code environments is left open, as is combining <code>ActObs</code> with more elaborate RL algorithms than GRPO.</li>
+    </ul>
+
+    <h1 id="microsoft">Microsoft</h1>
+
+    <h2 id="eos-tokens-disagree"><a href="https://arxiv.org/abs/2609.20511">When EOS Tokens Disagree: Understanding Length Inflation in On-Policy Distillation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-17</span>
+      <span>On-policy distillation &middot; Length inflation &middot; Termination tokens &middot; Post-training diagnostics</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Yuxiao Yang, Tianrun Yu, Shangzhe Li, Kaixiang Zhao (UNC Chapel Hill); Xuchao Zhang, Chetan Bansal (Microsoft); Huaxiu Yao (UNC); Taylor W. Killian (BYU); Weitong Zhang (UNC, corresponding). arXiv:2609.20511v1 [cs.LG], submitted 2026-09-17. 30 pages, 12 figures, 3 tables. Code at <a href="https://github.com/UNCSciML/opd-eos">github.com/UNCSciML/opd-eos</a>; site at <a href="https://uncsciml.github.io/opd-eos-website">uncsciml.github.io/opd-eos-website</a>. Microsoft-affiliation qualifies this under frontier-labs filter.</li>
+      <li>The framing: on-policy distillation (OPD) trains a student on its own rollouts with dense token-level teacher supervision, and has become a workhorse for transferring post-trained behavior into smaller or weaker base models. Multiple recent OPD studies report a length-inflation pathology &mdash; the student's rollouts grow monotonically until a large fraction clip at the generation budget with repetitive or redundant suffixes despite reaching the correct answer early. Prior explanations blame reverse-KL objective effects, rollout degradation, or generic training instability.</li>
+      <li>Contribution: identify <em>termination-token mismatch</em> between base students and post-trained teachers as a direct, readily diagnosable cause of the inflation, distinct from the mechanisms named above, and show that four candidate corrections behave very differently &mdash; only three of them, all operating on the probability-level distillation signal rather than the decoding interface, actually fix it.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li>Sampled-token OPD update, reformulated for reference:
+        <ul>
+          <li>Per-token advantage <code>A_t = log &pi;<sup>E</sup>(y_t | s_t) &minus; log &pi;<sub>&theta;</sub>(y_t | s_t)</code>, with gradient <code>g_t = A_t &nabla;<sub>&theta;</sub> log &pi;<sub>&theta;</sub>(y_t | s_t)</code>. The teacher scores only the exact token the student sampled; other termination-equivalent tokens receive no direct signal at this position.</li>
+          <li>Termination-equivalent set <code>&Escr;<sub>EOS</sub></code> = tokens registered as valid stops under the rollout protocol. Canonical student EOS <code>e<sub>&star;</sub> &isin; &Escr;<sub>EOS</sub></code>.</li>
+        </ul>
+      </li>
+      <li><strong>Diagnostic &mdash; termination-token mismatch.</strong> On Qwen3-1.7B-Base &rarr; Qwen3-4B (non-thinking) OPD on DAPO-Math-17K under the TTRL template: at the final observed rollout position, the student places most of its stopping probability on <code>&lt;|endoftext|&gt;</code>, while the teacher favors <code>&lt;|im_end|&gt;</code>. Student probability on <code>&lt;|im_end|&gt;</code> is approximately <code>10&#8722;11</code>. The teacher-preferred stop is therefore effectively unreachable by student sampling, and the student's native <code>&lt;|endoftext|&gt;</code> receives negative distillation signal at every rollout end because its per-token teacher log-prob is lower than the student's.</li>
+      <li><strong>Named contribution &mdash; four termination-handling strategies (three real fixes, one control).</strong>
+        <ul>
+          <li><em>Problem.</em> Sampled-token OPD suppresses whichever EOS surface token the student samples whenever the teacher places its stopping mass on a different surface token, even when the teacher's total stopping mass matches the student's. The suppressive signal drives the student's native EOS probability toward zero without transferring the teacher's preferred alternative, because the teacher-preferred token has too little sampling support to receive direct updates.</li>
+          <li><em>Mechanism.</em> Four candidate corrections isolate what actually matters.
+            <ul>
+              <li><em>Fix 1 &mdash; Shared-set decoding.</em> Register both <code>&lt;|endoftext|&gt;</code> and <code>&lt;|im_end|&gt;</code> as valid stops during student rollout; leave the OPD objective and both models' token probabilities untouched. Control condition &mdash; the paper predicts this cannot work and confirms it.</li>
+              <li><em>Fix 2 &mdash; Teacher-side EOS mapping.</em> Sum the teacher's probability mass on all termination-equivalent tokens and reassign it to the canonical <code>e<sub>&star;</sub></code> in the teacher's distribution; adjust for numerical stability so total mass is preserved. Student distribution unchanged; rollout terminates only on <code>e<sub>&star;</sub></code>.</li>
+              <li><em>Fix 3 &mdash; Semantic EOS class.</em> Treat all tokens in <code>&Escr;<sub>EOS</sub></code> as realizations of a single semantic action <code>stop</code>. For both policies define <code>&pi;&#772;(stop | s_t) = &Sigma;<sub>e &isin; &Escr;<sub>EOS</sub></sub> &pi;(e | s_t)</code>; leave non-EOS tokens unchanged. If the sampled token <code>y_t &isin; &Escr;<sub>EOS</sub></code> replace it in the objective with the meta-symbol <code>stop</code>, otherwise keep it. Apply standard sampled-token OPD on the collapsed action set. All tokens in <code>&Escr;<sub>EOS</sub></code> are registered as valid stops during rollout.</li>
+              <li><em>Fix 4 &mdash; Canonical single-EOS action space.</em> Map teacher EOS mass to <code>e<sub>&star;</sub></code> as in Fix 2, and additionally remove all other tokens in <code>&Escr;<sub>EOS</sub></code> from the student's sampling distribution (renormalize over the remainder). Same renormalized distribution is used for the actor log-probability computation. Terminates only on <code>e<sub>&star;</sub></code>.</li>
+            </ul>
+          </li>
+          <li><em>Why it works / why it beats prior.</em> Fixes 2, 3, 4 all reconcile termination at the probability level rather than the decoding interface, which is the level at which the suppressive signal actually enters the update. Fix 3 (semantic aggregation) is the paper's cross-family default: it needs no designated canonical surface token, so it applies to Gemma 3 where student and teacher already share the declared EOS set but distribute learned probability across different tokens within it. Fix 2 is the simplest choice for the Qwen3 case where the canonical student token is unambiguous. Fix 4 is the strictest, constraining the student's action space so only <code>e<sub>&star;</sub></code> can be sampled as a stop.</li>
+        </ul>
+      </li>
+      <li>Setup. Student Qwen3-1.7B-Base, teacher Qwen3-4B (non-thinking); cross-family checks on Llama-3.2-3B PT/IT and Gemma-3-4B PT/IT. Stage-wise checks on K2-Horizon-7B checkpoints (pretraining, midtraining, SFT, final post-training). All models trained on DAPO-Math-17K. Training budget: 1,024 prompt tokens, 7,168 response tokens. Independent evaluation budget: 8,192 tokens. Downstream metric: Avg@16 (16 samples per problem, unweighted mean over AMC23, AIME24, AIME25).</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Cross-family (Qwen3, Llama 3.2, Gemma 3).</strong> Vanilla OPD collapses each family's student termination probability to near zero (Figure 6 in the paper). The semantic EOS correction prevents the collapse or enables recovery in all three; recovery dynamics differ. Qwen3 reaches and holds high stopping mass quickly; Llama 3.2 and Gemma 3 stay in low-termination regimes for longer and recover later, and Llama 3.2 retains the largest residual gap versus its teacher's reference length on the same prompts.</li>
+      <li><strong>Qwen3 correction ablation (Figure 4a).</strong> Fix 1 tracks vanilla OPD &mdash; response length and clipping keep growing, native stopping probability keeps collapsing. Fixes 2, 3, 4 behave similarly to each other and keep response length and clipping close to the teacher's reference statistics on the same prompts.</li>
+      <li><strong>Gemma 3 (shared declared EOS set, differing learned preferences).</strong> PT student favors <code>&lt;eos&gt;</code>; IT teacher favors <code>&lt;end_of_turn&gt;</code>. Semantic correction restores termination without forcing surface-token agreement. This is the case that motivates semantic aggregation over surface-token mapping.</li>
+      <li><strong>K2-Horizon stage-wise (Figure 7).</strong> Fixing the teacher as the final post-trained checkpoint and initializing the student from earlier stages: pretraining favors <code>&lt;|ifm|endoftext|&gt;</code>, final teacher favors <code>&lt;|ifm|im_end|&gt;</code>. Most of that shift happens by midtraining; by SFT the student's stopping preference is close to the teacher's. Vanilla OPD from midtraining or SFT does not exhibit the severe collapse observed in base-to-post-trained OPD &mdash; the mismatch is what matters, not OPD per se. The corrected Pretrain-to-Final run still shows a distinct late-stage re-inflation (Phase 3) where termination probability collapses again after the surface form has already been transferred; this residual dynamic is <em>not</em> explained by the EOS mismatch and points to a second, unresolved mechanism.</li>
+      <li><strong>Template / grader effects.</strong> Cross-template evaluation can reduce measured response length (most clearly when a DAPO-trained model is evaluated with the TTRL template). Length inflation does not imply proportional accuracy loss &mdash; OPD accuracy gains can persist despite severe length inflation, particularly under TTRL evaluation, and DAPO-style graders penalize long redundant continuations more than TTRL-style graders do.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Non-interference check: applying semantic EOS aggregation at the midtraining and SFT stages, where mismatch is already absent, produces response-length, clipping and termination dynamics indistinguishable from vanilla OPD and yields no downstream degradation. The correction is inert when it is not needed.</li>
+      <li>Sampling vs. objective: even full-vocabulary reverse-KL OPD would not solve the mismatch on its own, because the local gradient is still weighted by the student's own token probabilities and a teacher-preferred EOS with negligible student mass would receive only a weak recovery signal. Full-vocabulary computation is not evaluated empirically due to compute cost.</li>
+      <li>Template and grader sensitivity (Appendix E): evaluation format strongly affects measured performance; training-template choice induces a persistent response-length bias; response length and measured accuracy are only partially coupled.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Limitations. The analysis is restricted to single-turn mathematical reasoning with sampled-token OPD; multi-turn OPD, tool-use OPD, and full-vocabulary reverse-KL variants are out of scope. The identified late-stage inflation (K2-Horizon Phase 3) is documented but its mechanism is not resolved. Termination mismatch is presented as an important, but not exhaustive, source of OPD length dynamics.</li>
+      <li>Release. Public implementation with the termination-handling corrections and evaluation protocols; K2-Horizon stage-wise experiment scripts.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
