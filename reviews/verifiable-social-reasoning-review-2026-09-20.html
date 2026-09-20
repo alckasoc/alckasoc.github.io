@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Verifiable Social Reasoning Review &mdash; September 20, 2026 | Auto Lit Review</title>
+<meta name="description" content="A quiet 36-hour window ending 2026-09-20 with no Tier 1 flagship launches; one Tier 2 frontier-lab paper survives dedup. Google Research's Fuse framework builds verifiable ground truth for user-mediated social reasoning by construction, evaluates 12 frontier LLMs on 21,600 user messages, and isolates the assistant-observer gap, user-bias sensitivity, narrative-detail sensitivity, and multi-turn dynamics against a 24k-annotation human baseline." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">September 20, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#google">Google</a>
+          <ul>
+            <li class="toc-h2"><a href="#fuse">Fuse: Verifiable Social Reasoning</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; September 20, 2026</div>
+    <h1 class="page-title">Verifiable Social Reasoning</h1>
+    <div class="page-meta">1 paper &middot; 1 lab &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-09-20 (steady state, one day after yesterday's on-policy-distillation-diagnostics review) surfaces no additional Tier 1 flagship launches. Dedup against the 2026-09-18 DeepSeek-V4.1-Flash page and the 2026-09-19 OPD-diagnostics page removes DeepSeek, Microsoft's <em>When EOS Tokens Disagree</em>, Amazon's <code>ActObs</code>, NVIDIA's <code>SoL-Pi</code>, Microsoft's <code>When2Think</code>, and Tencent's <code>WeVisDoc</code>. Several remaining candidates on Hugging Face Daily are frontier-adjacent but do not clear the frontier-lab-author bar: MiniMax-H3 (arXiv:2609.18323) is an independent third-party evaluation of MiniMax's model rather than a MiniMax paper, RetireOPD (arXiv:2609.20784) is Zhejiang University, Video DeltaNet (arXiv:2609.20744) is UC Berkeley + Impossible Inc., and JEPA-Anything (arXiv:2609.20800) lists a novel primary org rather than a listed frontier lab. One Tier 2 frontier-lab paper survives dedup and the affiliation filter: <strong>Google</strong>'s Amir Taubenfeld, Zorik Gekhman, Marian Croak, Avinatan Hassidim, Yossi Matias and Amir Feder, with Ariel Goldstein (Hebrew University) and Amir Feder (University of Cambridge), publish <a href="https://arxiv.org/abs/2609.17496"><em>Verifiable Social Reasoning for LLM Assistants</em></a>. It introduces <code>Fuse</code> (Framework for User-mediated Social Evaluation), a multi-agent simulation that constructs verifiable ground-truth motives, and uses the framework to decompose model behavior across four controllable axes (assistant vs. observer, user reporting bias, narrative detail level, multi-turn dynamics) on 12 frontier LLMs.</p>
+      <h3>Competitiveness</h3>
+      <p>No new model artifact is produced, so competitiveness is measured on the evaluation task itself against a 24,000-annotation human baseline. Across 12 evaluated LLMs no model exceeds an <code>MSR</code> of <code>83.7</code>, versus a human-majority-vote baseline of <code>89.8</code> (88% first-message solvability), for a gap of at least <code>6.1</code> <code>MSR</code> points on the strongest model even on a clear-cut, forced-choice binary motive task. The evaluated set spans <code>GPT-5.6</code> Luna and Terra, <code>Claude 5</code> Sonnet and Opus, <code>Gemini 3.7 Flash</code>, <code>Grok 4.5</code>, Mistral 4 Small (119B MoE) and Mistral 3.5 Medium (128B), GPT-OSS 20B and 120B MoE, and Gemma-4 12B and 31B. Frontier closed models achieve near-perfect Observer performance (raw social events, no user mediation) but four models across the Gemma-4 and Claude 5 families abstain in more than a third of the user-mediated cases, and their correct-prediction rate does not exceed 50%. Behavioral fragility is systematic: introducing a minimal single-sentence opposing-belief framing in the user's message costs the average model <code>7.7</code> <code>MSR</code> points, more than double the <code>3.6</code>-point drop for the human majority baseline under the same framing shift. Extending the debrief from two turns to eight closes some of the low-detail gap but never reaches human turn-2 performance for any of the 12 models, and 81% of turn-2 predictions do not change by turn 8. The paper is a diagnostic release &mdash; a static 21,600-message benchmark and the <code>Fuse</code> simulation pipeline &mdash; rather than a new model, but it directly targets the deployment regime for the DeepSeek-V4.1-Flash / <code>GPT-5.6</code> / <code>Opus 5</code> assistant tier and is the first frontier-lab evaluation to establish verifiable ground truth for everyday social reasoning by construction rather than by post-hoc human labeling.</p>
+      <h3>New frontier releases</h3>
+      <p>None in-window. No new frontier-lab model weights, technical-report submissions or launch blog posts crossed the 36-hour bar. Yesterday's on-policy-distillation-diagnostics coverage (Microsoft + Amazon) is deduped here; the DeepSeek-V4.1-Flash launch (arXiv:2609.19969, submitted 2026-09-17) is deduped against the 2026-09-18 page.</p>
+    </section>
+
+    <h1 id="google">Google</h1>
+
+    <h2 id="fuse"><a href="https://arxiv.org/abs/2609.17496">Verifiable Social Reasoning for LLM Assistants</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-15</span>
+      <span>Social reasoning &middot; Multi-agent simulation &middot; User mediation &middot; Sycophancy &middot; Alignment eval</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Amir Taubenfeld, Zorik Gekhman (Google Research; equal contribution), Avigail Grinstein-Dabush (Google Research), Itay Laish (Google Research), Ariel Goldstein (Hebrew University), Marian Croak, Avinatan Hassidim, Yossi Matias (Google Research), Amir Feder (Google Research / University of Cambridge). arXiv:2609.17496v1 [cs.AI / cs.CL], submitted 2026-09-15. Code and dataset released at <a href="https://github.com/google-research/google-research/tree/master/user_mediated_social_reasoning">google-research/google-research/tree/master/user_mediated_social_reasoning</a>. Google Research affiliation qualifies this under the frontier-labs filter.</li>
+      <li>The framing: LLM assistants are increasingly used for personal social advice, but every existing social-reasoning benchmark presents the model with an <em>omniscient</em>, third-person description of a predefined situation. Deployed assistants instead learn about social interactions through the subjective account of the user &mdash; a lens that omits context, projects framing, and can be actively biased. Existing user-mediated evaluations focus on safety-oriented scenarios (obvious delusions, superpower claims) where ground truth follows trivially from the premise; everyday social scenarios do not, and cannot be labeled post-hoc by human annotators.</li>
+      <li>Contribution: <code>Fuse</code>, a simulation framework that establishes verifiable ground truth <em>by construction</em>: a target agent is assigned a hidden motive that drives its behavior in a multi-agent simulation, and the evaluated assistant sees only the user agent's later subjective retelling. Applied to a 21,600-message benchmark with 24,000 human annotations, <code>Fuse</code> decomposes model behavior along assistant-vs-observer, user-bias, narrative-detail, and multi-turn axes across 12 frontier LLMs.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2609.17496v1/assets/viz1.png" alt="User-mediated reality diagram" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). AI assistants operate within a user-mediated reality: the assistant hears about social events through the subjective lens of the user, whose account may be partial or biased.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Fuse (Framework for User-mediated Social Evaluation).</strong>
+        <ul>
+          <li><em>Problem.</em> Everyday social reasoning has no natural verifiable ground truth: whether a coworker is genuinely supportive or covertly undermining is known only to the coworker, and cannot be recovered from a subjective user account by post-hoc human annotation cheaply enough to scale. Third-person situation benchmarks (Sap et al. 2019, Kim et al. 2023) measure a different task; safety-oriented user-mediated benchmarks (Gupta et al. 2025) only cover premises where the ground truth is trivial. Neither exposes user-mediated failure modes on the everyday assistant workload.</li>
+          <li><em>Mechanism.</em> Five-stage pipeline. (1) <em>Grounding.</em> Fix the reasoning categories to the ATOMS taxonomy (Beaudoin et al. 2020): <em>desire</em>, <em>intention</em>, <em>belief</em>, <em>emotion</em>, <em>knowledge</em>. Percepts and non-literal communication are excluded because the text-only simulation cannot support them. (2) <em>Scenario templates.</em> For each category generate templates <code>s</code> that specify a user persona, auxiliary personas, a scripted sequence of episodes, a target persona, and a set of possible target motives <code>M_s</code> &mdash; e.g. <code>{platonic, romantic}</code> for a new-acquaintance scenario. (3) <em>Social realizations.</em> For each <code>(s, m)</code> pair, sample multiple concrete unfoldings <code>r &isin; R(s, m)</code> using the Concordia multi-agent simulator (Vezhnevets et al. 2023), with all personas driven by <code>Gemini 3.1 Flash-Lite</code>; the target persona's behavior is conditioned on the assigned motive <code>m</code>. (4) <em>Debrief simulation.</em> After the realization ends, the user agent recounts the events to the evaluated assistant across <code>N</code> turns. Two controllable axes shape the retelling <em>without</em> changing the underlying events: reporting bias <code>b &isin; B_s</code> (a <em>default</em> condition versus an <em>opposing belief</em> condition that gently frames toward the wrong motive with a single sentence in the user simulator's prompt) and narrative detail level <code>l &isin; L_s</code> (three levels controlled by the intensity of a detail instruction in the user simulator's prompt). Simulation and debrief are deliberately decoupled: the same 1,200 simulations are reused across every evaluated model. (5) <em>Judge.</em> A <code>Gemini 3.1 Flash-Lite</code> LLM-as-judge classifies each prediction as <em>Correct</em>, <em>Incorrect</em>, or <em>Not Attempted</em>, conditioning on the motive set <code>M_s</code>, ground truth <code>m</code>, and prediction <code>&mcirc;</code>.</li>
+          <li><em>Why it works / why it beats prior.</em> Ground truth is set at generation time and is independent of the model's response, so evaluation does not require per-example human annotation and the benchmark scales to arbitrary size. Human effort is redirected from labeling every example to <em>validating the simulator</em> once &mdash; 300 raw simulations, 10 raters each, majority-vote match to the assigned motive at 97% (Section 3.3). Compared with safety-oriented user-mediated benchmarks (Gupta et al. 2025), <code>Fuse</code> covers everyday scenarios where the ground truth is nontrivial. Compared with omniscient-observer social benchmarks (Sap et al. 2019, Le et al. 2019, Kim et al. 2023), <code>Fuse</code> reproduces the deployed information asymmetry: the assistant sees only the debrief <code>d</code>, not the realization <code>r</code>. Compared with human-labeled behavioral-tendency evaluations (Scherrer et al. 2023), it scales without per-example annotation.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Mediated Social Reasoning score (MSR).</strong>
+        <ul>
+          <li><em>Problem.</em> Raw accuracy conflates two policies that behave very differently under deployment: models that abstain frequently (lower error rate, less utility) and models that always commit (higher error rate, higher utility). A single scalar metric that treats abstentions as errors punishes appropriate caution; treating abstentions as correct rewards evasion.</li>
+          <li><em>Mechanism.</em> With abstention credit <code>d &isin; (0, 1)</code>, define <code>MSR(d) = (|Correct| + d &middot; |Not Attempted|) / (|Correct| + |Incorrect| + |Not Attempted|)</code>. The reported number is <code>MSR(0.75)</code> &mdash; the midpoint between a random guess's expected score and a perfect prediction, reflecting the position that acknowledging uncertainty is preferable to guessing but less valuable than a correct prediction. Predictions are elicited via forced-choice prompting to push models to commit; <code>d</code> is tunable so downstream users can adjust the trade-off.</li>
+          <li><em>Why.</em> This is the classification-with-reject-option formulation (Herbei &amp; Wegkamp 2006; Bartlett &amp; Wegkamp 2008) instantiated at abstention-friendly deployment settings. It exposes the divergent Gemma-4 / Claude 5 abstention regime cleanly: their <code>MSR</code>s are inflated by the abstention credit even though their correct-prediction rate never exceeds 50%.</li>
+        </ul>
+      </li>
+      <li>Dataset. 30 scenario templates (six per ATOMS category kept: <em>desire</em>, <em>intention</em>, <em>belief</em>, <em>emotion</em>, <em>knowledge</em>) &times; 2 contrasting motives &times; 20 realizations = 1,200 multi-agent simulations. Per realization: three debriefs per <code>(bias, detail)</code> combination, each a single user message. Total: <code>21,600</code> user messages. Two bias conditions (default, opposing belief). Three narrative detail levels. Multi-turn analyses extend the debrief to 8 turns.</li>
+      <li>Evaluated models (12 total, seven families). Open-weight: Gemma-4 12B, Gemma-4 31B, Mistral 4 Small 119B MoE, Mistral 3.5 Medium 128B, GPT-OSS 20B, GPT-OSS 120B MoE. Closed-weight: <code>GPT-5.6</code> Luna, <code>GPT-5.6</code> Terra, <code>Claude 5</code> Sonnet, <code>Claude 5</code> Opus, <code>Gemini 3.7 Flash</code>, <code>Grok 4.5</code>. <code>Gemini 3.1 Flash-Lite</code> drives every simulated persona and the judge, and is deliberately excluded from the evaluated set to avoid a self-play bias.</li>
+      <li>Human validation, in two studies totaling 24,000 annotations. (i) <em>Simulation validation:</em> 300 raw social realizations, 10 raters each, majority-vote motive prediction from raw events = 97% match to assigned ground truth &mdash; the simulator faithfully manifests the intended behavior. (ii) <em>First-message solvability:</em> 2,100 debrief examples, 10 raters each, majority vote from the same input given to the models = 88% correct, <code>MSR = 89.8</code>. This is the human baseline all model comparisons are made against, and confirms that the released static benchmark is far from saturated.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Main leaderboard on first-message user-mediated social reasoning.</strong> No model exceeds <code>83.7 MSR</code>; the human majority baseline is <code>89.8 MSR</code>. Even the strongest model leaves a headroom of over 6 <code>MSR</code> points on a static, clear-cut binary-motive task where 88% of examples are recoverable from the first user message.</li>
+      <li><strong>Abstention regime.</strong> Mistral and <code>GPT-5.6</code> attempt a prediction on essentially every case. Four models from two families &mdash; Gemma-4 12B, Gemma-4 31B, <code>Claude 5</code> Sonnet, <code>Claude 5</code> Opus &mdash; abstain in more than a third of cases despite the forced-choice prompt. Their error rates are correspondingly lower, but their correct-prediction rate never exceeds 50%; the <code>MSR</code> abstention credit hides the utility gap.</li>
+      <li><strong>Assistant-Observer gap (isolating user mediation).</strong> In the <em>Observer</em> setting the model is presented directly with the raw simulation events instead of the user's account. Frontier closed models (<code>Claude 5</code> Opus, <code>Gemini 3.7 Flash</code>) reach near-perfect Observer performance; Mistral Small 4 (120B) still errs on <code>20.9%</code> of Observer cases, indicating that some of the observed gap is genuine social-reasoning limitation rather than only user mediation. Every model exhibits a substantial Observer &rarr; Assistant drop &mdash; correct predictions fall, errors rise, and Gemma-4/Claude 5 models increase their abstention rate. <code>Claude 5</code> Opus is a particularly clean case: near-perfect Observer, but abstention rises dramatically once user mediation is introduced &mdash; a policy choice rather than a capability gap.</li>
+      <li><strong>User-bias sensitivity.</strong> Introducing the opposing-belief single-sentence framing costs the average model <code>7.7 MSR</code> points; the human majority baseline drops only <code>3.6</code> points under the same framing shift. Focusing on the 8 non-high-abstention models (where the abstention credit does not compress the gap), the bias gap ranges from <code>6.9</code> to <code>12.5</code> points. The drop cannot be attributed to information loss alone &mdash; the events are unchanged, only their retelling &mdash; and is direct evidence of sycophantic adoption of the user's framing.</li>
+      <li><strong>Narrative-detail sensitivity.</strong> Mean model <code>MSR</code> rises from <code>74.2</code> at the lowest detail level to <code>80.1</code> at the highest (<code>+5.9</code>). The human majority baseline rises from <code>88.3</code> to <code>91.1</code> (<code>+2.8</code>). Ten of the 12 models narrow the gap with the human baseline as detail increases; the average gap falls <code>22%</code> from <code>14.1</code> to <code>11.0</code>. Interpretation: sufficient signal for a correct prediction is often already present at lower detail levels, but models form a detail-independent default interpretation and only revise once forced by accumulated evidence. Qualitative direction varies by model family: some default to the more alarming reading (Devon-laid-off case study, low-detail GPT Luna escalates to suicide-prevention advice on clearly positive signals; only at high detail does it correctly predict "genuinely fine"), others de-escalate even when concern is warranted.</li>
+      <li><strong>Multi-turn dynamics (8-turn debrief from a low-detail first message).</strong> <code>MSR</code> rises steeply between turns 2 and 4 as the user surfaces clarifying detail in response to model questions, then plateaus and in some cases degrades. Even with the extended turn budget, no model reaches the human-majority turn-2 baseline of <code>MSR = 89.8</code>, and most models remain below their own high-detail two-turn <code>MSR</code>. Position persistence is high: <code>81%</code> of turn-2 committed predictions are unchanged at turn 8; of those that change, <code>11%</code> flip toward correct, <code>8%</code> toward incorrect. Of initial abstentions, only <code>18%</code> remain by turn 8 &mdash; <code>58%</code> become correct, <code>24%</code> become incorrect.</li>
+      <li><strong>Case-study evidence of user-bias amplification.</strong> Multi-turn correct-to-incorrect flips are almost always driven by the user reframing genuinely supportive behaviors as strategic, without introducing new factual evidence &mdash; e.g. the Mistral 3.5 Caleb case study, where the model correctly identifies genuine collegial support at turn 2, then reverses to "this is a classic power dynamic in the making" at turn 4 after the user reframes deference as manipulation. Consistent with the multi-turn compounding of chatbot validation of user bias reported by Weilnhammer et al. (2026).</li>
+    </ul>
+
+    <table>
+      <caption>Selected quantitative gaps reported in the paper (12 evaluated models, 21,600-message benchmark).</caption>
+      <thead>
+        <tr><th>Setting</th><th>Human majority baseline</th><th>Model average</th><th>Strongest model</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>First-message MSR (default bias)</td><td>89.8</td><td>&mdash;</td><td>&le; 83.7</td></tr>
+        <tr><td>Simulation-only solvability from raw events</td><td>97%</td><td>near-perfect (Claude 5 Opus, Gemini 3.7 Flash Observer)</td><td>&mdash;</td></tr>
+        <tr><td>&Delta;MSR under opposing-belief bias</td><td>&minus;3.6</td><td>&minus;7.7</td><td>&mdash;</td></tr>
+        <tr><td>&Delta;MSR low &rarr; high narrative detail</td><td>+2.8 (88.3 &rarr; 91.1)</td><td>+5.9 (74.2 &rarr; 80.1)</td><td>&mdash;</td></tr>
+        <tr><td>Turn-2 &rarr; turn-8 position persistence</td><td>&mdash;</td><td>81% unchanged; 11% &rarr; correct; 8% &rarr; incorrect</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Task solvability calibration.</strong> Simulation-validation 97% vs. first-message solvability 88% quantifies the fraction of examples that are not decidable from the first user message alone. Multi-turn interaction closes some of that <code>9</code>-point residual gap but is not guaranteed to close it entirely; the remaining fraction is the intrinsic ceiling of the user-mediated setting.</li>
+      <li><strong>Clear-cut scenario construction.</strong> Templates are deliberately restricted to scenarios where the target person's motive leans strongly in one direction, and human solvability is validated per scenario before it enters the released benchmark. This isolates reasoning failure from ambiguity by construction, so residual model errors cannot be attributed to task under-specification.</li>
+      <li><strong>Abstention-credit sensitivity.</strong> <code>d = 0.75</code> is chosen as the midpoint between random-guess expected score and perfect prediction. The paper reports Correct / Incorrect / Not Attempted rates separately alongside <code>MSR</code>, so downstream users can recompute with any <code>d &isin; (0, 1)</code>. Under <code>d = 0</code> (abstain = wrong), Gemma-4 and Claude 5 collapse below the non-abstaining models; under <code>d = 1</code> (abstain = right) they rise near the top &mdash; the ordering is diagnostic of the abstention policy, not the reasoning capability.</li>
+      <li><strong>Simulator confound.</strong> Because the user is simulated, some part of the Assistant-Observer gap could arise from simulator-specific artifacts rather than user mediation per se. The mitigations are (i) building on the established Concordia framework, (ii) giving the simulated user full access to the simulation history so it can answer follow-up questions faithfully, and (iii) exposing multi-turn interaction so assistants can proactively elicit missing information. The paper does not empirically separate simulator artifact from intrinsic mediation difficulty; this is listed as a limitation.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Limitations. Text-only simulation excludes percepts and non-literal communication from the ATOMS taxonomy. First-message focus is the primary analytical target; multi-turn dynamics are treated as complementary rather than as a validated live benchmark, because a stable, released multi-turn benchmark would require exposing the user simulator as a live service. The Assistant-Observer gap conflates simulator artifact with intrinsic user-mediation difficulty and is not empirically decomposed. All simulations, user narratives, and judge decisions are driven by <code>Gemini 3.1 Flash-Lite</code>; the paper explicitly excludes it from the evaluated model set but does not report cross-simulator or cross-judge robustness.</li>
+      <li>Release. Public code and dataset at <a href="https://github.com/google-research/google-research/tree/master/user_mediated_social_reasoning">github.com/google-research/google-research/tree/master/user_mediated_social_reasoning</a>. Static <code>21,600</code>-message dataset ready for drop-in model evaluation with no additional infrastructure; multi-turn evaluation requires re-running the user simulator.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
