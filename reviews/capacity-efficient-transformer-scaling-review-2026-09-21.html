@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Capacity-Efficient Transformer Scaling Review &mdash; September 21, 2026 | Auto Lit Review</title>
+<meta name="description" content="A quiet 36-hour window ending 2026-09-21 with no Tier 1 flagship launches. Two Tier 2 frontier-lab papers survive dedup and affiliation, both attacking the same question &mdash; how to gain the quality of a bigger Transformer without paying the parameter or execution cost. Alibaba DreamX's IntBMoE decouples expert participation, execution and materialization in Mixture-of-Experts through a fixed codebook of blocks composed from all experts; Microsoft &amp; U Wisconsin-Madison's LRT thought tokens recover 67&ndash;81% of the BPB improvement from doubling recurrent-Transformer depth using 48% fewer parameters." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">September 21, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba</a>
+          <ul>
+            <li class="toc-h2"><a href="#intbmoe">IntBMoE: Block-Conditioned Full-Participation MoE</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#microsoft">Microsoft</a>
+          <ul>
+            <li class="toc-h2"><a href="#lrt-thought"><span>LRT Thought Tokens: Trading Depth for Time</span></a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; September 21, 2026</div>
+    <h1 class="page-title">Capacity-Efficient Transformer Scaling</h1>
+    <div class="page-meta">2 papers &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-09-21 (steady state, one day after yesterday's verifiable-social-reasoning review) surfaces no additional Tier 1 flagship launches. Dedup against the 2026-09-18 DeepSeek-V4.1-Flash page, the 2026-09-19 on-policy-distillation-diagnostics page, and the 2026-09-20 verifiable-social-reasoning page removes DeepSeek, Microsoft's <code>When EOS Tokens Disagree</code>, Amazon's <code>ActObs</code>, NVIDIA's <code>SoL-Pi</code>, Microsoft's <code>When2Think</code>, Tencent's <code>WeVisDoc</code>, and Google's <code>Fuse</code>. Several other candidates on Hugging Face Daily and arXiv's <code>cs.LG</code>/<code>cs.CL</code> Monday listing are frontier-adjacent but do not clear the frontier-lab-author bar: <code>Learning Foresight without Explicit Trajectories</code> (arXiv:2609.20669) is Dalian University of Technology; <code>Matrix AdaGrad</code> (arXiv:2609.21815) lists Independent Researchers and SJTU; the Berkeley zeroth-order preference paper (arXiv:2609.19144) is UC Berkeley; the JEPA and PLE-style variants have no frontier-lab primary affiliation. Two Tier 2 frontier-lab papers survive dedup and the affiliation filter. <strong>Alibaba</strong>'s DreamX / AMap team (Ran Cheng, Longfei Xu, Zheng Liu, Kaikui Liu, Xiangxiang Chu) publish <a href="https://arxiv.org/abs/2609.21346"><em>IntBMoE: Integrating Block-Level Conditioning into Expert Composition for Full-Participation Mixture-of-Experts</em></a>, a block-conditioned MoE that decouples participation, execution and materialization and is fully deployed in AMap's generative recommender under a <code>60&nbsp;ms</code> latency budget. <strong>Microsoft</strong>'s Yelong Shen with Zeyi Huang, Xuehai He and Yong Jae Lee (University of Wisconsin&ndash;Madison) publish <a href="https://arxiv.org/abs/2609.21605"><em>Trading Depth for Time in Recurrent Transformers</em></a>, inserting one or two latent thought tokens between vocabulary tokens in a Latent Recurrent Transformer (LRT) and comparing that to doubling or tripling physical depth. Both papers are diagnostic / architectural rather than launched models, but each targets a specific coupling in current Transformer designs and reports concrete parameter&ndash;quality trade-offs against strong baselines.</p>
+      <h3>Competitiveness</h3>
+      <p>Neither paper releases a new frontier model artifact, so competitiveness is measured on architectural micro-benchmarks against representative MoE and recurrent-Transformer baselines rather than against <code>GPT-5.6</code>, <code>Claude 5 Opus</code>, or <code>Gemini 3.7 Flash</code>. Alibaba's IntBMoE reaches <code>73.76%</code> Top-1 / <code>91.48%</code> Top-5 on ImageNet-1K with an 8-layer DeiT-Tiny-style backbone at <code>24.30&nbsp;M</code> total parameters and <code>23.11&nbsp;M</code> activated, exceeding the strongest MoE baseline (<code>SMEAR</code>) by <code>+1.98</code> Top-1 and <code>+1.15</code> Top-5 percentage points, and improving on the dense backbone by <code>+7.36</code> and <code>+3.79</code>. On MiniPile causal LM the same architecture reaches <code>PPL&nbsp;14.5878</code>, a <code>2.9%</code> PPL reduction versus the strongest MoE baseline (<code>&mu;MoE</code>&nbsp;CP) and <code>12.4%</code> versus the dense backbone; on the IntTravel sequential-recommendation benchmark it is the top model on <code>HR@1</code>/<code>HR@5</code>/<code>NDCG@5</code>. Cached inference eliminates the <code>O(KED)</code> composition cost from the request-time path: peak inference memory stays flat at <code>104.33&nbsp;MB</code> and inference cost stays flat at <code>3.457&nbsp;GFLOPs</code> as the expert-pool size <code>E</code> grows from 1 to 128, versus <code>54.57 &rarr; 627.83&nbsp;MB</code> and <code>3.495 &rarr; 8.305&nbsp;GFLOPs</code> without caching. In production on Alibaba T-Head PPUs, cached IntBMoE serves AMap's initial-map POI recommender at <code>19&nbsp;ms</code> average and <code>38&nbsp;ms</code> P99 within a <code>60&nbsp;ms</code> budget, delivering a <code>+2.4%</code> relative UVCTR gain in a one-week 5,000-QPS A/B experiment and shipping to full production. Microsoft's LRT thought-token result comes on NanoChat MoE backbones (0.8B and 1.3B total parameters at 16 and 20 physical layers). One thought token brings the 16-layer LRT within <code>0.006</code> BPB and the 20-layer LRT within <code>0.004</code> BPB of the corresponding double-depth LRT, recovering <code>66.7%</code> and <code>81.0%</code> of the doubling gain at approximately <code>48%</code> fewer total parameters (<code>1.04&times;</code> vs <code>2.00&times;</code> and <code>1.05&times;</code> vs <code>2.04&times;</code> of the reference count). Two thought tokens further improve BPB to <code>0.779</code> at 16L and <code>0.739</code> at 20L, coming within <code>0.008</code> BPB of triple-depth LRTs (<code>0.771</code> and <code>0.731</code>) while using approximately <code>65%</code> fewer total parameters. LRT+1 thought token beats every looped-Transformer baseline at matched decoding block count (up to 4 loops) and beats <code>PonderLM-2</code> by <code>0.011</code>&ndash;<code>0.007</code> BPB. Ablations show that removing the cross-token recurrence connection alone regresses BPB by <code>+0.009</code>, closing most of the gap to <code>PonderLM-2</code> and localizing the LRT-with-thought-tokens advantage to the longer recurrent dependency chain rather than to the thought-token computation itself. Both results are small-to-mid scale and neither is FLOP-matched against the current frontier assistant tier; they describe parameter-and-decoding trade-offs and internal ablations rather than a benchmark-topping deployable model.</p>
+      <h3>New frontier releases</h3>
+      <p>None in-window. No new frontier-lab model weights, technical-report submissions or launch blog posts crossed the 36-hour bar. Yesterday's Fuse benchmark coverage (Google) is deduped here; the DeepSeek-V4.1-Flash launch (2026-09-17) and the on-policy-distillation-diagnostics papers (Microsoft, Amazon; 2026-09-17 and 2026-09-18) are deduped against earlier pages.</p>
+    </section>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="intbmoe"><a href="https://arxiv.org/abs/2609.21346">IntBMoE: Integrating Block-Level Conditioning into Expert Composition for Full-Participation Mixture-of-Experts</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-19</span>
+      <span>MoE &middot; Hypernetwork composition &middot; Vision Transformer &middot; Sequential recommendation &middot; Production deployment</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Ran Cheng, Longfei Xu, Zheng Liu, Kaikui Liu, Xiangxiang Chu (DreamX, Alibaba Group; Longfei Xu, Zheng Liu equal contribution; Longfei Xu project lead). arXiv:2609.21346v1 [cs.LG]. Code released at <a href="https://github.com/AMAP-ML/DreamX-Rec/"><code>AMAP-ML/DreamX-Rec</code></a>. Alibaba (Qwen and adjacent generative teams under Alibaba Group) qualifies under the frontier-labs filter.</li>
+      <li>The framing: a conventional MoE layer conflates three quantities that ought to be independent. <em>Participation</em> is how many experts contribute knowledge to a token's output; <em>execution</em> is how many are actually computed (a compute cost, <code>O(k)</code> forward passes for Top-<code>k</code>); <em>materialization</em> is how many expert-sized parameter sets must be built and stored at runtime (a memory cost). Sparse Top-<code>k</code> routing (<code>Switch</code>, <code>GShard</code>, <code>DeepSeekMoE</code>) keeps execution and materialization low but shrinks participation to <code>k</code> per token. Dense output-mixing (<code>MMoE</code>, <code>PLE</code>, <code>Soft MoE</code>, <code>&mu;MoE</code>) restores full participation but scales execution with the number of experts <code>E</code>. Parameter-merging (<code>SMEAR</code>, <code>Lory</code>) keeps execution at one expert but its materialization grows with the number of distinct routing decisions <code>G</code>, at <code>O(GE|&theta;|)</code> synthesis cost per layer.</li>
+      <li>Contribution: <code>IntBMoE</code>, a block-conditioned MoE that pairs dense expert composition with sparse block execution, plus <code>DPRG</code> (Dual-Path Residual Gating), which couples two independently composed paths through multiplicative gating. Evaluated on ImageNet-1K, MiniPile causal LM, and IntTravel sequential recommendation; fully deployed in AMap's generative POI recommender under a <code>60&nbsp;ms</code> latency budget with a <code>+2.4%</code> relative UVCTR gain in A/B testing.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; IntBMoE (Integrated Block-conditioned MoE).</strong>
+        <ul>
+          <li><em>Problem.</em> The three MoE strategies each break one axis: sparse-routing binds participation to execution, dense output-mixing binds execution to the pool size <code>E</code>, and parameter-merging binds materialization to the number of routing units. Existing designs cannot decouple all three because they conflate <em>constructing</em> an expert transformation with <em>executing</em> it on the input, so token-conditioning either fires the whole pool or reduces to a per-token synthesis cost.</li>
+          <li><em>Mechanism.</em> IntBMoE replaces the FFN sublayer in a Transformer block with two-stage computation. <em>Stage 1 (block-level parameter synthesis, token-independent).</em> A codebook of <code>K</code> learned embeddings <code>{c<sub>b</sub>&isin;R<sup>d<sub>c</sub></sup>}</code> defines <code>K</code> reusable <code>L</code>-internal-layer blocks. A shared hypernetwork <code>h<sub>&phi;</sub></code> (Linear&ndash;LayerNorm&ndash;ReLU trunk + two linear heads) maps each <code>c<sub>b</sub></code> to a pair of composition coefficient vectors <code>&alpha;<sub>b</sub><sup>v</sup>, &alpha;<sub>b</sub><sup>g</sup> &isin; R<sup>E</sup></code> for the value and gate paths. The coefficients are <em>not</em> normalized by softmax or sigmoid, so they can be negative and need not sum to one; a <code>1/E</code> variance-preserving factor is applied when composing. For each internal layer <code>&ell;</code> the composed weight matrix is <code>W<sub>b,p</sub><sup>(&ell;)</sup> = (1/E) &Sigma;<sub>e</sub> &alpha;<sub>b,e</sub><sup>p</sup> W<sub>e</sub><sup>(&ell;)</sup></code> from a layer-specific pool <code>P<sup>(&ell;)</sup>={W<sub>e</sub><sup>(&ell;)</sup>, b<sub>e</sub><sup>(&ell;)</sup>}</code> of <code>E</code> expert bases. <em>Stage 2 (token-level Top-<code>k</code> routing).</em> A two-layer ReLU MLP router <code>g<sub>block-router</sub>: R<sup>d</sup> &rarr; R<sup>K</sup></code> scores the <code>K</code> blocks per token and selects the Top-<code>k</code>. Before entering a selected block, the token <code>x<sub>t</sub></code> is filtered by a sigmoid mask <code>m<sub>t,b</sub></code> conditioned on the block's codebook embedding <code>c<sub>b</sub></code>, giving different blocks distinct views of the same token. The token then flows sequentially through the <code>L</code> composed layers of block <code>b</code>. Selected block outputs are weighted by softmax routing probabilities <code>&pi;<sub>t,b</sub></code> and added to an always-active shared SwiGLU expert path.</li>
+          <li><em>Why it works / why it beats prior.</em> Every composed block draws on the entire expert pool, so participation is full (unlike sparse Top-<code>k</code>). The router still activates only <code>k</code> of <code>K</code> blocks per token, so execution stays sparse (unlike dense output-mixing). The codebook bounds the number of materialized composed blocks to <code>K</code>, independent of token count or routing unit count (unlike token-level <code>SMEAR</code> or segment-level <code>Lory</code>, which pay <code>O(GE|&theta;|)</code>). Composition depends only on model parameters, so at inference all <code>K</code> composed block parameters can be precomputed and cached, removing the <code>O(KED)</code> composition term from the request-time path.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; DPRG (Dual-Path Residual Gating).</strong>
+        <ul>
+          <li><em>Problem.</em> Each composed path <code>W<sub>b,p</sub><sup>(&ell;)</sup></code> is a <em>linear</em> combination of the same expert bases. If a block used a single composed path, its output would be linear in the pool, and increasing the codebook or the routing granularity would not add expressiveness above what a shared FFN plus a linear per-block scaling could achieve.</li>
+          <li><em>Mechanism.</em> Compose the expert bases twice per internal layer, into a value path <code>v<sub>t,b</sub><sup>(&ell;)</sup></code> and a gate path <code>g<sub>t,b</sub><sup>(&ell;)</sup></code>. Apply RMSNorm to the gate path and SiLU to a learnable residual scale <code>&lambda;</code>. Multiplicatively modulate: <code>&#x1D75B;<sub>t,b</sub><sup>(&ell;)</sup> = v<sub>t,b</sub><sup>(&ell;)</sup> &odot; (1 + &lambda; SiLU(g<sub>t,b</sub><sup>(&ell;)</sup>))</code>. LayerNorm is applied between consecutive internal layers.</li>
+          <li><em>Why.</em> The product of two independent linear compositions of the same expert basis is nonlinear in that basis, so DPRG adds expressiveness without enlarging <code>E</code>. Component ablations show that removing the gate path is the single largest regression on both ImageNet-1K (Top-1 <code>0.7376 &rarr; 0.6804</code>, <code>&minus;5.72 pp</code>) and MiniPile (PPL <code>14.59 &rarr; 15.89</code>).</li>
+        </ul>
+      </li>
+      <li>Complexity accounting. Let each block contain <code>L</code> internal layers with total matrix size <code>D = &Sigma;<sub>&ell;</sub> d<sub>&ell;-1</sub> d<sub>&ell;</sub></code>. Composition costs <code>O(KED)</code> once per weight update; routed execution over <code>T</code> tokens with Top-<code>k</code> selection costs <code>O(TkD)</code>. Amortized per-token cost is <code>O(KED/T + kD)</code>. At inference with cached composition, the request-time cost collapses to <code>O(TkD)</code>, plus lower-order router / filter / shared-expert terms, and is <em>independent</em> of <code>E</code>. This is the key production property: expanding the expert pool is free at request time.</li>
+      <li>Default configuration <code>(K, E, k, L) = (8, 16, 2, 2)</code> across the visual, language and recommendation experiments. Codebook embedding dim <code>d<sub>c</sub></code> and hypernetwork hidden dim <code>d<sub>h</sub></code> tuned per task; two-layer blocks (<code>L=2</code>) win over parameter-matched one-layer blocks on every task. Coefficients are unconstrained (variance-scaled by <code>1/E</code>) &mdash; softmax-normalized coefficients underperform on all three tasks.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>ImageNet-1K primary benchmark.</strong> 8-layer DeiT-Tiny-style backbone trained from scratch, mean over three seeds. IntBMoE reaches <code>0.7376</code> Top-1 and <code>0.9148</code> Top-5 at <code>24.30&nbsp;M</code> total parameters, <code>23.11&nbsp;M</code> activated, <code>4.063&nbsp;GFLOPs</code> per image (batch size 1) uncached and <code>3.457&nbsp;GFLOPs</code> cached. Relative to the dense backbone (<code>0.6640</code> / <code>0.8769</code> at <code>3.94&nbsp;M</code>), gains are <code>+7.36</code> and <code>+3.79</code> Top-1 / Top-5 percentage points. Relative to <code>SMEAR</code> at matched total params, gains are <code>+1.98</code> and <code>+1.15</code>. IntBMoE outperforms every sparse-routing baseline (<code>Switch</code>, <code>DeepSeek-V3 MoE</code>, <code>ReMoE</code>, <code>V-MoE</code>, <code>Expert Choice</code>, <code>DynMoE</code>, <code>MASS</code>) and every dense-participation baseline (<code>Soft MoE</code>, <code>SMEAR</code>, <code>Lory</code>, <code>&mu;MoE</code>&nbsp;CP/TR).</li>
+      <li><strong>Full-pool participation is empirical, not just architectural.</strong> Removing individual expert bases from all block compositions in one MoE layer (with a <code>1/(E&minus;1)</code> scale correction) and re-evaluating the ImageNet checkpoint without retraining lowers Top-1 accuracy by a mean of <code>1.60</code>, <code>0.49</code>, <code>1.17</code>, <code>0.78</code> percentage points across Layers 0/2/4/6. Layer 0 concentrates: removing <code>E1</code>, <code>E12</code>, <code>E15</code> drops accuracy by <code>4.10</code>, <code>4.99</code>, <code>9.15</code> pp respectively, versus much smaller effects for other bases; later-layer contributions are more evenly distributed (Layer 2 range <code>0.26</code>&ndash;<code>0.74</code>, Layer 4 <code>0.60</code>&ndash;<code>1.95</code>, Layer 6 <code>0.45</code>&ndash;<code>1.04</code>). Even the smallest drop is <code>0.26</code> pp &mdash; every basis contributes.</li>
+      <li><strong>Block-specific composition recipes differentiate with depth.</strong> Value-path mean pairwise cosine similarity between the eight blocks' composition recipes decreases monotonically <code>0.796 &rarr; 0.079 &rarr; 0.019 &rarr; 0.010</code> from Layer 0 to Layer 6; gate-path follows <code>0.726 &rarr; 0.126 &rarr; 0.083 &rarr; 0.043</code>. Class-conditioned block-allocation heatmaps on eight ImageNet classes show that different classes favor different blocks at Layer 4 (e.g. <em>hen</em> prefers <code>b<sub>4</sub></code>, <em>Boston bull</em> prefers <code>b<sub>6</sub></code>) and these preferences shift by Layer 6 (<code>b<sub>0</sub></code>, <code>b<sub>3</sub></code>). Shallow layers mostly share expert-composition patterns; deeper layers construct block-specific recipes.</li>
+      <li><strong>Component ablations (ImageNet-1K, Top-1).</strong>
+        <ul>
+          <li><em>w/o Gate</em> (drop DPRG multiplicative modulation): <code>0.7376 &rarr; 0.6804</code>, <code>&minus;5.72&nbsp;pp</code>. Largest regression.</li>
+          <li><em>1-Layer</em> (collapse two-layer block into a single parameter-matched layer): <code>0.6878</code>, <code>&minus;4.98&nbsp;pp</code>. Two-layer block structure provides benefits beyond parameter count.</li>
+          <li><em>Fixed <code>&lambda;=1</code></em> (non-learnable residual scale): <code>0.7244</code>, <code>&minus;1.32&nbsp;pp</code>.</li>
+          <li><em>Softmax Coeff.</em> (constrain composition coefficients): <code>0.7263</code>, <code>&minus;1.13&nbsp;pp</code>. Confirms unconstrained variance-scaled coefficients matter.</li>
+          <li><em>w/o Shared</em> (drop the always-active shared SwiGLU expert): <code>0.7332</code>, <code>&minus;0.44&nbsp;pp</code>.</li>
+          <li><em>w/o Filter</em> (drop block-conditioned feature filtering): <code>0.7372</code>, <code>&minus;0.04&nbsp;pp</code>.</li>
+        </ul>
+      </li>
+      <li><strong>Sensitivity to hyperparameters.</strong> Increasing <code>K</code> from 8 to 32 raises Top-1 by only <code>+0.07&nbsp;pp</code>; increasing <code>E</code> from 16 to 64 raises it by only <code>+0.15&nbsp;pp</code>. Increasing <code>k</code> consistently improves accuracy; <code>k=2</code> is the reported default trading gain for per-token compute. Block depth <code>L=2</code> maximizes Top-1.</li>
+      <li><strong>Generalization to causal language modeling and sequential recommendation.</strong> On MiniPile (18-layer Llama-style causal Transformer, 6&nbsp;GB deduplicated Pile subset), IntBMoE reaches <code>PPL&nbsp;14.5878</code> at loss <code>2.6802</code>, a <code>&minus;2.9%</code> PPL reduction versus <code>&mu;MoE&nbsp;CP</code> (<code>PPL&nbsp;15.0306</code>) and <code>&minus;12.4%</code> versus the dense backbone (<code>PPL&nbsp;16.6621</code>). On IntTravel (162.8&nbsp;M users, 7.3&nbsp;M POIs, 4.13&nbsp;B interactions, "Where"-next-POI task), IntBMoE is best on <code>HR@1</code> (<code>0.6852</code>), <code>HR@5</code> (<code>0.8692</code>), and <code>NDCG@5</code> (<code>0.7850</code>); every listed MoE baseline is at least one metric behind.</li>
+      <li><strong>Caching decouples inference cost from expert-pool size.</strong> Peak inference memory for cached IntBMoE stays flat at <code>104.33&nbsp;MB</code> and inference cost stays flat at <code>3.457&nbsp;GFLOPs</code> per image as <code>E</code> grows from 1 to 128. Uncached inference scales as expected: memory <code>54.57&nbsp;MB &rarr; 627.83&nbsp;MB</code> and compute <code>3.495&nbsp;GFLOPs &rarr; 8.305&nbsp;GFLOPs</code>. Caching adds a fixed pre-materialization cost, so it becomes memory-favorable from <code>E&nbsp;&ge;&nbsp;16</code>; training amortizes composition once per minibatch.</li>
+      <li><strong>Production deployment.</strong> Cached IntBMoE serves AMap's initial-map POI recommender on Alibaba T-Head PPUs. Existing production model (no MoE) as control, cached IntBMoE as treatment, one-week online A/B experiment at approximately <code>5,000&nbsp;QPS</code>. Latency: average <code>19&nbsp;ms</code>, P99 <code>38&nbsp;ms</code>, both within the <code>60&nbsp;ms</code> serving budget. Business metric: <code>+2.4%</code> relative UVCTR. Post-experiment, IntBMoE was fully rolled out to production traffic.</li>
+    </ul>
+
+    <table>
+      <caption>Selected quantitative results on ImageNet-1K (mean over three seeds, DeiT-Tiny-style 8-layer backbone; MoE methods use ~24M total parameters).</caption>
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>ACC@1</th>
+          <th>ACC@5</th>
+          <th>Params (M)</th>
+          <th>Activated (M)</th>
+          <th>FLOPs (G)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Dense</td><td>0.6640</td><td>0.8769</td><td>3.938</td><td>3.938</td><td>1.453</td></tr>
+        <tr><td>Switch Transformer</td><td>0.7004</td><td>0.8937</td><td>24.070</td><td>3.951</td><td>1.458</td></tr>
+        <tr><td>DeepSeek-V3 MoE</td><td>0.7078</td><td>0.8969</td><td>24.004</td><td>6.306</td><td>2.382</td></tr>
+        <tr><td>V-MoE</td><td>0.7167</td><td>0.9030</td><td>24.070</td><td>5.135</td><td>1.920</td></tr>
+        <tr><td>Expert Choice</td><td>0.7170</td><td>0.9030</td><td>24.070</td><td>5.135</td><td>1.958</td></tr>
+        <tr><td>Soft MoE</td><td>0.7122</td><td>0.8996</td><td>24.201</td><td>23.017</td><td>1.656</td></tr>
+        <tr><td>SMEAR</td><td>0.7178</td><td>0.9033</td><td>24.070</td><td>22.887</td><td>1.493</td></tr>
+        <tr><td>Lory</td><td>0.6956</td><td>0.8892</td><td>24.005</td><td>22.822</td><td>2.003</td></tr>
+        <tr><td>&mu;MoE (CP)</td><td>0.7012</td><td>0.8938</td><td>24.070</td><td>22.887</td><td>9.120</td></tr>
+        <tr><td><strong>IntBMoE</strong></td><td><strong>0.7376</strong></td><td><strong>0.9148</strong></td><td>24.295</td><td>23.111</td><td>4.063</td></tr>
+        <tr><td>IntBMoE (cached)</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>3.457</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Full component ablations on both ImageNet-1K and MiniPile confirm the same ordering: gate path &gt; two-layer block structure &gt; unconstrained coefficients &gt; learnable <code>&lambda;</code> &gt; shared expert &gt; feature filter. MiniPile PPL: <code>14.59</code> (full), <code>14.63</code> (w/o Filter), <code>14.79</code> (Fixed <code>&lambda;</code>), <code>14.99</code> (Softmax Coeff.), <code>15.14</code> (1-Layer), <code>15.30</code> (w/o Shared), <code>15.89</code> (w/o Gate). IntTravel <code>NDCG@5</code>: <code>0.7850</code> (full), <code>0.7846</code> (w/o Filter), <code>0.7844</code> (w/o Shared), <code>0.7839</code> (Softmax Coeff.), <code>0.7828</code> (Fixed <code>&lambda;</code> / 1-Layer / w/o Gate). The ranking of the top four ablations is task-dependent, but the gate and the two-layer block are consistently the two most important components.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Frontier-lab context. Alibaba (Qwen) is the primary China-side generative-model lab on the list; this paper is from DreamX, the same Alibaba unit that ships AMap's production generative recommender. The code and the deployment are both released. The paper does not introduce a new Qwen model but does surface an architectural building block that could plausibly appear in future Qwen or AMap generative releases &mdash; the composition-and-caching structure is compatible with a large-<code>E</code> pool at fixed request-time cost, which is a natural fit for latency-critical serving.</li>
+    </ul>
+
+    <h1 id="microsoft">Microsoft</h1>
+
+    <h2 id="lrt-thought"><a href="https://arxiv.org/abs/2609.21605">Trading Depth for Time in Recurrent Transformers</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-18</span>
+      <span>Latent Recurrent Transformer &middot; Thought tokens &middot; Depth&ndash;time trade-off &middot; MoE &middot; Test-time compute</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Zeyi Huang, Xuehai He, Yong Jae Lee (University of Wisconsin&ndash;Madison), Yelong Shen (Microsoft). arXiv:2609.21605v1 [cs.LG], submitted 2026-09-18. Microsoft affiliation (Yelong Shen) qualifies this under the frontier-labs filter. Builds on the same authors' Latent Recurrent Transformer (LRT; arXiv:2605.26797) and directly compares against <code>PonderLM-2</code> (Zeng et al. 2025) and looped Transformers.</li>
+      <li>The framing: a Transformer's computational depth per token can be increased in three ways. <em>Physical depth</em> adds independently parameterized layers. <em>Looped Transformers</em> repeatedly apply a shared stack (<code>R</code> loops of an <code>L</code>-layer backbone = <code>RL</code> layer executions per token with fixed parameters). <em>Recurrent Transformers</em> feed the preceding token's final hidden state into the current token's computation, extending computation along the temporal axis; the current token's forward pass builds directly on the preceding token's already-completed representation. This paper isolates the fourth degree of freedom: <em>within</em> a recurrent Transformer, is additional compute better spent as more temporal steps or as more physical layers?</li>
+      <li>Contribution: latent <em>thought tokens</em> inserted between consecutive vocabulary tokens in the LRT, sharing the LRT's backbone parameters and providing one extra stage of hidden-state refinement before the next-vocabulary-token prediction. Studied on 16-layer and 20-layer NanoChat MoE backbones (0.8B and 1.3B total parameters); one thought token recovers 67% and 81% of the BPB improvement from doubling LRT depth at approximately 48% fewer total parameters. Feedback ablations localize the LRT-with-thought-tokens advantage to the cross-token recurrent connection rather than to the thought-token computation itself.</li>
+    </ul>
+
+        <figure>
+      <img src="https://arxiv.org/html/2609.21605v1/LRT_TT_2.png" alt="Scaling LRT along depth or time" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). Scaling LRT along depth or time. (a) An <code>L</code>-layer LRT performs one backbone forward pass per vocabulary token and feeds its final hidden state into the next token's computation. (b) Depth scaling increases the backbone to <code>2L</code> independently parameterized layers. (c) Temporal scaling inserts one thought token after each vocabulary token, reusing the same <code>L</code>-layer backbone; the thought state supplies feedback to the next vocabulary token, continuing the recurrent chain across token boundaries.</figcaption>
+    </figure>
+
+<h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Latent thought tokens for LRT.</strong>
+        <ul>
+          <li><em>Problem.</em> LRT feeds the preceding token's final hidden state <code>h<sub>t-1</sub></code> into the current token's computation, so one backbone forward pass per vocabulary token still traverses a longer recurrent dependency chain than a standard Transformer. Increasing computation from that starting point can be done by adding independently parameterized layers (more parameters, more distinct transformations), or by reusing the existing backbone for extra temporal steps (fewer parameters, but repeated shared transformations). The two allocations have never been controlled against each other at matched decoding block count within the same recurrent architecture.</li>
+          <li><em>Mechanism.</em> Insert <code>K</code> continuous thought positions between each pair of consecutive vocabulary tokens. Let <code>h<sub>t</sub><sup>(0)</sup></code> be the state after processing vocabulary token <code>x<sub>t</sub></code> and <code>h<sub>t</sub><sup>(j)</sup></code> the state after the <code>j</code>-th thought token. Then <code>h<sub>t</sub><sup>(0)</sup> = F<sub>&theta;</sub>(E[x<sub>t</sub>], h<sub>t-1</sub><sup>(K)</sup>, C<sub>&lt;t,0</sub>)</code> and <code>h<sub>t</sub><sup>(j)</sup> = F<sub>&theta;</sub>(h<sub>t</sub><sup>(j-1)</sup>, h<sub>t</sub><sup>(j-1)</sup>; C<sub>&lt;t,j</sub>)</code> for <code>j=1,&hellip;,K</code>. The two occurrences of <code>h<sub>t</sub><sup>(j-1)</sup></code> in the second equation have different roles: it replaces a token embedding at the input <em>and</em> supplies the recurrent feedback within the backbone. Thought tokens have no learned token embedding, share the backbone attention / MoE / feedback-projection parameters (only their feedback scales and gates are separate), and share their associated vocabulary token's rotary position index (indices <code>0,0,1,1,&hellip;</code> for <code>K=1</code>; <code>0,0,0,1,1,1,&hellip;</code> for <code>K=2</code>). All positions write KV states visible to later positions under the causal mask. The output head reads <code>h<sub>t</sub><sup>(K)</sup></code> to predict <code>x<sub>t+1</sub></code>; setting <code>K=0</code> recovers vanilla LRT. Block executions per vocabulary token during decoding: <code>B<sub>decode</sub>(L, K) = L(K+1)</code>; one thought token matches doubling depth, two matches tripling depth, at the same block count.</li>
+          <li><em>Why it works / why it beats prior.</em> The MoE router can learn to select different experts for vocabulary and thought positions at different thinking steps, so successive shared-backbone passes activate different subsets of the shared parameters. Against looped Transformers, thought-token LRT still has the cross-token feedback that Looped Transformers lack. Against <code>PonderLM-2</code> (which also inserts continuous thought tokens), the difference is that LRT with thought tokens feeds the <em>final thought state</em> directly into the next vocabulary token's computation via the recurrent feedback pathway, so the explicit recurrent dependency chain continues across vocabulary-token boundaries. This is where the improvement over <code>PonderLM-2</code> lives &mdash; the ablation below removes exactly that connection and finds the gap collapses.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Parallel Multi-Refinement Training for LRT with thought tokens.</strong>
+        <ul>
+          <li><em>Problem.</em> The sequential-decoding equations require each position to wait for the preceding position's final state, so a straightforward parallel forward over the sequence is not possible. Naively unrolling the recurrence during training is prohibitively expensive.</li>
+          <li><em>Mechanism.</em> Multi-refinement training (Zeng et al. 2025; Huang et al. 2026): each pass processes all positions in parallel, taking recurrent inputs from the preceding pass's final states shifted by one position. For thought-token models, these positions belong to the expanded vocabulary-and-thought sequence, and at thought positions the shifted state also supplies the input-embedding replacement. LRT with thought tokens: one vocabulary-only initialization pass with zero recurrent input (no direct prediction loss), then four refinement passes over <code>N(K+1)</code> positions; next-token loss applied in each supervised pass with equal weight; gradients retained across passes. In LRT with thought tokens, the prediction is read from the last thought state of each vocabulary-token interval, so the vocabulary position itself receives no direct prediction loss. <code>PonderLM-2</code>'s multi-refinement uses <code>4.5</code> passes on average; looped Transformers instead unroll their repeated backbone passes in the training graph. Training-budget comparison across recurrent and looped runs is approximately &mdash; not exactly &mdash; FLOP-matched.</li>
+          <li><em>Why.</em> This makes the recurrent gradient dependency chain trainable. Figure 2 of the paper illustrates a gradient path from a thought token in Refine 3 through a vocabulary token in Refine 2, a thought token in Refine 1, and a vocabulary token in initialization &mdash; four backbone passes and approximately <code>4L</code> computational depth across two vocabulary-token intervals.</li>
+        </ul>
+      </li>
+      <li>Setup. NanoChat MoE at <code>L<sub>0</sub>=16</code> (0.8B reference) and <code>L<sub>0</sub>=20</code> (1.3B reference). Depth multipliers <code>1&times;</code>, <code>2&times;</code>, <code>3&times;</code> correspond to 16/32/48 and 20/40/60 layers respectively. MoE: 8 routed experts, top-2 routing, one shared expert. Width fixed across depth-scaled variants. LRT adds approximately 4% and 5% parameters over the reference vanilla Transformer through its feedback machinery; thought tokens reuse the same backbone and add no parameters. Evaluation: validation bits per byte (BPB, lower better) averaged over three seeds; sequential recurrence with KV caching from the first vocabulary token; models with one and two thought tokens are trained separately and evaluated with the same <code>K</code>.</li>
+    </ul>
+
+        <figure>
+      <img src="https://arxiv.org/html/2609.21605v1/MRT_2.png" alt="Parallel multi refinement training and gradient flow for LRT with thought tokens" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). Parallel multi-refinement training and gradient flow. A vocabulary-only forward pass initializes recurrent memory, followed by three refinement passes over vocabulary (blue) and thought (pink) positions. Orange arrows pass final hidden states from the preceding pass to the next position in the expanded sequence. Gray arrows show the recurrent gradient path from the thought token associated with <code>x<sub>4</sub></code> in Refine 3 back through vocabulary <code>x<sub>4</sub></code> in Refine 2, thought <code>x<sub>3</sub></code> in Refine 1, and vocabulary <code>x<sub>3</sub></code> in initialization &mdash; four backbone passes across two vocabulary-token intervals, accumulating approximately <code>4L</code> computational depth.</figcaption>
+    </figure>
+
+<h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>One thought token vs. doubling depth (matched decoding block count).</strong> At 16-layer reference, doubling LRT depth improves BPB from <code>0.798</code> to <code>0.780</code> (<code>&Delta;=&minus;0.018</code>) while adding one thought token reaches <code>0.786</code> (<code>&Delta;=&minus;0.012</code>). At 20-layer reference the corresponding values are <code>0.762 &rarr; 0.741 &rarr; 0.745</code> (<code>&Delta;</code> from vanilla LRT: <code>&minus;0.021</code> and <code>&minus;0.017</code>). One thought token recovers <code>66.7%</code> and <code>81.0%</code> of the doubling-depth BPB reduction, leaving gaps of <code>0.006</code> and <code>0.004</code> BPB. Total parameters: thought-token models are at <code>1.04&times;</code>/<code>1.05&times;</code> of the reference; double-depth LRTs are at <code>2.00&times;</code>/<code>2.04&times;</code>. Both alternatives execute <code>2&times;</code> the reference number of blocks per vocabulary token during decoding.</li>
+      <li><strong>Two thought tokens vs. tripling depth.</strong> Going from one to two thought tokens improves BPB from <code>0.786 &rarr; 0.779</code> at 16L and <code>0.745 &rarr; 0.739</code> at 20L using essentially the same parameters as one thought token. Triple-depth LRTs reach <code>0.771</code> and <code>0.731</code> BPB. LRT with two thought tokens comes within <code>0.008</code> BPB of the triple-depth LRTs at both sizes, recovering <code>70.4%</code> and <code>74.2%</code> of the tripling-depth improvement while using approximately <code>65%</code> fewer total parameters (<code>1.04&times;</code>/<code>1.05&times;</code> vs <code>2.96&times;</code>/<code>3.03&times;</code>).</li>
+      <li><strong>Comparison with looped Transformers.</strong> At two backbone forward passes per vocabulary token, LRT with one thought token beats the two-loop Transformer by <code>0.018</code> BPB at 16L and <code>0.029</code> at 20L. With two thought tokens, gaps over three-loop Transformers are <code>0.020</code> and <code>0.029</code>. LRT with one thought token also beats the four-loop model at both sizes. The <code>4</code>&ndash;<code>5%</code> LRT parameter overhead is small relative to these gaps.</li>
+      <li><strong>Comparison with PonderLM-2.</strong> With one thought token: <code>0.786</code> (LRT) vs <code>0.797</code> (PonderLM-2) at 16L, <code>0.745</code> vs <code>0.752</code> at 20L. With two: <code>0.779</code> vs <code>0.789</code> at 16L, <code>0.739</code> vs <code>0.745</code> at 20L. LRT wins at all four combinations.</li>
+      <li><strong>Comparison with standard Transformers.</strong> LRT with one thought token beats a triple-depth (48-layer / 60-layer) standard Transformer despite using fewer total parameters and fewer decoding block executions: <code>0.786</code> vs <code>0.789</code> at 16L, <code>0.745</code> vs <code>0.756</code> at 20L. This is a parameter-and-decoding trade-off comparison rather than a training-FLOP-matched claim, since the standard Transformer runs use less training compute.</li>
+      <li><strong>Cross-token recurrence ablation localizes the gain.</strong> Remove the connection that feeds the final thought state into the next vocabulary token's computation while retaining the thought-token computation itself. BPB at 16L increases from <code>0.786</code> to <code>0.795</code> (<code>+0.009</code>), approaching PonderLM-2's <code>0.797</code>. The explicit cross-token recurrent chain is the key contributor to the LRT-with-thought-tokens advantage over PonderLM-2. Information still flows through causal attention, so this is not simply an information-loss effect &mdash; it is the depth of the recurrent dependency chain.</li>
+      <li><strong>KV feedback ablation.</strong> Remove KV feedback (project keys and values from <code>h<sub>t-1</sub></code>) while retaining hidden-state feedback and cross-token recurrence. BPB at 16L increases from <code>0.786</code> to <code>0.790</code> (<code>+0.004</code>). KV feedback provides an additive benefit beyond the hidden-state residuals alone.</li>
+    </ul>
+
+    <table>
+      <caption>Depth vs. temporal computation on NanoChat MoE (three-seed average validation BPB, lower better). Physical depth and total params normalized to the corresponding 16-layer or 20-layer vanilla Transformer reference.</caption>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Phys. Depth</th>
+          <th>Decode blocks</th>
+          <th>Params 16L</th>
+          <th>Params 20L</th>
+          <th>BPB 16L</th>
+          <th>BPB 20L</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Transformer</td><td>1&times;</td><td>1&times;</td><td>1.00&times;</td><td>1.00&times;</td><td>0.818</td><td>0.788</td></tr>
+        <tr><td>Transformer</td><td>2&times;</td><td>2&times;</td><td>1.92&times;</td><td>1.94&times;</td><td>0.798</td><td>0.767</td></tr>
+        <tr><td>Transformer</td><td>3&times;</td><td>3&times;</td><td>2.83&times;</td><td>2.87&times;</td><td>0.789</td><td>0.756</td></tr>
+        <tr><td>Loop Transformer, 2 loops</td><td>1&times;</td><td>2&times;</td><td>1.00&times;</td><td>1.00&times;</td><td>0.804</td><td>0.774</td></tr>
+        <tr><td>Loop Transformer, 3 loops</td><td>1&times;</td><td>3&times;</td><td>1.00&times;</td><td>1.00&times;</td><td>0.799</td><td>0.768</td></tr>
+        <tr><td>Loop Transformer, 4 loops</td><td>1&times;</td><td>4&times;</td><td>1.00&times;</td><td>1.00&times;</td><td>0.795</td><td>0.764</td></tr>
+        <tr><td>PonderLM-2, 1 thought token</td><td>1&times;</td><td>2&times;</td><td>1.00&times;</td><td>1.00&times;</td><td>0.797</td><td>0.752</td></tr>
+        <tr><td>PonderLM-2, 2 thought tokens</td><td>1&times;</td><td>3&times;</td><td>1.00&times;</td><td>1.00&times;</td><td>0.789</td><td>0.745</td></tr>
+        <tr><td>LRT</td><td>1&times;</td><td>1&times;</td><td>1.04&times;</td><td>1.05&times;</td><td>0.798</td><td>0.762</td></tr>
+        <tr><td>LRT</td><td>2&times;</td><td>2&times;</td><td>2.00&times;</td><td>2.04&times;</td><td>0.780</td><td>0.741</td></tr>
+        <tr><td>LRT</td><td>3&times;</td><td>3&times;</td><td>2.96&times;</td><td>3.03&times;</td><td>0.771</td><td>0.731</td></tr>
+        <tr><td><strong>LRT + 1 thought token</strong></td><td>1&times;</td><td>2&times;</td><td>1.04&times;</td><td>1.05&times;</td><td><strong>0.786</strong></td><td><strong>0.745</strong></td></tr>
+        <tr><td><strong>LRT + 2 thought tokens</strong></td><td>1&times;</td><td>3&times;</td><td>1.04&times;</td><td>1.05&times;</td><td><strong>0.779</strong></td><td><strong>0.739</strong></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Feedback ablations at depth 16 with one thought token (Table 2 of the paper): full LRT <code>0.786</code>; without cross-token recurrence <code>0.795</code> (<code>+0.009</code>, approaches PonderLM-2's <code>0.797</code>); without KV feedback <code>0.790</code> (<code>+0.004</code>); PonderLM-2 reference <code>0.797</code> (<code>+0.011</code>). Removing cross-token recurrence alone closes most of the LRT-vs-PonderLM-2 gap, isolating the longer recurrent dependency chain across token boundaries as the dominant contributor. KV feedback provides an additional smaller benefit on top of hidden-state feedback.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Limitations named in the paper. Deeper LRTs remain better than thought-token LRTs at the same decoding block count &mdash; independent layers provide capacity that repeated shared transformations do not fully replace; the experiments do not isolate the cause. Training budgets across recurrent and looped runs are approximately, not exactly, FLOP-matched. Decoding block counts omit attention overhead; equal block counts do not imply equal FLOPs or latency because thought-token models attend over more positions and incur greater attention interaction cost. Models with different numbers of thought tokens are trained separately, so generalization to more thought tokens or adaptive thought-token counts at inference is left open. The recurrent source is the final-layer hidden state rather than a searched intermediate layer; a searched intermediate layer is left for future work.</li>
+      <li>Frontier-lab context. Microsoft (Yelong Shen and collaborators) has been one of the frontier labs pushing test-time-compute-via-latent-thought architectures over the last year; this paper is the follow-up to their earlier LRT release (arXiv:2605.26797), directly comparing the depth and temporal axes within the same recurrent architecture and reporting a decisive ordering of feedback-design choices. No Microsoft frontier model launch is announced in the paper.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
