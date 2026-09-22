@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agent Harnesses, On-Policy Alignment, and Video World Memory Review &mdash; September 22, 2026 | Auto Lit Review</title>
+<meta name="description" content="A quiet 36-hour window ending 2026-09-22 with no Tier 1 flagship launches. Four Tier 2 frontier-lab papers survive dedup and affiliation: Google's RRSI regularizes recursive self-improvement of agent harnesses; Ant Group's IER for on-policy distillation reweights sparse teacher supervision by gradient-estimation reliability; StepFun's onPanda annotates on-policy alignment data through token-level correction; Tencent's WorldCrafter builds a camera-queryable implicit 3D-aware memory for long-horizon video world models." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">September 22, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#ant-group">Ant Group</a>
+          <ul>
+            <li class="toc-h2"><a href="#ier-opd">IER: Gradient-Estimation-Aware Token Selection for On-Policy Distillation</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#google">Google</a>
+          <ul>
+            <li class="toc-h2"><a href="#rrsi">RRSI: Regularized Recursive Self-Improvement of Agent Harnesses</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#stepfun">StepFun</a>
+          <ul>
+            <li class="toc-h2"><a href="#onpanda">onPanda: On-Policy Alignment Annotation via Token-Level Correction</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#tencent">Tencent</a>
+          <ul>
+            <li class="toc-h2"><a href="#worldcrafter">WorldCrafter: Camera-Queryable Implicit 3D-aware Memory for Video World Models</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; September 22, 2026</div>
+    <h1 class="page-title">Agent Harnesses, On-Policy Alignment, and Video World Memory</h1>
+    <div class="page-meta">4 papers &middot; 4 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-09-22 (steady state, one day after yesterday's capacity-efficient-transformer-scaling review) surfaces no Tier 1 flagship launches. Four Tier 2 frontier-lab papers survive dedup and the affiliation filter, spread across two research programs: <em>how supervision should be allocated when a student model, an evolving agent harness, or a human annotator sits inside the loop</em> (Ant Group's <a href="https://arxiv.org/abs/2609.24432"><code>IER for on-policy distillation</code></a>, Google's <a href="https://arxiv.org/abs/2609.24972"><code>RRSI</code></a>, StepFun's <a href="https://arxiv.org/abs/2609.24983"><code>onPanda</code></a>) and <em>how a video generator should remember what it has already produced</em> (Tencent's <a href="https://arxiv.org/abs/2609.24984"><code>WorldCrafter</code></a>). Discovery dropped several frontier-adjacent September candidates whose v1 dates fall outside the 36-hour window: Qwen's <code>RecreationWorld</code> (v1 2026-09-18, v2 2026-09-21; v1 date governs), Qwen's <code>OmniVChat</code> (2026-09-18), ByteDance Seed's <code>Paint-Anything</code> (2026-09-17), Microsoft's <code>BI-Agent / BI-Bench</code> (2026-09-16), and MBZUAI-adjacent <code>Geometry of Values</code> (2026-09-17, and the two-author affiliation does not carry a frontier lab as primary).</p>
+      <h3>Competitiveness</h3>
+      <p>No flagship model artifacts crossed the bar, so competitiveness reads on method-level trade-offs rather than versus <code>GPT-5.6</code>, <code>Claude Opus 4.7</code> or <code>Gemini 3.7 Flash</code>. Ant Group's information-efficiency ratio <code>IER</code> matches or exceeds full on-policy distillation while allocating teacher supervision to only <code>0.1%&ndash;1%</code> of the tokens in student-generated trajectories, evaluated across mathematical and medical reasoning tasks. Google's <code>RRSI</code> improves on unregularized recursive-self-improvement baselines by up to <code>14.1</code> points on the in-distribution split it evolves against and up to <code>4.7</code> points on five out-of-distribution benchmarks, while running the resulting harness on <code>30%</code> fewer policy tokens; the eight-benchmark suite spans coding, agentic-workspace and engineering-design tasks. StepFun's <code>onPanda</code> reduces median annotation time for LLM alignment data by <code>52%</code> versus manual post-editing in a small controlled study; the same instrument records paired positive&ndash;negative token-level corrections as fine-grained supervision and connects to external tools so the same loop annotates agent trajectories. Tencent's <code>WorldCrafter</code> reports substantial gains in long-horizon consistency and camera-control accuracy versus prior video world models during minute-scale exploration across static and dynamic scenes, while preserving visual quality; the paper does not release a leaderboard-topping model but the memory-plus-few-step-distillation structure is a concrete departure from replay-buffer and per-view retrieval alternatives. Qwen's held-out <code>RecreationBench</code> (dropped for out-of-window v1) reports <code>GPT-6 Astra</code> at <code>58.1%</code> overall and passing all programmatic tests on only <code>2.8%</code> of tasks &mdash; a useful current-frontier reference for hybrid computer-use even though the paper itself is deduped.</p>
+      <h3>New frontier releases</h3>
+      <p>None in-window. No new frontier-lab model weights, technical reports or launch blog posts crossed the 36-hour bar. Yesterday's Alibaba <code>IntBMoE</code> and Microsoft <code>LRT thought-token</code> capacity-efficiency papers are deduped against the 2026-09-21 page; the DeepSeek-V4.1-Flash launch (2026-09-17) is deduped against the earlier page.</p>
+    </section>
+
+    <h1 id="ant-group">Ant Group</h1>
+
+    <h2 id="ier-opd"><a href="https://arxiv.org/abs/2609.24432">1% of Tokens Can Be Enough: On Gradient Estimation in On-Policy Distillation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-21</span>
+      <span>On-policy distillation &middot; Gradient estimation &middot; Information geometry &middot; Sparse token selection &middot; Reasoning</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Huanxin Sheng, Zhiling Ye, Haonan Wang, Jian Wang, Jinjie Gu, Jian Kang. arXiv:2609.24432v1 [cs.LG], submitted 2026-09-21. Ant Group (BaiLing) authors (Zhiling Ye, Jian Wang, Jinjie Gu) qualify the paper under the frontier-labs filter. Code at <a href="https://github.com/BruceSheng1202/IER-OPD"><code>BruceSheng1202/IER-OPD</code></a>.</li>
+      <li>The framing: sparse on-policy distillation (OPD) allocates the teacher's reverse-KL supervision to a small subset of tokens in student-generated trajectories. Existing selectors score tokens by <em>usefulness</em> (roughly, teacher&ndash;student disagreement or teacher confidence). At a fixed prefix the per-token gradient estimator uses a single sampled next token from the student, so a "useful" position can still yield a high-variance and therefore <em>noisy</em> update; the sparse budget spent on such a token buys nothing. The paper studies gradient estimation directly rather than teacher signal strength.</li>
+      <li>Contribution: an <em>information-efficiency ratio</em> <code>IER</code> based on a signal-to-noise decomposition of the sampled reverse-KL gradient under an optimal scalar baseline; a candidate-set approximation that keeps <code>IER</code> tractable; and a composition rule that plugs <code>IER</code> on top of existing usefulness scores while retaining the sampled reverse-KL training objective. On mathematical and medical reasoning tasks, sparse configurations at <code>0.1%&ndash;1%</code> token budgets match or exceed full OPD without token selection.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Information-Efficiency Ratio (IER).</strong>
+        <ul>
+          <li><em>Problem.</em> In sparse OPD the training objective at a fixed prefix is the reverse KL between the student and the teacher, and its gradient is estimated by sampling a single next token from the student and applying a REINFORCE-style score-function estimator. Two tokens at the same prefix can share the same expected gradient (same <em>usefulness</em>) but differ arbitrarily in the variance of that single-sample estimate. A usefulness-only selector therefore commits its scarce sparse budget to positions whose actual gradient updates are dominated by noise, degrading the effective on-policy signal.</li>
+          <li><em>Mechanism.</em> The paper models the per-prefix gradient estimator in information geometry as a stochastic vector with a mean (signal) and a noise term whose covariance is set by the student's next-token distribution. An <em>optimal scalar baseline</em> is subtracted from the score-function estimator to minimize the trace of that covariance in closed form; under this optimal baseline the relative gradient-estimation error is exactly the ratio of the noise trace to the squared signal norm. <code>IER</code> is defined as the reciprocal &mdash; a signal-to-noise ratio at the token level. Because computing it exactly requires the full teacher and student next-token distributions, the paper uses a <em>candidate-set approximation</em>: restrict the sum over the vocabulary to the union of top-<code>k</code> teacher and top-<code>k</code> student candidates at the prefix, and evaluate the signal norm and noise trace on that set. At training time, tokens are then scored by <code>IER</code> alone or by a product / rank-composition with an existing usefulness score (e.g. teacher&ndash;student KL, entropy, or per-token advantage). The training objective itself &mdash; sampled reverse-KL to the teacher on the selected tokens &mdash; is unchanged; only the selection rule moves.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior selectors <em>rank by expected value</em> of the gradient; <code>IER</code> <em>discounts by variance</em>. A high-usefulness position with a diffuse student distribution over many near-tied candidates yields a noisy single-sample estimate; <code>IER</code> demotes it in favor of a position whose usefulness is comparable but whose next-token distribution concentrates the signal on a small candidate set. Since the analysis assumes the optimal scalar baseline is already applied, the ranking is invariant to that baseline &mdash; the improvement is orthogonal to variance-reduction tricks that only shift the mean.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Task suite spans mathematical reasoning and medical reasoning; sparse configurations at token budgets between <code>0.1%</code> and <code>1%</code> of the student trajectory match or exceed full on-policy distillation without any selection.</li>
+      <li>Adding <code>IER</code> on top of multiple existing selectors improves them in multiple settings, indicating the gradient-estimation dimension is complementary to teacher-usefulness signal &mdash; not a substitute.</li>
+      <li>Because the training objective is the same sampled reverse-KL used by full OPD, the compute per selected token is unchanged; the <code>0.1%&ndash;1%</code> supervision-density result translates directly into approximately <code>100&times;&ndash;1000&times;</code> fewer teacher-forward calls per student trajectory during distillation.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Ablations reported in the paper split usefulness vs. gradient-estimation reliability and confirm that neither dimension alone is sufficient at the extreme sparse budgets; <code>IER</code> on its own matches strong usefulness selectors and combines additively with them.</li>
+      <li>The candidate-set top-<code>k</code> approximation trades off scoring cost against the fidelity of the noise-trace estimate; the reported configurations use small <code>k</code> and still yield the sparse-matches-dense result, suggesting the ranking is dominated by the head of the next-token distribution.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning. Ant Group's BaiLing team has been publishing extensively on on-policy alignment. <code>IER</code> is a diagnostic and a selection rule rather than a training recipe: it slots underneath existing OPD stacks and is orthogonal to the choice of teacher, student and reverse-KL variant.</li>
+      <li>Limitations. The analysis assumes a fixed prefix and per-token independence; multi-token dependencies within a reasoning step are not modeled. The optimal scalar baseline is derived under the sampled reverse-KL estimator; extensions to reward-weighted RL fine-tuning would require re-deriving the noise trace under that estimator.</li>
+    </ul>
+
+    <h1 id="google">Google</h1>
+
+    <h2 id="rrsi"><a href="https://arxiv.org/abs/2609.24972">RRSI: Regularized Recursive Self-Improvement of Agent Harnesses</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-21</span>
+      <span>Agent harness &middot; Recursive self-improvement &middot; Regularization &middot; Out-of-distribution generalization &middot; Coding / agentic workspace</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Peng Xia, Rujun Han, Zifeng Wang, Yanfei Chen, Yufan Zhang, Yoonho Lee, Chengsong Huang, Han Yu, Zhongying CuiZhu, Yifei Ming, Huaxiu Yao, Burak Gokturk, Tomas Pfister, Chen-Yu Lee (Google Research; corresponding <code>google-research</code> GitHub org, project page at <a href="https://regularized-rsi.com/"><code>regularized-rsi.com</code></a>). arXiv:2609.24972v1 [cs.LG], submitted 2026-09-21. Google qualifies under the frontier-labs filter.</li>
+      <li>The framing: an LLM agent's capability is set less by its frozen backbone model than by its <em>harness</em> &mdash; the prompts, control flow, tooling, memory, and context management that wrap the backbone. Recent methods automate harness design by iteratively proposing and selecting component-wise edits, which practically constitutes recursive self-improvement (RSI) at the agent-system level. Recursive evolution treats the training tasks as an implicit fitness signal, and the resulting harness memorizes benchmark-specific tricks: large in-distribution gains that shrink or vanish on out-of-distribution benchmarks. The paper's claim is that the RSI loop needs explicit regularization on <em>what</em> a candidate edit is allowed to change and on <em>which</em> proposals the selector accepts.</li>
+      <li>Contribution: <code>RRSI</code>, which constrains both the proposer and the selector inside a recursive harness-evolution loop. The proposer runs under a <em>temporally annealed edit-budget</em> that limits how many edits a single candidate can bundle, plus a history-aware exploration bias toward unexplored trajectories. The selector is a <em>critic + pruner</em>: the critic screens benchmark-specific proposals, and the pruner removes changes that are too small, too expensive, or no longer useful. Evaluated on eight coding / agentic-workspace / engineering-design benchmarks with reported gains up to <code>14.1</code> points in-distribution and up to <code>4.7</code> points on five out-of-distribution benchmarks, at <code>30%</code> fewer policy tokens.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Regularized proposer.</strong>
+        <ul>
+          <li><em>Problem.</em> An unregularized RSI proposer bundles many edits per candidate to maximize expected in-distribution gain, and can repeatedly propose along already-explored trajectories because doing so raises immediate benchmark score. Both behaviors cause the evolved harness to accumulate benchmark-specific machinery that does not survive distribution shift.</li>
+          <li><em>Mechanism.</em> Two constraints on the proposer. (i) A <em>temporally annealed edit budget</em> caps the number of component-wise edits a single candidate can bundle; the cap decreases with evolution step so that later rounds have to commit to smaller, cleaner deltas over an already-strong base. (ii) An <em>evolution-history bias</em> conditions the proposal distribution on the trajectory of accepted / rejected edits so far, up-weighting unexplored components (previously untouched prompts, tools, or control-flow branches). Both signals feed the LLM proposer as structured context, not as reward-shaping on the search, so the proposer's own reasoning is preserved.</li>
+          <li><em>Why it works / why it beats prior.</em> Bundle-size caps make each candidate small enough that its OOD effect can be assessed by the critic; the history bias breaks the exploration&ndash;exploitation degeneracy that produces benchmark-specific overfitting in vanilla RSI. Together they favor <em>reusable</em> mechanisms &mdash; components with broad applicability &mdash; over benchmark-specific ones or edit noise. This is the axis of improvement over prior harness-evolution work that relies on selection-side scoring alone.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Critic + Pruner selector.</strong>
+        <ul>
+          <li><em>Problem.</em> Selection by benchmark score alone accepts a candidate whenever it improves the fitness signal, even if the improvement is a benchmark-specific hack (e.g. a prompt that memorizes a training-split cue) or a redundant / expensive change that is later obviated by a cleaner edit.</li>
+          <li><em>Mechanism.</em> Two-stage selection. The <em>critic</em> is a separate LLM pass that reads each proposed edit and reasons about whether the change is benchmark-specific &mdash; e.g. a prompt clause that quotes a training-split-specific artifact &mdash; and screens such proposals before they reach evaluation. The <em>pruner</em> runs after acceptance and removes accumulated harness components that are too small in expected effect, too expensive in policy tokens, or that have been subsumed by later edits. Both stages operate on the harness as a data structure with explicitly named components, so their decisions are traceable.</li>
+          <li><em>Why.</em> The critic converts OOD generalization from an implicit hope into an explicit acceptance gate; the pruner converts harness-size control from an implicit cost into an explicit maintenance operation. The reported <code>30%</code> reduction in policy tokens over unregularized evolution is directly attributable to the pruner &mdash; unregularized RSI has no mechanism to shrink the harness once an edit is accepted.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Benchmark suite.</strong> Eight benchmarks across coding, agentic-workspace and engineering-design tasks. <code>RRSI</code> evolves the harness against one split and is evaluated on the remaining five as out-of-distribution.</li>
+      <li><strong>Headline numbers.</strong> Up to <code>+14.1</code> points on the split <code>RRSI</code> evolves against, and up to <code>+4.7</code> points on the five out-of-distribution benchmarks, versus unregularized recursive self-improvement baselines. The evolved harness runs on <code>30%</code> fewer policy tokens than the unregularized-evolution harness at matched or better task performance.</li>
+      <li><strong>Interpretation.</strong> The <em>in-distribution gain shrinks and OOD gain grows</em> shape is the classic regularization signature: the unregularized baseline overshoots on the fitness signal it directly sees, and <code>RRSI</code> trades some of that overshoot for transfer. The token-budget reduction is the pruner's contribution alone; the OOD gain is jointly attributable to the annealed edit budget, the history bias, and the critic.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Component ablations in the paper isolate the proposer's edit budget, the proposer's history bias, the critic, and the pruner. The narrative attribution is that the critic and the edit budget are the dominant contributors to OOD generalization; the pruner is the dominant contributor to token-budget reduction; the history bias contributes on benchmarks where the evolution loop is prone to concentrating on a small subset of components.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning. This is part of a growing 2026 literature on evolving <em>the harness rather than the model</em> (the site's own prior <code>MemHarness</code>, <code>AutoSaddler</code>, <code>Harness Handbook</code> entries all live in this thread). <code>RRSI</code> is the first paper on this page to explicitly frame the loop as recursive self-improvement and to import bias&ndash;variance-style regularization into it.</li>
+      <li>Limitations. The setup still trusts the backbone LLM to produce faithful critic verdicts on whether an edit is benchmark-specific; a stronger critic on a harness that already saturates on OOD would probably regress. The five OOD benchmarks are drawn from a related distribution to the in-distribution split, so the reported <code>+4.7</code> is not evidence of far transfer.</li>
+    </ul>
+
+    <h1 id="stepfun">StepFun</h1>
+
+    <h2 id="onpanda"><a href="https://arxiv.org/abs/2609.24983">onPanda: Efficient Annotation of On-Policy Alignment Data for LLMs and Agents via Token-Level Correction</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-21</span>
+      <span>On-policy alignment &middot; Token-level correction &middot; Annotation UX &middot; SFT / preference data &middot; Agent trajectories</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Lei Yang, Mengyin Liu, Jia Wang, Hangyu Guo, Liang Zhao, Zheng Ge, Kang An, Binxing Jiao, Qi Han, Daxin Jiang, Siqi Shen, Xiangyu Zhang (StepFun; Zheng Ge, Binxing Jiao, Daxin Jiang, Xiangyu Zhang are named StepFun leads on prior <em>Step</em> family releases). arXiv:2609.24983v1 [cs.CL], submitted 2026-09-21. Project page at <a href="https://on-panda.github.io/research/"><code>on-panda.github.io</code></a>. Panda-CVL dataset + a token-level correction benchmark released alongside. StepFun qualifies under the frontier-labs filter.</li>
+      <li>The framing: on-policy alignment (SFT and preference tuning on data that preserves the base model's sampling distribution) needs annotations whose tokens are still drawn from the model itself. Manual post-editing throws away this property &mdash; corrected tokens are human-authored and off-policy for the base model. The paper argues that a good annotation UX for on-policy data is not "rewrite the reply" but "locate the first wrong token and let the model continue."</li>
+      <li>Contribution: <code>onPanda</code>, an interactive annotation tool built around a <em>locate&ndash;correct&ndash;continue</em> loop: annotator reads a model response, locates the first inappropriate token, either picks a substitute from the model's own candidate tokens or types free-form text; the system truncates everything after that position and continues generation from the corrected prefix; repeat until satisfactory. Small controlled study reports <code>52%</code> reduction in median annotation time versus manual post-editing. Also releases <code>Panda-CVL</code> and a token-level correction benchmark; connects to external tools / harnesses for annotating agent trajectories.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Token-level correction as the core interaction.</strong>
+        <ul>
+          <li><em>Problem.</em> Manual post-editing of an LLM response replaces spans of model tokens with human tokens; the resulting text has a distributional shift at those spans that makes it off-policy for the base model, so SFT on the corrected reply drags the student off its own manifold and preference pairs constructed this way have a stylistic marker distinguishing the chosen from the rejected trace. The alternative &mdash; rejection sampling until the model produces an acceptable trace on its own &mdash; is expensive and fails on rare errors.</li>
+          <li><em>Mechanism.</em> An IDE-style interface presents the model's response with per-token candidate lists (top-<code>k</code> from the sampling distribution at each position, plus optional free-form typing). The annotator scans left-to-right for the first inappropriate token, and edits it either by choosing another candidate from the same distribution or by typing arbitrary text. The system commits the correction, <em>truncates everything strictly after that position</em>, and resumes generation from the new prefix. The loop terminates when the annotator marks the whole reply satisfactory. Because only the first wrong token per iteration is authored by the annotator, and everything downstream is regenerated by the model, the vast majority of tokens in the final response are drawn from the model's own sampling distribution &mdash; the trace stays on-policy.</li>
+          <li><em>Why it works / why it beats prior.</em> Locate-first-error + continue is the minimum-intervention correction: it commits exactly one token per loop iteration and lets the model recover on its own tail. The recorded stream of (rejected candidate token, chosen candidate token, prefix, resumed suffix) provides <em>naturally paired positive&ndash;negative supervision with precise position anchors</em>, which is the same shape preference-optimization objectives (DPO / KTO / IPO) already consume. Manual post-editing yields no such fine-grained supervision because the human&ndash;model boundary is a span, not a token. Rejection sampling yields no negative examples at all.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Trajectory annotation via tool / harness plug-in.</strong>
+        <ul>
+          <li><em>Problem.</em> Agent trajectories interleave model tokens with tool calls, tool outputs, and environment observations. Rewriting an agent trace by hand is even further off-policy than rewriting a chat reply, because the interleaved tool state has to be re-simulated.</li>
+          <li><em>Mechanism.</em> <code>onPanda</code> plugs into external tools and harnesses so that when the annotator corrects the first wrong action token in a trajectory, the system resumes both model generation <em>and</em> tool execution from the corrected prefix, producing a live environment-consistent completion of the trace. The token-level correction loop is unchanged; only the resumption step is upgraded from pure text continuation to full-harness rollout.</li>
+          <li><em>Why.</em> This preserves the on-policy property for agent SFT and preference data: the trace after the correction reflects what the model would actually do in the environment, not what the annotator writes it should do.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Annotation efficiency.</strong> Small controlled study reports median annotation time reduced by <code>52%</code> versus manual post-editing.</li>
+      <li><strong>Data output.</strong> Since the corrected reply is dominated by model-generated tokens after the first correction, the resulting SFT set stays close to the base model's distribution. The recorded (chosen, rejected) token pairs at correction positions form fine-grained preference supervision with precise position anchors.</li>
+      <li><strong>Released artifacts.</strong> <code>Panda-CVL</code>, a dataset annotated with <code>onPanda</code>, and a benchmark for token-level correction.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The paper's contribution is a UX + data-generation pipeline rather than a training method, so the ablation surface is smaller: candidate-selection vs. free-form-typing, model-side top-<code>k</code> depth, and whether the harness resumes from the exact corrected prefix vs. re-samples with a nudged prompt.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning. This dovetails with the same page's other on-policy paper (<code>IER for on-policy distillation</code>): both take the position that <em>where and how</em> supervision is applied along a student trajectory dominates the choice of loss. <code>onPanda</code> generates the trajectory data; <code>IER</code> selects the tokens on which distillation is spent.</li>
+      <li>Limitations. The <code>52%</code> reduction comes from a small controlled study, not a full annotation-house deployment; the exact composition of the study cohort determines how much of the gain reflects the token-level UX vs. familiarity with model outputs. Free-form typing at a correction position is still off-policy for the token typed, though it stays local.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="worldcrafter"><a href="https://arxiv.org/abs/2609.24984">WorldCrafter: Consistent Video World Model with Implicit 3D-aware Memory</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-21</span>
+      <span>Video world model &middot; Implicit 3D memory &middot; Camera control &middot; Few-step distillation &middot; Streaming exploration</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Wangbo Yu, Kunhao Liu, Wenbo Hu, Shenghai Yuan, Chaoran Feng, Haiyang Zhou, Yukun Huang, Yiran Wang, Wang Zhao, Yingmin Luo, Ying Shan (Ying Shan leads Tencent ARC Lab, which qualifies under the frontier-labs filter as Tencent / Hunyuan). arXiv:2609.24984v1 [cs.CV], submitted 2026-09-21. Project webpage: <a href="https://drexubery.github.io/WorldCrafter"><code>drexubery.github.io/WorldCrafter</code></a>.</li>
+      <li>The framing: video world models let a user or an agent interactively explore a scene, but over long horizons and across viewpoints they drift &mdash; the model fails to <em>respect prior observations</em>, so a room the user already walked through no longer looks the same when they return. Existing solutions either (i) replay the full frame history through the video generator's attention (breaks the token budget as horizon grows), (ii) build an explicit depth-based reconstruction and re-project it (brittle, and expensive), or (iii) train a global feature memory (viewpoint-agnostic; wastes capacity on evidence irrelevant to the requested view). The paper's claim is that the <em>requested viewpoint should shape how multi-view evidence is compressed</em>.</li>
+      <li>Contribution: <code>WorldCrafter</code> learns a <em>camera-queryable implicit 3D-aware memory</em>. A memory encoder and a pose-conditioned readout module are trained jointly with the video generator; they compress historical observations into a fixed set of <em>target-view-specific</em> tokens injected before denoising, without any explicit depth-based correspondence. Combined with recent temporal context and few-step distillation, the system supports minute-scale streaming exploration from a single image or text prompt. Static and dynamic scene experiments report substantial gains in long-horizon consistency and camera-control accuracy while preserving visual quality.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Camera-queryable implicit 3D-aware memory.</strong>
+        <ul>
+          <li><em>Problem.</em> The video generator has a fixed token budget per denoising step. If the whole history of previously generated frames were streamed through cross-attention, the budget would blow up with the horizon; if a global viewpoint-agnostic memory were used, the tokens spent on evidence irrelevant to the requested view would displace tokens on the evidence that actually needs to be re-rendered from that view. Long-horizon consistency drift is a direct consequence of both failures.</li>
+          <li><em>Mechanism.</em> Two modules learned jointly with the video generator. A <em>memory encoder</em> takes the stream of previously observed frames (or generated frames folded back as observations) and produces a persistent latent representation of the scene &mdash; implicit, in the sense that it is not tied to depth maps or point clouds. A <em>pose-conditioned readout</em> takes the target camera pose for the next segment and queries the memory to produce a small, <em>view-specific</em> set of tokens; these tokens are injected into the video generator's context before denoising, alongside recent temporal context (last few frames) and any text / image prompt. Because the memory is queried by pose rather than integrated globally, the token budget scales with the number of readout tokens, not with the length of the history. No explicit depth-based correspondence is computed &mdash; the memory learns whatever 3D-aware compression best serves the denoising loss.</li>
+          <li><em>Why it works / why it beats prior.</em> Framing the memory as <em>camera-queryable</em> means the readout budget is spent on the parts of the scene visible from the requested view; framing it as <em>implicit</em> avoids the failure modes of explicit-depth re-projection (holes, floaters, mismatched dynamic content). Recent temporal context handles short-range coherence, so the memory is free to specialize on long-range consistency. Few-step distillation makes the whole pipeline compatible with streaming exploration &mdash; each new segment is denoised in a small number of steps, so exploration keeps up with input.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Task.</strong> Interactive scene exploration from a single input image or text prompt, streamed segment-by-segment at controlled camera trajectories. Static and dynamic scenes.</li>
+      <li><strong>Reported gains.</strong> Substantial improvements in long-horizon consistency and camera-control accuracy versus prior video-world-model baselines during minute-scale exploration, while preserving visual quality (the paper's summary language). The arXiv HTML with quantitative benchmark tables was not accessible from this run's fetcher due to a persistent rate limit; the project webpage <a href="https://drexubery.github.io/WorldCrafter"><code>drexubery.github.io/WorldCrafter</code></a> lists specific deltas.</li>
+      <li><strong>Streaming property.</strong> Because the memory read is a fixed number of tokens per segment and the video generator uses few-step distillation, per-segment cost is bounded independent of horizon length &mdash; the key property for minute-scale exploration.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The abstract-level ablation surface identifies three ingredients: pose-conditioned readout vs. viewpoint-agnostic memory, implicit memory vs. explicit-depth re-projection, and inclusion of recent temporal context on top of memory. Fine-grained ablation numbers are on the project page and in the arXiv HTML rather than the abstract.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning. This joins Tencent ARC's continued line on video world models and camera-controlled video generation (Hunyuan3D, scene-exploration systems). The camera-queryable-memory framing is the concrete architectural claim, and it is the ingredient most directly comparable against replay-buffer and per-view-retrieval alternatives from Kling, Sora-2, and Runway Gen-4 concurrent work.</li>
+      <li>Limitations. Long-horizon consistency in the presence of dynamic objects that leave and re-enter the frame remains partly a training-data question: the memory learns whatever the joint denoising loss teaches it, and dynamic-object re-entry is a distribution the training data may under-cover.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
