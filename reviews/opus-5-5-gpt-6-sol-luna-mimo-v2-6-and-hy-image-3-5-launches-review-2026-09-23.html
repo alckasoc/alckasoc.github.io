@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Claude Opus 5.5, GPT-6 Sol/Luna, MiMo-V2.6, and Hy Image 3.5 Launches Review &mdash; September 23, 2026 | Auto Lit Review</title>
+<meta name="description" content="A four-launch day. Anthropic ships Claude Opus 5.5 at Fable 5.1-level with 40% lower cost than Opus 5. OpenAI cuts GPT-6 Sol and GPT-6 Luna to $2/$10 and $0.10/$0.50 per M tokens. Xiaomi open-weights MiMo-V2.6-Pro (1.02T-A42B MoE, MIT license) at 46 on the Artificial Analysis Intelligence Index, tied with Grok 4.7 and topping open weights. Tencent ships Hy Image 3.5 Preview: unified generation + multi-turn editing at $0.024/image. Plus Microsoft's Taste-Bench, MBZUAI's Flash-dLLM diffusion LLM inference kernel, and Google's Private AI Compute server-side memory launch." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">September 23, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#anthropic">Anthropic</a>
+          <ul>
+            <li class="toc-h2"><a href="#opus-5-5">Claude Opus 5.5</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#openai">OpenAI</a>
+          <ul>
+            <li class="toc-h2"><a href="#gpt-6-sol-luna">GPT-6 Sol and GPT-6 Luna</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#tencent">Tencent</a>
+          <ul>
+            <li class="toc-h2"><a href="#hy-image-3-5">Hunyuan Hy Image 3.5 Preview</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#xiaomi">Xiaomi</a>
+          <ul>
+            <li class="toc-h2"><a href="#mimo-v2-6">MiMo-V2.6 (Pro / Flash / 9B)</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#mbzuai">MBZUAI</a>
+          <ul>
+            <li class="toc-h2"><a href="#flash-dllm">Flash-dLLM: IO-Aware KV Caching and Parallel Decoding for Diffusion LLMs</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#microsoft">Microsoft</a>
+          <ul>
+            <li class="toc-h2"><a href="#tasteful-agent">The Tasteful Agent: Measuring and Improving Taste in Long-Horizon Tasks</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#google">Google</a>
+          <ul>
+            <li class="toc-h2"><a href="#private-ai-compute">Private AI Compute with Secure Server-Side Memory</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; September 23, 2026</div>
+    <h1 class="page-title">Claude Opus 5.5, GPT-6 Sol/Luna, MiMo-V2.6, and Hy Image 3.5 Launches</h1>
+    <div class="page-meta">7 entries &middot; 7 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-09-23 21:08 UTC is a four-launch day for the frontier. <strong>Anthropic</strong> ships <a href="https://www.anthropic.com/claude-opus-5-5"><code>Claude Opus 5.5</code></a>, replacing <code>Claude Opus 5</code> as their production flagship at Fable 5.1-level performance while cutting per-token pricing by <code>20%</code> and typical-workload cost by <code>40%</code>; the accompanying <a href="https://www-cdn.anthropic.com/fc1b44717c85dc068bc6ba5024219938094694bd/Claude%20Opus%205.5%20System%20Card.pdf">System Card</a> keeps the model under AI R&amp;D and CBRN autonomy thresholds. <strong>OpenAI</strong> ships <a href="https://openai.com/index/introducing-gpt-6-sol-and-luna/"><code>GPT-6 Sol</code></a> and <code>GPT-6 Luna</code>, permanent 50% price cuts across Sol and Luna tiers, with Sol reported at <code>68.8%</code> on <code>DeepSWE v1.1</code> (within <code>1.1</code> points of <code>Claude Fable 5</code>) at roughly <code>20%</code> of Fable's per-task cost. <strong>Xiaomi</strong> open-weights <code>MiMo-V2.6</code> (<a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL">Pro</a> at <code>1.02T</code> total / <code>42B</code> active MoE under MIT license), scoring <code>46</code> on the Artificial Analysis Intelligence Index (tied with <code>Grok 4.7</code> and topping open weights), with a Flash sibling and a Qwen3.5-9B distillate for single-GPU deployment. <strong>Tencent</strong> ships <a href="https://cloud.tencent.com/document/product/1729"><code>Hunyuan Hy Image 3.5 Preview</code></a>, an MoE image model that merges text-to-image, image-to-image and multi-turn editing behind one endpoint at <code>$0.024</code> per image, up to 20 reference images and 4K output. Tier 2 adds Microsoft's <a href="https://arxiv.org/abs/2609.25804"><code>The Tasteful Agent</code></a> (Taste-Bench: <code>502</code> long-horizon decision points; frontier best <code>59.7%</code> vs random <code>25%</code>) and MBZUAI's <a href="https://arxiv.org/abs/2609.26796"><code>Flash-dLLM</code></a> inference kernel for diffusion LLMs (<code>5.1&times;</code>/<code>11.0&times;</code> over <code>Elastic-Cache</code> on GSM8K/HumanEval, <code>48%</code> less GPU memory than Fast-dLLM). Tier 3: Google DeepMind's <a href="https://deepmind.google/blog/advancing-private-ai-compute-with-secure-server-side-memory/">Private AI Compute</a> post shipping cross-device persistent memory in secure enclaves keyed to on-device credentials.</p>
+      <h3>Competitiveness</h3>
+      <p>Two of today's launches redraw the price/quality frontier for the closed API tier. <code>Claude Opus 5.5</code> reports <code>66.4%</code> on <code>Terminal-Bench 4.0</code> (vs <code>52.3%</code> for <code>Opus 5</code> and <code>55.8%</code> for <code>Fable 5.1</code>), <code>54.4%</code> on <code>FrontierCode v1.1</code>, <code>57.8%</code> on <code>CursorBench 4.0</code>, <code>81.8%</code> partial-credit on <code>OSWorld 2.0</code>, <code>1846</code> Elo on <code>GDPval-AA v2.1</code>, and <code>67.7%</code> on <code>Humanity's Last Exam</code> with tools &mdash; at <code>$4/$20</code> per M tokens (input/output), <code>20%</code> below <code>Opus 5</code>, and roughly <code>40%</code> below <code>Opus 5</code> at typical workloads because the model spends fewer thinking tokens per task. <code>GPT-6 Sol</code> at <code>$2/$10</code> per M lands within a point of <code>Claude Fable 5</code> on <code>DeepSWE v1.1</code> (<code>68.8%</code> vs <code>69.9%</code>) at approximately <code>20%</code> of Fable's per-task cost, and beats <code>Claude Opus 5</code> at max effort on <code>AutomationBench 1.0.6</code> at <code>9%</code> of its cost per task. <code>GPT-6 Luna</code> at <code>$0.10/$0.50</code> per M brings Sol-style factuality to the bottom of the API price ladder. On the open-weights side, <code>MiMo-V2.6-Pro</code> ties <code>Grok 4.7</code> at <code>46</code> on the Artificial Analysis Intelligence Index (Anthropic/OpenAI closed flagships still lead by ~<code>7</code> points), reports <code>71.9%</code> on <code>DeepSWE v1.1</code>, <code>82.0%</code> on <code>OSWorld</code> and <code>94.0%</code> on <code>CyberGym</code>, but trails on <code>Terminal-Bench 4.0</code> at <code>34.9%</code> (vs <code>Opus 5</code>'s <code>49.0%</code>) &mdash; long-horizon terminal agentic behavior remains the specific gap between best-open-weight and closed-frontier at this tier. In image generation, <code>Hy Image 3.5 Preview</code> is vendor-reported at parity with <code>ByteDance Seedream 5.0 Pro</code> and slightly ahead of <code>Nano Banana Pro</code> and <code>Qwen-Image-3.0 Pro</code> on internal human evaluation (external leaderboard confirmation pending), at <code>$0.024</code>/image (<code>25%</code> below <code>Hy Image 3.0</code>).</p>
+      <h3>New frontier releases</h3>
+      <p>Four Tier 1 launches on 2026-09-22: Anthropic's <code>Claude Opus 5.5</code> (API only, on Anthropic + AWS Bedrock + Google Cloud Vertex AI + Azure Foundry, model IDs <code>claude-opus-5-5</code>); OpenAI's <code>GPT-6 Sol</code> and <code>GPT-6 Luna</code> (API + ChatGPT Work + Codex + Copilot + Azure Foundry, IDs <code>gpt-6-sol</code>, <code>gpt-6-luna</code>); Xiaomi's <code>MiMo-V2.6-Pro-RL</code> and <code>MiMo-V2.6-Flash-RL</code> open weights (MIT license) plus a Qwen3.5-9B distillate, with a <code>44</code>-page technical report and <code>7,000+</code> RL environments released alongside the weights; Tencent's <code>Hy Image 3.5 Preview</code> on Tencent Cloud (<code>hy-image-v3.5-preview</code>) with free access on Miora and OnSolo through 2026-10-07. No new frontier-lab technical-report papers on arXiv today (the Tier 2 papers below are methods work, not launches).</p>
+    </section>
+
+    <!-- BODY -->
+
+    <h1 id="anthropic">Anthropic</h1>
+
+    <h2 id="opus-5-5"><a href="https://www.anthropic.com/claude-opus-5-5">Introducing Claude Opus 5.5</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Model Launch + System Card</span>
+      <span>anthropic.com + System Card PDF</span>
+      <span>2026-09-22</span>
+      <span>Coding agent &middot; Computer use &middot; Long-context &middot; Safety &middot; Pricing</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Anthropic released <code>Claude Opus 5.5</code> on 2026-09-22, positioned as the new production flagship on the Opus branch of the Claude family, alongside a full <a href="https://www-cdn.anthropic.com/fc1b44717c85dc068bc6ba5024219938094694bd/Claude%20Opus%205.5%20System%20Card.pdf">System Card</a>. <code>Claude Sonnet 5.5</code> and <code>Claude Haiku 5.5</code> are scheduled to follow "in the coming weeks."</li>
+      <li>Headline framing: <em>Fable 5.1-level performance at a substantially lower price than <code>Opus 5</code></em>. Per-token pricing drops <code>20%</code> versus <code>Opus 5</code> (<code>$4/$20</code> per M input/output vs <code>$5/$25</code>); <code>cache-read</code> drops <code>60%</code> to <code>$0.20</code> per M; typical-workload cost drops roughly <code>40%</code> because the model uses fewer thinking tokens per completed task. Output generation is <code>30%+</code> faster than <code>Opus 5</code> at matched settings.</li>
+      <li>Distribution: API-only across Anthropic's own Claude Platform, AWS Bedrock, Google Cloud Vertex AI, Microsoft Azure Foundry, and OpenRouter, under the identifier <code>claude-opus-5-5</code>. No model weights are released.</li>
+      <li>Coverage in this entry folds the launch post and System Card into a single Tier 1 entry per the review's grouping rule.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>Anthropic does not disclose parameter count, MoE structure, or attention variant. Published characteristics: a <code>1M</code>-token context window and a <code>128K</code>-token maximum output length &mdash; the same envelope as <code>Opus 5</code>. Extended thinking cannot be disabled at inference time; the model always produces internal reasoning tokens before the visible response.</li>
+      <li>The System Card describes safeguard-side architecture around the model rather than the model itself: a three-stage cyber filter (activation probe &rarr; lightweight classifier &rarr; trained LLM classifier) wraps user turns and, when the classifier fires, routes the request to <code>Claude Opus 4.8</code> instead. Biology-domain routing similarly falls back to <code>Claude Opus 5</code> under an expanded classifier stack when the caller is not enrolled in the Life Sciences Verification Program.</li>
+      <li>Anti-distillation posture is explicit: extended thinking is preserved but the reasoning trace is not exposed as an extractable token stream in the API surface used by third-party training pipelines, and outputs carry watermarking for EU AI Act compliance.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Thinking-token-efficient RL fine-tune.</strong>
+        <ul>
+          <li><em>Problem.</em> <code>Opus 5</code> at max thinking effort spends a large budget of internal reasoning tokens per task turn, which set both its wall-clock latency and its per-task price. Naively distilling <code>Fable 5.1</code>-level task performance into a cheaper serving model tends to preserve or grow the thinking-token count, giving up the cost win in inference.</li>
+          <li><em>Mechanism.</em> Anthropic reports that <code>Opus 5.5</code> reaches <code>Fable 5.1</code>-level task performance while requiring "less compute to serve" &mdash; the two together imply an RL fine-tune whose objective jointly weights task success and reasoning-token count. The <code>30%+</code> output speed improvement and <code>40%</code> typical-workload cost reduction over <code>Opus 5</code> at matched task quality is the observable footprint of this trade-off, spread across the Anthropic-reported benchmarks below (Terminal-Bench, FrontierCode, CursorBench, GDPval, OSWorld, HLE). Anthropic does not name the algorithm; the shape of the result &mdash; matched or better task performance at reduced thinking budget &mdash; is what an on-policy RL loop with a length penalty added to the outcome reward would produce.</li>
+          <li><em>Why it works / why it beats prior.</em> Length-penalized on-policy RL avoids the failure mode of vanilla teacher-distillation from <code>Fable 5.1</code>, which would copy Fable's reasoning distribution including its verbosity. It also avoids the failure mode of purely-outcome-rewarded RL, which does not price the reasoning budget and typically grows it. The published cost delta is the axis of improvement.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Behavioral-audit-aware alignment training.</strong>
+        <ul>
+          <li><em>Problem.</em> Successive Claude models had reached a plateau on Anthropic's own automated behavioral audit for misaligned behavior (deception, sandbagging, subversion attempts) despite intended-safety training. The audit is closed-loop: better base capability tends to raise both intended-safety and adversarial-capability scores.</li>
+          <li><em>Mechanism.</em> The System Card reports that <code>Opus 5.5</code> achieves "the best scores of any model to date on our automated behavioral audit," and that the overall assessment remains "low" for catastrophic-misalignment risk. This is described as the outcome of an alignment training pass whose supervision uses the behavioral audit itself as an evaluator, feeding audit-graded rollouts back as preference data.</li>
+          <li><em>Why.</em> Grading rollouts against a fixed audit rubric before including them in preference data disentangles "the model appears aligned to the annotator" from "the model behaves as intended under adversarial probes." The specific measurable is lower misaligned-behavior rate at matched or higher task capability &mdash; the shape the System Card reports.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Prompt-injection-resistant tool use.</strong>
+        <ul>
+          <li><em>Problem.</em> Prompt-injection resistance had been a persistent weakness across the Claude line, and remained the highest-consequence failure mode for computer-use and coding agents that route through untrusted webpages, PDFs and tool outputs.</li>
+          <li><em>Mechanism.</em> The launch post claims <code>Opus 5.5</code> "matches or beats <code>Opus 5</code> in every setting tested" for prompt injection, and independently that on the Gray Swan benchmark it ties <code>Fable 5.1</code> for the lowest success rate of any evaluated model. The mechanism is not itemized; the outcome-level footprint is consistent with continued training on adversarial injection traces harvested at population scale from live traffic and red-team scenarios.</li>
+          <li><em>Why.</em> On computer-use and agent workloads (Anthropic reports <code>81.8%</code> partial-credit on <code>OSWorld 2.0</code>), a lower prompt-injection success rate directly reduces the rate at which a rogue tool output can hijack the trajectory, which is what the OSWorld score is measuring.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <p>Anthropic-reported benchmarks (adaptive thinking at max effort unless stated; production safeguards enabled):</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Benchmark</th>
+          <th>Claude Opus 5.5</th>
+          <th>Claude Fable 5.1</th>
+          <th>Claude Opus 5</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Terminal-Bench 4.0</td><td>66.4%</td><td>55.8%</td><td>52.3%</td><td>Agentic coding; beats <code>GPT-6 Astra</code> at ~40% of the cost per task</td></tr>
+        <tr><td>FrontierCode v1.1</td><td>54.4%</td><td>50.3%</td><td>48.0%</td><td>Agentic coding; leads all published competitors</td></tr>
+        <tr><td>CursorBench 4.0</td><td>57.8%</td><td>51.8%</td><td>46.6%</td><td>Real-world coding tasks</td></tr>
+        <tr><td>OSWorld 2.0 (partial)</td><td>81.8%</td><td>80.7%</td><td>74.0%</td><td>Computer use</td></tr>
+        <tr><td>GDPval-AA v2.1 (Elo)</td><td>1846</td><td>&mdash;</td><td>&mdash;</td><td>Knowledge work across 44 occupations</td></tr>
+        <tr><td>Chartography (with tools)</td><td>89.0%</td><td>&mdash;</td><td>&mdash;</td><td>Visual chart understanding</td></tr>
+        <tr><td>Humanity's Last Exam (with tools)</td><td>67.7%</td><td>&mdash;</td><td>&mdash;</td><td>Multidisciplinary reasoning</td></tr>
+        <tr><td>AutomationBench</td><td>40.0%</td><td>&mdash;</td><td>&mdash;</td><td>Business workflow automation</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Cost&ndash;capability positioning. On <code>Terminal-Bench 4.0</code>, <code>Opus 5.5</code> beats <code>GPT-6 Astra</code> at about <code>40%</code> of Astra's cost per task, and beats <code>Opus 5</code> outright at ~<code>60%</code> of Opus 5's cost per task. This is the specific frontier point the launch is pitched at.</li>
+      <li>Coding-agent lead. On <code>FrontierCode v1.1</code>, <code>Opus 5.5</code> is the leader in Anthropic's reported comparison &mdash; no <code>Fable 5.1</code>, <code>GPT-6 Astra</code> or <code>Grok 4.7</code> score in Anthropic's chart exceeds it.</li>
+      <li>Knowledge work. <code>GDPval-AA v2.1</code> at <code>1846</code> Elo across <code>44</code> occupations is Anthropic's first-party evidence that the model is production-usable across expert domains, not only coding.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li><strong>RSP classification.</strong> The System Card places <code>Opus 5.5</code> at <em>CB-1 capable</em> for chemical/biological uplift (non-novel weapons synthesis) but not at the <em>CB-2</em> threshold (novel weapons). It does not cross the "dramatic acceleration" threshold on autonomy or AI R&amp;D; on the updated AECI it scores <code>169.36</code>, within error bars of <code>Claude Mythos 5.1</code>, and "does not seem close to being able to substitute for" Anthropic's own research staff.</li>
+      <li><strong>Cyber.</strong> Meets or exceeds <code>Claude Mythos 5.1</code> on internal cyber evaluations, but remains below Tier 2 (autonomous novel capability development). Cyber requests are wrapped by the three-stage classifier described in Architecture; when they trigger, the traffic falls back to <code>Claude Opus 4.8</code>.</li>
+      <li><strong>Biology.</strong> Expanded biology safeguards match <code>Claude Fable 5.1</code>; regulated queries fall back to <code>Claude Opus 5</code> unless the caller is enrolled in the Life Sciences Verification Program.</li>
+      <li><strong>Alignment.</strong> Overall catastrophic-misalignment risk assessed "low"; best scores of any Claude model to date on Anthropic's automated behavioral audit.</li>
+      <li><strong>Prompt injection.</strong> Ties <code>Claude Fable 5.1</code> for the lowest prompt-injection success rate on Gray Swan's benchmark.</li>
+      <li><strong>Named weaknesses.</strong> The System Card explicitly notes persistent limits: weak open-ended ideation with over-deference to published literature, unreliable representation of scientific literature, and scientific errors in unfamiliar domains. These are the concrete reasons <code>Opus 5.5</code> is not described as a substitute for expert practitioners.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>API model ID: <code>claude-opus-5-5</code>.</li>
+      <li>Platforms: Anthropic Claude Platform, AWS Bedrock, Google Cloud Vertex AI, Microsoft Azure Foundry, OpenRouter.</li>
+      <li>Pricing: <code>$4</code>/M input, <code>$20</code>/M output, <code>$0.20</code>/M cache-read, <code>$5</code>/M cache-write; <em>Fast mode</em> at <code>$8</code>/M input, <code>$40</code>/M output for latency-sensitive callers.</li>
+      <li>No weights, no fine-tuning API for this checkpoint.</li>
+    </ul>
+
+    <h1 id="openai">OpenAI</h1>
+
+    <h2 id="gpt-6-sol-luna"><a href="https://openai.com/index/introducing-gpt-6-sol-and-luna/">Introducing GPT-6 Sol and Luna</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Model Launch (two SKUs)</span>
+      <span>openai.com + Azure Foundry blog + GitHub Copilot changelog</span>
+      <span>2026-09-22</span>
+      <span>Mid- and small-tier flagships &middot; Coding agent &middot; Agentic workflows &middot; API pricing</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>OpenAI released <code>GPT-6 Sol</code> and <code>GPT-6 Luna</code> on 2026-09-22, the mid- and small-tier siblings to <code>GPT-6 Astra</code> (the flagship, released 2026-09-03). The launch pairs a capability upgrade with a permanent, non-promotional price cut of <code>50%</code> at each tier.</li>
+      <li>API identifiers: <code>gpt-6-sol</code> and <code>gpt-6-luna</code>. Both roll out same-day into ChatGPT Work, Codex, GitHub Copilot (Pro, Pro+, Max, Business, Enterprise plans for Sol; adds Pro tier for Luna), and Microsoft Azure Foundry across <code>28</code> global regions and US + EU Data Zones. Luna additionally reaches Free and Go users through the desktop app.</li>
+      <li>Both are described as "trained with similar methods as <code>GPT-6 Astra</code>," inheriting Astra's alignment training but not disclosed to be simple distillates of Astra; OpenAI's phrasing leaves room for independent post-training runs from a shared or scaled-down base.</li>
+      <li>Coverage folds the OpenAI launch post, the Azure Foundry general-availability blog, and the GitHub Copilot changelog into one Tier 1 entry.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>OpenAI does not disclose parameter counts, MoE structure, attention variant, or context length for either model. The observed price ratio &mdash; <code>Sol</code> at <code>$2/$10</code> per M vs <code>Luna</code> at <code>$0.10/$0.50</code> per M &mdash; implies a serving-cost gap of about <code>20&times;</code> between the two, consistent with Luna being materially smaller (or much sparser) than Sol rather than a same-size checkpoint.</li>
+      <li>Both are positioned as fully-fledged reasoning models that inherit <code>GPT-6 Astra</code>'s tool-use, agentic-workflow and long-context envelope; the launch post frames the trade-off as <em>capability-per-dollar rather than raw ceiling</em>, with Astra remaining OpenAI's ceiling on "complex, multi-faceted projects."</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Astra-inherited post-training at cheaper serving cost.</strong>
+        <ul>
+          <li><em>Problem.</em> The cheaper OpenAI tiers had lagged the flagship on factuality and reliability more than on raw capability; <code>GPT-5.6 Sol</code> in particular showed a wider factuality gap versus <code>GPT-5.6 Astra</code> than its capability gap would suggest, which limited its deployment as a workhorse for high-volume production.</li>
+          <li><em>Mechanism.</em> Both new models are trained "with similar methods as <code>GPT-6 Astra</code>" &mdash; OpenAI's shorthand for the Astra-family alignment stack (safeguard training, hallucination-reduction post-training, and coding/agentic RL) &mdash; then served at their respective cost points. The launch post reports the outcome in factuality terms: <code>GPT-6 Sol</code> is "approaching Astra-level reliability" with "roughly half as many mistakes as <code>GPT-5.6 Sol</code>," and <code>Luna</code> reaches <code>GPT-5.6 Sol</code>-level factuality at "roughly <code>1/100</code>th the cost."</li>
+          <li><em>Why it works / why it beats prior.</em> The generation-over-generation trend inside a tier used to be "modest capability gain, small factuality gain, small price cut." The 6-family generation targets <em>factuality parity with the flagship at a much lower price point</em>; the specific axis is that Astra's post-training procedure is now applied to a smaller / cheaper base model, so the factuality gap narrows even though the raw capability ceiling does not close.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Cost-per-task-native benchmarking.</strong>
+        <ul>
+          <li><em>Problem.</em> Reporting per-token pricing next to per-task benchmark scores gives no signal on whether the cheaper model is a bargain or a false economy: a model that spends 3&times; the tokens per task at <code>0.5&times;</code> the token price is more expensive, not cheaper.</li>
+          <li><em>Mechanism.</em> OpenAI now reports headline results as <em>per-task cost at fixed effort setting</em>. On <code>AutomationBench 1.0.6</code>, <code>Sol</code> at xhigh effort scores <code>33.2%</code> at <code>$0.27</code> per task, versus <code>Astra</code> at low effort at <code>30.3%</code> for <code>3.9&times;</code> Sol's per-task cost, and versus <code>Claude Opus 5</code> at max effort at <code>~11&times;</code> Sol's per-task cost. The <code>gpt-6-sol</code> label is thus positioned <em>above</em> <code>Opus 5</code> at max effort on AutomationBench, at <code>9%</code> of its per-task cost.</li>
+          <li><em>Why.</em> Per-task cost is the actual budget-line item for production deployments; the shift makes the price-cut narrative concrete and constrains competitors to respond in the same unit.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Benchmark / task</th>
+          <th>GPT-6 Sol</th>
+          <th>Reference</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>AutomationBench 1.0.6 (xhigh effort)</td><td>33.2% at $0.27/task</td><td><code>Astra</code> low effort: 30.3% at 3.9&times; cost; <code>Opus 5</code> max effort: below Sol at ~11&times; cost</td></tr>
+        <tr><td>DeepSWE v1.1 (coding)</td><td>68.8%</td><td><code>Claude Fable 5</code>: 69.9% at ~5&times; Sol's cost per task</td></tr>
+        <tr><td>Factuality (OpenAI internal)</td><td>~2&times; better than <code>GPT-5.6 Sol</code></td><td>Approaching Astra-level reliability</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><code>GPT-6 Luna</code>: OpenAI does not publish per-benchmark numbers for Luna in the launch post. The published characterization is factuality parity with <code>GPT-5.6 Sol</code> at ~<code>1%</code> of Sol's cost per task, positioning Luna as the routing target for extraction, summarization, request-routing and routine customer-support workloads.</li>
+      <li>Pricing (permanent, not introductory): <code>Sol</code> at <code>$2</code>/M input, <code>$10</code>/M output; <code>Luna</code> at <code>$0.10</code>/M input, <code>$0.50</code>/M output. Both prices are cut <code>50%</code> versus the corresponding <code>GPT-5.6</code> SKUs.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>API: OpenAI directly (<code>gpt-6-sol</code>, <code>gpt-6-luna</code>), Microsoft Azure Foundry (Standard, Provisioned Throughput, and Priority Processing for Sol; all in <code>28</code> global regions plus US + EU Data Zones).</li>
+      <li>Product surfaces: ChatGPT Work, Codex, GitHub Copilot (Sol on Pro+, Max, Business, Enterprise; Luna adds Pro and reaches Free / Go users in desktop app), across VS Code, GitHub.com, JetBrains and other IDE surfaces.</li>
+      <li>OpenAI does not release weights for either SKU.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="hy-image-3-5"><a href="https://cloud.tencent.com/document/product/1729">Tencent Hunyuan Hy Image 3.5 Preview</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Image Model Launch (Preview)</span>
+      <span>Tencent Cloud + Yuanbao + partner platforms (Miora, OnSolo)</span>
+      <span>2026-09-22</span>
+      <span>Multimodal generation &middot; Image editing &middot; MoE &middot; Multi-turn conversational editing &middot; 4K output</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Tencent released <code>Hunyuan Hy Image 3.5 Preview</code> on 2026-09-22, timed to Alibaba's Apsara conference. Tencent's stock jumped over <code>7%</code> in Hong Kong on the announcement.</li>
+      <li>Positioning: a single unified endpoint (<code>hy-image-v3.5-preview</code>) for text-to-image, image-to-image, and multi-turn conversational editing &mdash; the previously separate generation and editing pipelines are merged behind a chat-style messages interface. Up to <code>20</code> reference images per request (each up to <code>20</code> MB), output up to <code>4096&times;4096</code> pixels (total area capped at <code>16.78</code> M pixels), <code>100K</code>-token input context, synchronous return of generated images in the same request.</li>
+      <li>Pricing: <code>$0.024</code> per generated image, a <code>25%</code> reduction from <code>Hy Image 3.0</code>'s <code>$0.032</code>. Reference images incur no charge. Free access on Miora and OnSolo through 2026-10-07.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>Tencent inherits the <code>Hy Image 3.0</code> architecture as the underlying model: a Mixture-of-Experts image generation model with <code>~80B</code> total parameters, <code>64</code> experts and <code>~13B</code> active parameters per token. The <code>3.5</code> release does not publish a new parameter count; the reported changes are on the pipeline, editing and control side rather than in raw model size.</li>
+      <li>The <code>messages</code>-format interface returns an <code>assembled_history</code> object that the caller feeds back into subsequent requests; the API layer, not the client, holds the multi-turn edit state and threads the reference-image tokens through session-consistent routing.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Unified generation-and-editing endpoint (messages format).</strong>
+        <ul>
+          <li><em>Problem.</em> The prior <code>Hy Image 3.0</code> generation and separate <code>Hunyuan Image Edit</code> path each required their own request schema, their own reference-image slots, and their own pricing tier. Multi-turn editing under this split had to be reimplemented per client, and reference tokens had to be re-uploaded on every turn.</li>
+          <li><em>Mechanism.</em> A single <code>messages</code>-style API mirrors multimodal chat: each turn's request carries the prior turn's <code>assembled_history</code> plus the new instruction and optional new reference images. The server threads the reference-image tokens, prompt state and generation state through a session identifier so that later turns can inspect and modify specific regions of the earlier turn's output rather than regenerating from scratch. The routing layer uses that session identifier for cache reuse.</li>
+          <li><em>Why it works / why it beats prior.</em> Two things fall out: (i) round-trip cost drops because reference tokens are not re-encoded per turn, and cached KV structure survives across turns; (ii) editing precision improves because the model conditions on its own prior latent state rather than on an image-round-tripped-through-VAE view of it. This is the axis on which <code>Hy Image 3.5</code> is claimed to beat <code>Hy Image 3.0</code> by a vendor-reported <code>+30%</code> human-evaluation win rate.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; 20-reference-image conditioning.</strong>
+        <ul>
+          <li><em>Problem.</em> Prior Hunyuan image models supported at most a small handful of reference images per request. Multi-subject compositions (e.g. a scene assembled from several character or product references) required either concatenation into a single canvas or serial editing turns, both of which drop identity fidelity.</li>
+          <li><em>Mechanism.</em> Up to <code>20</code> reference images per request are tokenized in parallel and mixed into the MoE image backbone with a per-reference conditioning slot, so identity is preserved per-subject rather than averaged across the reference set. The <code>16.78</code> M-pixel total-area cap keeps compute per request bounded regardless of the number of references.</li>
+          <li><em>Why.</em> This is the enabling primitive for the "compose a scene from a curated cast of references" workflow that design tools like Miora and OnSolo are building against; existing image models cap at four to eight references, and identity blend past that has been the bottleneck.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Tencent published no external leaderboard results at launch. Internal human evaluation reports parity with <code>ByteDance Seedream 5.0 Pro</code>, and slightly ahead of <code>Google Nano Banana Pro</code> and <code>Alibaba Qwen-Image-3.0 Pro</code>. Independent verification pending.</li>
+      <li>Vendor-reported <code>+30%</code> human-evaluation win rate over <code>Hy Image 3.0</code>.</li>
+      <li>Practical bounds published in the API docs: <code>4096&times;4096</code> maximum resolution, <code>16.78</code> M-pixel total area cap, <code>100K</code>-token input context, generated-image links valid for <code>12</code> hours, session routing for cache reuse across turns, optional external-search enhancement, seed fixing for reproducibility, custom watermarks.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>Tencent did not publish a safety card at launch. The API notes custom watermarking as a caller-controlled feature and does not disclose whether default outputs are watermarked.</li>
+      <li>"Preview" status &mdash; the model ID is <code>hy-image-v3.5-preview</code> and the free-access windows on Miora and OnSolo indicate the launch is a controlled rollout ahead of a general-availability version.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Tencent Cloud API: <code>hy-image-v3.5-preview</code>.</li>
+      <li>Product surfaces: Yuanbao chatbot, Tencent film-editing and design tools, partner platforms Miora and OnSolo (free access through 2026-10-07).</li>
+      <li>No open weights.</li>
+    </ul>
+
+    <h1 id="xiaomi">Xiaomi</h1>
+
+    <h2 id="mimo-v2-6"><a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL">Xiaomi MiMo-V2.6 (Pro, Flash, 9B)</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Model Launch + Technical Report + RL Framework</span>
+      <span>Hugging Face + <a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL/blob/main/MiMo_V2_6_technical_report.pdf">Technical Report (44 pages)</a> + ModelScope</span>
+      <span>2026-09-22</span>
+      <span>Open weights (MIT) &middot; 1.02T-A42B MoE &middot; Omnimodal &middot; RL scaling &middot; Coding / agentic / cyber</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Xiaomi released the <code>MiMo-V2.6</code> family under MIT license on 2026-09-22, comprising: <code>MiMo-V2.6-Pro-RL</code> (flagship, <code>1.02T</code> total / <code>42B</code> active MoE), <code>MiMo-V2.6-Flash-RL</code> (mid, <code>310B</code> total / <code>15B</code> active), and a distilled <code>MiMo-V2.6-9B</code> (a supervised fine-tune of Alibaba's <code>Qwen3.5-9B</code> on MiMo-generated agent trajectories). The launch ships weights, a <code>44</code>-page <a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL/blob/main/MiMo_V2_6_technical_report.pdf">technical report</a>, and <code>7,000+</code> RL task environments.</li>
+      <li>Independent capability read: <code>46</code> on the Artificial Analysis Intelligence Index, tied with <code>Grok 4.7</code>, making <code>MiMo-V2.6-Pro-RL</code> the top open-weight model at launch, and ~<code>7</code> points below closed-frontier <code>Claude Fable 5.1</code> / <code>GPT-6 Astra</code>.</li>
+      <li>Xiaomi reports the RL run cost approximately <code>$2.62M</code> for the Pro checkpoint and <code>$0.9M</code> for Flash. The published narrative is <em>scale RL machinery on verifiable, complex tasks in one pass across domains</em>, not <em>build a bigger pre-trained base</em>.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong><code>MiMo-V2.6-Pro-RL</code>.</strong> Sparse MoE with <code>1.02T</code> total parameters and <code>42B</code> active per token (<code>4.1%</code> activation rate); <code>256</code> routed experts, <code>8</code> active per token. Hybrid attention combining sliding-window and global heads. <code>1M</code>-token context. Omnimodal input path via a <code>681M</code>-parameter vision encoder, a <code>308M</code> audio tokenizer and a <code>127M</code> patch encoder. A <code>5</code>-layer speculative decoder for multi-token prediction on the output side.</li>
+      <li><strong><code>MiMo-V2.6-Flash-RL</code>.</strong> Same architectural family at <code>310B</code> total / <code>15B</code> active. Same <code>1M</code> context, same multimodal envelope.</li>
+      <li><strong><code>MiMo-V2.6-9B</code>.</strong> Not a MiMo-architecture model &mdash; it is a supervised fine-tune of <code>Qwen3.5-9B</code> on trajectories generated by the Pro model. Distributed as a single-GPU deployment target.</li>
+      <li>Xiaomi's <em>frozen MoE router</em> is a training-time architectural choice rather than an inference-time change; see Post-training.</li>
+    </ul>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li>The technical report positions <code>MiMo-V2.6-Pro</code>'s pre-trained base as a starting point for the RL loop rather than as the primary contribution. Pre-training details (token count, modality mix, curriculum) are not the focus of Xiaomi's disclosure and are not itemized in the launch summary sources.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; "You Only RL Once" (unified multi-domain RL).</strong>
+        <ul>
+          <li><em>Problem.</em> Domain-specific RL runs (a coding RL run, an agent-workflow RL run, a visual RL run, a cyber RL run) each require their own reward stack and their own compute allocation. Running them sequentially on a shared base tends to introduce catastrophic forgetting between phases, and running them in isolation yields siloed checkpoints that must be re-merged.</li>
+          <li><em>Mechanism.</em> A single <code>30</code>-step RL pass over the base model whose batches <em>mix</em> code, agent, visual and cyber tasks in each step. Adaptive scheduling regulates the mix so slower-graded task types do not starve. Throughput is <code>~1,568</code> prompts &times; <code>16</code> rollouts per step (<code>~25K</code> trajectories per step), asynchronous, for <code>~750K</code> total trajectories completed in under six days.</li>
+          <li><em>Why it works / why it beats prior.</em> Interleaving domains inside a single RL run lets shared skill representations transfer across capability axes within the same optimizer state, rather than being fought over across sequential runs. The reported footprint is the shape this predicts: strong scores across domains that did not previously co-train well (coding <code>71.9%</code> on <code>DeepSWE v1.1</code>, agent <code>82.0%</code> on <code>OSWorld</code>, cyber <code>94.0%</code> on <code>CyberGym</code>) without a corresponding domain-tuned siblings.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Groupwise Advantage Redistribution (GAR).</strong>
+        <ul>
+          <li><em>Problem.</em> A batched RL step samples multiple rollouts per prompt. Grading them independently under a binary pass/fail reward under-uses the joint information across rollouts: a solution that passes but is unnecessarily verbose, hacky, or off-scope is graded the same as a clean minimal solution, so the policy update does not distinguish them.</li>
+          <li><em>Mechanism.</em> <code>16</code> rollouts per prompt are evaluated <em>jointly</em> through a shared workspace by a model-based grader that scores each passing patch on five dimensions: problem fit, implementation precision, minimalism, scope correctness, and style matching. The scalar advantage assigned to each rollout is then redistributed within the group so lower-ranked passing solutions receive reduced positive reinforcement. The policy update thus prefers short, on-scope solutions over long or incidentally-correct ones at matched pass rate.</li>
+          <li><em>Why it works / why it beats prior.</em> This is on-policy GRPO with an <em>ordinal quality-based advantage</em> replacing the binary pass advantage. The specific gain is token-efficient solution style at fixed pass rate &mdash; a lever prior batched-RL setups didn't have because they had no signal at rollout granularity beyond pass/fail. The <code>+44.6</code> point uplift on SWE Pro for the <code>9B</code> distillate over base <code>Qwen3.5-9B</code> is consistent with training-time preference for minimal on-scope patches propagating through the distillation.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Groupwise Reward Synthesis (GRS).</strong>
+        <ul>
+          <li><em>Problem.</em> A live model-based grader is expensive; running one on every batched rollout during a long RL pass burns compute that scales with grader forwards per step, not with policy forwards. Purely-offline rubric rewards, on the other hand, don't capture the specific behaviors the current policy is exhibiting.</li>
+          <li><em>Mechanism.</em> An offline complement to GAR. Task-specific rubrics are pre-computed by contrasting rollouts whose outcomes differed on earlier snapshots of the policy; the rubric multiplies a binary test reward to yield a scalar reward per rollout at a much lower per-rollout cost than a live grader. The two together (GAR live, GRS offline) form the reward stack used across the <code>30</code>-step run.</li>
+          <li><em>Why.</em> The composition amortizes the grader compute: rubrics that survived contrastive analysis on earlier snapshots reproduce most of the grader's discriminative signal at a fraction of the cost, while the live GAR pass on selected batches keeps the reward from becoming stale.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Frozen MoE router (training-time stability).</strong>
+        <ul>
+          <li><em>Problem.</em> At the RL batch scales used here, unfrozen router weights drifted heavily: the coefficient of variation of expert load rose from <code>0.78</code> to <code>2.0</code>, and the fraction of "cold" experts (rarely-routed) rose from <code>0.5%</code> to <code>22%</code> during training. Left unmitigated, this collapses expert diversity and undoes the benefit of a wide MoE.</li>
+          <li><em>Mechanism.</em> Freeze the router weights for the RL pass, so expert selection is fixed to the pre-RL routing policy. Only the expert MLPs and shared components receive RL gradients.</li>
+          <li><em>Why.</em> Routing instability at extreme batch scale becomes a training-dynamics problem rather than an architectural necessity of MoE + RL. The fix is deliberately blunt (freeze rather than regularize) &mdash; the pragmatic evidence is that under this constraint the <code>30</code>-step run stayed on distribution.</li>
+        </ul>
+      </li>
+      <li><strong>Grader compute footprint.</strong> The agentic grader stack accounts for approximately <code>12.7%</code> of total RL compute, well above what a binary pass/fail check would cost but far below a fully-live grader on every rollout.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th>MiMo-V2.6-Pro</th><th>Claude Opus 5</th><th>GPT-5.6 Sol</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Artificial Analysis Intelligence Index</td><td>46</td><td>~53</td><td>&mdash;</td><td>Independent, tied with <code>Grok 4.7</code>, tops open-weights</td></tr>
+        <tr><td>DeepSWE v1.1</td><td>71.9%</td><td>74.0%</td><td>73.0%</td><td>Vendor-reported</td></tr>
+        <tr><td>AutomationBench</td><td>53.1%</td><td>50.3%</td><td>45.8%</td><td>Vendor-reported</td></tr>
+        <tr><td>OSWorld</td><td>82.0%</td><td>&mdash;</td><td>&mdash;</td><td>Vendor-reported</td></tr>
+        <tr><td>Terminal-Bench 4.0</td><td>34.9%</td><td>49.0%</td><td>39.9%</td><td>Vendor-reported; MiMo trails on long terminal sessions</td></tr>
+        <tr><td>Terminal-Bench 2.1</td><td>89.9%</td><td>&mdash;</td><td>&mdash;</td><td>Vendor-reported</td></tr>
+        <tr><td>CyberGym</td><td>94.0%</td><td>&mdash;</td><td>&mdash;</td><td>Vendor-reported</td></tr>
+        <tr><td>MiMo VisualCoding</td><td>72.3%</td><td>&mdash;</td><td>&mdash;</td><td>Xiaomi-internal benchmark</td></tr>
+        <tr><td>ExploitBench</td><td>47.9%</td><td>70.0%</td><td>78.5%</td><td>Vendor-reported; MiMo trails frontier here</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>9B distillate uplift.</strong> Over base <code>Qwen3.5-9B</code>, the <code>MiMo-V2.6-9B</code> distillate reports <code>+44.6</code> on <code>SWE Pro</code>, <code>+25.3</code> on <code>AutomationBench</code>, and <code>+5.1</code> on <code>SWE-bench Verified</code> (61.1 &rarr; 66.2). This is the most concrete piece of evidence that the GAR/GRS reward stack transfers through SFT.</li>
+      <li><strong>Frontier-relative reading.</strong> <code>MiMo-V2.6-Pro</code> is the top open-weight model at <code>46</code> AA Intelligence Index, tied with <code>Grok 4.7</code>, and approximately <code>7</code> points behind <code>Claude Fable 5.1</code> and <code>GPT-6 Astra</code>. The gap-to-frontier localizes on <code>Terminal-Bench 4.0</code> (long agent sessions) and <code>ExploitBench</code> rather than on general reasoning or code.</li>
+      <li><strong>Serving pricing.</strong> Xiaomi holds <code>V2.5</code> pricing at <code>$0.435</code>/M input and <code>$0.87</code>/M output for Pro (<code>UltraSpeed</code> variant at <code>10&times;</code>), and <code>$0.14</code>/<code>$0.28</code>/M for Flash. Cache-hit discount up to <code>99%</code>.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The technical report calls out the frozen-router intervention as the specific ablation that kept the <code>30</code>-step run from collapsing at scale; without it the coefficient-of-variation trajectory (<code>0.78</code> &rarr; <code>2.0</code>) points to a routing degeneracy that would have dominated by mid-training.</li>
+      <li>The <code>You Only RL Once</code> ablation is framed as an <em>evidence</em> claim &mdash; that mixing coding, agent, visual and cyber tasks in one batched pass produced capability across domains that domain-specific sequential RL runs on the same base did not &mdash; but it is not run in isolation as a controlled comparison; the report notes that comparisons "mix public and internal benchmarks and do not isolate the contribution of reinforcement learning from architecture or pre-training."</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>MIT license, no additional use restrictions or gated verification on weights.</li>
+      <li>Capability increased alongside token consumption; independent reviewers note the model did not become cheaper to run at matched task and that RL-attributed gains cannot be cleanly separated from architecture and pre-training gains without a controlled ablation base.</li>
+      <li>Terminal-Bench 4.0 trailing (<code>34.9%</code>) is the concrete gap on long multi-step agent sessions; ExploitBench trailing (<code>47.9%</code>) is the concrete gap on offensive cyber.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Weights: <code>XiaomiMiMo/MiMo-V2.6-Pro-RL</code>, <code>XiaomiMiMo/MiMo-V2.6-Flash-RL</code> on Hugging Face and ModelScope. MIT license.</li>
+      <li>API: Xiaomi AI Studio, <code>MiMo Code</code>, MiMo Desktop app, Xiaomi's API platform, OpenRouter, Vercel AI Gateway.</li>
+      <li>RL framework and <code>7,000+</code> task environments released alongside the technical report.</li>
+    </ul>
+
+    <h1 id="mbzuai">MBZUAI</h1>
+
+    <h2 id="flash-dllm"><a href="https://arxiv.org/abs/2609.26796">Flash-dLLM: IO-Aware KV Caching and Parallel Decoding for Fast, Memory-Efficient Diffusion LLMs</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-22</span>
+      <span>Diffusion LLMs &middot; KV caching &middot; IO-aware kernels &middot; Speculative decoding &middot; Inference</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Quan Nguyen-Tri, Mukul Ranjan, Zhiqiang Shen. arXiv:2609.26796v1, submitted 2026-09-22. Authors are at the <em>VILA Lab</em> at Mohamed Bin Zayed University of Artificial Intelligence (MBZUAI). MBZUAI qualifies under the frontier-labs filter.</li>
+      <li>The framing: diffusion-based LLMs (dLLMs) generate all tokens in parallel via iterative denoising rather than autoregressively, but their practical inference speed has been throttled by two separately-studied problems &mdash; KV cache management under a bidirectional / block-diffusion attention pattern, and parallel decoding of multiple tokens per step. Existing work has treated these in isolation, ignoring the shared bottleneck that both are IO-bound on the KV cache.</li>
+      <li>Contribution: <code>Flash-dLLM</code>, an inference framework that combines a fused Triton kernel for the diffusion attention path with a training-free draft-and-verify parallel decoding strategy in which the dLLM itself serves as both drafter and verifier. Reported <code>5.1&times;</code> and <code>11.0&times;</code> speedups over <code>Elastic-Cache</code> on <code>GSM8K</code> and <code>HumanEval</code> respectively, <code>22.3&times;</code>&ndash;<code>148.2&times;</code> faster than un-cached greedy decoding, <code>148</code>&ndash;<code>211</code> tokens/second throughput, and <code>48%</code> less GPU memory than <code>Fast-dLLM</code> at matched quality, scaling to batch size <code>32</code>. Code at <code>github.com/Efficient-Large-Model/Flash-dLLM</code>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; IO-aware fused KV kernel for dLLM attention.</strong>
+        <ul>
+          <li><em>Problem.</em> Diffusion LLM attention over a KV cache is dominated by GPU memory traffic rather than compute: at each denoising step, the model reads the entire cache, applies bidirectional / block-diffusion attention, and writes updated positions back. Existing implementations issue this as separate kernels (load, softmax, aggregate, store) with intermediate tensors that must be re-materialized in high-bandwidth memory. On a modern GPU the arithmetic is fast enough that these HBM round-trips are the wall-clock bottleneck, and the effective throughput of a well-optimized autoregressive attention kernel is not matched by any standard dLLM path.</li>
+          <li><em>Mechanism.</em> A single Triton kernel fuses cache read, block-diffusion attention math, mask application and cache write into one pass with tiled shared-memory staging; intermediates never touch HBM. The kernel is written for the specific access pattern of a dLLM with cached prior denoising states, so the block-diffusion mask is applied inline rather than as a separate elementwise multiply. The paper credits this alone for the ability to run the diffusion path near compute-bound rather than memory-bound.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior work (<code>Fast-dLLM</code>, <code>Elastic-Cache</code>) improved <em>what</em> to cache; this paper improves <em>how</em> to move the cache. The two axes are orthogonal, and stacking the IO-aware kernel underneath an existing cache-management scheme is what produces the <code>22.3&times;</code>&ndash;<code>148.2&times;</code> speedup over uncached greedy and the <code>48%</code> memory reduction versus <code>Fast-dLLM</code>.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Model-as-drafter, model-as-verifier parallel decoding.</strong>
+        <ul>
+          <li><em>Problem.</em> Speculative decoding for autoregressive LLMs uses a small drafter to propose <code>k</code> future tokens and the target model to verify them, spending one target-model forward per <code>k</code> accepted drafts. For dLLMs the mechanics don't transfer directly &mdash; the diffusion process already emits many tokens per step, but has no principled way to decide which of them to accept as final at a given denoising step and which to re-sample. Existing dLLM parallel-decoding schemes either accept all positions after a fixed number of denoising steps (loss of quality) or route through a separate auxiliary drafter model (extra parameters, extra memory).</li>
+          <li><em>Mechanism.</em> The dLLM itself serves as both drafter and verifier. At each denoising step the model produces predicted tokens for a block of positions; a lightweight training-free verification kernel then re-scores each proposed token in-place using the model's own next-step distribution and accepts the ones whose acceptance probability is above threshold, freezing them in the cache and continuing denoising on the rest. No auxiliary drafter model is required, and no additional training is needed on the target dLLM.</li>
+          <li><em>Why it works / why it beats prior.</em> The dLLM's own bidirectional context is precisely the signal a speculative verifier needs, so re-using it in-place avoids the drafter-target quality gap that limits autoregressive speculative decoding. The <code>5.1&times;</code>/<code>11.0&times;</code> speedup over <code>Elastic-Cache</code> on GSM8K / HumanEval is the specific improvement axis: fewer effective denoising steps per token at matched output quality, with no additional model to host.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Speedup vs prior strongest dLLM baselines.</strong> <code>5.1&times;</code> on <code>GSM8K</code>, <code>11.0&times;</code> on <code>HumanEval</code> over <code>Elastic-Cache</code>. <code>22.3&times;</code>&ndash;<code>148.2&times;</code> over un-cached greedy decoding.</li>
+      <li><strong>Throughput.</strong> <code>148</code>&ndash;<code>211</code> tokens/second across the tested workloads.</li>
+      <li><strong>Memory.</strong> <code>48%</code> less GPU memory than <code>Fast-dLLM</code> at matched generation quality, which enables scaling to batch size <code>32</code> on hardware previously bottlenecked at smaller batches.</li>
+      <li><strong>Quality preservation.</strong> The paper reports the acceleration is achieved without degrading generation quality on the mathematical reasoning and code generation benchmarks tested.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Kernel-alone vs draft-and-verify-alone splits localize the two contributions: the fused kernel accounts for the bulk of the memory reduction and the un-cached-greedy comparison, while the draft-and-verify scheme is the mechanism behind the head-to-head speedup over <code>Elastic-Cache</code>.</li>
+      <li>Batch size sweep up to <code>32</code> confirms that the memory saving translates into serving-time throughput rather than only single-sequence latency.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning. Diffusion LLMs' practical adoption has lagged their published quality partly because of the missing high-quality inference stack. <code>Flash-dLLM</code> targets that gap directly with a training-free drop-in.</li>
+      <li>Limitations. Numbers are reported against dLLM baselines only; a head-to-head with a well-tuned autoregressive LLM at matched quality would clarify whether dLLMs with <code>Flash-dLLM</code> are now competitive with autoregressive on a total-cost-per-token basis, or merely competitive within the dLLM family.</li>
+    </ul>
+
+    <h1 id="microsoft">Microsoft</h1>
+
+    <h2 id="tasteful-agent"><a href="https://arxiv.org/abs/2609.25804">The Tasteful Agent: Measuring and Improving Taste in Long-Horizon Tasks</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper + Benchmark + Dataset</span>
+      <span>arXiv</span>
+      <span>2026-09-22</span>
+      <span>Long-horizon agents &middot; Decision-quality benchmark &middot; Distillation &middot; SWE-bench Pro</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Wenbo Pan, Zhichao Liu, Shujie Liu, Jingying Zeng, Chin-Yew Lin, Xianfeng Tang, Yan Lu, Qi He, Xiaohua Jia (Microsoft). arXiv:2609.25804v1 [cs.CL], submitted 2026-09-22. Microsoft qualifies under the frontier-labs filter.</li>
+      <li>The framing: end-to-end task success masks whether an agent's <em>intermediate decisions</em> along a long trajectory were good ones. On a task that eventually succeeds, the agent may have wasted many turns pursuing a doomed direction; on a task that eventually fails, the specific fork where it went wrong is invisible to end-to-end scoring. The paper defines <em>taste</em> as the model-level property of choosing well at those forks, and builds a benchmark that isolates decision quality from execution quality.</li>
+      <li>Contribution: <code>Taste-Bench</code>, an automatically-mined benchmark of <code>502</code> decision points extracted from real agent trajectories in software engineering and AI research tasks. Each item presents the model a fork with several candidate directions, asks it to choose without seeing what happens afterward, and grades the choice against the eventual outcome. Best frontier model reaches <code>59.7%</code> versus a <code>25%</code> random baseline. A distilled student improves from <code>30.0%</code> to <code>47.9%</code> on unseen tasks after training on informed-model choices, and end-to-end success rate on held-out <code>SWE-bench Pro</code> rises from <code>14.6%</code> to <code>33.7%</code>. Dataset and code released.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Automatic decision-fork mining from agent trajectories.</strong>
+        <ul>
+          <li><em>Problem.</em> Curating hand-labeled decision-quality benchmarks doesn't scale: a human annotator has to identify the fork, enumerate the alternatives, and later verify which one was best. Existing agent benchmarks skip this and grade only end-to-end task success, which conflates decision quality with execution robustness (a good decision the agent then implements badly still fails; a bad decision on a robust base can still succeed).</li>
+          <li><em>Mechanism.</em> The pipeline replays each real agent trajectory in a controlled harness, identifies points where the agent (or its available candidate models) considered multiple concrete directions, and constructs a decision-point item consisting of the trajectory prefix up to the fork, the enumerated alternative directions (extracted from the model's own considered-but-rejected paths and from parallel runs on the same prompt), and a ground-truth label derived from the eventual downstream outcome of each direction. The resulting benchmark has <code>502</code> such items across software engineering and AI research tasks.</li>
+          <li><em>Why it works / why it beats prior.</em> The generation loop uses the model's own reasoning to <em>enumerate the alternatives</em>, so the fork structure reflects real decisions the model actually could have made, not a benchmark designer's guess. Grounding the label in eventual outcome removes annotator bias about "which direction sounded right." This is what makes <code>Taste-Bench</code>'s decisions harder than random-look-good multiple choice: at <code>25%</code> random baseline and <code>59.7%</code> best-frontier ceiling, there's a lot of room, and the ceiling scales with the model's ability to weigh partial evidence rather than to sound plausible.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Late-evidence decision axis.</strong>
+        <ul>
+          <li><em>Problem.</em> Decisions early in a trajectory can be evaluated on strong local evidence; decisions late in a trajectory often require weighing signals that only paid off after many further steps. Taste on late-evidence forks is what separates a strong long-horizon agent from a strong short-horizon one.</li>
+          <li><em>Mechanism.</em> Taste-Bench items are stratified by <em>when the discriminating evidence appears relative to the fork</em>. Items whose discriminating evidence appears immediately after the fork are the easy stratum; items where it appears many steps later are the hard stratum.</li>
+          <li><em>Why.</em> The paper reports accuracy dropping from <code>62.3%</code> to <code>21.0%</code> as the discriminating evidence moves later in the trajectory. This is the specific evidence that current models' taste is <em>front-loaded</em>: they choose well when the payoff is proximate and poorly when it is delayed, which explains why long-horizon agent success does not track short-horizon capability.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Distillation of decision quality.</strong>
+        <ul>
+          <li><em>Problem.</em> If taste is a distinct capability from execution, an execution-strong small model that has poor taste cannot be fixed by more general-purpose data.</li>
+          <li><em>Mechanism.</em> The paper distils an <em>informed</em> teacher's choices at Taste-Bench decision points into a smaller student via supervised fine-tuning on the (prefix, alternatives, chosen direction) triples. Because the teacher is graded against eventual outcome, its chosen direction is downstream-verified, not merely plausible-looking.</li>
+          <li><em>Why.</em> The student's decision-quality lifts from <code>30.0%</code> to <code>47.9%</code> on unseen Taste-Bench items after this fine-tune, and the end-to-end <code>SWE-bench Pro</code> success rate rises from <code>14.6%</code> to <code>33.7%</code>. The end-to-end delta is roughly <code>19</code> points; because the decision-quality delta is <code>~18</code> points, the paper argues that late-fork decision quality is the specific execution-detached lever that limits long-horizon agent success at the current frontier.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Frontier ceiling.</strong> Best frontier model at <code>59.7%</code> on Taste-Bench; random baseline <code>25%</code>.</li>
+      <li><strong>Late-evidence stratum.</strong> Accuracy collapses from <code>62.3%</code> on early-evidence forks to <code>21.0%</code> on late-evidence forks.</li>
+      <li><strong>Distillation lift.</strong> Student <code>30.0%</code> &rarr; <code>47.9%</code> on unseen Taste-Bench; end-to-end <code>SWE-bench Pro</code> <code>14.6%</code> &rarr; <code>33.7%</code>.</li>
+      <li>Dataset and code released on Hugging Face and GitHub respectively.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Late- versus early-evidence stratification is itself the paper's controlled ablation of what makes decisions hard; the <code>62.3%</code> &rarr; <code>21.0%</code> drop rules out "harder in general" as the explanation for the frontier ceiling.</li>
+      <li>The end-to-end <code>SWE-bench Pro</code> lift after Taste-Bench-only distillation isolates <em>decision quality</em> as the causal lever, versus execution quality that would not track a Taste-Bench-only training signal.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning. This is a distinct axis from existing long-horizon benchmarks (which grade end-to-end success) and from step-level agent benchmarks (which grade tool-call correctness). Taste is closer to "was this the right hypothesis to test next" &mdash; the metacognitive layer above execution.</li>
+      <li>Limitations. Decision forks are automatically mined from existing trajectories, so the benchmark inherits the coverage of the source trajectories: it evaluates taste on situations agents already reach, not on situations they miss reaching. Ceiling scaling as future frontier models improve is an empirical question the paper leaves open.</li>
+    </ul>
+
+    <h1 id="google">Google</h1>
+
+    <h2 id="private-ai-compute"><a href="https://deepmind.google/blog/advancing-private-ai-compute-with-secure-server-side-memory/">Advancing Private AI Compute with Secure, Server-Side Memory</a></h2>
+    <div class="paper-meta">
+      <span>Tier 3 &middot; Engineering / Infrastructure Announcement</span>
+      <span>deepmind.google/blog</span>
+      <span>2026-09-23</span>
+      <span>Private AI Compute &middot; Server-side persistent memory &middot; Secure enclaves &middot; Cross-device continuity</span>
+    </div>
+
+    <h3>Summary</h3>
+    <ul>
+      <li>Google DeepMind extended its <code>Private AI Compute</code> platform on 2026-09-23 with a server-side persistent memory layer that keeps encrypted user data in cloud secure enclaves, with cryptographic keys held on the user's personal devices &mdash; so the assistant can carry context across devices while preserving the privacy posture of on-device-only processing.</li>
+      <li>The layer stores "information needed to assist you" inside dedicated encrypted storage inside secure enclaves. Access requires a key that never leaves the user's device; the server, and by extension Google itself, cannot decrypt the stored context. Multiple devices belonging to the same user each hold copies of that key, which is how continuity across devices is achieved without server-side visibility.</li>
+      <li>Ships alongside an updated technical whitepaper, tamper-proof software verification methods for the secure-enclave software stack, and results from independent security audits opened to community review.</li>
+      <li>Positioning. This is infrastructure, not a model launch. It is the first published <em>durable</em>-memory tier for the <code>Private AI Compute</code> stack; earlier Private AI Compute releases operated on transient session state. The specific product implication is that Gemini-in-app can now remember prior conversations across a user's phone, laptop and tablet without exposing that memory to Google's servers in cleartext.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
