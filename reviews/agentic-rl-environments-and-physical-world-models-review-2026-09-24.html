@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agentic RL Environments and Physical World Models Review &mdash; September 24, 2026 | Auto Lit Review</title>
+<meta name="description" content="A two-paper Tier 2 slate closes the 36-hour window ending 2026-09-24 18:00 UTC. Qwen (Alibaba Token Foundry) ships VHD-Play, a mechanism-first agentic RL environment pipeline that pre-solves a mathematical model and only then has a corpus-grounded LM setter render its decision process as stateful tools; Qwen3.6-35B-A3B's mean agentic score rises from 0.204 to 0.815 across five optimization families. Shanghai AI Laboratory ships InternW0, the first InternW-series physical world model: an asymmetric video-action flow-matching backbone with observation-conditioned K/V routing, trained on 7,233 hours across 25 domains including a 275-hour real-lab EgoLab set; 98.6% on LIBERO, 93.12% on RoboTwin 2.0-Full, and a 68.4% progress score on a 15-stage metal-organic framework synthesis pipeline." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">September 24, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba (Qwen)</a>
+          <ul>
+            <li class="toc-h2"><a href="#vhd-play">VHD-Play: Mechanism-First Agentic RL Environments</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#shanghai-ai-lab">Shanghai AI Laboratory</a>
+          <ul>
+            <li class="toc-h2"><a href="#internw0">InternW0: Asymmetric Video&ndash;Action Physical World Model</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; September 24, 2026</div>
+    <h1 class="page-title">Agentic RL Environments and Physical World Models</h1>
+    <div class="page-meta">2 papers &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-09-24 18:00 UTC (steady state, one day after yesterday's four-launch page) surfaces no new Tier 1 flagship launches. Two Tier 2 frontier-lab papers survive dedup and the affiliation filter, both submitted on 2026-09-23. Qwen's <a href="https://arxiv.org/abs/2609.27321"><code>VHD-Play</code></a> (Verifiable Hidden Dynamics Play, Alibaba Token Foundry) is a <em>construction-order</em> reversal for agentic RL environments: sample a mathematical model, solve it for reference outcomes, then have a frozen LM <em>setter</em> render the decision process as stateful tools; the resulting environments admit verifiable outcome signals at scale (<code>3,300</code> admitted environments across <code>11</code> mechanism families at <code>$0.01&ndash;$0.03</code> per environment). Shanghai AI Laboratory's <a href="https://arxiv.org/abs/2609.27656"><code>InternW0</code></a> is the first named member of a physical-world-model series: a mixture-of-transformers with an asymmetric video expert / action expert split, flow-matching training, and observation-conditioned context routing that reuses layerwise K/V across policy calls. It is trained on <code>7,233.5</code> hours across <code>25</code> training domains including a <code>275</code>-hour real-laboratory egocentric set (<code>EgoLab</code>) that specifically records wet-lab instrument use.</p>
+      <h3>Competitiveness</h3>
+      <p>No flagship model artifacts crossed the bar, so competitiveness is method-level. On its own diagnostic suite of five optimization families (Inventory-DP, Knapsack, Linear Program, Quadratic Program, Routing), <code>VHD-Play</code> training raises <code>Qwen3.6-35B-A3B</code>'s mean agentic score from <code>0.204</code> to <code>0.815</code> &mdash; closing <code>84%</code> of the parameter-revealed stateful gap versus the same base model in <em>informed-agentic</em> setting, and <code>77%</code> of the gap to the fully written-out (non-agentic) version. On external benchmarks the trained model beats <code>Qwen3.7-Max</code> on a 365-day <code>E-Commerce</code> agent evaluation (<code>$182,844</code> ending balance vs <code>$165,224</code>, a <code>3.4&times;</code> gain over the untrained base), improves <code>BFCL V4</code> by <code>+2.84</code> points (<code>61.25</code> &rarr; <code>64.08</code>) and gains <code>+0.094</code> on <code>TravelBench</code> plan quality (<code>0.700</code> &rarr; <code>0.794</code>; still short of <code>Qwen3.7-Max</code>'s <code>0.891</code>) &mdash; a training signal generated from mathematically-solved problems transfers to real agent tasks. On real-robot deployment <code>InternW0</code> matches or exceeds <code>&pi;0.5</code> on five long-horizon tasks (<code>73.3%</code> Make-Sandwich; <code>82.7%</code> Pick-Industrial-Parts vs <code>53.1%</code>; <code>88.9%</code> Sort-Tubes; <code>68.4%</code> progress on a <code>15</code>-stage metal-organic framework synthesis task vs <code>50.2%</code> and Fast-WAM's <code>10.7%</code>; <code>65.3%</code> progress on a 5-stage force-and-contact-aware quantitative pipetting task vs <code>46.7%</code> and Fast-WAM's <code>18.7%</code>) while sustaining a <code>16.47</code> Hz model-side update rate at <code>60.73</code> ms per action on an RTX 5090D (<code>3.13&times;</code> the throughput of the Fast-WAM baseline). Simulation numbers are strong (<code>98.6%</code> average on LIBERO's 40 single-arm tasks; <code>93.12%</code> on RoboTwin 2.0-Full bimanual) but not directly comparable to closed-frontier flagships since those do not run this set. Neither paper is positioned as a chart-topping model release; both are pipeline artifacts.</p>
+      <h3>New frontier releases</h3>
+      <p>None in-window. No new frontier-lab model weights, technical reports of a <em>new</em> model, or launch blog posts crossed the 36-hour bar. Tencent's <a href="https://arxiv.org/abs/2609.27284">Hunyuan-A13B Technical Report</a> was posted to arXiv in-window (v1 2026-09-23) but documents a June-2025 open-weights release (<code>tencent/Hunyuan-A13B-Instruct</code>, released 2025-06-27); as a retrospective technical report on a previously-shipped model it does not qualify as a Tier 1 launch and is not covered here. OpenAI's 2026-09-23 posts (Airbnb / <code>GPT-6 Astra</code> integration; ChatGPT Ads expansion to Southeast Asia and Taiwan; Sam Altman remarks at the UN Security Council) are business or global-affairs items, not model or method releases, and do not qualify.</p>
+    </section>
+
+    <!-- BODY -->
+
+    <h1 id="alibaba">Alibaba (Qwen)</h1>
+
+    <h2 id="vhd-play"><a href="https://arxiv.org/abs/2609.27321">Verifiable Hidden Dynamics Play: Generating Agentic RL Environments from Solved Mechanisms</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-23</span>
+      <span>Agentic RL &middot; Environment generation &middot; Verifiable rewards &middot; Function calling &middot; Tool use</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Xinjie Shen (Georgia Tech), Wei Fan, Xudong Guo, Jianhong Tu, Yang Su, Chuqiao Kuang, Yinger Zhang, Lianghao Deng, Dayiheng Liu &mdash; the last eight authors at <strong>Alibaba Token Foundry</strong> (the Qwen post-training organization). arXiv:2609.27321v1 [cs.LG], submitted 2026-09-23. Qwen affiliation on the majority of authors qualifies the paper under the frontier-labs filter.</li>
+      <li>The problem is that agentic RL training pipelines need <em>diverse</em>, <em>verifiable</em> and <em>cheap</em> environments where success is defined not by rubric-graded LLM judges but by a computable oracle. Existing pipelines build the environment first, then bolt on a reward function &mdash; which either loses information or requires domain-expert authoring per task. The paper reverses the dependency: sample a mathematical model of a real optimization problem, solve it to obtain the reference solution and default baseline, and only then generate the interactive environment around that already-computed answer.</li>
+      <li>Contribution: <em>mechanism-first construction</em>. The reference solution fixes the outcome rule before the environment is realized, and an LM <em>setter</em> renders the decision process as a set of stateful tools plus a scenario narrative &mdash; producing environments whose rewards are both verifiable (against the pre-computed oracle) and information-asymmetric (parameters &theta; are withheld from the agent even though the solver used them). The paper releases <code>3,300</code> admitted environments spanning <code>11</code> mechanism families at <code>$0.01&ndash;$0.03</code> per environment; training <code>Qwen3.6-35B-A3B</code> on them raises its mean agentic score across five optimization families from <code>0.204</code> to <code>0.815</code>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Mechanism-first construction order.</strong>
+        <ul>
+          <li><em>Problem.</em> Conventional agentic-environment pipelines write a scenario, ship it, and then post-hoc author a reward. When the reward is graded by an LLM judge, it is neither faithful nor cheap; when the reward is a hand-authored program, the environment must be constrained to what the author can verify, and diversity collapses. Neither path scales to the hundreds-of-thousands of environments RL agent training needs, and neither guarantees that the reward signal actually measures optimal play.</li>
+          <li><em>Mechanism.</em> The pipeline runs in this order: (1) sample parameters <code>&theta; ~ P_f</code> from a mechanism-family distribution <code>f</code> (e.g. inventory dynamic programming, knapsack, linear program, quadratic program, vehicle routing &mdash; the paper's five diagnostic families, plus six more for scale); (2) invoke a <em>family-specific solver</em> <code>S_f</code> to compute <code>z_&theta; = (u*(&theta;), u_0(&theta;))</code>, i.e. the optimal utility under the true dynamics <em>and</em> a default-policy baseline; (3) fix the outcome rule <code>&Rscr;_&theta;</code> from that solved reference <em>before any environment realization</em>; (4) realize an executable operational form <code>D(&theta;)</code> from the mathematical model <code>M(&theta;)</code>, converting parameters into state-transition dynamics <code>&Lambda;_&theta;</code> and a utility functional <code>U_&theta;</code>; (5) hand the full draw <code>(&theta;, S_f, M(&theta;), D(&theta;))</code> plus a passage retrieved from a real-world document corpus to a frozen LM <em>setter</em>, which emits <code>E(&theta;)</code>: a scenario narrative, database schema, tool implementations wrapping <code>&Lambda;_&theta;</code>, and player instructions; (6) wrap the realized dynamics with an observation map <code>&Omega;_&theta;</code> and action set <code>&Ascr;</code> that <em>withhold</em> <code>&theta;</code> from the policy while exposing only environment-facing tool calls.</li>
+          <li><em>Why it works / why it beats prior.</em> Pre-solving pins verifiability: reward is scored against <code>u*(&theta;)</code> not against an LLM judge, and the corpus-grounded setter cannot change the answer because it is downstream of the solver. Deriving the environment from an already-solved problem also lets the pipeline <em>admit</em> only draws whose interactive form remains solvable under a fixed action budget, so the resulting corpus is guaranteed learnable rather than degenerate. Compared to Agent-RLVR (Deng et al., 2606.11425), which grafts programmatic rewards onto existing coding environments, VHD-Play generates the environment and the reward jointly from the same pre-solved problem, and its cost scales with the setter's LLM cost, not with human authoring &mdash; the reported <code>$0.01&ndash;$0.03</code> per environment.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Information-asymmetric interface.</strong>
+        <ul>
+          <li><em>Problem.</em> If the parameters <code>&theta;</code> that the solver used are exposed to the agent, the agent can in principle re-derive <code>u*(&theta;)</code> analytically and skip the entire agentic loop; the environment collapses into a math benchmark. But if <code>&theta;</code> is hidden and the environment offers only tool calls that read <em>partial</em> state, the agent has to <em>interact</em> to discover the same reference solution.</li>
+          <li><em>Mechanism.</em> The observation map <code>&Omega;_&theta;</code> exposes only local, tool-reachable projections of the state; parameters remain in the setter's scope but never appear in observation tokens. Actions <code>&Ascr;</code> are function-calling tool invocations against the setter-authored stateful tools; the agent sees only tool responses. The paper distinguishes three matched conditions on the same underlying <code>&theta;</code>: a <em>written-out</em> non-agentic prompt (F, the parameters and dynamics fully in the prompt), an <em>informed-agentic</em> environment (I, parameters revealed but interaction still tool-based), and the true <em>agentic</em> setting (A, parameters withheld).</li>
+          <li><em>Why.</em> The three-condition split is what lets the paper attribute training gains to <em>stateful interaction</em> rather than to problem knowledge. Base <code>Qwen3.6-35B-A3B</code> scores <code>0.962</code> in written-out mode &mdash; the underlying math is well within its capability &mdash; but only <code>0.231</code> in the informed-agentic condition and <code>0.204</code> in the true agentic condition. The training gap is not <em>knowing the answer</em>, it is <em>knowing how to interrogate the environment to reach one</em>.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2609.27321v1/x2.png" alt="VHD-Play construction order: mathematical model sampled and solved before environment realization; separately, model is realized to executable dynamics and rendered by a setter." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). The mechanism-first construction order. Left path solves <code>M(&theta;)</code> to a reference <code>z_&theta;</code> and fixes the outcome rule; right path realizes <code>M(&theta;)</code> to executable dynamics <code>D(&theta;)</code> and hands them to the LM setter, which produces the environment presentation <code>E(&theta;)</code>. Reward against the pre-computed reference is what makes the environment verifiable.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Diagnostic suite: five optimization families &mdash; Inventory Dynamic Programming, Knapsack, Linear Program, Quadratic Program, and Routing &mdash; each admitted to fixed episode length. Score is a normalized utility on <code>[0, 1]</code> against the family's solved reference; the <em>macro</em> column averages the five families.</li>
+      <li><em>Base &rarr; VHD-Play trained</em> on <code>Qwen3.6-35B-A3B</code>:</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Condition</th><th>Inventory DP</th><th>Knapsack</th><th>Linear Prog</th><th>Quadratic Prog</th><th>Routing</th><th>Macro (avg)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Written-out (F)</td><td>0.976 &rarr; 0.999</td><td>0.984 &rarr; 0.996</td><td>0.978 &rarr; 1.000</td><td>0.975 &rarr; 1.000</td><td>0.897 &rarr; 0.965</td><td>0.962 &rarr; 0.992</td></tr>
+        <tr><td>Informed-agentic (I)</td><td>0.469 &rarr; 0.968</td><td>0.132 &rarr; 0.948</td><td>0.161 &rarr; 0.732</td><td>0.168 &rarr; 0.836</td><td>0.226 &rarr; 0.889</td><td>0.231 &rarr; 0.875</td></tr>
+        <tr><td>Agentic (A) &mdash; headline</td><td>0.449 &rarr; 0.912</td><td>0.117 &rarr; 0.843</td><td>0.143 &rarr; 0.661</td><td>0.162 &rarr; 0.795</td><td>0.148 &rarr; 0.866</td><td><strong>0.204 &rarr; 0.815</strong></td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Held-out training families see <code>+0.56</code> average gain; near-OOD unseen families see <code>+0.63</code>; two far-OOD groups see <code>+0.24</code> and <code>+0.16</code>. The transfer to unseen mechanism families is the paper's main generalization claim.</li>
+      <li>External benchmarks (tests never seen during VHD-Play training):
+        <ul>
+          <li><strong>E-Commerce Bench (365-day agent).</strong> Ending cash balance <code>$54,294</code> &rarr; <code>$182,844</code> (a <code>3.4&times;</code> gain), and above <code>Qwen3.7-Max</code>'s <code>$165,224</code>. The trained checkpoint also completes all runs without bankruptcy, whereas the base checkpoint bankrupts on a non-trivial fraction of them.</li>
+          <li><strong>BFCL V4 (10-cell function-calling suite).</strong> Mean <code>61.25</code> &rarr; <code>64.08</code>, a <code>+2.84</code> point improvement.</li>
+          <li><strong>TravelBench (plan quality).</strong> <code>0.700</code> &rarr; <code>0.794</code>; <code>Qwen3.7-Max</code> holds <code>0.891</code> and remains the ceiling on that benchmark.</li>
+        </ul>
+      </li>
+      <li>Scale statistics: <code>3,300</code> admitted environments across <code>11</code> mechanism families; average episode of <code>59.7</code> assistant turns; scenario diversity of <code>28</code> domains at normalized entropy <code>0.997</code>. Cost per environment is <code>$0.01&ndash;$0.03</code> (dominated by the setter's LM inference).</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><em>Where does the gain come from &mdash; parameters or interaction?</em> The three-condition split (Table 2 above) shows base <code>Qwen3.6-35B-A3B</code> almost solves the math when parameters are in the prompt (<code>0.962</code> macro) but not when it has to interact (<code>0.204</code>). VHD-Play training closes <code>84%</code> of the parameter-revealed stateful gap (informed-agentic <code>0.231 &rarr; 0.875</code>) and <code>77%</code> of the full written-out-to-agentic gap (<code>0.204 &rarr; 0.815</code> against the <code>0.992</code> post-training written-out ceiling).</li>
+      <li><em>Is the gain just teaching the model to call more tools?</em> Within fixed tool-adoption strata across eight families the training gain is <code>+0.413</code>, and only <code>+0.030</code> of the total gain is attributable to increased tool adoption &mdash; the remaining ~<code>94%</code> is quality of stateful interaction, not frequency of it.</li>
+      <li><em>Policy drift.</em> KL divergence between trained and base policies on held-out trajectory states is <code>D_KL(&pi;_trained || &pi;_base) = 0.089</code> nats per assistant token: the training moves the policy meaningfully but does not collapse it toward a narrow distribution.</li>
+      <li><em>Co-scaling on Knapsack (Figure 5 in the paper).</em> Environment difficulty scales cleanly with problem size: <code>6&times;5</code> configurations yield <code>+0.412</code> gain, <code>8&times;7</code> <code>+0.551</code>, <code>9&times;9</code> <code>+0.675</code>, <code>11&times;11</code> <code>+0.861</code> &mdash; larger problems admit larger, more informative reward signals rather than saturating.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>The setter LM is frozen during environment generation and is not further trained; the only trained parameters are the RL policy on the generated environments. This isolates the environment-generation cost from any policy-side compute and lets the same setter run against future base models unchanged.</li>
+      <li>Failure modes acknowledged: on <code>TravelBench</code> the trained model still trails <code>Qwen3.7-Max</code> by <code>~0.1</code>, indicating that transfer from mathematically-solved mechanisms to unstructured planning tasks is partial; on Routing (the family with the least clean closed-form solver) the informed-agentic gap remains <code>~0.08</code> after training. Both are consistent with the pipeline's core assumption that verifiable outcome signal is bounded by solver quality.</li>
+    </ul>
+
+    <h1 id="shanghai-ai-lab">Shanghai AI Laboratory</h1>
+
+    <h2 id="internw0"><a href="https://arxiv.org/abs/2609.27656">InternW0: A Foundational Physical World Model for Efficient Real-World Interactions</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-23</span>
+      <span>Physical world model &middot; VLA &middot; Flow matching &middot; Asynchronous inference &middot; Wet-lab robotics</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Jisong Cai, Yao Mu, Ganlin Yang, Zhe Cao, Zhangzheng Tu, Xing Gao, Kailin Li, Xinyu Zhan, Lixin Yang, Yangkun Zhu, Haoxiang Ma, Ming Zhou, Qiaojun Yu, Yufei Xue, Liqun He, Yifei Yao, Yifan Zhu, Long Ling, Bingqi Jiang, Haoyu Guo, Xueyue Zhu, Bowen Zhou, Bin Zhao, Tianfan Xue, Chunhua Shen, Weinan Zhang. arXiv:2609.27656v1 [cs.RO / cs.LG], submitted 2026-09-23. Physical Intelligence Team, <strong>Shanghai AI Laboratory</strong>. Project page: <a href="https://internrobotics.github.io/internw0/">internrobotics.github.io/internw0</a>; code at <a href="https://github.com/InternRobotics/internw0"><code>InternRobotics/internw0</code></a>.</li>
+      <li>The framing is a physical <em>world model</em> whose value is measured not by pixel-space video prediction quality but by whether its predictions <em>remain actionable</em> as the real world changes during a policy step. Prior video-and-action world models (Fast-WAM, single-timescale VLA backbones) tie video prediction and action decoding to the same forward pass, forcing action latency to grow with prediction horizon and giving up on the observation that in most manipulation the action rate has to be an order of magnitude faster than useful video rollouts.</li>
+      <li>Contribution: an <em>asymmetric video&ndash;action architecture</em> where a high-capacity video expert runs at long horizons and a lightweight action expert runs at the control rate, coupled by <em>observation-conditioned context routing</em> that reuses the layerwise K/V of the video expert across action steps rather than regenerating it. Plus <code>EgoLab</code>, a <code>275</code>-hour real-lab egocentric dataset built specifically for wet-lab science tasks, contributing to a full training set of <code>7,233.5</code> hours across <code>25</code> domains and <code>811,969</code> episodes. Real-robot deployment covers a <code>15</code>-stage metal-organic-framework synthesis workflow and a <code>5</code>-stage quantitative-pipetting task on top of standard LIBERO / RoboTwin benchmarks.</li>
+    </ul>
+
+    <figure>
+      <img src="https://internrobotics.github.io/internw0/images/report/overview.png" alt="InternW0 overview: data mix, model architecture, simulation and real-world scientific task results." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the project page, sourced from the technical report). Data mix, model architecture, and simulation and real-world scientific task results for InternW0.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Asymmetric video&ndash;action architecture.</strong>
+        <ul>
+          <li><em>Problem.</em> A single-tower video-language-action model has to serve two objectives at odds with each other. Rolling out a useful video prediction wants a large model, a long context, and enough compute per step that inference latency is measured in hundreds of milliseconds. Closed-loop dexterous control wants latency in tens of milliseconds and update rates well over <code>10</code> Hz. Prior single-tower VLAs and video-then-action models (Fast-WAM among them) either sacrifice update rate or truncate the prediction horizon. Neither is a true world model in the sense that the prediction remains valid across a control step.</li>
+          <li><em>Mechanism.</em> InternW0 splits the transformer stack into a <em>video expert</em> and an <em>action expert</em>, sharing tokenization and low-level embeddings but running at different frequencies with different parameter counts. The video expert produces a rollout of future visual state at a slow rate; the action expert consumes the current observation, the current point in the video-expert rollout, and its own recent history to decode a chunk of action tokens at the control rate. Training uses flow matching on both video and action targets under a mixture-of-transformers backbone. Domain-specific interface tokens and soft prompts (learned per embodiment) let the same trunk drive heterogeneous robots without a separate policy head per platform. Contact-aware post-training adds a supervised term over force and tactile signals for tasks where compliance matters.</li>
+          <li><em>Why it works / why it beats prior.</em> The split respects the two objectives' natural timescales rather than forcing them onto one. Because the video expert can be scaled without pushing action latency up, the paper is able to run a larger video backbone than a monolithic VLA of the same total budget would allow, and still hit <code>16.47</code> Hz model-side update rate at <code>60.73</code> ms per action on an RTX 5090D &mdash; <code>3.13&times;</code> the Fast-WAM baseline's throughput at matched context. Compared to interleaved video-then-action architectures, the axis of improvement is that action decoding does not stall on video rollout.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Observation-conditioned context routing.</strong>
+        <ul>
+          <li><em>Problem.</em> Even with a split-tower design, if every action step reruns the video expert from scratch on the current observation, the video expert becomes an amortization bottleneck: the same rollout is recomputed for every micro-step of control, with each recomputation mostly duplicating the previous one. This is what caps prior asynchronous designs and is what fixes the effective planning horizon at a small multiple of one video forward pass.</li>
+          <li><em>Mechanism.</em> Between video rollouts, InternW0 keeps the video expert's layerwise K/V cache alive and routes it through a learned observation-conditioned gate. When a new observation arrives, the gate emits a per-layer transformation of the cached K/V so that the video expert's attention over the ongoing rollout reflects the newly observed state without recomputing the full rollout. The action expert reads through this rerouted cache at every control step. In effect, the video expert runs asynchronously, at its native slow rate, and the action expert benefits from a partial-refresh mechanism whose cost is a small fraction of a fresh forward pass.</li>
+          <li><em>Why.</em> The refresh cost is bounded by the size of the K/V update (a per-layer routed transformation) rather than a re-embed of the entire context. This is what turns "video-then-action" from a batch two-step into a genuinely asynchronous control loop. The efficiency chart in the paper attributes the <code>3.13&times;</code> throughput gain over Fast-WAM primarily to this K/V reuse rather than to raw arithmetic-density improvements in the action expert.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; EgoLab dataset and contact-aware post-training.</strong>
+        <ul>
+          <li><em>Problem.</em> Wet-lab tasks &mdash; instrument handling, liquid transfer, mixing, MoF synthesis &mdash; are absent from the standard robot-manipulation datasets that VLAs are pretrained on. A world model trained without this footage sees force-sensitive dexterous manipulation only in synthetic simulation, and its post-training has no in-domain contact prior.</li>
+          <li><em>Mechanism.</em> <code>EgoLab</code> is <code>275.4</code> hours of new egocentric video recorded in a real chemistry laboratory covering instrument handling, liquid transfer, mixing, and other wet-lab activity. It contributes to a training pool of <code>7,233.5</code> hours across <code>25</code> domains and <code>811,969</code> episodes, spanning six robot datasets plus egocentric video. Contact-aware post-training adds a supervised loss on force/tactile signals for the pipetting and MoF-synthesis tasks specifically, coupling the action expert to the force channel at the point where the standard visual observation stops being informative.</li>
+          <li><em>Why.</em> The dataset choice is the key departure from prior physical-world-model work that indexes on simulation and object-manipulation datasets rather than wet-lab footage; the contact-aware term is what makes the model's real-world scores on MoF synthesis and pipetting jump substantially over the visual-only ablation (<code>68.4%</code> vs <code>&pi;0.5</code>'s <code>50.2%</code> progress on MoF; <code>65.3%</code> vs <code>46.7%</code> on pipetting).</li>
+        </ul>
+      </li>
+    </ul>
+
+    <figure>
+      <img src="https://internrobotics.github.io/internw0/images/report/architecture.png" alt="InternW0 architecture: asymmetric video expert and action expert with observation-conditioned K/V routing." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper, via project page). Split-tower architecture. The video expert generates long-horizon predictions asynchronously; the action expert consumes routed K/V from the video expert at the control rate. Observation-conditioned routing refreshes the cached rollout in place of a full recomputation.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Simulation:</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th>Setup</th><th>InternW0</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>LIBERO</td><td>40 single-arm tasks, average success</td><td>98.6%</td></tr>
+        <tr><td>RoboTwin 2.0-Full</td><td>Bimanual, average success</td><td>93.12%</td></tr>
+        <tr><td>RoboTwin 2.0-Clean2Random</td><td>Randomized-clutter transfer</td><td>75.60%</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Real-world deployment (15 trials per task; comparisons versus <code>&pi;0.5</code> and <code>Fast-WAM</code> at matched compute):</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Task</th><th>InternW0</th><th>&pi;0.5</th><th>Fast-WAM</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Make Sandwich</td><td>73.3%</td><td>73.3%</td><td>40.0%</td></tr>
+        <tr><td>Pick Industrial Parts</td><td>82.7%</td><td>53.1%</td><td>50.6%</td></tr>
+        <tr><td>Sort Tubes</td><td>88.9%</td><td>86.7%</td><td>66.7%</td></tr>
+        <tr><td>MoF Synthesis (15-stage; progress score)</td><td>68.4%</td><td>50.2%</td><td>10.7%</td></tr>
+        <tr><td>Quantitative Pipetting (5-stage; progress score)</td><td>65.3%</td><td>46.7%</td><td>18.7%</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Latency and throughput on an RTX 5090D: <code>16.47</code> Hz model-side update rate; <code>60.73</code> ms per action; <code>3.13&times;</code> speedup over <code>Fast-WAM</code> at matched context. Video prediction runs asynchronously; there is no stall on the action side while a fresh rollout is being produced.</li>
+      <li>Domain generalization: the same trunk drives multiple robot embodiments through learned soft prompts &mdash; no per-embodiment head. The MoF synthesis and pipetting tasks specifically depend on <code>EgoLab</code> pretraining plus contact-aware post-training; visual-only ablations degrade sharply on both.</li>
+    </ul>
+
+    <figure>
+      <img src="https://internrobotics.github.io/internw0/images/report/efficiency.png" alt="InternW0 action latency and update rate versus Fast-WAM." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 3 (from the project page, sourced from the technical report). Action-side latency and model-side update rate on RTX 5090D. The asymmetric split plus observation-conditioned K/V routing sustains <code>16.47</code> Hz update rate at <code>60.73</code> ms per action, <code>3.13&times;</code> the Fast-WAM baseline's throughput at matched context.</figcaption>
+    </figure>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Removing observation-conditioned K/V routing (falling back to full-recomputation asynchronous scheduling) drops throughput to roughly the Fast-WAM baseline while leaving in-simulation success largely intact &mdash; consistent with the throughput gain being an inference-side property rather than a modeling-quality property.</li>
+      <li>Removing contact-aware post-training substantially degrades MoF-synthesis and pipetting scores while leaving Make-Sandwich and Sort-Tubes near-unchanged, isolating the force/tactile term to tasks where compliance is on the critical path.</li>
+      <li>Training without the <code>EgoLab</code> footage keeps LIBERO / RoboTwin scores nearly at published levels but drops MoF-synthesis and pipetting sharply &mdash; the wet-lab pretraining is what carries the scientific-task numbers.</li>
+    </ul>
+
+    <figure>
+      <img src="https://internrobotics.github.io/internw0/images/report/real-world-tasks.png" alt="Real-world tasks: sandwich, industrial parts, tubes, MoF synthesis, pipetting." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 4 (from the project page, sourced from the technical report). Real-world deployment tasks: everyday manipulation (Make Sandwich, Pick Industrial Parts, Sort Tubes) and wet-lab science (MoF Synthesis, Quantitative Pipetting).</figcaption>
+    </figure>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning: "the first instantiation of the InternW physical world model series" &mdash; naming implies a successor family, and the design (mixture-of-transformers with split experts, flow matching, K/V routing) reads as a template rather than a one-off. The project repository ships the model page infrastructure but the model weights themselves are staged for release rather than posted alongside the paper at v1.</li>
+      <li>Limitations acknowledged: real-world scores on MoF and pipetting are <em>progress</em> scores, not full-success rates, and the <code>15</code>-trial sample size on each task makes the confidence interval wide; the paper does not report seed variance. On the RoboTwin Clean2Random split the number (<code>75.60%</code>) trails the paper's own RoboTwin-Full number by a substantial margin, indicating the model is not yet robust to strong clutter randomization.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
