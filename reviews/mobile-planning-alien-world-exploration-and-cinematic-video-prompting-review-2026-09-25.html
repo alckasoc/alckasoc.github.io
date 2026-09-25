@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mobile Planning, Alien-World Exploration, and Cinematic Video Prompting Review &mdash; September 25, 2026 | Auto Lit Review</title>
+<meta name="description" content="Three Tier 2 frontier-lab papers close the 36-hour window ending 2026-09-25 21:37 UTC. Alibaba Tongyi-MAI ships Qwen-Planner-Agent, a 27B closed-loop mobile-planner stack whose CARE reward-and-advantage engineering couples SFT with hybrid-environment RL and posts 77.05% Overall on MobilePA-Bench at $2.41 per 1K tasks. Tencent Hunyuan + Fudan release ExplorationBench, a two-sandbox verifiable-alien-worlds benchmark (AlienCode: 31 discovery targets / 70 tasks; AlienLogic: 24/70) that grades rule discovery by executable interpreters and proof checkers rather than LLM judges; Claude Opus 5 tops Best@3 M4 at 87.6% / 77.6%. Alibaba Wan Team's WanPE is a 397B cinematic prompt-enhancement model trained on 1.05M videos with Semantic-Consistency GRPO, adding 10.7-18.8 preference points at 5-15s and 50.9 at 30s over raw prompts." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">September 25, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba</a>
+          <ul>
+            <li class="toc-h2"><a href="#qwen-planner-agent">Qwen-Planner-Agent: Closed-Loop AI-for-AI Mobile Planner</a></li>
+            <li class="toc-h2"><a href="#wanpe">WanPE: Cinematic Prompt Enhancement for Modern Text-to-Video</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#tencent">Tencent</a>
+          <ul>
+            <li class="toc-h2"><a href="#explorationbench">ExplorationBench: Measuring Exploration in Verifiable Alien Worlds</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; September 25, 2026</div>
+    <h1 class="page-title">Mobile Planning, Alien-World Exploration, and Cinematic Video Prompting</h1>
+    <div class="page-meta">3 papers &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-09-25 21:37 UTC (steady state, one day after yesterday's two-paper Alibaba/Shanghai-AI-Lab slate) surfaces no new Tier 1 flagship launches. Three Tier 2 frontier-lab papers survive dedup and the affiliation filter, all sitting on the Hugging Face Daily selection for 2026-09-25. Alibaba's <a href="https://arxiv.org/abs/2609.29892"><code>Qwen-Planner-Agent</code></a> (Tongyi-MAI) is the <em>trained-model companion</em> to the August-shipped <code>MobilePA-Bench</code> environment covered on <a href="mobile-planner-benchmarks-and-behavioral-densing-laws-review-2026-08-26.html">2026-08-26</a>: a 27B closed-loop stack that couples SFT with a hybrid-environment RL algorithm called <code>CARE</code> (Competence-Aware Reward-and-Advantage Engineering) and a stateful <em>Harness</em> that owns Memory, Skills and sub-agent dispatch. Tencent Hunyuan + Fudan's <a href="https://arxiv.org/abs/2609.30199"><code>ExplorationBench</code></a> is a two-sandbox rule-discovery benchmark <em>designed against training-data recall</em>: <code>AlienCode</code> (an executable alien calculation language, 31 discovery targets, 70 held-out tasks) and <code>AlienLogic</code> (a patched deduction system, 24 discovery targets, 70 held-out tasks), each graded by an executable interpreter or a proof checker rather than an LLM judge. Alibaba Wan Team's <a href="https://arxiv.org/abs/2609.30221"><code>WanPE</code></a> is a 397B cinematic prompt-enhancement model trained on 1.05M real-world videos with a <em>video-grounded reverse-construction</em> objective and a semantic-consistency RL algorithm (<code>SC-GRPO</code>) that keeps user-specified content intact while a shot-level cinematic plan is elaborated on top.</p>
+      <h3>Competitiveness</h3>
+      <p>No new generalist model artifacts crossed the bar, so the comparison surface is method-vs-method within each artifact family. On <code>MobilePA-Bench</code>, <code>Qwen-Planner-Agent</code> at 27B parameters posts <code>77.05%</code> Overall &mdash; ahead of <code>GPT-6 Astra</code> (<code>76.84%</code>) and <code>Claude Opus 5</code> (<code>75.71%</code>) &mdash; at <code>$2.41</code> estimated output cost per <code>1,000</code> tasks (thinking tokens included, input tokens and infrastructure excluded), and <code>+9.83</code> points above its own <code>Qwen3.8-27B</code> baseline. Per-dimension the model leads on <em>Tool Use</em> (<code>77.79%</code> vs Claude Opus 5's <code>77.60%</code> and GPT-6 Astra's <code>75.71%</code>) and <em>Memory</em> (<code>74.76%</code> vs GPT-6 Astra's <code>74.73%</code> and Claude Opus 5's <code>71.81%</code>); it trails on <em>Skills</em> (<code>86.25%</code> vs GPT-6 Astra's <code>93.25%</code>) and ties Claude Opus 5 on <em>Sub-agent</em> (<code>59.55%</code> vs GPT-6 Astra's <code>53.93%</code>). On <code>ExplorationBench</code>, <code>Claude Opus 5</code> is the best explorer at <code>Best@3 M4</code>: <code>87.6%</code> on <code>AlienCode</code> and <code>77.6%</code> on <code>AlienLogic</code>, with <code>GPT-5.6 Sol</code> tight behind on <code>AlienCode</code> (<code>87.1%</code>) but slipping to <code>75.2%</code> on <code>AlienLogic</code>; the paper's headline finding is not the ranking but the <em>instability</em> &mdash; median autonomous-exploration scores of <code>66.0%</code> vs hindsight-replay <code>40.7%</code> on <code>AlienCode</code>, and up to <code>72.8</code>-point run-to-run variance, with <code>6/30</code> AlienCode trajectories finishing below earlier milestones. On <code>WanPEval</code> (~<code>11,000</code> human preference judgments), <code>WanPE</code> adds <code>10.7&ndash;18.8</code> preference points over the raw user prompt at <code>5&ndash;15</code> second clip lengths and <code>50.9</code> points at <code>30</code> seconds, remaining competitive with <code>Seedance 2.5</code> and beating other commercial prompt-enhancers at short durations. None of the three is positioned as a chart-topping model release; all three are pipeline / evaluation / prompting artifacts.</p>
+      <h3>New frontier releases</h3>
+      <p>None in-window. No new frontier-lab model weights, technical reports of a <em>new</em> model, or launch blog posts crossed the 36-hour bar. The <code>Qwen-Planner-Agent</code> paper releases documentation and code on <a href="https://github.com/Tongyi-MAI/Qwen-Planner-Agent">GitHub</a> but not the 27B weights themselves; <code>ExplorationBench</code> ships the two sandboxes as open artifacts (project page <a href="https://www.explorationbench.com/"><code>explorationbench.com</code></a>); <code>WanPE</code> ships the enhancement model behind an evaluation page at <a href="https://wan-pe.github.io"><code>wan-pe.github.io</code></a>.</p>
+    </section>
+
+    <!-- BODY -->
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="qwen-planner-agent"><a href="https://arxiv.org/abs/2609.29892">Qwen-Planner-Agent: A Closed-Loop AI-for-AI Framework for Real-World Mobile Planner Agents</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-24</span>
+      <span>Agentic RL &middot; Mobile agents &middot; Post-training &middot; Tool use &middot; Memory</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Tingyu Qu, Weigao Sun, Yuecheng Liu, Yucheng Zhao, Yi Zhu, Yifeng Ding, Qiyi Wang, Sihan Cao, Pengkun Jiao, Hanlei Xie, Xiongwei Wu, Qichao Wang, Haodong Zhang, Jiajun Liu, Yuhao Wang, Yuqing Xie, Junpeng Zhao, Long Chen, Ming Ma, Sihan Yang, Ziwang Zhao, Yanhao Jia, Liangquan Gong, Feida Zhu, Yiran Zhong and Steven Hoi &mdash; <strong>Alibaba Tongyi-MAI</strong> (the Mobile-AI subgroup of Alibaba's Tongyi Lab / Token Hub). arXiv:2609.29892v1 [cs.AI], submitted 2026-09-24, on the Hugging Face Daily selection for 2026-09-25. The author list overlaps heavily with the <a href="mobile-planner-benchmarks-and-behavioral-densing-laws-review-2026-08-26.html#mobilepa-bench"><code>MobilePA-Bench</code></a> paper (Alibaba Tongyi-MAI, arXiv:2608.23035, covered 2026-08-26), positioning <code>Qwen-Planner-Agent</code> as the trained-model companion to that August-shipped benchmark.</li>
+      <li>The problem the paper takes on is that mobile-planner training pipelines have <em>three</em> partially-decoupled leaks: training data that never sees deployment errors, a post-training reward whose scale does not track the model's current competence (either too generous and the RL never finds a signal, or too strict and the model collapses to short trajectories), and a runtime harness whose retrieved skills and memories are context-adapted only in the sense of last-turn prompt injection. The paper closes all three under a single closed loop.</li>
+      <li>Contribution: a three-stage AI-for-AI lifecycle (data / training / harness) unified by the same underlying <code>Qwen-Planner-Agent</code> policy. Trained at <code>27B</code> total parameters, the agent reaches <code>77.05%</code> Overall on <code>MobilePA-Bench</code>, <code>+9.83</code> points over its own <code>Qwen3.8-27B</code> base and ahead of <code>GPT-6 Astra</code> (<code>76.84%</code>) and <code>Claude Opus 5</code> (<code>75.71%</code>), at an estimated <code>$2.41</code> per <code>1,000</code> tasks in output-token cost (including reasoning tokens; input tokens and infrastructure excluded).</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2609.29892v1/x1.png" alt="Qwen-Planner-Agent overview: MobilePA-Bench overall score bar chart, per-dimension radar (tool use, memory, skill use, sub-agent), and cost-per-1K-tasks scatter." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). Overall/per-dimension/cost view of <code>Qwen-Planner-Agent</code> on <code>MobilePA-Bench</code> at <code>27B</code> parameters. The left panel is the Overall score; the middle panel is the per-dimension radar (Tool Use / Memory / Skills / Sub-agent); the right panel plots estimated output cost per <code>1,000</code> tasks including thinking tokens.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; The AI-for-AI closed loop.</strong>
+        <ul>
+          <li><em>Problem.</em> A conventional agent pipeline has three disconnected stages: humans write the training data, humans write the reward, humans write the retrieval prompts. Each stage sees a static caricature of the others: the training data doesn't see runtime failures, the reward doesn't see the current model's competence curve, and the harness doesn't see which skills the model has actually internalised. When the deployed model logs a failure, the failure has to be manually attributed to one of the three, then propagated by hand.</li>
+          <li><em>Mechanism.</em> Three specialised agents replace the three human loops. <em>AI for Data</em>: a task-construction agent generates realistic mobile-planning tasks against the <code>MobilePA-Bench</code> sandbox and collects interaction trajectories, then an <em>evidence-preserving curation</em> agent balances the resulting corpus by coverage of tool families, memory patterns, skill invocations and sub-agent dispatch. <em>AI for Training</em>: SFT on the curated trajectories is followed by hybrid-environment RL under <code>CARE</code> (see below). <em>AI for Harness</em>: deployed agent traces are consumed by a runtime <em>Scenario Adapter</em> that adapts which skills, memories and sub-agent dispatch policies are exposed to the planner on the next turn; the traces also feed back into task construction. The three agents share the same underlying policy; the loop closes because the log of what the deployed agent failed at rewrites both the training corpus and the runtime retrieval.</li>
+          <li><em>Why it works / why it beats prior.</em> Compared to open-source mobile-agent recipes (AndroidWorld / Mobile-Agent-v3 line and the AppWorld-style stateful function-calling line), the loop's closure is what buys the paper its cost efficiency: the <code>+9.83</code> Overall gain over its own base model comes without a new base pretrain and without human-written new tasks &mdash; the tasks are generated, the reward is auto-calibrated by <code>CARE</code>, and the harness is auto-tuned by the Scenario Adapter. The paper's positioning against prior <em>agentic RL</em> pipelines (Agent-RLVR, Kimi-K3-K2 recipe, Rubric-guided RL) is that those recipes fix one leak at a time; this pipeline closes all three under the same policy.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; CARE: Competence-Aware Reward-and-Advantage Engineering.</strong>
+        <ul>
+          <li><em>Problem.</em> Fixed reward shaping on agentic tasks fails in both directions. If the reward is generous (partial credit for any correct tool call), the model learns to over-plan, over-invoke tools, and produce long trajectories whose extra tokens do not translate into task-outcome gains. If the reward is strict (all-or-nothing verifier), the RL never sees a gradient signal at the current competence and the model collapses toward short, degenerate policies. A hybrid-environment setup exacerbates the problem: the same policy is trained across executable-tool tasks, memory-recall tasks, skill-invocation tasks and sub-agent dispatch tasks, each with a different natural verifier scale.</li>
+          <li><em>Mechanism.</em> <code>CARE</code> replaces a single fixed reward by two coupled adjustments to standard PPO-style RL. First, <em>competence-aware reward</em>: for each hybrid environment the reward function is scaled by an estimated competence score for that environment, so that partial credit lands where the current policy is weakest and disappears where it is already at ceiling &mdash; this keeps every environment producing gradient. Second, <em>competence-aware advantage</em>: within a group of sampled trajectories on the same task, the advantage baseline (the group's mean return) is corrected by the same competence estimator, so that easy environments do not swamp the batch and hard ones do not vanish. The competence estimate is refreshed online during training. The result: SFT lays down the skills and hybrid-environment RL under <code>CARE</code> raises reliability on tasks the base model already got right sometimes, and improves recovery on tasks it got wrong.</li>
+          <li><em>Why.</em> This is a scale-and-shift on top of the standard PPO / GRPO family, not a new optimiser. Compared to plain GRPO (Kimi K3, DeepSeek-V4), <code>CARE</code>'s per-environment scaling is what lets one policy be trained end-to-end across four qualitatively different environments (tool / memory / skill / sub-agent) without either the easy environment or the hard one dominating.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; The Harness (Memory + Skills + Scenario Adapter + sub-agent dispatch).</strong>
+        <ul>
+          <li><em>Problem.</em> A capable planner still fails on a mobile task if its runtime scaffolding is wrong. Memories that were retrieved based on prompt similarity may miss the entity the user actually meant (implicit-reference tasks). A skill retrieved from a static catalogue may be invoked at the wrong argument scale. A sub-agent dispatch policy that always fires the strongest sub-agent burns budget on trivial subtasks. And unlike the training loop, the deployed harness has to make these calls one turn at a time.</li>
+          <li><em>Mechanism.</em> The Harness is a stateful execution component with four cooperating sub-modules. (i) <em>Memory</em> retrieves relevant evidence from histories that exceed the active context window, and is tested externally on <code>LoCoMo</code>, <code>LongMemEval</code> and <code>BEAM</code>; retrieval is evidence-grounded rather than similarity-only. (ii) <em>Skills</em> are tool-conditioned reusable procedural components (a lightweight, deployable representation of the trained policy's typical multi-tool routines) and are invoked when a matching pattern is detected in the plan. (iii) The <em>Scenario Adapter</em> matches runtime guidance to available tools and to the user's declared scenario, so that the same underlying skill is invoked with the correct argument scale (e.g. currency, date, permission scope) even when the user's prompt omits it. (iv) <em>Sub-agent dispatch</em> decomposes a request and delegates specialised subtasks (search / calculation / long-form drafting) to specialised sub-agents; the planner tracks constraints and dispatch history across turns and coordinates recovery when a tool call errors.</li>
+          <li><em>Why.</em> This is the same harness class used by <code>Kimi-K3</code>'s agent stack and the <code>GPT-6 Astra</code>-family Skills mechanism, but with two closed-loop distinctives: the Scenario Adapter's guidance library is populated <em>from</em> the deployed trace log, and Skills are compiled from RL-trained routines rather than authored by hand.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Primary benchmark: <code>MobilePA-Bench</code> (Alibaba Tongyi-MAI, arXiv:2608.23035, released 2026-08-24). Executable mobile-agent sandbox across <code>13</code> functional domains and <code>212</code> realistic mobile tools with live application databases; four evaluation dimensions (<em>Tool Use</em>, <em>Memory</em>, <em>Skills</em>, <em>Sub-agent</em>) verified by evidence-based checks over sandbox state.</li>
+      <li><em>Frontier comparison on <code>MobilePA-Bench</code></em> (numbers as reported in the paper and on the project page):</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Model</th><th>Overall</th><th>Tool Use</th><th>Memory</th><th>Skills</th><th>Sub-agent</th><th>Cost / 1K tasks</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>Qwen-Planner-Agent 27B</code></td><td><strong>77.05%</strong></td><td><strong>77.79%</strong></td><td><strong>74.76%</strong></td><td>86.25%</td><td>59.55%</td><td><code>$2.41</code></td></tr>
+        <tr><td><code>GPT-6 Astra</code></td><td>76.84%</td><td>75.71%</td><td>74.73%</td><td><strong>93.25%</strong></td><td>53.93%</td><td>&mdash;</td></tr>
+        <tr><td><code>Claude Opus 5</code></td><td>75.71%</td><td>77.60%</td><td>71.81%</td><td>83.00%</td><td>59.55%</td><td>&mdash;</td></tr>
+        <tr><td><code>Qwen3.8-27B</code> (base)</td><td>67.22%</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Two dimensions where the trained model beats its stronger commercial peers: <em>Tool Use</em> (<code>77.79%</code>, ahead of Claude Opus 5's <code>77.60%</code> and GPT-6 Astra's <code>75.71%</code>) and <em>Memory</em> (<code>74.76%</code>, ahead of GPT-6 Astra's <code>74.73%</code> and Claude Opus 5's <code>71.81%</code>). One dimension where it trails: <em>Skills</em> (<code>86.25%</code>, behind GPT-6 Astra's <code>93.25%</code>). One tie: <em>Sub-agent</em> (<code>59.55%</code>, tied with Claude Opus 5, ahead of GPT-6 Astra's <code>53.93%</code>). The <em>Skills</em> gap is consistent with GPT-6 Astra's mature deployed Skills mechanism, and the <em>Sub-agent</em> gap-over-GPT is consistent with the closed-loop trace-driven dispatch retraining.</li>
+      <li>Cost efficiency: <code>$2.41</code> per <code>1,000</code> tasks is an output-token-only estimate that includes reasoning tokens; input tokens and infrastructure are excluded. The number is not directly comparable to the commercial peers' API cost because the paper's estimate excludes the input-token side and infra, but the paper positions the training run as producing an agent that matches frontier commercial models at open-source-compatible cost.</li>
+      <li>Memory benchmarks: the Harness's Memory module is separately evaluated on <code>LoCoMo</code>, <code>LongMemEval</code> and <code>BEAM</code>. The paper's claim (from the project page) is that Memory retrieval helps on histories that exceed the active context; specific per-benchmark scores are reported in the paper's Section 5 but are not enumerated on the project page.</li>
+      <li>Seven non-mobile agentic benchmarks: the paper reports that Qwen-Planner-Agent maintains general capabilities across seven agentic evaluations outside <code>MobilePA-Bench</code>, so that the closed-loop training does not narrow the base model. Per-benchmark numbers are in the paper but not aggregated on the project page.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Baseline vs full stack: the base <code>Qwen3.8-27B</code> scores <code>67.22%</code> Overall on <code>MobilePA-Bench</code>; the trained <code>Qwen-Planner-Agent</code> at the same parameter count scores <code>77.05%</code> Overall, a <code>+9.83</code> point gain attributed to the combination of AI-for-Data curation, <code>CARE</code>-driven RL, and the runtime Harness. The paper's per-component ablation (SFT-only, SFT+RL without <code>CARE</code>, SFT+RL+<code>CARE</code>, SFT+RL+<code>CARE</code>+Harness) is not enumerated on the project page.</li>
+      <li>Harness on / off: the Scenario Adapter and Skills modules are described as necessary for the <code>93.25%</code>-gap-closing on the <em>Skills</em> dimension; the paper's Skills sub-ablation isolates the effect of skill compilation from RL-trained routines vs a static authored skill catalogue.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Code and documentation: <a href="https://github.com/Tongyi-MAI/Qwen-Planner-Agent">github.com/Tongyi-MAI/Qwen-Planner-Agent</a>. Project page: <a href="https://tongyi-mai.github.io/Qwen-Planner-Agent/">tongyi-mai.github.io/Qwen-Planner-Agent</a>. The paper describes the training recipe and the harness in enough detail to reproduce against <code>MobilePA-Bench</code>; the 27B model weights are not on the HuggingFace card as of the arXiv posting.</li>
+    </ul>
+
+    <h2 id="wanpe"><a href="https://arxiv.org/abs/2609.30221">WanPE: Towards Cinematic Prompt Enhancement for Modern Text-to-Video Generation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-25</span>
+      <span>Text-to-video &middot; Prompt enhancement &middot; RL post-training &middot; Cinematic planning</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Yubo Zhu, Yawen Shao, Ziyun Dai, Zixun Fang, Kai Zhu, Siyang Sun, Haolan Xue, Chuxin Wang, Tingyu Weng, Jingming Luo, Chen Shi, Lianghua Huang, Yufeng Ai, Yuzheng Wang, Wenyuan Zhang, Yu Shang, Yuxiang Bao, Zoubin Bi, Jie Xiao, Jinbo Xing, Jiaxing Zhao, Chongyang Zhong and additional co-authors &mdash; <strong>Wan Team, Alibaba Group</strong>, in collaboration with Nanjing University, USTC, Fudan and Tsinghua. arXiv:2609.30221v1 [cs.CV], submitted 2026-09-25, on the Hugging Face Daily selection for 2026-09-25. The Alibaba Wan Team affiliation is stated on the paper's project page (<a href="https://wan-pe.github.io"><code>wan-pe.github.io</code></a>) and puts the paper on the same Alibaba video-generation line as the previously-covered <code>Wansong v1.0</code> (2026-07-17), <code>Sana Video 2.0</code> and Wan3.0 public beta (2026-08-10).</li>
+      <li>The problem is that a raw user prompt fed to a modern text-to-video generator under-specifies the shot: it names an object and an action but not the camera trajectory, the lens, the lighting, the pacing, the cut, or the shot-level continuity across a 30-second clip. Human-written cinematic screenplays specify all of those. Existing prompt enhancers (Sora-style prompt rewriters, CAPE-T2V's captioner-anchored enhancement) either lose the user's specific semantic requirements while adding cinematic detail, or add cinematic detail at short durations but drift on longer ones as the shot list has to be sustained across cuts.</li>
+      <li>Contribution: a <em>video-grounded reverse-construction</em> training objective (write the shot-level cinematic plan <em>from</em> the finished video, not from the raw prompt), a <code>397B</code>-parameter enhancer trained on <code>1.05M</code> real-world videos, and a semantic-consistency RL algorithm (<code>SC-GRPO</code>) that keeps the user's declared content intact under the elaboration. Evaluated on the paper's own <code>WanPEval</code> benchmark (~<code>11,000</code> human preference judgments across seven cinematic genres), <code>WanPE</code> adds <code>10.7&ndash;18.8</code> preference points over the raw prompt at <code>5&ndash;15</code>-second clips and <code>50.9</code> points at <code>30</code> seconds, and remains competitive with <code>Seedance 2.5</code> at <code>30</code> seconds while beating other commercial prompt enhancers at <code>5&ndash;15</code>-second lengths.</li>
+    </ul>
+
+    <figure>
+      <img src="https://wan-pe.github.io/assets/figures/intro.png" alt="WanPE motivation figure: raw user prompt vs cinematic-plan-enhanced prompt vs generated video comparison." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper's project page). Motivation. Left: raw user prompt, thin on cinematography, produces an under-specified clip. Right: the same content elaborated with a shot-level cinematic plan by <code>WanPE</code> produces a coherent multi-shot output at 30 seconds. The middle column is the intermediate cinematic-screenplay representation the enhancer emits.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Video-grounded reverse construction.</strong>
+        <ul>
+          <li><em>Problem.</em> Training a prompt enhancer with (short-prompt &rarr; long-prompt) supervision has no ground truth: any given short prompt has many possible cinematic elaborations, and the elaboration a human labeller writes is not causally connected to a real video. When such a model is deployed against a finished generator, it often adds cinematic detail that the generator cannot actually render, so preference against the raw prompt is lost.</li>
+          <li><em>Mechanism.</em> The pipeline reverses the causal order. (1) Start from <code>1.05M</code> real-world videos with cinematic structure. (2) For each video, extract the shot list, camera trajectory, lens, lighting cues and pacing to produce a <em>screenplay-grade</em> long prompt <code>L</code> that a strong human director would write if commissioned to produce that exact video. (3) Reduce <code>L</code> to a short user-style prompt <code>S</code> by removing the cinematography. (4) Train the enhancer on <code>(S &rarr; L)</code> pairs. Because <code>L</code> is <em>derived from</em> a real, generator-renderable video, the enhancer's targets are the elaborations that a modern text-to-video generator can actually execute.</li>
+          <li><em>Why it works / why it beats prior.</em> Compared to Sora-style captioner-first prompt rewriting (the enhancer is a captioner that runs on user prompts) and to <code>CAPE-T2V</code>'s captioner-anchored enhancement (which conditions on both sides but constructs <code>L</code> from human labellers), reverse construction ties the target elaboration to the generator's <em>rendering distribution</em>. The <code>1.05M</code>-video training corpus is what covers the seven genres reported on the project page (Action, Animation, Speech, Advertisement, Singing &amp; Dance, Drama, Knowledge), each with its own cinematography conventions.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; SC-GRPO (Semantic-Consistency GRPO).</strong>
+        <ul>
+          <li><em>Problem.</em> Once the enhancer is elaborating aggressively, it can hallucinate content that was not in the user's short prompt. In a 30-second output that ripples into visible drift: the subject the user named in the prompt is replaced by a similar-but-different subject in later shots. Preference scores go up because the video is cinematically stronger, but the user's request has been silently rewritten.</li>
+          <li><em>Mechanism.</em> <code>SC-GRPO</code> replaces the plain preference reward with a compound reward whose second term is a <em>semantic-consistency</em> check between the user's short prompt <code>S</code>, the generated elaboration <code>L'</code>, and (in an on-policy loop) the video the generator produces from <code>L'</code>. GRPO's group-baseline structure is retained; the semantic-consistency term is subtracted from any elaboration that drops or replaces user-specified entities, and added to any elaboration that preserves them while extending cinematography. Because it operates on GRPO's advantage baseline rather than on the reward alone, easy prompts do not swamp hard ones.</li>
+          <li><em>Why.</em> This is directly comparable to the Rubric-Guided Policy Optimization (<code>RGPO</code>) line for video reward modelling (<code>RewardVerse</code>, 2609.22947) &mdash; both split a preference reward into interpretable sub-terms. <code>SC-GRPO</code>'s specific split (cinematic preference vs semantic consistency) is what buys the paper the <code>30</code>-second gain: at short durations semantic drift is not visible, but at <code>30</code> seconds the consistency term is what stops the enhancer from silently rewriting the user's request.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <figure>
+      <img src="https://wan-pe.github.io/assets/figures/method.png" alt="WanPE training pipeline: reverse construction from real videos to (short prompt, long prompt) pairs; then SC-GRPO RL loop with consistency reward." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper's project page). Training pipeline. Top: reverse construction from <code>1.05M</code> real videos to <code>(S, L)</code> training pairs. Bottom: <code>SC-GRPO</code> RL loop with the group-advantage baseline and the semantic-consistency reward term.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Primary benchmark: <code>WanPEval</code>, the paper's own preference-scored evaluation with ~<code>11,000</code> human judgments across seven cinematic genres (Action, Animation, Speech, Advertisement, Singing &amp; Dance, Drama, Knowledge). Preference score is delta over the raw user prompt on the same underlying generator.</li>
+      <li>Duration curve: at <code>5</code>-, <code>10</code>-, and <code>15</code>-second clips <code>WanPE</code> adds <code>10.7&ndash;18.8</code> preference points over the raw prompt. At <code>30</code>-second clips the gain grows to <code>50.9</code> points &mdash; the durations at which raw user prompts most under-specify the shot are also the durations where cinematic-plan enhancement helps most.</li>
+      <li>Competitor set (from the paper's project page): <code>WanPE</code> beats other commercial prompt enhancers at <code>5&ndash;15</code>-second clip lengths and remains competitive with <code>Seedance 2.5</code> at <code>30</code>-second clips. The exact per-competitor preference deltas are in the paper's <code>WanPEval</code> table; the project page reports only the aggregate.</li>
+      <li>Scale: <code>397B</code> parameters. This is the largest prompt-enhancement model reported to date; prior enhancer lines (CAPE-T2V, Sora-style rewriter) operate at sub-<code>10B</code> scale. The paper's positioning is that cinematic elaboration is closer to open-ended screenplay writing than to captioning, and the <code>397B</code> parameter budget is what buys the seven-genre coverage.</li>
+    </ul>
+
+    <figure>
+      <img src="https://wan-pe.github.io/assets/figures/results.png" alt="WanPE evaluation: preference delta over raw prompt across durations and genres, versus commercial competitors including Seedance 2.5." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 3 (from the paper's project page). <code>WanPEval</code> preference deltas over the raw user prompt across durations (<code>5</code> / <code>10</code> / <code>15</code> / <code>30</code> seconds) and cinematic genres. <code>Seedance 2.5</code> is the closest commercial peer at <code>30</code> seconds.</figcaption>
+    </figure>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Reverse construction vs forward captioning: the paper's Section 5 ablation contrasts the video-grounded reverse-construction supervision (targets are elaborations derived from real videos) against a forward-captioning baseline (elaborations written by human labellers with no video). The reverse-construction training corpus produces elaborations that the downstream generator can actually render; the forward-captioning training corpus produces elaborations that trigger generator failure modes on longer clips.</li>
+      <li><code>SC-GRPO</code> on / off: the semantic-consistency term is what closes the <code>30</code>-second gap; without it, the paper reports the enhancer at <code>30</code> seconds drops several preference points because entities the user named in <code>S</code> are silently replaced in later shots. The exact drop is in the paper's ablation table.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Project page and evaluation artefacts: <a href="https://wan-pe.github.io">wan-pe.github.io</a>. GitHub repository is referenced from the project page. The enhancer weights are not directly linked from the arXiv abstract or the project page.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="explorationbench"><a href="https://arxiv.org/abs/2609.30199">ExplorationBench: Measuring AI Systems' Exploration in Verifiable Alien Worlds</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-24</span>
+      <span>Benchmark &middot; Exploration &middot; Rule discovery &middot; Verifiable evaluation</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Ming Zhang, Zhenghao Xiang, Peizhong Gao, Yujiong Shen, Yuhui Wang, Zhonghan Yue, Shihan Dou, Zhangyue Yin, Junjie Ye, Shichun Liu, Weihuang Zheng, Jiahao Chen, Jiayi Chen, Hongzhang Liu, Jiaqi Shao, Tao Gui, Qi Zhang, Xuanjing Huang, Suncong Zheng and Maxm Pan &mdash; <strong>Tencent Hunyuan</strong> (Suncong Zheng, Maxm Pan) with <strong>Fudan University NLP Group</strong> (Ming Zhang, Tao Gui, Qi Zhang, Xuanjing Huang and coauthors). arXiv:2609.30199v1 [cs.LG/cs.AI], submitted 2026-09-24, on the Hugging Face Daily selection for 2026-09-25. Tencent Hunyuan's coauthorship qualifies the paper under the frontier-labs filter.</li>
+      <li>The problem is that current agentic-reasoning benchmarks (MMLU-Pro, GPQA, HLE, LiveCodeBench, SWE-Bench) grade recall over training-data-adjacent facts and procedures. When a frontier model scores well, that says almost nothing about its ability to <em>explore</em> &mdash; to sit in an environment whose rules it has never seen, form hypotheses, design experiments and iterate to a working rule. The confounds are two: an LLM judge can't verify a novel-rule hypothesis exactly, and if the rule matches something the model has seen in training, recall wins and exploration is never used.</li>
+      <li>Contribution: two <em>verifiable alien-world</em> sandboxes, both graded by exact executable checks. <code>AlienCode</code> is an alien calculation language with <code>31</code> discovery targets (hidden operators / constructs) and <code>70</code> held-out tasks that require applying those rules; grading is an executable interpreter over the language. <code>AlienLogic</code> is a patched deduction system with <code>24</code> discovery targets and <code>70</code> held-out tasks; grading is an executable proof checker. Each sandbox gives the system a <em>flawed manual</em>, worked examples, and a dedicated tool-call schema to run experiments. The paper evaluates <code>10</code> AI systems including <code>Claude Opus 5</code>, <code>GPT-5.6 Sol</code>, and top open-weight peers, and reports that even the best explorers are unstable across trajectories.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2609.30199v1/x1.png" alt="ExplorationBench overview: two sandboxes (AlienCode, AlienLogic), each with a flawed manual, an exploration phase (M1-M4 rounds), and a held-out test phase graded by executable interpreter or proof checker." loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). Overview of <code>ExplorationBench</code>. Left: <code>AlienCode</code> (<code>31</code> discovery targets, <code>70</code> tasks; graded by an executable interpreter over the alien calculation language). Right: <code>AlienLogic</code> (<code>24</code> discovery targets, <code>70</code> tasks; graded by an executable proof checker over the patched deduction system). Each sandbox gives the system a flawed manual, worked examples, four exploration rounds (<code>M1</code>&ndash;<code>M4</code>) with a tool-call schema, and then a held-out test phase.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Verifiable alien worlds.</strong>
+        <ul>
+          <li><em>Problem.</em> A rule-discovery benchmark faces two adversaries: (i) an LLM judge cannot exactly verify whether a hypothesised rule matches the hidden rule the world enforces &mdash; two rules can be semantically similar and produce different answers on the held-out tasks; and (ii) if the hidden rule is anywhere in the model's training distribution, recall obscures exploration. So the target has to be both <em>executable</em> (checkable exactly) and <em>alien</em> (conflicting with familiar knowledge).</li>
+          <li><em>Mechanism.</em> Each sandbox is a deterministic executable system. <code>AlienCode</code> is a calculation language where the operators and control flow are defined in the sandbox's interpreter (not documented in the manual); <code>AlienLogic</code> is a deduction system whose axioms are patched so that familiar first-order-logic shortcuts fail. Both come with a <em>flawed</em> user manual: a document that overlaps in vocabulary with the true rule set but is missing or contradictory in the specifics the discovery targets test. The system is granted four exploration rounds (<code>M1</code>&ndash;<code>M4</code>) during which it may call the tool schema to run inputs through the interpreter / proof checker and observe outputs; on the held-out tasks the same interpreter / proof checker grades the system's answers.</li>
+          <li><em>Why it works / why it beats prior.</em> The exact-grading property is what makes <code>ExplorationBench</code> a legitimate exploration test rather than a novel-flavoured reading-comprehension test. Compared to prior verifiable-reasoning benchmarks (<code>NewtonBench</code>-style scientific-law discovery, or the more established <code>SWE-Bench</code>-style code-verifier benchmarks), the alien-worlds design specifically breaks training-data recall: the interpreter's semantics are constructed to conflict with familiar programming or logical intuitions, so a model that has memorised a similar-looking language cannot silently pass by pattern-matching.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Autonomous exploration vs hindsight-replay evaluation.</strong>
+        <ul>
+          <li><em>Problem.</em> A benchmark that only reports a system's final held-out score conflates two things: <em>what the system discovered</em> and <em>how good its experimental protocol was at extracting that discovery</em>. Two systems can end at the same score for different reasons: one designed better experiments, one was luckier with the environment's evidence sequence.</li>
+          <li><em>Mechanism.</em> The paper distinguishes two evaluation modes on the same sandbox. In <em>autonomous exploration</em>, the system chooses which inputs to run through the tool schema at each round. In <em>hindsight replay</em>, the system is given the <em>same</em> sequence of (input, output) pairs an autonomous run produced, but not the freedom to choose them. Comparing scores between modes attributes gains to <em>adaptive experiment design</em>.</li>
+          <li><em>Why.</em> On <code>AlienCode</code>, median autonomous-exploration score is <code>66.0%</code> and median hindsight-replay is <code>40.7%</code> &mdash; a <code>25.3</code>-point gap that specifically measures the value of choosing which experiments to run. Prior benchmarks that only measure the final score cannot separate these components, so a system that got lucky with an easy evidence sequence looks the same as a system that designed better experiments.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Rule-report / task-solve gap.</strong>
+        <ul>
+          <li><em>Problem.</em> A system that <em>can state</em> the correct rule at the end of the exploration phase might still not <em>solve</em> tasks that use it, because rule articulation and rule-execution are separate capabilities in current LLMs.</li>
+          <li><em>Mechanism.</em> The paper additionally asks the system to <em>report</em> the discovered rule at the end of exploration, and grades the reported rule against the ground-truth rule (also via the interpreter / proof checker) independently of the held-out task score.</li>
+          <li><em>Why.</em> Systems whose reported rule matches the ground-truth rule still solve the held-out tasks only <code>70.9%</code> of the time. The rule report is a lossy readout of what the system can do: articulation and execution do not coincide.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Ten AI systems evaluated across four exploration rounds (<code>M1</code>, <code>M2</code>, <code>M3</code>, <code>M4</code>). Reported top scores at <code>Best@3 M4</code> (top-of-three sampled runs at round 4):</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Model</th><th><code>AlienCode</code> (Best@3 M4)</th><th><code>AlienLogic</code> (Best@3 M4)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>Claude Opus 5</code></td><td><strong>87.6%</strong></td><td><strong>77.6%</strong></td></tr>
+        <tr><td><code>GPT-5.6 Sol</code></td><td>87.1%</td><td>75.2%</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Autonomous exploration vs hindsight replay on <code>AlienCode</code>: median <code>66.0%</code> autonomous vs <code>40.7%</code> hindsight replay &mdash; a <code>25.3</code>-point gap that isolates the contribution of adaptive experiment design. Systems that plan their experiments materially outperform systems that see the same evidence in a fixed order.</li>
+      <li>Run-to-run variance reaches <code>72.8</code> points across trajectories on the same sandbox for the same system. Exploration is not monotonic: <code>6</code> of <code>30</code> <code>AlienCode</code> trajectories tracked finished below earlier milestones the same trajectory had reached, i.e. later rounds actively unlearned rules the earlier rounds had discovered.</li>
+      <li>Rule-report / task-solve gap: systems whose end-of-exploration rule report exactly matches the ground-truth rule still solve held-out tasks only <code>70.9%</code> of the time. The paper reads this as a discovery-execution gap: articulating a rule and reliably executing under it are separate capabilities.</li>
+      <li>Sandbox-to-sandbox transfer: the paper reports transfer tests where a system that has explored one sandbox is tested on held-out tasks in the other. Transfer is not directly reported on the project page; the paper's Section 5 gives the per-sandbox transfer scores.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Flawed manual on / off: removing the flawed manual (leaving only the tool schema) hurts exploration for the smaller systems in the panel and is roughly a wash for the top explorers &mdash; the manual is a scaffolding for weaker models and near-zero information for models that can compensate by running experiments.</li>
+      <li>Exploration round budget: performance is measured at <code>M1</code>, <code>M2</code>, <code>M3</code>, and <code>M4</code>. The paper's headline finding &mdash; that continued exploration can stall or reverse gains &mdash; is directly visible in the round-by-round trace, where the mean score across systems does not monotonically increase from <code>M1</code> to <code>M4</code>. For some systems, <code>M4</code> is worse than <code>M3</code> because later hypotheses overwrite earlier correct beliefs.</li>
+      <li>Grader choice: the paper contrasts its executable-interpreter / proof-checker grading with LLM-judge grading on the same held-out task set. LLM-judge grading over-credits semantically-similar-but-wrong rule reports; exact executable grading rejects them.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>The two sandboxes are engineered against training-data recall, but the paper acknowledges that a system's <em>meta-strategies</em> (experiment design, hypothesis revision, belief tracking) do transfer from training data &mdash; the benchmark tests exploration <em>skill</em>, not exploration <em>from scratch</em>.</li>
+      <li>Two sandboxes are not a broad enough sample of alien-rule structures to claim generality; the paper positions <code>ExplorationBench</code> as a first, verifiable, executable-graded probe rather than a comprehensive exploration evaluation. Extending to more sandboxes with different rule families is flagged as future work.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Project page: <a href="https://www.explorationbench.com/">www.explorationbench.com</a>. arXiv paper: <a href="https://arxiv.org/abs/2609.30199">2609.30199</a>. Both sandboxes are released as open evaluation artefacts with their interpreters and proof checkers.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
