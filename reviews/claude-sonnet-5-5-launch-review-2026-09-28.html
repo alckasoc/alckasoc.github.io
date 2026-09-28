@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Claude Sonnet 5.5 Launch Review &mdash; September 28, 2026 | Auto Lit Review</title>
+<meta name="description" content="Anthropic ships Claude Sonnet 5.5 (2026-09-28): 30% faster and 30% cheaper than Sonnet 5, matching Opus 5.5 within a handful of points on Terminal-Bench (70.6% vs 66.4%), CursorBench (55.5% vs 57.8%) and OSWorld (80.1% vs 81.8%). Three Tier 2 papers close the 36-hour window: Shanghai AI Laboratory's InternW0-&Delta; couples a video expert and action expert through a 30-block Mixture-of-Transformers and adds Causal Imprint (training-only future supervision) for 92.8% on LIBERO-Plus Clean2Random and 5.11&times; inference speedup vs Fast-WAM; Google DeepMind/Kaggle's Game Arena runs 900K duplicate-poker hands and 31.5K Werewolf games across ten frontier models, exposing dramatic cross-game inconsistency (Gemini 3 Pro Preview leads Chess at 1325 Elo but sits at &minus;15.17 BB/100 in Poker where GPT-5.2 leads at +46.56); Baidu/PKU/Tsinghua's Highlight-Then-Summarize builds a compress-then-reason pipeline (H2S) whose 14B model outperforms Qwen3.8-27B by 10.17 points at 97.1% retention with a 4K output budget." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">September 28, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#anthropic">Anthropic</a>
+          <ul>
+            <li class="toc-h2"><a href="#claude-sonnet-5-5">Claude Sonnet 5.5: The Cheaper Half of the 5.5 Split</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#google">Google DeepMind</a>
+          <ul>
+            <li class="toc-h2"><a href="#game-arena">Game Arena: Strategic LLM Evaluation in Competitive Environments</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#shanghai-ai-lab">Shanghai AI Laboratory</a>
+          <ul>
+            <li class="toc-h2"><a href="#internw0-delta">InternW0-&Delta;: World Action Model with Causal Imprint</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#baidu">Baidu</a>
+          <ul>
+            <li class="toc-h2"><a href="#h2s">Highlight-Then-Summarize: Compress-Then-Reason for Long Context</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; September 28, 2026</div>
+    <h1 class="page-title">Claude Sonnet 5.5 Launch</h1>
+    <div class="page-meta">4 papers &middot; 4 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-09-28 20:42 UTC (steady state, gap since the 2026-09-25 review) is anchored by one Tier 1 launch and three Tier 2 papers from the Monday arXiv batch. Anthropic ships <a href="https://www.anthropic.com/news/claude-sonnet-5-5"><code>Claude Sonnet 5.5</code></a> (API ID <code>claude-sonnet-5-5</code>) at <code>$2</code>/<code>$10</code> per million input/output tokens, positioned as the price-performance floor of the 5.5 generation while landing within a handful of points of last week's <code>Claude Opus 5.5</code> on the frontier coding and computer-use suites. Shanghai AI Laboratory's <a href="https://arxiv.org/abs/2609.31394"><code>InternW0-&Delta;</code></a> is a direct follow-up to the <code>InternW0</code> reviewed on 2026-09-24: same 30-block Mixture-of-Transformers video/action split, but adds <em>Causal Imprint</em>&mdash;training-only future supervision that produces action-relevant predictive representations without any inference-time video rollout&mdash;and expands the training corpus to <code>20K+</code> hours across four heterogeneous data sources. Google DeepMind's <a href="https://arxiv.org/abs/2609.31473"><code>Game Arena</code></a> (Ian Gemp, Marc Lanctot, and the Kaggle infrastructure team) launches the paper platform behind Kaggle Game Arena with <code>900,000</code> poker hands, <code>~31,500</code> Werewolf games, and a Chess round-robin at <code>40</code> games per pair, using a maximum-entropy correlated equilibrium to derive game-theoretic ratings. Baidu's <a href="https://arxiv.org/abs/2609.31382"><code>Highlight-Then-Summarize</code></a> (with PKU and Tsinghua co-authors) trains a <code>14B</code> compress-then-reason pipeline that surpasses <code>Qwen3.8-27B</code> by <code>10.17</code> points on their <code>H2S-Bench</code> long-context suite while operating under a <code>4K</code>-token output budget.</p>
+      <h3>Competitiveness</h3>
+      <p>The headline number is that <code>Claude Sonnet 5.5</code> operates at Sonnet-tier pricing (<code>$2</code> in / <code>$10</code> out per million tokens, versus Opus 5.5's <code>$15</code>/<code>$75</code>) while sitting within 4&ndash;7 points of Opus 5.5 across the deployment-relevant suites: <code>Terminal-Bench 4.0</code> <code>70.6%</code> vs <code>66.4%</code> (Sonnet 5.5 actually leads Opus 5.5 here), <code>CursorBench 4.0</code> <code>55.5%</code> vs <code>57.8%</code>, <code>OSWorld 2.1</code> <code>80.1%</code> vs <code>81.8%</code>, <code>GDPval-AA v2.1</code> <code>1844</code> vs <code>1846</code>. Against its own predecessor <code>Sonnet 5</code>, the jump is far larger: <code>Terminal-Bench 4.0</code> <code>70.6%</code> vs <code>10.3%</code>, <code>CursorBench 4.0</code> <code>55.5%</code> vs <code>34.1%</code>, <code>OSWorld 2.1</code> <code>80.1%</code> vs <code>57.0%</code>, and the <code>GDPval-AA v2.1</code> agentic-task Elo climbs by <code>395</code> points (<code>1449</code> &rarr; <code>1844</code>). <code>FrontierCode 1.1</code> at max compute is one of the few metrics where Opus 5.5 still leads clearly (<code>54.4%</code> vs Sonnet 5.5's <code>46.2%</code>). Against OpenAI and Google, only <code>Terminal-Bench 4.0</code> and <code>OSWorld 2.1</code> have public numbers on the Anthropic launch page &mdash; both are agentic-computer-use suites rather than pure-reasoning leaderboards like <code>MMLU-Pro</code> or <code>HLE</code>, and Anthropic does not publish the latter for Sonnet 5.5. On the research side, <code>Game Arena</code>'s ratings surface a genuine finding for competitiveness discussions: rankings <em>do not transfer</em> across skill dimensions. <code>Gemini 3 Pro Preview</code> tops Chess at <code>1325</code> Elo but sits at <code>&minus;15.17</code> BB/100 in Poker, where <code>GPT-5.2</code> leads at <code>+46.56</code> BB/100 despite ranking mid-pack in Chess (<code>933</code> Elo). <code>InternW0-&Delta;</code> is a pipeline and pretraining artifact, not a chart-topping model release, but its <code>92.8%</code> LIBERO-Plus Clean2Random under distribution shift and <code>5.11&times;</code> inference speedup vs Fast-WAM are the numbers to beat for the next open world-action model. <code>H2S-14B</code> is a small model in a crowded field; the <code>10.17</code>-point margin over <code>Qwen3.8-27B</code> at nearly half the parameter count is the recruiting point.</p>
+      <h3>New frontier releases</h3>
+      <p>One flagship launch in-window: <strong>Claude Sonnet 5.5</strong> from Anthropic on 2026-09-28, replacing <code>Claude Sonnet 5</code> at the same price point with an accompanying system card and a first-time-for-Sonnet Pok&eacute;mon-Red screenshot demonstration. No other frontier-lab model weights or launch blog posts qualified for Tier 1 inclusion during the window: <code>Qwen3Guard-Stream</code>-{0.6B, 4B, 8B} weights refreshed on Hugging Face on 2026-09-27 but the accompanying technical report is a 2025-10-16 arXiv submission being re-published rather than a new release, and does not meet the &quot;new artifact in-window&quot; bar. <code>Gemini 3.8 Flash</code> and <code>Flash Cyber</code> shipped 2026-09-02 (out of window). <code>DeepSeek-V4.1-Flash</code> shipped 2026-09-10 (out of window, covered in the 2026-09-18 review). <code>Grok 4.7</code> shipped 2026-09-21 (out of window).</p>
+    </section>
+
+    <!-- BODY -->
+
+    <h1 id="anthropic">Anthropic</h1>
+
+    <h2 id="claude-sonnet-5-5"><a href="https://www.anthropic.com/news/claude-sonnet-5-5">Claude Sonnet 5.5: The Cheaper Half of the 5.5 Split</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch Post + System Card</span>
+      <span>anthropic.com</span>
+      <span>2026-09-28</span>
+      <span>Model launch &middot; Agentic coding &middot; Computer use &middot; Safety</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Anthropic launched <code>Claude Sonnet 5.5</code> on 2026-09-28 under API ID <code>claude-sonnet-5-5</code>, six days after the 2026-09-22 <code>Claude Opus 5.5</code> release covered in the 2026-09-23 review. The launch bundles a <a href="https://www-cdn.anthropic.com/870c8f525702625d2c62fc6dd04c857e3250bec1/Claude%20Sonnet%205.5%20System%20Card.pdf">system card</a> and inherits Opus 5.5's three-stage cyber safeguards, harmful-CB classifiers, and prompt-injection defenses.</li>
+      <li>The positioning is explicitly price-performance: pricing stays at Sonnet-tier (<code>$2</code>/<code>$10</code> per M input/output tokens; <code>$0.20</code>/<code>$2.50</code> per M cache read/write), the launch page markets a <code>&ge;30%</code> speed increase over <code>Sonnet 5</code> and up to a <code>30%</code> lower cost per task, and the benchmark presentation is anchored on beating <code>Sonnet 5</code> outright while landing close to <code>Opus 5.5</code>. On <code>Terminal-Bench 4.0</code> Sonnet 5.5 actually <em>beats</em> Opus 5.5 (<code>70.6%</code> vs <code>66.4%</code>), while on <code>OSWorld 2.1</code>, <code>CursorBench 4.0</code> and <code>GDPval-AA v2.1</code> the two models are within a handful of points.</li>
+      <li>The model card highlights Pok&eacute;mon Red from screenshots as the first Sonnet to beat the game (previously an Opus-only demonstration), extended computer-use runs, and image understanding gains &mdash; capabilities where the prior Sonnet 5 was substantially behind the frontier. Knowledge cutoff is 2026-06.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>The launch post and system card do not disclose parameter count, context length as a headline number, attention variant, mixture-of-experts vs dense choice, or any low-level architecture detail. Anthropic continues its policy of not publishing architecture for Sonnet-tier and Opus-tier launches; the only architecture-adjacent fact stated is that Sonnet 5.5 inherits the &quot;preserved thinking&quot; feature expansion from Opus 5.5.</li>
+      <li><strong>Named contribution &mdash; Preserved thinking (expanded).</strong>
+        <ul>
+          <li><em>Problem.</em> Extended-reasoning models generate long chains of latent thinking tokens during a turn, but if those tokens are truncated or replaced with a summary between tool calls or between turns, the model has to re-derive the same intermediate conclusions on every subsequent call. On long agentic runs (Terminal-Bench, Cursor tasks, sustained OSWorld sessions) that amortization loss dominates cost.</li>
+          <li><em>Mechanism.</em> Preserved thinking retains the raw thinking tokens across the boundary between tool responses and between turns within an agentic loop, feeding them back into the prefix of the next forward pass rather than discarding or summarizing them. Anthropic reports that Sonnet 5.5 &quot;expands&quot; this feature relative to Opus 5.5 but does not describe the specific delta &mdash; presumably a wider scope of preservation or lower guarding.</li>
+          <li><em>Why it works / why it beats prior.</em> Discarding thinking between tool calls forces re-derivation and burns tokens the user pays for; summarizing loses the specific numeric or code-symbolic anchors the model relied on. Preserving verbatim keeps continuity but bloats context on long runs, which is the trade-off the &quot;expansion&quot; here is likely tuning. Anthropic ties the feature to the strong <code>Terminal-Bench 4.0</code> and <code>OSWorld 2.1</code> gains vs Sonnet 5.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Pre-training and training data</h3>
+    <ul>
+      <li>Anthropic's public statement: &quot;Claude Sonnet 5.5 was trained on a proprietary mix of publicly available information from the internet, public and private datasets, and other sources, such as synthetic data generated by other models.&quot; ClaudeBot honors <code>robots.txt</code>; the system card notes deduplication and classification are applied.</li>
+      <li>Knowledge cutoff: <strong>June 2026</strong>. That is three months earlier than Sonnet 5's cutoff and matches Opus 5.5's cutoff, which suggests a shared pretraining corpus across the 5.5 family.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li>The system card describes post-training as &quot;rigorous post-training and fine-tuning aimed at making it an assistant whose behavior aligns with the values described in Claude's constitution,&quot; and lists distillation attack prevention as a first-class objective (there is a classifier for attempted model distillation with no fallback model).</li>
+      <li>No RL algorithm details (PPO / DPO / GRPO / GSPO), reward model architecture, or SFT recipe is disclosed &mdash; consistent with prior Sonnet and Opus launches. The specific behavior deltas visible in evaluations (Pok&eacute;mon Red screenshot performance; long computer-use runs) suggest agentic-trajectory training on realistic tool-use environments.</li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>Headline capability comparison as published on the launch page:</li>
+    </ul>
+    <table>
+      <thead><tr><th>Benchmark</th><th>Sonnet 5.5</th><th>Sonnet 5</th><th>Opus 5.5</th></tr></thead>
+      <tbody>
+        <tr><td><code>Terminal-Bench 4.0</code></td><td><strong>70.6%</strong></td><td>10.3%</td><td>66.4%</td></tr>
+        <tr><td><code>FrontierCode 1.1</code> (max)</td><td>46.2%</td><td>42.4%</td><td><strong>54.4%</strong></td></tr>
+        <tr><td><code>CursorBench 4.0</code></td><td>55.5%</td><td>34.1%</td><td><strong>57.8%</strong></td></tr>
+        <tr><td><code>GDPval-AA v2.1</code></td><td>1844</td><td>1449</td><td><strong>1846</strong></td></tr>
+        <tr><td><code>OSWorld 2.1</code></td><td>80.1%</td><td>57.0%</td><td><strong>81.8%</strong></td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Sonnet 5.5 beats or ties Opus 5.5 on <code>Terminal-Bench 4.0</code>, and is within <code>1</code>&ndash;<code>2.3</code> points of Opus 5.5 on <code>CursorBench 4.0</code>, <code>GDPval-AA v2.1</code> and <code>OSWorld 2.1</code>. The one clear Opus lead is <code>FrontierCode 1.1</code> at max compute (<code>54.4%</code> vs <code>46.2%</code>).</li>
+      <li>Sonnet 5's <code>10.3%</code> on Terminal-Bench 4.0 is notable: the 4.0 revision is stricter than 3.x and the older Sonnet is essentially unable to complete its tasks. The <code>Sonnet 5</code> &rarr; <code>Sonnet 5.5</code> jump on this suite (<code>+60.3</code> percentage points) is the largest single-generation gain Anthropic has reported for a Sonnet iteration.</li>
+      <li>System-card evaluation numbers (safeguards-off unless noted):
+        <ul>
+          <li><strong>Cybersecurity.</strong> <code>ExploitBench</code>: <code>11.53</code> flags with AutoNudge, <code>80%</code> Cap%, <code>43.4%</code> arbitrary-code-execution rate (<code>178/410</code> runs). <code>CyScenarioBench</code>: <code>46.1%</code> challenge-completion rate. Binary Exploitation: <code>50</code> control-flow hijacks vs Sonnet 5's <code>3</code>. <code>ExploitGym</code>: &quot;approaching Mythos 5.1&quot; per the card.</li>
+          <li><strong>Biology (CB-1/CB-2).</strong> <code>VCT</code> accuracy <code>0.58</code>; <code>BioMysteryBench</code> <code>0.89</code> human-solvable / <code>0.45</code> human-difficult; <code>Protocols</code> <code>0.67</code> on both subsets; black-box RNA design median matches <code>Opus 5.5</code>.</li>
+          <li><strong>Agentic and coding safety.</strong> Claude Code malicious refusal <code>85.2%</code>; Claude Code dual-use success <code>98.4%</code>; malicious computer-use refusal <code>79.46%</code> (matches Opus 5.5). Prompt-injection ASR: <code>3.01%</code> coding (Shade, no safeguards), <code>0.07%</code> computer-use (Shade), <code>0%</code> browser with auto mode.</li>
+          <li><strong>Harmlessness.</strong> Single-turn harmful (API) harmless-response rate <code>95.61%</code>; benign over-refusal <code>0.02%</code>; child-safety harmful <code>99.57%</code>; election integrity <code>100%</code>.</li>
+          <li><strong>Bias.</strong> <code>BBQ</code> disambiguated accuracy <code>80.01%</code>, bias score <code>-0.75%</code> (closest to zero across the 5.5 lineup per Anthropic); political even-handedness (API) <code>97.9%</code>.</li>
+          <li><strong>Autonomy/RSP.</strong> <code>AECI</code> score <code>167.93</code> (marginally below <code>Opus 5.5</code>'s <code>169.12</code>).</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Safety and limitations</h3>
+    <ul>
+      <li>Sonnet 5.5 inherits <code>Opus 5.5</code>'s three-stage cyber safeguards &mdash; internal activation probe + lightweight on-model classifier + trained LLM classifier &mdash; with fallback behavior to <code>Sonnet 5</code> when triggered. Frontier-LLM-development capabilities (kernel development on specific ML accelerators) fall back to <code>Sonnet 5</code>. Conventional weapons/explosives and model-distillation classifiers have <em>no</em> fallback: the model refuses.</li>
+      <li>Chemical/biological safeguards match <code>Sonnet 5</code> (not the tighter <code>Opus 5.5</code> configuration), with no fallback. The pattern: cyber gets the maximal safeguards, biology stays at Sonnet-tier.</li>
+      <li>Automated behavioral audit ran <code>~4,100</code> investigation sessions using a handwritten scenario library (<code>~1,850</code> descriptions); external red-teaming via Gray Swan's IPI benchmark. Alignment assessment uses static behavioral evaluations, automated interactive behavioral evaluations, misalignment-related capability evaluations, and external red teaming.</li>
+      <li>The card is explicitly &quot;condensed&quot;, with pre-deployment testing concentrated on the frontier models &mdash; a shift Anthropic flags directly.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>API model ID <code>claude-sonnet-5-5</code>. Pricing: <code>$2</code> per M input tokens, <code>$10</code> per M output tokens, <code>$0.20</code> per M cache-read tokens, <code>$2.50</code> per M cache-write tokens. Zero-data-retention option available. Migration guide referenced for thinking-mode changes vs Sonnet 5.</li>
+    </ul>
+
+    <h1 id="google">Google DeepMind</h1>
+
+    <h2 id="game-arena"><a href="https://arxiv.org/abs/2609.31473">Game Arena: Strategic LLM Evaluation in Competitive Environments</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper (Technical Report)</span>
+      <span>arXiv</span>
+      <span>2026-09-25 (announced 2026-09-28)</span>
+      <span>Evaluation &middot; Game-theoretic ratings &middot; Frontier model benchmarking</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Ian Gemp, Marc Lanctot, Domino Weir, Elsa Dong, Daniel Hennes and colleagues at <strong>Google DeepMind</strong> and <strong>Google Research</strong>, with Will Cukierski and Meg Risdal from the <strong>Kaggle</strong> platform team (Kaggle is a Google subsidiary); arXiv:2609.31473v1 [cs.LG], submitted 2026-09-25 in the Monday 2026-09-28 announcement batch; 31 pages, 15 figures. Frontier-lab affiliation is satisfied by the Google DeepMind and Google Research author majority.</li>
+      <li>The paper documents the platform behind Kaggle Game Arena: a continuously-running head-to-head evaluation of frontier LLMs across three games chosen to be structurally different &mdash; <em>Chess</em> (perfect information, two-player), <em>Poker</em> (imperfect information with hidden hands), and <em>Werewolf</em> (multi-agent social deduction with private roles). The claim: static academic benchmarks saturate, and continuous game play scales evaluation difficulty with model strength.</li>
+      <li>Ten models are evaluated in a full round-robin: <code>Gemini 3 Pro Preview</code>, <code>Gemini 3 Flash Preview</code>, <code>o3</code>, <code>GPT-5.2</code>, <code>GPT-5 mini</code>, <code>Grok 4</code>, <code>Grok 4.1 Fast Reasoning</code>, <code>Claude Opus 4.5</code>, <code>Claude Sonnet 4.5</code>, <code>Claude Haiku 4.5</code> (Chess); <code>DeepSeek V3.2</code> substitutes for <code>Claude Haiku 4.5</code> in Poker. The line-up is one generation behind today's frontier (Claude 5.5 and GPT-6 are not measured), which the authors flag as intentional given the run duration.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Text-based agent harness.</strong>
+        <ul>
+          <li><em>Problem.</em> Cross-vendor LLM comparison in games has historically required custom action-space encoders per model or per game (chess piece indices vs FEN strings vs UCI vs board bitmaps). This couples the evaluation to the vendor's specific tool interfaces and makes the results incomparable when the harness changes.</li>
+          <li><em>Mechanism.</em> Every model receives the game state and legal action set as natural-language text (FEN plus verbalized last moves for Chess; hand strings plus betting history for Poker; conversation transcript plus role prompt for Werewolf). Actions are returned as free-form text and parsed. This puts every model on the same wire format and lets the harness treat models as black boxes.</li>
+          <li><em>Why it works / why it beats prior.</em> Any tokenizer difference across vendors is absorbed by the shared text protocol, so ranking differences trace to <em>play strength</em>, not encoder wins. The trade-off is that a strong model with a poor natural-language chess vocabulary will be underrated relative to a benchmark that feeds it FEN directly.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Game-Theoretic Evaluation (GTE) for Werewolf.</strong>
+        <ul>
+          <li><em>Problem.</em> Werewolf outcomes depend heavily on role assignment (Werewolf vs Villager vs Seer); a model that is strong as a Werewolf but weak as a Villager may look average when averaged over roles, and worse, its rating will be dominated by whichever role happens to be sampled more often. Straight win-rate averages conflate role skill with role sampling.</li>
+          <li><em>Mechanism.</em> GTE frames evaluation as a &quot;model-vs-model-vs-role&quot; meta-game with three strategic players. A <em>Role Player</em> chooses the game role to maximize the performance gap between Model A and Model B; Models A and B then play zero-sum within that role. The system solves for the <em>maximum-entropy correlated equilibrium</em> of the meta-game, and derives model ratings from the equilibrium marginal. This adversarially selects the roles that best discriminate between models, then rates using those discriminative matches.</li>
+          <li><em>Why it works / why it beats prior.</em> Elo-style rating over uniform role sampling is dominated by roles where all models play similarly (low signal); GTE upweights the roles where models actually differ, extracting more information per match. Compared to prior LLM social-deduction benchmarks that report role-agnostic win rates, GTE surfaces role-specific asymmetries directly &mdash; and the paper shows exactly this: <code>Gemini 3 Pro Preview</code> improves any coalition it joins yet gets a negative individual rating in Werewolf.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Anti-saturation platform design.</strong>
+        <ul>
+          <li><em>Problem.</em> Static benchmarks saturate once models solve them; refresh cycles are slow and each new dataset is released frozen.</li>
+          <li><em>Mechanism.</em> Because the platform's opposition <em>is</em> the pool of models submitted to it, difficulty scales automatically with frontier strength. Model A's score against Model B updates in place whenever either model's play changes, and new game variants can be added without invalidating prior scores.</li>
+          <li><em>Why it works / why it beats prior.</em> Kaggle competitions have used this dynamic for humans since 2010; Game Arena imports the mechanic wholesale for LLMs. Compared to Chatbot Arena's crowdsourced preference ratings, Game Arena's outcomes are objective ground truth from game rules rather than aggregated preference labels.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>Sample sizes are large: <code>40</code> games per pair in the Chess round-robin (<code>20</code> as White, <code>20</code> as Black); <code>900,000</code> total poker hands across <code>45</code> pairwise matchups using duplicate-poker format (<code>20,000</code> hands per pair, with each hand replayed both ways for variance reduction); <code>~31,500</code> Werewolf games.</li>
+      <li>Chess Elo ratings after the full round-robin:</li>
+    </ul>
+    <table>
+      <thead><tr><th>Rank</th><th>Model</th><th>Chess Elo</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><code>Gemini 3 Pro Preview</code></td><td><strong>1325</strong></td></tr>
+        <tr><td>2</td><td><code>Gemini 3 Flash Preview</code></td><td>1297</td></tr>
+        <tr><td>3</td><td><code>o3</code></td><td>1009</td></tr>
+        <tr><td>4</td><td><code>GPT-5.2</code></td><td>933</td></tr>
+        <tr><td>5</td><td><code>Grok 4</code></td><td>773</td></tr>
+        <tr><td>6</td><td><code>Grok 4.1 Fast Reasoning</code></td><td>632</td></tr>
+        <tr><td>7</td><td><code>GPT-5 mini</code></td><td>525</td></tr>
+        <tr><td>8</td><td><code>Claude Opus 4.5</code></td><td>236</td></tr>
+        <tr><td>9</td><td><code>Claude Sonnet 4.5</code></td><td>189</td></tr>
+        <tr><td>10</td><td><code>Claude Haiku 4.5</code></td><td>122</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Poker BB/100 rankings:</li>
+    </ul>
+    <table>
+      <thead><tr><th>Rank</th><th>Model</th><th>BB/100</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><code>GPT-5.2</code></td><td><strong>+46.56</strong></td></tr>
+        <tr><td>2</td><td><code>o3</code></td><td>+29.69</td></tr>
+        <tr><td>3</td><td><code>Grok 4</code></td><td>+27.11</td></tr>
+        <tr><td>4</td><td><code>Claude Opus 4.5</code></td><td>+17.62</td></tr>
+        <tr><td>5</td><td><code>Claude Sonnet 4.5</code></td><td>+12.83</td></tr>
+        <tr><td>6</td><td><code>Gemini 3 Flash Preview</code></td><td>+5.49</td></tr>
+        <tr><td>7</td><td><code>DeepSeek V3.2</code></td><td>&minus;10.05</td></tr>
+        <tr><td>8</td><td><code>Gemini 3 Pro Preview</code></td><td>&minus;15.17</td></tr>
+        <tr><td>9</td><td><code>Grok 4.1 Fast Reasoning</code></td><td>&minus;19.19</td></tr>
+        <tr><td>10</td><td><code>GPT-5 mini</code></td><td>&minus;94.87</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Werewolf GTE ratings:</li>
+    </ul>
+    <table>
+      <thead><tr><th>Rank</th><th>Model</th><th>GTE Rating</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><code>Gemini 3 Pro Preview</code></td><td><strong>+0.10%</strong></td></tr>
+        <tr><td>2</td><td><code>Gemini 3 Flash Preview</code></td><td>&minus;0.36%</td></tr>
+        <tr><td>3</td><td><code>GPT-5.2</code></td><td>&minus;1.12%</td></tr>
+        <tr><td>4</td><td><code>Claude Opus 4.5</code></td><td>&minus;1.31%</td></tr>
+        <tr><td>5</td><td><code>Claude Sonnet 4.5</code></td><td>&minus;3.67%</td></tr>
+        <tr><td>6</td><td><code>Grok 4.1 Fast Reasoning</code></td><td>&minus;5.23%</td></tr>
+        <tr><td>7</td><td><code>Grok 4</code></td><td>&minus;5.28%</td></tr>
+        <tr><td>8</td><td><code>GPT-5 mini</code></td><td>&minus;6.78%</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Cross-game inconsistency is the paper's headline finding: no model tops all three games. Gemini leads Chess and Werewolf but is a losing player in Poker (<code>&minus;15.17</code> BB/100). <code>GPT-5.2</code> dominates Poker but is <code>392</code> Elo behind Gemini 3 Pro in Chess. The Claude 4.5 family is at the bottom in Chess (all under <code>240</code> Elo) despite matching mid-pack in Poker.</li>
+      <li>The <code>GPT-5 mini</code> Poker result is a diagnostic case: the model opened <code>98.3%</code> of hands dealt (almost never folding preflop) and posted the field's worst BB/100 by a large margin. This directly demonstrates that aggressive preflop range selection without post-flop skill is severely punished by variance-reduction over <code>20,000</code> duplicate-poker hands per pair &mdash; the pathology becomes measurable at sample sizes the traditional 100-hand benchmarks miss.</li>
+      <li>Chess pathology mode: weaker models maintain parity in opening theory but &quot;quickly diverge&quot; during middlegame complexity. The Claude 4.5 tier's Elo (all under 240) is consistent with strong opening play collapsing under tactical branching &mdash; not general strategic weakness so much as failure to project several moves ahead under uncertainty.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Duplicate poker (each hand replayed with roles swapped) is the reported variance-reduction lever; the paper does not describe explicit ablations of harness choices, but the sample-size difference between Chess (<code>40</code> games/pair) and Poker (<code>20,000</code> hands/pair) exposes how much more Poker signal you need to separate models. The Werewolf format's <code>~31,500</code> games are similarly tuned for GTE stability at eight models.</li>
+      <li>Cross-game rank correlations are essentially zero for some pairs (Chess vs Poker), which the authors present as evidence for the anti-saturation-through-diversity claim: a leaderboard on any one game misses skills the others surface.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Platform code and match transcripts are shipped through Kaggle Game Arena; the arXiv report is the technical companion.</li>
+    </ul>
+
+    <h1 id="shanghai-ai-lab">Shanghai AI Laboratory</h1>
+
+    <h2 id="internw0-delta"><a href="https://arxiv.org/abs/2609.31394">InternW0-&Delta;: A World Action Model Bridging Predictive Dynamics and Actions with 20K+ Hours of Open Data</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper (Technical Report)</span>
+      <span>arXiv</span>
+      <span>2026-09-25 (announced 2026-09-28)</span>
+      <span>Robotics &middot; World action model &middot; MoT &middot; Video-action coupling</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Physical Intelligence Team, <strong>Shanghai AI Laboratory</strong>; arXiv:2609.31394v1 [cs.RO], submitted 2026-09-25, 48+ authors including Xingyu Miao, Zizun Li, Baole Fang, Kaiwen Song, Tenghui Wang, Hanxue Zhang, Yating Wang, Xudong Li, Yuping He, Xueyuan Wei et al. Project page: <a href="https://internrobotics.github.io/InternW0-Delta/">internrobotics.github.io/InternW0-Delta</a>. Frontier-lab affiliation is satisfied by the Shanghai AI Laboratory team majority.</li>
+      <li>InternW0-&Delta; is a direct follow-up to the <a href="https://arxiv.org/abs/2609.27656">InternW0</a> reviewed on 2026-09-24 (same author group, same MoT scaffolding). The &Delta; adds three named contributions on top of the InternW0 base: <em>Causal Imprint</em> for action-relevant predictive representations, <em>4D-aware representation distillation</em> from a frozen Track4World teacher, and a <em>sparse memory context</em> (anchor / recent / current) that keeps the action-inference path light.</li>
+      <li>The paper positions itself against <code>&pi;0.5</code>, <code>DreamZero</code>, <code>Motus</code> and Fast-WAM. The specific claim vs Fast-WAM is a shared design principle &mdash; separate future-video supervision from the action-inference path &mdash; but a different mechanism: Causal Imprint learns representations from training-only future supervision rather than distilling from a video generator, so inference-time has zero cost from the future-prediction branch.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; 30-block Mixture-of-Transformers with video and action experts.</strong>
+        <ul>
+          <li><em>Problem.</em> Coupling video prediction and action generation naively (one shared trunk) forces the action head to spend capacity on visual dynamics it doesn't need, and forces the video expert to accept action-specific fine-tuning noise. The result is that the same model can be trained to be a good video model or a good policy, but not both.</li>
+          <li><em>Mechanism.</em> Two pretrained experts &mdash; a video expert (visual dynamics, scene semantics, geometry) and an action expert (policy output) &mdash; are coupled through <code>30</code> directed Mixture-of-Transformers blocks. Each MoT block routes information in one direction (video &rarr; action) via cross-block attention, so gradients from the action loss cannot corrupt the video expert's representations, but the action expert can consume video features at every depth. The attention mask enforces this directionality per layer.</li>
+          <li><em>Why it works / why it beats prior.</em> Directed MoT preserves the pretrained video expert's representation quality while giving the action expert layerwise access to it &mdash; a stronger version of the two-tower or adapter approaches, because information flow at <em>every</em> block is denser than at any single fusion point. Compared to InternW0's original MoT block (undirected), the directed variant explicitly prevents action-loss backpropagation into video features, which the authors flag as the reason for the improvement.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Causal Imprint.</strong>
+        <ul>
+          <li><em>Problem.</em> Predictive video models help policies (Fast-WAM, DreamZero) but require running a video generator at inference time, which is prohibitively slow (<code>&gt;500</code> ms per action for full video rollout). If you skip the rollout, you lose the predictive signal entirely. And if you condition the policy on realized future frames during training (as some prior work does), you leak future information into the action head, so the model learns to expect ground-truth futures it will never have at deployment.</li>
+          <li><em>Mechanism.</em> Causal Imprint aggregates recent and current visual features into a set of <em>imprint tokens</em> that predict adjacent latent differences (&Delta;z) between successive frames. Supervision comes from actual future frames <em>only during training</em>: the imprint tokens are trained to encode &quot;what should change next&quot; without ever seeing the realized future. At inference, the imprint tokens are produced from the current observation alone and fed into the action expert as an auxiliary conditioning signal. No future frames are generated at deployment.</li>
+          <li><em>Why it works / why it beats prior.</em> The imprint captures &quot;future-relevant scene changes&quot; without requiring the model to synthesize pixels at inference &mdash; it distills the useful part of a full video generator (dynamics prediction) into a per-step feature that costs the same as any other token. Compared to Fast-WAM's separation of future-video supervision from action-inference, Causal Imprint further compresses the future-prediction signal from &quot;a full generated frame&quot; to &quot;a small set of predictive tokens,&quot; explaining the reported <code>5.11&times;</code> inference speedup.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; 4D-aware representation distillation via frozen Track4World.</strong>
+        <ul>
+          <li><em>Problem.</em> World action models trained on robot demonstrations tend to underweight geometry and motion (a 2D visual embedding suffices for many table-top tasks) and consequently generalize poorly to novel viewpoints or 3D configurations. Adding a full 3D scene understanding module inflates parameters and slows inference.</li>
+          <li><em>Mechanism.</em> A frozen <em>Track4World</em> teacher (a pretrained 4D representation model, meaning 3D geometry over time) supplies geometry- and motion-aware feature targets. The InternW0-&Delta; video expert is trained with an auxiliary MSE loss against these teacher features. This is training-only: the teacher is discarded at inference, adding zero computational cost to policy execution.</li>
+          <li><em>Why it works / why it beats prior.</em> Distillation from a specialist teacher is standard, but doing it against a 4D (spatio-temporal geometry) target on top of a 2D video backbone is what supplies the geometric prior the action expert relies on for novel-view generalization. Compared to end-to-end 3D-aware policies, this approach keeps the deployment model shape identical to a video/action MoT and pays only the training-time cost.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Sparse memory context (anchor / recent / current).</strong>
+        <ul>
+          <li><em>Problem.</em> A dense history of observations grows quadratically with episode length in an attention-based action model, blowing up latency; but the naive alternative (only the current frame) discards the task-context signal that long-horizon manipulation needs.</li>
+          <li><em>Mechanism.</em> The model maintains exactly three observation slots: the <em>anchor</em> (episode-start frame, encoding the initial task setup), the <em>recent</em> frame (immediately before the previous action chunk, encoding what just happened), and the <em>current</em> frame (present state). All three are fed to the video expert; the action expert consumes their MoT-routed representations.</li>
+          <li><em>Why it works / why it beats prior.</em> The three-frame budget is a much stronger signal than current-frame-only for phase-dependent tasks (e.g. &quot;still bolting on the wheel&quot; vs &quot;already moved on to the next part&quot;), and much cheaper than a sliding-window K observations. Compared to Fast-WAM's context, the explicit anchor slot supplies the task-setup signal that a rolling window loses after a few seconds.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Pre-training and training data</h3>
+    <ul>
+      <li>Total training corpus: over <strong>20,000 hours</strong> after processing &mdash; the paper claims &quot;the largest open-source corpus of its kind.&quot; The corpus integrates four heterogeneous sources:
+        <ul>
+          <li><em>Robot demonstrations.</em> 15 datasets including AgiBotWorld, RoboMIND, Dexora, RH20T, RDT-1B, RoboSet.</li>
+          <li><em>Egocentric human data.</em> EgoDex, EgoVerse. Aligned to robot format via action alignment, kinematic alignment, visual alignment, and action-speed alignment.</li>
+          <li><em>UMI data.</em> Hy-UMI-10K.</li>
+          <li><em>Ego2Robot conversions.</em> Human demonstrations retargeted to robot action space.</li>
+        </ul>
+      </li>
+      <li>Data-processing pipeline: signal-anomaly and consistency filtering, static-boundary trimming, visual-quality filtering, action-magnitude guard, instruction-correctness verification. Filtered data indices are shipped with versioned references to the original samples so results are reproducible against the underlying open datasets.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li>Post-training on real-robot platforms is a light adaptation of the same pretrained checkpoint: two gripper-based and two dexterous-hand platforms are supported without re-pretraining. The paper does not describe an RL post-training stage (this is behavior-cloning-heavy, in line with the &pi;0-family lineage).</li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>Simulation benchmarks:</li>
+    </ul>
+    <table>
+      <thead><tr><th>Benchmark</th><th>Metric</th><th>InternW0-&Delta;</th></tr></thead>
+      <tbody>
+        <tr><td><code>LIBERO-Plus</code> Clean2Clean</td><td>Success rate</td><td>90.0%</td></tr>
+        <tr><td><code>LIBERO-Plus</code> Clean2Random</td><td>Success under distribution shift</td><td><strong>92.8%</strong></td></tr>
+        <tr><td><code>RoboTwin 2.0</code> Clean2Random</td><td>Bimanual success rate</td><td>71.9%</td></tr>
+        <tr><td><code>EBench</code></td><td>Mobile bimanual overall</td><td>66.0</td></tr>
+        <tr><td><code>RoboDojo</code></td><td>Average success</td><td>23.9% (&quot;nearly double&quot; strongest prior WAM)</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Deployment: <code>152.8</code> ms round-trip latency on a single NVIDIA RTX 5090 GPU, corresponding to a <code>5.11&times;</code> speedup versus Fast-WAM (the paper's most direct baseline). Real-robot support spans four platforms (two gripper, two dexterous hand) using the same pretrained backbone.</li>
+      <li>The <code>LIBERO-Plus</code> Clean2Random score (<code>92.8%</code>) is notable: it exceeds the Clean2Clean number (<code>90.0%</code>), which the authors attribute to the distribution-shift set inadvertently sampling easier task subsets rather than to the model generalizing better under shift than in-distribution &mdash; but the paper does not explicitly investigate this inversion.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The abstract page and HTML we could reach discuss ablations of the four named contributions individually against the InternW0 base (i.e., removing Causal Imprint, removing 4D distillation, replacing directed MoT with undirected, removing the anchor slot), but the specific numeric deltas are in figures we could not extract as text.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Announced deliverables: training code and model weights, the data-processing pipeline, model-development infrastructure (feature caching, layerwise optimization), deployment utilities, and versioned filtered-data indices. Project page: <a href="https://internrobotics.github.io/InternW0-Delta/">internrobotics.github.io/InternW0-Delta</a>.</li>
+    </ul>
+
+    <h1 id="baidu">Baidu</h1>
+
+    <h2 id="h2s"><a href="https://arxiv.org/abs/2609.31382">Highlight-Then-Summarize: Learning to Compress Evidence for Long-Context Understanding</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-25 (announced 2026-09-28)</span>
+      <span>Long-context compression &middot; RL &middot; Evidence retrieval</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Zhaoyuan Xia and Tong Mo (<strong>Peking University</strong>), Jianguang Jiang, Gaofeng Lu, Zhenyu Jiao, Xing Yuan, and Dai Dai (<strong>Baidu Inc.</strong>), Qinghongbing Xie, Yung Xiang Hue, and Long Zeng (<strong>Tsinghua University</strong>). arXiv:2609.31382v1 [cs.CL], submitted 2026-09-25, announced in the Monday 2026-09-28 batch. Baidu on the author list satisfies the frontier-lab filter.</li>
+      <li>The problem: long-context LLMs are asked to reason over <code>128K</code>-token inputs where the relevant evidence is a small fraction, and forcing the model to attend to everything wastes generation budget on irrelevant content. The paper proposes a <em>compress-then-reason</em> pipeline: (1) highlight source-grounded question-relevant spans; (2) condense them into a compact question-conditioned summary; (3) answer from the summary.</li>
+      <li>Named artifacts: <code>H2S-Dataset</code> (<code>6,647</code> training examples averaging <code>43.9K</code> tokens of context, drawn from <code>11</code> benchmarks), <code>H2S-RL</code> (reinforcement-learning reward for evidence selection + summarization quality), <code>H2S-Bench</code> (seven-task evaluation suite), <code>H2S-14B</code> (the released model).</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Highlight-Then-Summarize (H2S) compress-then-reason paradigm.</strong>
+        <ul>
+          <li><em>Problem.</em> A single-pass long-context reader has to allocate attention across the full input and generate the answer from that mixture. When evidence is sparse (a few paragraphs out of 128K tokens), most attention is wasted, and if the output budget is small (a few thousand tokens), the model may run out of budget before actually stating the answer. Simple retrieval + reader loses grounding because the reader can't verify claims against the source.</li>
+          <li><em>Mechanism.</em> H2S is a two-stage prompt: stage 1 (Highlight) instructs the model to identify source-grounded question-relevant evidence spans as verbatim quotes; stage 2 (Summarize) has the same model rewrite those quotes into a compact question-conditioned summary; stage 3 (Answer) is a small final generation from the summary. Training is via <code>H2S-RL</code>: the reward decomposes into evidence-selection quality (does the highlighted span support the answer?) and summarization quality (is the summary faithful and covering?), avoiding a single opaque outcome-only signal.</li>
+          <li><em>Why it works / why it beats prior.</em> Splitting the compression from the reasoning lets the output budget concentrate on the answer rather than on regurgitating irrelevant context, and the process-level rewards keep the highlight step from drifting toward hallucination. Compared to single-pass long-context reading, H2S-14B is smaller and cheaper; compared to retrieve-then-read (RAG) pipelines, the highlight stage stays inside the model's context so it can verify claims against the source in one pass.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>Headline result: <code>H2S-14B</code> reaches an average score of <code>32.60</code> on <code>H2S-Bench</code>, outperforming <code>Qwen3.8-27B</code> by <code>10.17</code> points at roughly half the parameter count.</li>
+      <li>Performance retention under output-budget compression: <code>97.1%</code> of the 16K-output baseline score is preserved when the output budget is cut to 4K tokens. This is the deployment-relevant metric: cheaper generation without meaningful accuracy loss.</li>
+      <li>Evidence-Summary Quality (the paper's own metric on selection + summarization faithfulness) is reported as highest among evaluated open-source models; specific numbers vs baselines are in figures not extractable as text here.</li>
+      <li>Context budget: <code>128K</code> input tokens, <code>4K</code> output tokens. Average context in the training set: <code>43.9K</code> tokens across <code>6,647</code> examples drawn from <code>11</code> upstream benchmarks.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The paper's ablation table (breaking down H2S into Highlight-only, Summarize-only, and end-to-end with process rewards vs outcome-only) is referenced but the specific per-cell numbers are in figures not accessible in the text-only extraction.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Code and data resources are released via GitHub per the abstract statement.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
