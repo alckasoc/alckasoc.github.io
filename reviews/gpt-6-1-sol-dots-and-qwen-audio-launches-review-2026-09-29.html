@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenAI DevDay 2026 &amp; Qwen-Audio-3.1-Realtime Launches Review &mdash; September 29, 2026 | Auto Lit Review</title>
+<meta name="description" content="OpenAI DevDay 2026 (2026-09-29): GPT-6.1 Sol lands at $2/$10 per M tokens with $0.10/M cached input, matching GPT-6 Astra on DeepSWE v1.1 and Terminal-Bench Science 0.1 at roughly one-fifth Astra's per-task cost, and beating Opus 5.5 by 2.2pp on AutomationBench 1.0.6 at one-third the cost; Dots launches always-on GPT-6-Astra-powered agents with per-dot cloud computers, browser, and 4,000+ app connectors for Pro and Business Premium. Alibaba Token Foundry ships Qwen-Audio-3.1-Realtime with a three-layer Think/Act/Speak-and-Coordinate framework driving background-speech response rates from 73.0% to 13.0% on Full-Duplex-Bench v1.5, +8.04pp on Long-AMC, +3.6pp on tau-Voice, and FLEURS WER 3.98 (from 9.01). Two Tier 2 papers close the window: Google DeepMind/EPFL/UCL Gatsby's Simplex Diffusion Models lift discrete diffusion onto the probability simplex, admit closed-form reverse transitions and cross-entropy training, and hit 32.1% GSM8K in 8 distilled steps versus discrete diffusion's 21.4% in 128; Tencent Foundation Model Department/CASIA's encoder-free scaling laws show compute-optimal allocation shifts from a=0.464 to a=0.570 (multimodal), predicting encoder-free/encoder-based crossover at 6.1e21 FLOPs (1.2e22 under 5x overtraining)." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">September 29, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#openai">OpenAI</a>
+          <ul>
+            <li class="toc-h2"><a href="#gpt-6-1-sol">GPT-6.1 Sol &amp; DevDay 2026: Near-Astra Intelligence at One-Fifth the Cost</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba</a>
+          <ul>
+            <li class="toc-h2"><a href="#qwen-audio-3-1-realtime">Qwen-Audio-3.1-Realtime: Reliable Agentic Voice via Think/Act/Speak-and-Coordinate</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#google">Google DeepMind</a>
+          <ul>
+            <li class="toc-h2"><a href="#simplex-diffusion">Simplex Diffusion Models: Discrete Diffusion on the Probability Simplex</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#tencent">Tencent</a>
+          <ul>
+            <li class="toc-h2"><a href="#encoder-free-scaling">How Far Are We from Removing the Visual Encoder? Scaling Laws for Encoder-Free Multimodal Pretraining</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; September 29, 2026</div>
+    <h1 class="page-title">OpenAI DevDay 2026 &amp; Qwen-Audio-3.1-Realtime Launches</h1>
+    <div class="page-meta">4 papers &middot; 4 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-09-29 22:17 UTC (steady state, one day after the 2026-09-28 Sonnet 5.5 review) closes with two Tier 1 launches and two Tier 2 papers. <strong>OpenAI</strong> runs <a href="https://openai.com/index/devday-2026-recap/">DevDay 2026</a> and ships <a href="https://openai.com/index/introducing-gpt-6-1-sol/"><code>GPT-6.1 Sol</code></a> (API ID <code>gpt-6.1-sol</code>) at <code>$2</code>/<code>$10</code> per million input/output tokens with a <code>$0.10</code>/M cached-input price &mdash; a <code>50%</code> cut on cached input versus <code>GPT-6 Sol</code> and a <code>95%</code> discount versus its own standard input rate. The launch is co-timed with <a href="https://openai.com/index/introducing-dots/"><code>Dots</code></a>, an always-on-agent product powered by <code>GPT-6 Astra</code> that runs on a per-dot cloud computer and browser and connects to <code>4,000+</code> apps for Pro and Business Premium subscribers. <strong>Alibaba</strong>'s Token Foundry team publishes the <a href="https://arxiv.org/abs/2609.25176"><code>Qwen-Audio-3.1-Realtime</code></a> technical report alongside a <code>qwen-audio-3.1-realtime-plus</code> WebSocket endpoint at <code>$6.4</code>/M audio-input, <code>$0.8</code>/M text-input, and <code>$24</code>/M output tokens. Two Tier 2 papers survive dedup and the frontier-lab affiliation filter from the 2026-09-29 arXiv batch: <strong>Google DeepMind</strong>/EPFL/UCL Gatsby's <a href="https://arxiv.org/abs/2609.35553"><em>Simplex Diffusion Models</em></a> lifts discrete diffusion onto the probability simplex; and <strong>Tencent</strong> Foundation Model Department/CASIA's <a href="https://arxiv.org/abs/2609.35457"><em>How Far Are We from Removing the Visual Encoder?</em></a> derives compute-optimal allocation scaling laws for encoder-free multimodal pretraining and predicts the crossover budget with encoder-based baselines.</p>
+      <h3>Competitiveness</h3>
+      <p>The headline number is that <code>GPT-6.1 Sol</code> operates at Sonnet-tier pricing (<code>$2</code>/<code>$10</code> per M input/output tokens, identical to Anthropic's <code>Claude Sonnet 5.5</code> launched 2026-09-28) while OpenAI reports it matches <code>GPT-6 Astra</code> on <code>DeepSWE v1.1</code> at roughly one-fifth Astra's cost, and lands within <code>2.1</code> percentage points of Astra on <code>OSWorld 2.0</code> at maximum reasoning effort for less than half the cost. On <code>AutomationBench 1.0.6</code> it scores <code>+2.2</code> points above <code>Claude Opus 5.5</code> at medium reasoning at roughly one-third Opus 5.5's per-task cost, and <code>+4.8</code> above <code>GPT-6 Sol</code> at the same settings. On <code>Terminal-Bench Science 0.1</code> it more than doubles <code>GPT-6 Sol</code>'s score at maximum reasoning for less than half the cost, averaging <code>$5.47</code> per task versus <code>Opus 5.5</code>'s <code>$23.21</code> and <code>GPT-6 Astra</code>'s <code>$23.80</code>. Factuality-error rate at low reasoning drops <code>32%</code> versus <code>GPT-6 Sol</code> (from <code>11.4%</code> to <code>7.7%</code>), landing within <code>1.9</code> points of <code>Astra</code>. Broken-search-tool disclosure failure sits at <code>2.1%</code> versus <code>Astra</code>'s <code>1.5%</code>, <code>GPT-6 Sol</code>'s <code>4.9%</code>, and <code>GPT-6 Luna</code>'s <code>28.7%</code>. <code>Qwen-Audio-3.1-Realtime</code>'s numbers position it at parity with the closed-frontier voice tier: <code>τ-Voice</code> agentic task success <code>82.0%</code> (from <code>78.4%</code>); <code>FLEURS</code> WER <code>3.98</code> (from <code>9.01</code>); <code>Full-Duplex-Bench v1.5</code> background-speech response rate <code>0.1300</code> (from <code>0.7300</code>); Chinese multi-turn safety-attack success drops from <code>80.50%</code> to <code>26.00%</code>, English from <code>63.50%</code> to <code>23.50%</code>. Interruption stop latency of <code>1.116</code> s remains far behind <code>GPT-Realtime-2</code>'s <code>0.383</code> s (per the article summary), and the human red-team success rate sits at <code>92.00%</code> versus <code>GPT-Realtime-2</code>'s <code>96.00%</code> &mdash; competitive but not leading on those two axes. On the research side, <em>Simplex Diffusion Models</em> at <code>8</code> distilled steps solve <code>32.1%</code> of GSM8K versus discrete diffusion's <code>21.4%</code> at <code>128</code> steps; the Tencent scaling-law paper predicts encoder-free multimodal models will overtake encoder-based at <code>6.1&times;10<sup>21</sup></code> FLOPs (<code>1.2&times;10<sup>22</sup></code> under <code>5&times;</code> overtraining), which shifts how large open-source labs should budget compute for pixel-input LMs.</p>
+      <h3>New frontier releases</h3>
+      <p>Two flagship launches in-window: <strong>GPT-6.1 Sol</strong> from OpenAI on 2026-09-29 (a same-day drop-in for the <code>gpt-6-sol</code> tier of ChatGPT/Codex/API and the second-newest model in the <code>GPT-6</code> family after <code>GPT-6 Astra</code>), and <strong>Qwen-Audio-3.1-Realtime</strong> from Alibaba's Token Foundry on 2026-09-28 (API-only via QwenCloud WebSocket, no open weights). <code>Dots</code> is a co-timed product launch on the <code>GPT-6 Astra</code> base rather than a new model, and is treated below as part of the same OpenAI Tier 1 entry per the launch-group rule. <code>Ultrafast</code> speed tier for <code>GPT-6 Astra</code> (<code>300</code> tok/s, up to <code>8&times;</code> Codex speedup) also shipped at DevDay 2026 but is a serving-mode variant of an existing model, not a new model release. No other frontier-lab model weights or launch blog posts qualified for Tier 1 inclusion in the window: <code>Claude Sonnet 5.5</code> shipped 2026-09-28 (covered in the 2026-09-28 review); <code>Meta Muse Spark 1.3</code> shipped 2026-09-03 (out of window). Business items in-window &mdash; Anthropic IPO filing at <code>&gt;$2T</code> valuation, OpenAI targeting <code>$30B</code> at <code>$1.4T</code> pre-money, AMD acquiring World Labs for <code>$8.2B</code> &mdash; are not research artifacts and are not included.</p>
+    </section>
+
+    <!-- BODY -->
+
+    <h1 id="openai">OpenAI</h1>
+
+    <h2 id="gpt-6-1-sol"><a href="https://openai.com/index/introducing-gpt-6-1-sol/">GPT-6.1 Sol &amp; DevDay 2026: Near-Astra Intelligence at One-Fifth the Cost</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch Post + Product Announcements + System Card Addendum</span>
+      <span>openai.com</span>
+      <span>2026-09-29</span>
+      <span>Model launch &middot; Always-on agents &middot; Agentic coding &middot; Pricing</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>OpenAI DevDay 2026</strong> (2026-09-29) shipped a bundle of ~<code>20</code> announcements. The two Tier 1-adjacent artifacts are <a href="https://openai.com/index/introducing-gpt-6-1-sol/"><code>GPT-6.1 Sol</code></a> (a new model in the <code>GPT-6</code> family) and <a href="https://openai.com/index/introducing-dots/"><code>Dots</code></a> (an always-on agent product powered by <code>GPT-6 Astra</code>). The remainder is developer tooling (Codex CLI voice steering, <code>/agents</code> view, Code Review in ChatGPT desktop, Codex Security Cloud with automated finding investigation), API surface (Decisions API for finite-answer real-time decision making, Agents API extended with computer use, AWS Bedrock Managed Agents partnership), collaboration surface (ChatGPT Space team hubs, Pages collaborative documents, Collaborative Slides multi-agent editing, Team Tasks, <code>@ChatGPT</code> integrations for Slack and Teams, macOS Meetings plugin), Marketplace (<code>32</code> partners from Adobe, Figma, Salesforce, HubSpot, Harvey, Legora, Palo Alto Networks, CrowdStrike, plus <code>Sign in with ChatGPT</code> across <code>16</code> platforms including Notion, Vercel, Cognition Devin), and Private Intelligence (Zero Data Retention plus Private Safety Processing; Private Inference preview fall 2026).</li>
+      <li><strong>Pricing.</strong> <code>GPT-6.1 Sol</code> ships at <code>$2</code> per million input tokens, <code>$10</code> per million output tokens, <code>$0.10</code> per million cached input tokens. The cached-input price is <code>50%</code> below <code>GPT-6 Sol</code>'s cached rate and <code>95%</code> below <code>GPT-6.1 Sol</code>'s own standard input rate. For reference, <code>GPT-6 Astra</code> is <code>$10</code>/<code>$50</code> per M input/output with <code>$1</code>/M cached; <code>GPT-6.1 Sol</code> is roughly one-fifth Astra's per-token cost.</li>
+      <li><strong>Positioning.</strong> The launch page frames <code>GPT-6.1 Sol</code> as "near-Astra intelligence for a fifth of the price," and structures every headline benchmark as a two-way trade (<code>Sol</code>-to-<code>Astra</code> quality gap vs. cost multiple; <code>Sol</code>-to-<code>Opus 5.5</code> quality lead vs. cost multiple). The pricing is identical to <a href="https://www.anthropic.com/news/claude-sonnet-5-5"><code>Claude Sonnet 5.5</code></a> (also <code>$2</code>/<code>$10</code>) launched 2026-09-28. Availability: all API, Plus, Pro, Business, Enterprise, Education users, including in ChatGPT Work and Codex.</li>
+      <li><strong>Ultrafast tier.</strong> A parallel <code>GPT-6 Astra Ultrafast</code> serving mode launched at <code>~300</code> tokens/s (~<code>8&times;</code> normal in Codex, ~<code>6&times;</code> in the API), available now in the API and in Codex/ChatGPT Work for Pro 500 and Enterprise, with a new <code>Pro 500</code> tier priced at <code>25&times;</code> the ChatGPT Plus allowance and Ultrafast included. Ultrafast is a decoding-throughput variant of an existing model, not a separate release, so it does not qualify as a Tier 1 launch on its own.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>OpenAI does not disclose parameter count, context length, mixture-of-experts vs dense design, attention variant, or any low-level architecture detail for <code>GPT-6.1 Sol</code>. The launch page describes it as an upgrade over <code>GPT-6 Sol</code> with "similar methods as <code>GPT-6 Astra</code>" per the DevDay presentation (see also the 2026-09-23 GPT-6 Sol/Luna launch review).</li>
+      <li>Reasoning effort settings <code>low</code>, <code>medium</code>, and <code>maximum</code> (with an unnamed <code>xhigh</code> tier implied in the benchmark presentation) are used to trade quality for cost, matching the effort-scaling framing of prior <code>GPT-6</code> releases.</li>
+      <li><strong>Named contribution &mdash; Ultrafast serving mode.</strong>
+        <ul>
+          <li><em>Problem.</em> Agentic and Codex workflows are latency-sensitive; a Codex run that generates <code>10k</code> tokens at <code>~40</code> tok/s spends four minutes on decoding alone, while user attention drops off after tens of seconds. Batched decoding gains do not help the single-user case.</li>
+          <li><em>Mechanism.</em> Ultrafast is a serving-mode variant of <code>GPT-6 Astra</code> that raises single-stream output rate to <code>~300</code> tok/s (OpenAI does not disclose whether the speedup comes from speculative decoding, MoE token routing at lower activation counts, kernel changes, or something else). Codex sees an <code>~8&times;</code> speedup; the general API sees <code>~6&times;</code>.</li>
+          <li><em>Why it works / why it beats prior.</em> The <code>Astra</code> model itself is unchanged &mdash; quality per task is the same &mdash; but wall-clock latency comes down enough that a Codex agent completing a bug-fix workflow feels interactive rather than batched. This is a decoding-throughput mechanism rather than an intelligence mechanism, so quality benchmarks do not shift.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Dots (always-on GPT-6 Astra-powered agents).</strong>
+        <ul>
+          <li><em>Problem.</em> Agentic products to date (Codex, ChatGPT Tasks, Perplexity Comet, Devin) sit on the interaction boundary: the user starts a task, the agent runs, the user reads the output. Background work &mdash; watching customer feedback, catching regressions the moment CI reports them, rerunning experiments with new data as it arrives &mdash; requires either a schedule (cron) or the user manually starting each turn.</li>
+          <li><em>Mechanism.</em> Each Dot runs on its own dedicated cloud computer with its own browser, its own set of connected apps (up to the <code>4,000+</code> in the OpenAI plugin ecosystem), and its own persistent workspace. It is powered by <code>GPT-6 Astra</code>. Dots operate on two tracks: <em>proactive research</em> uses read-only versions of the connected apps to watch for anomalies, and <em>active work</em> uses full-access tools with an auto-reviewer that checks each action against user instructions and OpenAI safety rules. Sensitive actions (password changes, payments) always require human approval. Dot conversations do not count toward ChatGPT limits; Codex/ChatGPT Work tasks still count. Custom Rules let users permit, require-approval, or block specific tool actions per Dot. Enterprise <em>specialist Dots</em> can be given organization-assigned identity and credentials, integrated with Microsoft Agent 365 governance, and scoped to specific responsibilities (procurement, invoicing, contracting).</li>
+          <li><em>Why it works / why it beats prior.</em> The dedicated cloud computer eliminates the "wake and warm" latency of ephemeral Codex sandboxes; the read-only proactive track eliminates the safety risk of an always-on agent with write access; and the per-Dot plugin scope prevents cross-project credential leakage. Compared to Anthropic's <a href="https://www.anthropic.com/claude-opus-5-5">Claude Opus 5.5</a> agentic setup (which is still turn-driven inside ChatGPT/Console) and to Devin (which requires per-task setup), Dots is the first frontier-lab product where the default is "the agent runs and comes back to you," not "you drive the agent." Availability: Pro and Business Premium (first Dot included), Enterprise/Edu/Healthcare beta with admin opt-in.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Pre-training and training data</h3>
+    <ul>
+      <li>OpenAI's public statement per the launch page: <code>GPT-6.1 Sol</code> is "trained with similar methods as <code>GPT-6 Astra</code>" and represents "a significant upgrade over <code>GPT-6 Sol</code>." No token count, data mix, or corpus timing details are disclosed. Knowledge cutoff is not stated on the launch page.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li>The launch page does not disclose an RL algorithm (PPO/DPO/GRPO/GSPO), reward-model architecture, SFT recipe, or distillation strategy for <code>GPT-6.1 Sol</code>. The alignment claim on the page is that <code>GPT-6.1 Sol</code> shows "substantial improvements over <code>GPT-6 Sol</code> in our alignment evaluations, bringing it closer to <code>GPT-6 Astra</code>," specifically citing the broken-search-tool disclosure metric (see Evaluation &amp; results).</li>
+      <li>The DevDay presentation frames <code>Dots</code>' behavior policy as an auto-review layer wrapped around the base <code>GPT-6 Astra</code> policy: every action taken by a Dot is checked against user Custom Rules and OpenAI safety rules before dispatch, with pause/stop authority granted to the monitoring system on safety concern. This is a deployment-time policy layer rather than a post-training modification of <code>Astra</code>'s weights.</li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>Headline benchmarks as published on the <code>GPT-6.1 Sol</code> launch page. OpenAI reports gaps in percentage points and cost multiples rather than absolute scores for most rows; only Terminal-Bench Science 0.1's <code>68.1%</code> Astra baseline and factuality's <code>7.7%</code>/<code>11.4%</code> error rates are given as absolute values.</li>
+    </ul>
+    <table>
+      <thead><tr><th>Benchmark</th><th>Setting</th><th>GPT-6.1 Sol result</th><th>vs. reference</th></tr></thead>
+      <tbody>
+        <tr><td><code>DeepSWE v1.1</code></td><td>Sol effort matched to Astra</td><td>Matches <code>GPT-6 Astra</code></td><td><code>~1/5</code> Astra cost; <code>+6.4</code> pp vs <code>GPT-6 Sol</code></td></tr>
+        <tr><td><code>GDP.pdf</code></td><td>&mdash;</td><td>&gt; <code>Opus 5.5</code>; approaches <code>Astra</code></td><td>&lt; <code>1/2</code> Opus 5.5 cost; <code>~1/5</code> Astra cost</td></tr>
+        <tr><td><code>AutomationBench 1.0.6</code></td><td>medium reasoning</td><td>+<code>2.2</code> pp vs <code>Opus 5.5</code></td><td><code>~1/3</code> Opus 5.5 cost; +<code>4.8</code> pp vs <code>GPT-6 Sol</code></td></tr>
+        <tr><td><code>OSWorld 2.0</code></td><td>maximum reasoning</td><td>+<code>7</code> pp vs <code>GPT-6 Sol</code></td><td>&lt; <code>1/2</code> Sol cost; within <code>2.1</code> pp of <code>Astra</code> at <code>~1/7</code> Astra cost</td></tr>
+        <tr><td><code>Terminal-Bench Science 0.1</code></td><td>maximum reasoning</td><td>&gt; <code>2&times;</code> <code>GPT-6 Sol</code> score</td><td>Avg <code>$5.47</code>/task vs <code>$23.21</code> (<code>Opus 5.5</code>) / <code>$23.80</code> (<code>Astra</code>); Astra baseline <code>68.1%</code></td></tr>
+        <tr><td>Factuality (error rate)</td><td>low reasoning</td><td><code>7.7%</code></td><td>vs <code>GPT-6 Sol</code>'s <code>11.4%</code> (<code>&minus;32%</code>); within <code>1.9</code> pp of <code>Astra</code></td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Broken-search-tool disclosure failure rates on the OpenAI safety-transparency panel: <code>Astra</code> <code>1.5%</code>, <code>GPT-6.1 Sol</code> <code>2.1%</code>, <code>GPT-6 Sol</code> <code>4.9%</code>, <code>GPT-6 Luna</code> <code>28.7%</code>. The launch page states "no attempts to bypass automated safety reviewers observed" during evaluation and describes improved transparency about limitations and respect for user intent.</li>
+    </ul>
+
+    <h3>Safety and limitations</h3>
+    <ul>
+      <li>Full details are documented in the <a href="https://deploymentsafety.openai.com/gpt-6-1-sol"><code>GPT-6.1 Sol</code> system card addendum</a> on OpenAI's deployment safety portal (an addendum rather than a standalone system card, indicating the base card is <code>GPT-6</code>-family shared).</li>
+      <li>The launch page's safety framing centers on three claims: (i) broken-search-tool disclosure rate approaches <code>Astra</code>, (ii) no attempts to bypass automated safety reviewers were observed during evaluation, and (iii) transparency about model limitations and user-intent respect improved over <code>GPT-6 Sol</code>. Concrete cyber/CB/bio/agentic evaluation numbers are not reproduced on the launch page.</li>
+      <li>For <code>Dots</code>, the safety mechanism is architectural: proactive-research tools are read-only; active-work tools go through an auto-reviewer; sensitive actions (credential changes, payments) always require a human in the loop; Business/Enterprise workspaces exclude content from model improvement by default; proactive-research and Dot notes are never used for training.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li><code>GPT-6.1 Sol</code>: API model ID <code>gpt-6.1-sol</code>, available same day 2026-09-29. Access in Plus, Pro, Business, Enterprise, Education plans and via the API. Codex and ChatGPT Work exposed at launch.</li>
+      <li><code>Dots</code>: Pro and Business Premium (first Dot included at no additional cost, allowance for deeper work with extended limits for the first month after launch, additional Dots via scale allowance). Enterprise/Edu/Healthcare beta with admin toggle (disabled by default). Eligible-market only; not all regions.</li>
+      <li><code>GPT-6 Astra Ultrafast</code>: API now; ChatGPT Work/Codex for Pro 500 and Enterprise. Pro 500 = <code>25&times;</code> ChatGPT Plus allowance.</li>
+    </ul>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="qwen-audio-3-1-realtime"><a href="https://arxiv.org/abs/2609.25176">Qwen-Audio-3.1-Realtime: Reliable Agentic Voice via Think/Act/Speak-and-Coordinate</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Technical Report + Managed API Launch</span>
+      <span>arXiv</span>
+      <span>2026-09-28</span>
+      <span>Voice model launch &middot; Full-duplex &middot; Tool-use RL &middot; Multilingual speech</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>Alibaba Token Foundry</strong> (formerly Qwen team) shipped <a href="https://arxiv.org/abs/2609.25176"><code>Qwen-Audio-3.1-Realtime</code></a> on 2026-09-28: API-only via QwenCloud WebSocket as <code>qwen-audio-3.1-realtime-plus</code>, no open weights. Companion release <code>Qwen-Audio-3.1-ASR-Flash-Filetrans</code> is an offline transcription model with hot-word support, speaker separation, multilingual and Chinese dialect ASR at <code>$0.15</code>/<code>$0.47</code> per M input/output.</li>
+      <li>Positioning: reliable agentic voice interaction. The report frames prior real-time voice models as either half-duplex (missing turn-taking) or full-duplex-but-fragile (fillers, background-speech false replies, weak tool use). <code>v3.1</code>'s pitch is that it holds full-duplex turn-taking while adding executable tool-call reliability and multilingual ASR gains.</li>
+      <li>Pricing (per M tokens): audio input <code>$6.4</code>; text input <code>$0.8</code>; combined text-and-audio output <code>$24</code> (output text is not charged separately). Context window <code>262K</code> total (<code>245K</code> max input + <code>16K</code> max output). Function calling, web search, structured outputs, context cache, fine-tuning supported. <code>14</code> languages covered in the multilingual benchmark battery.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Two-model architecture sharing an Audio Encoder + LLM design.</strong> A <em>full-duplex decision model</em> processes streaming audio and decides at each step whether to listen, speak, stop, or resume. A <em>speech-to-text model</em> generates the response content as text on the same audio input. Text is then converted to streaming speech by a <em>context-aware voice renderer</em> that uses conversation history and acoustic context. The two models share the same audio encoder and language-model backbone; only heads differ.</li>
+      <li><strong>Named contribution &mdash; M2-OPD (Multimodality and Multi-Teacher On-Policy Distillation, "Think" layer).</strong>
+        <ul>
+          <li><em>Problem.</em> An audio-native LM has to inherit a text LM's reasoning and knowledge without an intermediate transcription step, and it has to absorb specialised audio understanding (emotion, pragmatic intent, acoustic scenes) without splintering into a separate model per skill.</li>
+          <li><em>Mechanism.</em> M2-OPD runs two on-policy distillation stages on <em>student-generated</em> trajectories. In <em>Multimodality OPD</em>, the Audio Student policy is supervised by a Text Teacher scoring student prefixes on text-equivalent prompts, plus a frozen Audio Reference giving audio-conditioned distributions on the same contexts &mdash; the student pulls text-LM behavior across through the Text Teacher term and audio grounding through the reference term. In <em>Multi-Teacher OPD</em>, domain-specific audio experts (each independently trained via GRPO on emotion, pragmatic intent, or acoustic-scene tasks) supervise the main model's own trajectories at the token level, consolidating specialist behavior into one deployable AudioLM. Trained on approximately <code>1M</code> hours of paired audio-text data spanning audio understanding, spoken instruction following, multi-turn interaction, tool-oriented requests, emotion, empathy, pragmatic intent, and acoustic-scene understanding.</li>
+          <li><em>Why it works / why it beats prior.</em> On-policy distillation avoids the exposure-bias failure of teacher-forced SFT on paired transcripts (where the audio student's outputs during deployment drift out of the teacher's training distribution). Splitting supervision across a text teacher and a frozen audio reference is what lets the student absorb text-LM knowledge without losing audio conditioning; multi-teacher token-level distillation lets one deployable model carry several audio specialisations without model-per-skill routing.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Self-evolving executable environments with three validation gates ("Act" layer).</strong>
+        <ul>
+          <li><em>Problem.</em> Voice-agent tool use requires the model to select a tool, ground its parameters, verify state, and report back &mdash; and existing tool-use RL work grades all of those under one trajectory-level reward, which conflates a wrong tool choice with a right tool call reported badly. Training environments also age out as tool contracts change.</li>
+          <li><em>Mechanism.</em> A pipeline generates executable environments (tools, policies, databases, tasks) and admits each through three gates: a <em>static gate</em> replays a reference solution from initial database state and checks expected results, permitted writes, policy clauses, and information boundaries; a <em>rollout gate</em> evaluates model trajectories against database results, write operations, and behavioral requirements (confirmation, truthful status reporting); a <em>difficulty gate</em> runs each task multiple times and labels it as consistently solved, consistently failed, or boundary. Only boundary-case tasks feed into GRPO training, run at dialogue-, milestone-, and turn-level rollout granularities.</li>
+          <li><em>Why it works / why it beats prior.</em> Separating tool selection, parameter grounding, state verification, and progress communication into gate-checked signals means GRPO's advantage can attribute credit to the right decision point rather than smearing over the whole rollout. Filtering to boundary tasks concentrates learning signal on rollouts where the model is uncertain, which is where policy-gradient methods extract the most information per step.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Full-duplex speak-and-coordinate policy.</strong>
+        <ul>
+          <li><em>Problem.</em> Full-duplex speech agents fail in three characteristic ways: talking through user interruptions, replying to overheard background chatter, and emitting fillers ("um", "hmm") that read as hesitation. Prior full-duplex baselines respond to background speech ~<code>73%</code> of the time on <code>Full-Duplex-Bench v1.5</code>.</li>
+          <li><em>Mechanism.</em> The Speak-and-Coordinate layer governs three orthogonal policy dimensions: <em>how to speak</em> (persona, empathy, expression constraints), <em>when to speak</em> (pause handling, turn-taking, interruption response), and <em>whether to speak or act</em> (tool triggers, verification requirements, capability boundaries). The full-duplex decision model gates output at millisecond scale on the acoustic stream, while the S2T path composes reply content independently.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior full-duplex systems couple speech-timing decisions to content generation, so a slow content stream produces false fillers. Decoupling the timing model from the content model lets the timing head suppress speech during background-only audio without waiting for the S2T path to finish, dropping background-speech response rate from <code>73.0%</code> on v3.0 to <code>13.0%</code> on v3.1 and cutting filler rate from <code>0.7590</code> to <code>0.2960</code> on v3.0-equivalent evaluations.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2609.25176v1/interaction_loop_paper.png" alt="Conceptual interaction loop and three-layer Think/Act/Speak-and-Coordinate framework" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). Conceptual interaction loop and three technical layers &mdash; Think (M2-OPD over ~1M hours of paired audio-text), Act (GRPO with executable environments and three validation gates), Speak-and-Coordinate (full-duplex timing head + content model).</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://arxiv.org/html/2609.25176v1/model_framework_paper.png" alt="Qwen-Audio-3.1-Realtime model framework: shared Audio Encoder+LLM feeding a full-duplex decision head and a speech-to-text head, then a context-aware voice renderer" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). Shared Audio Encoder + LLM feeds a full-duplex decision head (listen/speak/stop/resume) and a speech-to-text head; the S2T output plus conversation history and acoustic context enter a context-aware voice renderer for streaming speech.</figcaption>
+    </figure>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>Core comparison of <code>v3.0</code> and <code>v3.1</code> on the paper's benchmark battery:</li>
+    </ul>
+    <table>
+      <thead><tr><th>Benchmark</th><th>Metric</th><th>v3.0</th><th>v3.1</th><th>Change</th></tr></thead>
+      <tbody>
+        <tr><td><code>τ-Voice</code> (half-duplex S2T)</td><td>Overall task success</td><td>78.4%</td><td><strong>82.0%</strong></td><td>+3.6 pp</td></tr>
+        <tr><td><code>SpeechFCEval</code></td><td>Accuracy</td><td>83.28%</td><td><strong>86.00%</strong></td><td>+2.72 pp</td></tr>
+        <tr><td><code>AMC</code></td><td>Score</td><td>47.12</td><td><strong>52.21</strong></td><td>+5.09</td></tr>
+        <tr><td><code>Long-AMC</code></td><td>Score</td><td>44.44%</td><td><strong>52.48%</strong></td><td>+8.04 pp</td></tr>
+        <tr><td><code>MultiChallenge</code></td><td>Score</td><td>52.38</td><td><strong>53.85</strong></td><td>+1.47</td></tr>
+        <tr><td>Multilingual <code>BBA</code> (14 languages)</td><td>Macro accuracy</td><td>81.7%</td><td><strong>88.1%</strong></td><td>+6.4 pp</td></tr>
+        <tr><td><code>FLEURS</code></td><td>WER (&darr;)</td><td>9.01</td><td><strong>3.98</strong></td><td>&minus;5.03</td></tr>
+        <tr><td><code>VoiceChat</code></td><td>Overall Spoken score</td><td>4.046</td><td><strong>4.100</strong></td><td>+0.054</td></tr>
+        <tr><td><code>VoiceChat</code></td><td>Overall Rubric score</td><td>0.956</td><td><strong>0.961</strong></td><td>+0.005</td></tr>
+        <tr><td><code>HalluQA</code></td><td>Score</td><td>68.44%</td><td><strong>71.33%</strong></td><td>+2.89 pp</td></tr>
+        <tr><td><code>DNA Safety</code></td><td>Score</td><td>91.80%</td><td><strong>94.99%</strong></td><td>+3.19 pp</td></tr>
+        <tr><td>Capability Boundary</td><td>Score</td><td>94.51%</td><td><strong>96.77%</strong></td><td>+2.26 pp</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><code>Full-Duplex-Bench v1.5</code> breakdown for <code>v3.1</code> (all times in seconds):
+        <ul>
+          <li><em>User interruption</em>: response rate <code>0.8450</code>, resume rate <code>0.1300</code>, stop latency <code>1.1160</code>, response latency <code>1.9540</code>.</li>
+          <li><em>User backchannel</em>: resume rate <code>0.9694</code>, response latency <code>1.7000</code>, stop latency <code>0.7380</code>.</li>
+          <li><em>Background speech</em>: response rate (&darr;) <code>0.1300</code> (from <code>0.7300</code> on v3.0); resume rate <code>0.8700</code>.</li>
+          <li><em>Talking to others</em>: response rate (&darr;) <code>0.0300</code>; resume rate <code>0.9600</code>.</li>
+        </ul>
+      </li>
+      <li>Multi-turn safety-attack success rates dropped sharply: Chinese <code>80.50%</code> &rarr; <code>26.00%</code> (&minus;<code>54.50</code> pp), English <code>63.50%</code> &rarr; <code>23.50%</code> (&minus;<code>40.00</code> pp). Human red-team success rate <code>92.00%</code> versus <code>GPT-Realtime-2</code>'s <code>96.00%</code> per the article summary of the paper.</li>
+      <li>GRPO with reward penalties on search-tool over-use reduced mean queries per search call from <code>4.37</code> to <code>1.05</code> (&minus;<code>76%</code>), a token-efficiency win independent of the accuracy metrics above.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Filler rate reduction on v3.0-comparable evaluations: <code>0.7590</code> &rarr; <code>0.2960</code>, attributed to the full-duplex decision head suppressing speech during background-only audio (the Speak-and-Coordinate ablation).</li>
+      <li>Interruption stop latency <code>1.116</code>s remains substantially higher than <code>GPT-Realtime-2</code>'s <code>0.383</code>s, which the report frames as a deliberate trade &mdash; a longer stop window reduces false interruptions on backchannels ("mm-hm") that the model would otherwise treat as new turns.</li>
+    </ul>
+
+    <h3>Safety and limitations</h3>
+    <ul>
+      <li>The 40-plus-pp drops on Chinese and English multi-turn attack success rates are the paper's headline safety claim. DNA Safety <code>91.80%</code> &rarr; <code>94.99%</code> and Capability Boundary <code>94.51%</code> &rarr; <code>96.77%</code> round out the improvement story.</li>
+      <li>Limitations: interruption stop latency remains behind <code>GPT-Realtime-2</code>; human red-team success rate trails <code>GPT-Realtime-2</code> by <code>4</code> pp; API-only access means no self-hosted deployment. No open weights.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Managed API only: <code>qwen-audio-3.1-realtime-plus</code> live on QwenCloud over WebSocket. Companion offline model <code>Qwen-Audio-3.1-ASR-Flash-Filetrans</code> also live. Pricing per M tokens: audio input <code>$6.4</code>, text input <code>$0.8</code>, combined output <code>$24</code>. No open weights on Hugging Face at launch.</li>
+    </ul>
+
+    <h1 id="google">Google DeepMind</h1>
+
+    <h2 id="simplex-diffusion"><a href="https://arxiv.org/abs/2609.35553">Simplex Diffusion Models: Discrete Diffusion on the Probability Simplex</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-28</span>
+      <span>Discrete diffusion &middot; Language modeling &middot; Distillation &middot; Math reasoning</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Justin Deschenaux, Alexandre Galashov, Andrew Campbell, Li Kevin Wenliang, James Thornton, Arnaud Doucet and Valentin De Bortoli at <strong>Google DeepMind</strong>, <strong>EPFL</strong> and <strong>UCL Gatsby</strong> introduce <em>Simplex Diffusion Models</em> (SDMs), a discrete diffusion formulation that operates on the probability simplex rather than on categorical samples. Frontier-lab affiliation is satisfied by the Google DeepMind author majority.</li>
+      <li>The claim: prior discrete diffusion approaches suffer from <em>information collapse</em> because each denoising step samples a categorical outcome and discards the model's uncertainty about which category is right. SDMs carry the full probability distribution across steps so uncertainty is preserved end-to-end.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Simplex Diffusion (main method).</strong>
+        <ul>
+          <li><em>Problem.</em> Discrete diffusion (D3PM, MDLM, masked diffusion) at each reverse step samples a token from the current categorical distribution and moves on. If the model was <code>60%</code> confident about the token, that <code>60%</code>-<code>40%</code> uncertainty is lost the moment sampling happens; the next step conditions only on the sampled outcome. This <em>information collapse</em> makes low-step sampling brittle: distillation to <code>8</code> steps loses substantially more quality than the equivalent continuous diffusion, which passes real-valued means.</li>
+          <li><em>Mechanism.</em> SDM lifts the reverse process onto the probability simplex: state at each denoising step is a probability distribution over the vocabulary rather than a categorical sample. The forward process is defined so that the reverse admits <em>closed-form transitions</em> &mdash; no ODE integration is needed, unlike Dirichlet Flow Matching. Training uses a plain cross-entropy loss between the model's predicted distribution and the target. Sampling uses a DDIM-like scheme with a tunable stochasticity dial: pure deterministic sampling for max efficiency, or a Langevin-style noise term for exploration.</li>
+          <li><em>Why it works / why it beats prior.</em> Carrying probability mass across denoising steps means the reverse process has strictly more information at each step than a categorical-sampling reverse process would have. On distillation, this pays off: at <code>8</code> steps, SDMs solve <code>32.1%</code> of GSM8K versus discrete diffusion's <code>21.4%</code> at <code>128</code> steps (see Evaluation). Closed-form transitions and cross-entropy training are what make it a practical substitute for existing discrete diffusion pipelines: same objective, same computational profile, no ODE solver in the loop.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <table>
+      <thead><tr><th>Task</th><th>Metric</th><th>SDM</th><th>Baseline</th></tr></thead>
+      <tbody>
+        <tr><td>OpenWebText</td><td>GenPPL (64 steps)</td><td>17.0</td><td>competitive with discrete diffusion</td></tr>
+        <tr><td>OpenWebText</td><td>Unigram entropy (64 steps)</td><td>5.46</td><td>&mdash;</td></tr>
+        <tr><td><code>TinyGSM</code> (T=0.1)</td><td>Pass rate</td><td><strong>49.0%</strong></td><td>45.8% (masked / uniform diffusion)</td></tr>
+        <tr><td><code>GSM8K</code> (distilled)</td><td>Pass rate at <code>8</code> steps</td><td><strong>32.1%</strong></td><td>21.4% (discrete diffusion at <code>128</code> steps)</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>The 8-step distilled GSM8K result is the paper's headline number: SDMs beat a <code>16&times;</code>-step-count discrete-diffusion baseline by <code>+10.7</code> pp. On non-distilled OpenWebText language modeling, SDMs are roughly on par with prior discrete diffusion at matched step count.</li>
+      <li>On code generation via <code>TinyGSM</code>, SDMs beat masked/uniform diffusion baselines by <code>+3.2</code> pp at the same step count.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The stochasticity dial of the DDIM-like sampler is exposed as an inference-time knob rather than fixed at training; the paper reports quality is stable across a wide range of noise multipliers, with pure deterministic sampling used for the low-step distilled runs.</li>
+      <li>Comparison to Dirichlet Flow Matching: SDM avoids the ODE-integration step that DFM requires, at matched or better quality on the tested benchmarks.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning within DeepMind's diffusion-LLM line: SDMs sit between masked-diffusion approaches (which are throwing away uncertainty by hard-masking) and continuous-embedding diffusion (which loses the discrete-token guarantees). The simplex formulation is the smallest change to standard discrete-diffusion pipelines that recovers the uncertainty-preservation of continuous-space diffusion.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="encoder-free-scaling"><a href="https://arxiv.org/abs/2609.35457">How Far Are We from Removing the Visual Encoder? Scaling Laws for Encoder-Free Multimodal Pretraining</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-28</span>
+      <span>Multimodal scaling laws &middot; Encoder-free MLLM &middot; MoE decoder &middot; IsoFLOP</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Lin Chen (CASIA / UCAS, Tencent internship), Bolin Ni, Qi Yang, Lan Jiang, Kun Ding, Xiaoran Fan, Hower Yang, Ying Wang at <strong>Tencent</strong> Foundation Model Department, with Shiming Xiang at <strong>CASIA</strong>. Frontier-lab affiliation via the Tencent author majority.</li>
+      <li>The question the paper addresses: if a multimodal LLM feeds projected image patches directly into the decoder and asks the decoder to learn its own visual representations from pixels, how much extra compute does that cost versus a decoder-plus-frozen-encoder MLLM, and at what compute budget do the two architectures cross over?</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Setup.</strong> A controlled scaling study on matched sparse-MoE decoder ladders from <code>1.1B</code> total / <code>71M</code> active up to <code>44B</code> total / <code>2.4B</code> active parameters, run once with an encoder-free decoder (raw image patches &rarr; projection &rarr; decoder with bidirectional visual attention on image tokens, causal elsewhere) and once with an encoder-based decoder (SigLIP ViT + ConvPool adapter + projector &rarr; same decoder). Identical data mixture, optimization setup, and visual-token granularity across both arms. IsoFLOP profiles are fit by varying model size <code>M</code> at fixed compute <code>C</code> with <code>D = C/M</code>.</li>
+      <li><strong>Named contribution &mdash; Compute-optimal allocation law for encoder-free MLLMs.</strong>
+        <ul>
+          <li><em>Problem.</em> Compute-optimal scaling (M<sub>opt</sub> &prop; C<sup>a</sup>, D<sub>opt</sub> &prop; C<sup>b</sup>, a+b=1) has been derived for text-only and encoder-based multimodal LLMs, but not for encoder-free MLLMs where the decoder is doing the visual-representation job the encoder used to do. Without that law, practitioners have no principled way to allocate a compute budget between model size and data for encoder-free training.</li>
+          <li><em>Mechanism.</em> The paper fits the standard IsoFLOP formulation &mdash; loss ℒ(M, D) = E + AM<sup>&minus;&alpha;</sup> + BD<sup>&minus;&beta;</sup>, loss-compute frontier ℒ<sup>*</sup>(C) = E + KC<sup>&minus;&gamma;</sup>, with &gamma; = &alpha;&beta;/(&alpha;+&beta;) &mdash; separately for encoder-free and encoder-based decoders, on both text-only and multimodal validation objectives. Uncertainty is quantified via bootstrap resampling at 80% CI. Efficiency-gain metrics <em>EG<sup>C</sup></em> (extra compute for equal loss) and <em>EG<sup>M</sup></em> (extra FLOPs per token for equal loss) are defined and estimated over the fitted range and the extrapolation region.</li>
+          <li><em>Why it works / why it beats prior.</em> The IsoFLOP methodology is unchanged; the contribution is that fitting it in matched pairs isolates the encoder's contribution to compute-optimal allocation and lets the paper report an interpretable delta (multimodal <code>a</code> shifts from <code>0.464</code> encoder-based to <code>0.570</code> encoder-free, an <code>~11%</code> shift toward preferring model size over data). Prior encoder-free MLLM work (Fuyu, Chameleon, EVE, SOLO) reported single-scale ablations; this is the first controlled compute-frontier fit.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation and results</h3>
+    <ul>
+      <li>Core compute-optimal exponents (bootstrap 80% CIs shown in the paper):</li>
+    </ul>
+    <table>
+      <thead><tr><th>Setting</th><th>Objective</th><th>Encoder-free <code>a</code></th><th>Encoder-based <code>a</code></th><th>Shift</th></tr></thead>
+      <tbody>
+        <tr><td>Bidirectional visual attention</td><td>Text</td><td>0.427 &plusmn; 0.024</td><td>0.422 &plusmn; 0.007</td><td>+0.005</td></tr>
+        <tr><td>Bidirectional visual attention</td><td>Multimodal</td><td><strong>0.570 &plusmn; 0.024</strong></td><td>0.464 &plusmn; 0.007</td><td><strong>+0.106</strong></td></tr>
+        <tr><td>Causal visual attention</td><td>Multimodal</td><td>0.557</td><td>&mdash;</td><td>shift persists</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Loss-compute exponents on the text objective: <code>0.0973</code> encoder-free vs <code>0.0979</code> encoder-based &mdash; text loss-compute curves are essentially identical, so any efficiency deficit is confined to the multimodal objective.</li>
+      <li>Efficiency gains under compute-optimal allocation (extrapolated from the fit):
+        <ul>
+          <li>Text <em>EG<sup>C</sup></em> ~<code>0.98</code> (encoder-free needs <code>~2%</code> more compute) and <em>EG<sup>M</sup></em> ~<code>0.99</code> across the fitted range.</li>
+          <li>Multimodal <em>EG<sup>C</sup></em> rises from <code>~0.20</code> to <code>~0.62</code> across the measured budgets; multimodal <em>EG<sup>M</sup></em> settles at <code>~0.80</code> (encoder-free requires <code>1.25&times;</code> FLOPs per token for equal loss).</li>
+          <li><strong>Predicted encoder-free / encoder-based crossover: <code>6.1&times;10<sup>21</sup></code> FLOPs</strong> (80% CI: [<code>4.2&times;10<sup>21</sup></code>, <code>1.0&times;10<sup>22</sup></code>]).</li>
+        </ul>
+      </li>
+      <li>Under <code>5&times;</code> overtraining (D/M above the compute-optimal ratio), the crossover shifts to <code>1.2&times;10<sup>22</sup></code> FLOPs (80% CI: [<code>8.4&times;10<sup>21</sup></code>, <code>2.0&times;10<sup>22</sup></code>]) and multimodal <em>EG<sup>C</sup></em> at the largest budget drops from <code>0.62</code> to <code>0.52</code>. Text efficiency remains within <code>&lt;1%</code>.</li>
+      <li>Topic-level crossover ordering (from earliest to latest): STEM (near parity already), Charts (rapid convergence), then GUI, OCR, Caption (later, proportional to how much low-level visual perception is required).</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2609.35457v1/mm_transition.png" alt="Attention mass on visual tokens per decoder layer in 8B encoder-free vs encoder-based models across training tokens" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 7 (from the paper). Visual learning across training tokens. At layer 12 of the 8B encoder-free decoder, attention mass on visual tokens rises from <code>0.217</code> to <code>0.645</code> as training progresses, matching the encoder-based model's steady <code>~0.645</code> &mdash; the decoder is learning to attend to visual tokens the way a dedicated encoder-projected representation would be attended to.</figcaption>
+    </figure>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Vision-specific decoder adaptations that emerge in the encoder-free arm without any encoder-side supervision:
+        <ul>
+          <li><strong>Attention.</strong> Attention mass on visual tokens at layer 12 (8B model) climbs from <code>0.217</code> at training start to <code>0.645</code>, matching the encoder-based model's steady-state <code>~0.645</code>.</li>
+          <li><strong>Layerwise processing.</strong> Visual representations diverge from raw inputs much earlier in encoder-free models; shallow decoder layers act as an implicit visual-encoding stage.</li>
+          <li><strong>Expert routing.</strong> Visual-token routing concentrates with scale, consistent with specialist MoE experts adopting visual roles.</li>
+          <li><strong>Bidirectional vs causal.</strong> Causal visual attention yields <code>a = 0.557</code> vs bidirectional's <code>0.570</code> on the multimodal objective &mdash; the compute-allocation shift is architectural (encoder-free vs encoder-based), not an artifact of the attention mask.</li>
+        </ul>
+      </li>
+      <li>Robustness analyses: validation-curve envelope comparison, extrapolation-error analysis, sensitivity to the irreducible-loss parameter <em>E</em>, bootstrap intervals at 80% CI.</li>
+      <li>Encoder compute accounting: including the visual encoder's FLOPs in the encoder-based budget strengthens the encoder-free relative efficiency &mdash; the crossover budgets above use the more conservative decoder-only accounting.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Limitations flagged by the authors: extrapolation past the measured <code>10<sup>19</sup></code>&ndash;<code>10<sup>21</sup></code> FLOP range assumes the fitted scaling law persists; encoder size is held fixed across decoder scales, potentially disadvantaging the encoder-based arm; crossover timing varies by task type so aggregate predictions mask heterogeneous behavior; sharp early-training loss drops in encoder-free models hint at optimization dynamics not fully characterised; results are limited to sparse-MoE decoders and generalisation to dense architectures is untested.</li>
+      <li>Practical implication: if the crossover is correct at <code>~6&times;10<sup>21</sup></code>&ndash;<code>1&times;10<sup>22</sup></code> FLOPs, then labs already training in the <code>10<sup>22</sup></code>&ndash;<code>10<sup>24</sup></code> FLOP range should be indifferent-to-preferring encoder-free multimodal training, and the specific advantage compounds as compute-per-token FLOP-efficiency <em>EG<sup>M</sup></em> at <code>~0.80</code> means encoder-based models leave FLOPs on the table at fixed decoder size.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
