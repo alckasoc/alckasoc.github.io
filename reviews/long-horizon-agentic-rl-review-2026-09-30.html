@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Long-Horizon Agentic RL Review &mdash; September 30, 2026 | Auto Lit Review</title>
+<meta name="description" content="Five frontier-lab research papers on long-horizon agentic RL and video-generation distillation in the 36-hour window ending 2026-09-30 19:30 UTC. Alibaba Qwen's QwenGyre elastically reallocates GPU between rollout and training for xlong-horizon (~1M-token, hours-long) rollouts, hitting +6.0pp on NL2RepoBench (52.5% to 58.5%) in 48 training steps at up to 1.85x speedup over Colocate. Ant Group's Marathoner synthesizes ultra-long-horizon tasks from 1000+-line GitHub PRs with Multi-Task Chaining and a Later Stage Bonus Reward, sustaining 10+ hours and 1000+ tool calls per rollout. NVIDIA's Hindsight-Divergence Localization (HDL) branches new RLVR continuations from the token positions where the policy reconsiders its choices under hindsight, cutting generated tokens 2.5x and rollout wall-clock 1.8x vs GRPO while gaining up to 12.5pp on agent tasks. Xiaomi MiMo's GAGAR runs an SFT-trained agentic grader over the shared workspace of a rollout group and applies sum-preserving quality-based advantage redistribution on top of GRPO, evaluated at industrial scale on MiMo-V2.6-Flash (310B) and MiMo-V2.6-Pro (1.02T). Shanghai AI Laboratory's Real2Gym turns human/robot videos into physics-validated interactive gyms with an agentic Real2Sim2Real loop, outperforming GPT-6 Astra Direct Mode by 16.7pp success rate in-sim (with ~74.9% fewer policy tokens) and 33.3pp on a physical Franka. NVIDIA's LongLive-Plug distills reusable CFG, few-step, and long-context error-correction capabilities into once-per-backbone-family LoRAs deployable training-free to 54 downstream video-diffusion models across three backbones." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">September 30, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba</a>
+          <ul>
+            <li class="toc-h2"><a href="#qwengyre">QwenGyre: Elastic RL for xLong-Horizon Agents</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#ant-group">Ant Group</a>
+          <ul>
+            <li class="toc-h2"><a href="#marathoner">Marathoner: Ultra-Long-Horizon Autonomous Intelligence</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#nvidia">NVIDIA</a>
+          <ul>
+            <li class="toc-h2"><a href="#hdl">Hindsight-Divergence Localization for Efficient RLVR</a></li>
+            <li class="toc-h2"><a href="#longlive-plug">LongLive-Plug: Once-for-All Distillation for Video Generation</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#shanghai-ai-laboratory">Shanghai AI Laboratory</a>
+          <ul>
+            <li class="toc-h2"><a href="#real2gym">Real2Gym: Building Gyms from Videos, Bringing Skills to Robots</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#xiaomi">Xiaomi</a>
+          <ul>
+            <li class="toc-h2"><a href="#gagar">GAGAR: Groupwise Agentic Grading &amp; Advantage Redistribution</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; September 30, 2026</div>
+    <h1 class="page-title">Long-Horizon Agentic RL</h1>
+    <div class="page-meta">6 papers &middot; 5 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-09-30 19:30 UTC (steady state, one day after the 2026-09-29 GPT-6.1 Sol / Qwen-Audio-3.1-Realtime launches review) closes with <strong>no new frontier-lab flagship model launches</strong> and six Tier 2 research papers, five of which cluster tightly around one theme: <em>reinforcement learning and data synthesis for long-horizon agents</em>. <strong>Alibaba</strong>'s Qwen team ships <a href="https://arxiv.org/abs/2609.33848"><em>QwenGyre</em></a>, an elastic RL framework for xlong-horizon rollouts spanning hours, hundreds of tool interactions, and roughly <code>1M</code> tokens per trajectory. <strong>Ant Group</strong> ships <a href="https://arxiv.org/abs/2609.34378"><em>Marathoner</em></a>, an ultra-long-horizon agentic model that sustains <code>10+</code> hours of continuous execution and <code>1000+</code> tool calls per task after being post-trained on task-level data synthesized from large GitHub PRs. <strong>NVIDIA</strong>'s <a href="https://arxiv.org/abs/2609.36864"><em>Hindsight-Divergence Localization (HDL)</em></a> reallocates the RLVR rollout budget by branching new continuations from the token positions where the current policy reconsiders its choices when conditioned on the eventual outcome. <strong>Xiaomi</strong> MiMo's <a href="https://arxiv.org/abs/2609.32577"><em>GAGAR</em></a> adds a sum-preserving, quality-weighted advantage redistribution on top of GRPO for code agents, using an SFT-trained agentic grader that inspects all trajectories of a rollout group in a shared workspace and re-ranks the test-passing ones by implementation quality. <strong>Shanghai AI Laboratory</strong>'s <a href="https://arxiv.org/abs/2609.37089"><em>Real2Gym</em></a> converts human and robot demonstration videos into physics-validated interactive simulation gyms and closes an agentic Real2Sim2Real loop so robot skills transfer to a real Franka arm without policy-weight updates. The sixth entry is <strong>NVIDIA</strong>'s <a href="https://arxiv.org/abs/2609.38154"><em>LongLive-Plug</em></a>, a once-per-backbone-family LoRA distillation framework that supplies training-free classifier-free guidance, few-step sampling, and long-video error correction to 54 downstream video-diffusion models across three backbones &mdash; the day's largest cross-model transfer artifact from a frontier lab.</p>
+      <h3>Competitiveness</h3>
+      <p>None of the day's papers move the closed-frontier chat leaderboard (<code>GPT-6 Astra</code>, <code>GPT-6.1 Sol</code>, <code>Claude Opus 5.5</code>, <code>Claude Sonnet 5.5</code>, <code>Gemini 3 Ultra</code> remain unchallenged on <code>DeepSWE v1.1</code>, <code>OSWorld 2.0</code>, <code>AutomationBench 1.0.6</code>, <code>Terminal-Bench Science 0.1</code>), but the training-side numbers matter for anyone doing agentic RL at industrial scale. <em>HDL</em> reports up to a <code>2.5&times;</code> reduction in generated tokens and <code>1.8&times;</code> reduction in rollout wall-clock time versus <code>GRPO</code> at matched group sizes and training steps, and lifts agent-task performance by up to <code>12.5</code> points despite the reduced generation budget &mdash; this is a rare Pareto-frontier improvement for RLVR. <em>QwenGyre</em> hits <code>+6.0</code> absolute points on <code>NL2RepoBench</code> (<code>52.5%</code> to <code>58.5%</code>) in <code>48</code> training steps with a <code>1.85&times;</code> speedup versus a colocate baseline and <code>1.78&times;</code> versus an async baseline &mdash; the first published xlong-horizon (<code>~1M</code>-token) online RL framework where elastic resource reallocation is described as the primary throughput mechanism. <em>Marathoner</em> is reported to "surpass the performance of a strong proprietary model" across <code>5</code> ultra-long-horizon benchmarks without naming that model in the abstract; the hours-and-tool-calls headline (<code>10+</code> hours, <code>1000+</code> tool calls per task) is the axis where it competes. <em>GAGAR</em> lands at <code>MiMo-V2.6</code>-family scale (Flash: <code>310B</code>, Pro: <code>1.02T</code>) and reports "improved code agent performance, reduced trajectory-length growth, and more stable training" in controlled code-only Flash experiments; abstract-level numbers are not provided. <em>Real2Gym</em> is the day's clearest closed-vs-open head-to-head: it beats <code>GPT-6 Astra</code>'s Direct Mode by <code>+16.7</code> percentage points on in-sim success with approximately <code>74.9%</code> fewer policy-execution tokens across those environments, and by <code>+33.3</code> percentage points on physical execution across four tasks on a real Franka arm. <em>LongLive-Plug</em> does not benchmark against closed-frontier video models directly; its axis is training-free portability of distilled capabilities across <code>54</code> downstream video-diffusion checkpoints.</p>
+      <h3>New frontier releases</h3>
+      <p><strong>Zero new flagship model launches</strong> in-window. The most recent Tier 1 launches remain <code>GPT-6.1 Sol</code> from OpenAI (2026-09-29, covered in the 2026-09-29 review) and <code>Qwen-Audio-3.1-Realtime</code> from Alibaba Token Foundry (2026-09-28, same review). No new model weights, launch blog, or "X Technical Report" that names a model surfaced from the frontier-lab sweep (Anthropic, OpenAI, DeepMind, xAI, Meta, Microsoft AI, NVIDIA, DeepSeek, Alibaba, Moonshot, Z.ai, ByteDance, Tencent, Baidu, MiniMax, Xiaomi, Ant Group, StepFun, 01.AI, MBZUAI, LG AI, Naver) between <code>2026-09-29 22:17</code> UTC (previous review's window close) and <code>2026-09-30 19:30</code> UTC.</p>
+    </section>
+
+    <!-- BODY -->
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="qwengyre"><a href="https://arxiv.org/abs/2609.33848">QwenGyre: An Elastic Reinforcement Learning Framework for Training xLong-Horizon Agents</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-29</span>
+      <span>Agentic RL &middot; xLong-horizon &middot; Systems</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Weiqi Wang, Yuxin Zhou, Mouxiang Chen and colleagues at the <strong>Qwen</strong> team (Alibaba) release <em>QwenGyre</em>, an end-to-end online RL framework for training LLM agents on <strong>xlong-horizon</strong> tasks &mdash; a rollout regime the paper defines as a single execution spanning hours, hundreds of model&ndash;environment interactions, and roughly <code>1M</code> tokens per trajectory. Frontier-lab affiliation is satisfied by the Qwen organization.</li>
+      <li>The two systems-level problems that motivate the framework are (i) <em>GPU idling from execution variance</em> in the rollout phase (some rollouts hit the token or wall-clock cap in minutes, others run for hours; a fixed rollout/training split leaves the training GPUs starving during long tails) and (ii) <em>training inefficiency from trajectory redundancy</em> (agents that branch and backtrack generate large amounts of near-duplicate suffix text along shared prefixes; ordinary GRPO loss weights those duplicates equally).</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Elastic GPU reallocation between rollout and training.</strong>
+        <ul>
+          <li><em>Problem.</em> In a standard colocated pipeline, rollout and training share the same GPU set with a fixed schedule; xlong rollouts (<code>~1M</code> tokens) violate the schedule because completion time is heavy-tailed, so the training pass either waits or runs on stale data. In an async pipeline the two workloads live on separate GPU pools, but the rollout pool is over-provisioned for tail latency, leaving <code>~half</code> of it idle in the median case.</li>
+          <li><em>Mechanism.</em> QwenGyre treats the GPU pool as a single elastic budget and dynamically shifts GPUs from rollout to training (and back) as the current step's outstanding rollouts finish or stall. The rollout side keeps a queue of active branches; when the queue drains, released GPUs are handed to the training side to run additional gradient steps on already-completed trajectories; when new tasks arrive, GPUs migrate back. Migration cost is amortized because a single xlong rollout takes long enough (hours) that the migration setup is a rounding error on rollout time.</li>
+          <li><em>Why it works / why it beats prior.</em> Colocate leaves training GPUs idle during the rollout tail; async over-provisions the rollout pool for its tail. QwenGyre gets both endpoints simultaneously: median rollout throughput matches an over-provisioned async pool, and training throughput matches a full-utilization colocate pool. Reported speedups are <code>1.85&times;</code> versus Colocate and <code>1.78&times;</code> versus Async on <code>NL2RepoBench</code> training.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Trajectory processor (branch reconstruction and duplicate elimination).</strong>
+        <ul>
+          <li><em>Problem.</em> An xlong agent explores by branching. If the agent tries three fixes for the same bug, the RL group receives three trajectories that share the first several hundred tool calls verbatim &mdash; the shared prefix contributes the same gradient three times, and the duplicate suffix work bloats the training minibatch.</li>
+          <li><em>Mechanism.</em> The processor reconstructs the <em>branching history</em> of the rollout group as a tree, then eliminates duplicate paths so each unique (prefix, suffix) pair contributes once to the loss. Progress scoring on the tree assigns credit to the branching decision itself rather than to the shared prefix.</li>
+          <li><em>Why it works / why it beats prior.</em> Plain GRPO on branching agents implicitly overweights whatever prefix survived to be branched from; the processor removes that bias and directs gradient signal to the branching decision, where the actual policy improvement can happen.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Headline task: <code>NL2RepoBench</code>. QwenGyre lifts the base checkpoint from <code>52.5%</code> to <code>58.5%</code> (<code>+6.0</code> absolute points) in <code>48</code> training steps.</li>
+      <li>Throughput vs. baselines at matched hardware:
+        <ul>
+          <li>Up to <code>1.85&times;</code> speedup versus Colocate.</li>
+          <li>Up to <code>1.78&times;</code> speedup versus Async.</li>
+        </ul>
+      </li>
+      <li>Scale of the rollouts trained against: hours per rollout, hundreds of environment interactions, approaching <code>1M</code> tokens per trajectory &mdash; the paper's regime label "xlong" is intended to distinguish it from ordinary "long-horizon" RL (tens of interactions, tens of thousands of tokens).</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The abstract-level release does not enumerate ablations beyond the two headline speedup deltas versus Colocate and Async. Full ablation set awaits the arXiv PDF.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning: the framework is written to run under the Qwen family's standard training stack and is described as end-to-end &mdash; no dependency on custom training kernels or a separate rollout runtime, which matters for reproducibility outside Alibaba.</li>
+    </ul>
+
+    <h1 id="ant-group">Ant Group</h1>
+
+    <h2 id="marathoner"><a href="https://arxiv.org/abs/2609.34378">Marathoner: Ultra-Long-Horizon Autonomous Intelligence</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-30</span>
+      <span>Agentic RL &middot; Long-horizon &middot; Task synthesis</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Zhang Ruiyang, Ou Jinpeng, Xie Yifan and colleagues at <strong>Ant Group</strong> introduce <em>Marathoner</em>, an autonomous agentic model post-trained to sustain <em>ultra-long-horizon</em> execution &mdash; the paper's operational headline is a single agent that continues meaningful work for <code>10+</code> hours and issues <code>1000+</code> tool calls per task. Frontier-lab affiliation is satisfied by the Ant Group (BaiLing) authorship.</li>
+      <li>The paper frames ultra-long-horizon capability as the missing training axis for agents: current post-training pipelines optimize per-turn or per-episode reward on short trajectories, so the resulting model quits or loops when a task legitimately requires many hours of continuous action.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li>The post-training pipeline is four stages: (1) ultra-long-horizon task synthesis, (2) Multi-Task Chaining, (3) rejection-sampling SFT on teacher-generated trajectories, and (4) harness-based RL in independent sandboxes with a Later-Stage Bonus Reward.</li>
+      <li><strong>Named contribution &mdash; Ultra-Long-Horizon Task Synthesis.</strong>
+        <ul>
+          <li><em>Problem.</em> Publicly available agentic training tasks (SWE-Bench-scale bug fixes, tool-use scenarios, computer-use vignettes) top out at hundreds of steps and a few hours of wall-clock work &mdash; not enough to teach a model to persist through the failure modes that only appear after many hours.</li>
+          <li><em>Mechanism.</em> The pipeline mines <em>major release PRs</em> from diverse GitHub repositories that add <code>1000+</code> lines of new code, and treats each such PR as a task specification: reproduce the diff starting from the pre-PR checkout, with tests as the reward signal. A single large PR yields a task that legitimately requires many hours of continuous coding, testing, and debugging.</li>
+          <li><em>Why it works / why it beats prior.</em> Real major-release PRs come with their own regression tests and reviewer comments, so the ground-truth signal is well-defined; and the difficulty scales naturally with PR size, unlike synthetic bug-injection pipelines that top out at the size of the injection.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Multi-Task Chaining.</strong>
+        <ul>
+          <li><em>Problem.</em> Even large-PR tasks eventually cap out around the size of one release; frontier-difficulty ultra-long-horizon tasks require more than a single PR's worth of coordinated work.</li>
+          <li><em>Mechanism.</em> Multi-Task Chaining stitches multiple generated tasks into a single composite task, so the agent must complete task A's PR-scale objective and then, from the resulting repo state, complete task B on top of it, and so on. The composite task inherits difficulty additively.</li>
+          <li><em>Why it works / why it beats prior.</em> Chaining generates frontier-level task complexity without waiting for the natural distribution of extremely large PRs; and because each linked task retains its own tests, the composite gets a fine-grained per-subtask reward signal instead of one terminal reward.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Later Stage Bonus Reward.</strong>
+        <ul>
+          <li><em>Problem.</em> Uniform per-step reward implicitly encourages the agent to do useful work early and then coast; models trained with per-token-uniform advantage estimators exit the task once the early wins are banked.</li>
+          <li><em>Mechanism.</em> The reward function is reshaped so that meaningful maneuvers &mdash; taking a nontrivial action that advances task state &mdash; performed in later stages of execution receive a bonus over the same action performed early. The bonus is stage-dependent (position within the trajectory rather than absolute wall-clock).</li>
+          <li><em>Why it works / why it beats prior.</em> Standard PPO/GRPO with terminal or step-uniform rewards has no mechanism to fight the "coast after early wins" failure mode; the later-stage bonus explicitly rewards the agent for staying productive across the whole trajectory, which is precisely the axis the ultra-long-horizon benchmarks measure.</li>
+        </ul>
+      </li>
+      <li><strong>Harnesses in independent sandboxes.</strong> During RL rollout, the cold-started model executes tasks in real environments through diverse harnesses (Codex-style CLI, browser, arbitrary tool APIs) in isolated per-rollout sandboxes. The isolation lets many rollouts run in parallel without cross-contamination; the diversity of harnesses prevents overfitting to a specific tool surface.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Evaluated on <code>5</code> benchmarks containing ultra-long-horizon tasks (specific benchmark identifiers not enumerated in the abstract-level release).</li>
+      <li>Reported to achieve "consistent and substantial performance improvements over base model" and to "surpass performance of strong proprietary model" &mdash; the proprietary model is not named at abstract level.</li>
+      <li>Operational headline: consistent operation for <code>10+</code> hours and <code>1000+</code> tool calls on highly challenging tasks.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Not enumerated at abstract level; the arXiv PDF will confirm the per-component contribution of Multi-Task Chaining and Later Stage Bonus Reward.</li>
+    </ul>
+
+    <h1 id="nvidia">NVIDIA</h1>
+
+    <h2 id="hdl"><a href="https://arxiv.org/abs/2609.36864">Where the Model Changes Its Mind: Hindsight-Divergence Localization for Efficient RLVR</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-30</span>
+      <span>RLVR &middot; GRPO &middot; Rollout efficiency</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Fanchao Chen, Hengyu Fu, Shivaram Venkataraman and Jiantao Jiao (with <strong>NVIDIA</strong> among the contributing affiliations) introduce <em>Hindsight-Divergence Localization</em> (HDL), a token-selection method for RLVR that concentrates the group's rollout budget on the positions where the current policy would most change its mind if it knew how the trajectory was going to end.</li>
+      <li>The setup targets group-relative RL methods (<code>GRPO</code> and descendants) where a training group is built from many independently sampled complete rollouts. The paper's observation is that independent complete-rollout sampling wastes tokens on positions where the policy is already decisive and undersamples the branch points that actually change the outcome.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Hindsight-Divergence Localization (HDL).</strong>
+        <ul>
+          <li><em>Problem.</em> In <code>GRPO</code> the group's advantage estimate depends on differences between rollout outcomes, but the vast majority of the tokens in each rollout are not what caused the outcome difference. Sampling <code>N</code> independent complete trajectories to fill the group therefore spends most of its generation budget on tokens with near-zero counterfactual impact.</li>
+          <li><em>Mechanism.</em> HDL first generates a small number of complete root trajectories, then rescores each root under hindsight: for every token in the root, it compares the current policy's log-likelihood at that position to the log-likelihood <em>conditioned on the terminal outcome</em>. Positions where the hindsight-induced log-likelihood shift is large are the ones where the policy would have reconsidered its choice knowing the outcome. HDL treats those positions as branch points, resamples <code>K</code> new continuations from each selected branch under the original task context (so the branch point sees the same task but a different suffix), and fills the training group with those continuations. Each continuation reuses its root prefix at inference time and contributes policy updates only through its newly generated suffix.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior efficient-rollout work for <code>GRPO</code> either truncates rollouts at a fixed depth (misses late-trajectory branches) or samples uniformly on prefix length (samples too many uninteresting prefixes). Hindsight divergence is a natural exploration signal: it is exactly the metric that identifies positions where the group's advantage estimate would benefit most from an extra sample. Because the prefix is shared with the root, the extra sample is cheap in tokens generated even though it produces a genuinely new trajectory outcome.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Experiments with three models across math, code, and agent tasks. Versus <code>GRPO</code> at matched group sizes and training steps:
+        <ul>
+          <li>Up to <code>2.5&times;</code> reduction in generated tokens per training step.</li>
+          <li>Up to <code>1.8&times;</code> speedup in rollout wall-clock time per training step.</li>
+          <li>Gains of up to <code>+12.5</code> percentage points on agent tasks despite the reduced generation budget.</li>
+        </ul>
+      </li>
+      <li>The math and code numbers are described as "gains" without specific point-deltas at abstract level.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Not enumerated at abstract level; the branch-selection metric and root/continuation ratio are the natural ablation axes and are expected in the arXiv PDF.</li>
+    </ul>
+
+    <h2 id="longlive-plug"><a href="https://arxiv.org/abs/2609.38154">LongLive-Plug: Once-for-All Distillation for Video Generation</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-30</span>
+      <span>Video diffusion &middot; Distillation &middot; LoRA</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Shuai Yang, Luozhou Wang, Wei Huang and colleagues at <strong>NVIDIA</strong> (with Song Han among the senior authors) introduce <em>LongLive-Plug</em>, a distillation framework whose output is a small set of reusable LoRAs on a base video-diffusion model rather than a distilled model per downstream task.</li>
+      <li>The observation the paper is written against is that every specialization of a video-diffusion base model (long-video generation, world modeling, robotics, editing) runs its own distillation stage, and each stage is expensive; but many of the distilled capabilities (classifier-free guidance in one pass, few-step sampling, error correction along long autoregressive rollouts) are largely task-independent.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Once-for-All LoRA distillation.</strong>
+        <ul>
+          <li><em>Problem.</em> Per-downstream distillation re-derives the same capabilities (CFG in one pass, few-step sampling, long-context error correction) each time. When the downstream model adds conditioning branches or expands output channels, the previously distilled model has to be discarded and the distillation redone.</li>
+          <li><em>Mechanism.</em> LongLive-Plug attaches each capability as a LoRA on the shared base of a backbone family. Three capability LoRAs are trained: (i) a CFG LoRA that provides classifier-free guidance in one pass with text-guidance strength controllable at inference time by the LoRA's inference weight (even though it was trained at a fixed guidance scale); (ii) a few-step-sampling LoRA that allows the model to sample in a small fixed number of denoising steps; (iii) a long-context error-correction LoRA for autoregressive generation. At deployment time, the CFG LoRA and the few-step LoRA are composed on a compatible downstream model with no additional training; the composition preserves both few-step decoding and CFG controllability.</li>
+          <li><em>Why it works / why it beats prior.</em> The LoRAs live on the base backbone; downstream models within the same family share that backbone plus their own extra branches/channels, so the LoRA plugs in without touching the extras. Because the capabilities are trained on the base and are not specialization-specific, they transfer without downstream fine-tuning. The counterpart in prior work is per-target distillation, which recovers each capability separately for each downstream and does not compose across capabilities.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Training-free deployment verified on <code>54</code> downstream models across <code>3</code> backbone families and <code>8</code> task categories: world modeling, robotics, editing, multimodal generation, and four additional categories not listed in the abstract.</li>
+      <li>Each capability is distilled once per backbone family and reused across the family without per-target retraining.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Not enumerated at abstract level; the composition test between CFG-LoRA and few-step-LoRA at various guidance-strength inference weights is expected in the arXiv PDF.</li>
+    </ul>
+
+    <h1 id="shanghai-ai-laboratory">Shanghai AI Laboratory</h1>
+
+    <h2 id="real2gym"><a href="https://arxiv.org/abs/2609.37089">Real2Gym: Building Gyms from Videos, Bringing Skills to Robots</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-30</span>
+      <span>Robotics &middot; Real2Sim2Real &middot; Video-to-skill</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Kerui Ren, Yingxiang Xu, Kaiwen Song and colleagues at <strong>Shanghai AI Laboratory</strong> introduce <em>Real2Gym</em>, an agentic Real2Sim2Real framework that converts human and robot demonstration videos into interactive simulation environments (the "gyms") and then transfers the resulting skills to a physical robot without updating any model weights.</li>
+      <li>The paper's framing is that the standard Real2Sim pipeline stops at scene reconstruction and leaves the "then what" &mdash; validated actions, task-conditioned variations, and skill retention across episodes &mdash; to a separate hand-authored stack.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Real2Sim module.</strong>
+        <ul>
+          <li><em>Problem.</em> Video-based scene reconstruction produces geometry, but downstream policy learning needs an editable scene with objects and camera aligned to the input demonstration <em>and</em> executable physical interactions that can be validated against the source video's action semantics. Off-the-shelf reconstruction pipelines return one or the other, not both.</li>
+          <li><em>Mechanism.</em> Real2Sim reconstructs editable scenes from the demonstration video, aligns objects and cameras with the input, then validates each demonstrated or retargeted action by executing it under native physics. Actions that fail feasibility checks are discarded before they can pollute the policy training set. The module also generates task-conditioned variations of the reconstructed scene, each of which is re-validated the same way.</li>
+          <li><em>Why it works / why it beats prior.</em> Physics validation at reconstruction time closes the loop that most Real2Sim work leaves open; the same simulator that provides training is the one that certifies actions. Task-conditioned variations then multiply one demonstration into many training environments without the physics-plausibility drift of purely generative augmentation.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Agentic skill-distillation loop.</strong>
+        <ul>
+          <li><em>Problem.</em> Even given a validated gym, mapping "the video shows this manipulation" to a general policy that transfers to a new object layout requires an agent that can generate, run, and refine executable code &mdash; and can remember what worked.</li>
+          <li><em>Mechanism.</em> Inside each generated environment the Real2Gym agent generates executable code for each manipulation stage, observes outcomes, and distills successful attempts and failures into three reusable artifacts: task procedures, object-relative motions, and recovery strategies. Distillation writes into a skill library that a shared perception-and-control interface reads at subsequent execution time. Deployment (in-sim or on the physical robot) reuses those artifacts to shape motion for the current observation &mdash; without any update to underlying model weights.</li>
+          <li><em>Why it works / why it beats prior.</em> Because skills are distilled as structured artifacts rather than baked into policy weights, the same skill library transfers across the sim-to-real boundary; and the recovery-strategy component (what to do when a stage fails) is the axis where the paper's zero-shot Franka numbers most exceed direct-mode <code>GPT-6 Astra</code>.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>In-simulation success rate: <code>+16.7</code> percentage points over <code>GPT-6 Astra</code> Direct Mode.</li>
+      <li>Policy-execution tokens: approximately <code>&minus;74.9%</code> versus <code>GPT-6 Astra</code> Direct Mode on those environments (roughly <code>4&times;</code> fewer tokens for higher success).</li>
+      <li>Physical execution: <code>+33.3</code> percentage points success rate over <code>GPT-6 Astra</code> Direct Mode across <code>4</code> tasks on a real Franka arm.</li>
+      <li>High-fidelity scene reconstruction across the tested environments is claimed at a level "outperforming" the direct-mode baseline; specific reconstruction-quality metrics are not enumerated at abstract level.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Not enumerated at abstract level; per-component contribution of physics validation vs. task-conditioned variation and per-artifact contribution of the three skill types (procedures / object-relative motions / recovery) are the natural ablation axes.</li>
+    </ul>
+
+    <h1 id="xiaomi">Xiaomi</h1>
+
+    <h2 id="gagar"><a href="https://arxiv.org/abs/2609.32577">Groupwise Agentic Grading and Advantage Redistribution for Code Agent RL</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-09-29</span>
+      <span>Code agent RL &middot; GRPO &middot; MiMo-V2.6</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Jinhao Dong, Liang Zhao, Zihao Yue and colleagues at the <strong>Xiaomi MiMo</strong> team introduce <em>GAGAR</em> (Groupwise Agentic Grading and Advantage Redistribution), a training-side correction for the standard binary-reward failure mode in code-agent RL. The industrial-scale evaluation is on pre-RL SFT checkpoints of <code>MiMo-V2.6-Flash</code> (<code>310B</code> total params) and <code>MiMo-V2.6-Pro</code> (<code>1.02T</code> total params).</li>
+      <li>The paper's framing is that binary test-based rewards collapse the very information the training signal needs to reward: a trajectory that produces a small, clean, on-scope patch and a trajectory that produces a sprawling, off-scope patch both pass the tests and both receive advantage <code>+1</code> under <code>GRPO</code>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; GAGAR framework.</strong> Three design principles: <em>Groupwise</em> (comparative evaluation within the rollout group), <em>Agentic</em> (an SFT-trained grader agent actively inspects code changes), and <em>Zero-sum</em> (credit is redistributed rather than added or removed).
+        <ul>
+          <li><em>Problem.</em> In RLVR for code agents, <code>GRPO</code> assigns identical advantages to every test-passing trajectory in the rollout group, so the policy has no gradient signal that prefers a targeted fix to a bloated one that also happens to pass. This leaves trajectory length free to drift upward and encourages out-of-scope code changes.</li>
+          <li><em>Mechanism.</em> After the rollout group's <em>dynamic sampling</em> filter (retain only groups containing both passing and failing trajectories), all trajectories from each group are placed together in a <em>shared workspace</em>. An SFT-trained agentic grader jointly inspects the trajectories in the workspace &mdash; not per-trajectory in isolation &mdash; and produces a ranking over the test-passing candidates by implementation quality (targeted vs. sprawling, on-scope vs. off-scope, adherence to task specification). Lower-ranked test-passing trajectories are then <em>downweighted</em>; and the advantages of <em>all</em> test-passing trajectories in the group are <em>proportionally rescaled so their sum matches the original pre-redistribution total</em>. This is the sum-preserving property that keeps GAGAR's average advantage compatible with the underlying <code>GRPO</code> optimizer.</li>
+          <li><em>Why it works / why it beats prior.</em> Groupwise inspection (a single grader looking at the group's whole workspace) sees code diffs side by side, so quality contrast is what the grader is optimized to detect; sum preservation prevents the redistribution from shrinking the group's overall gradient magnitude (which would otherwise slow down training on groups where the grader intervenes). Compared with LLM-judge post-hoc reranking, GAGAR redistributes credit inside the training step rather than filtering after the fact.</li>
+        </ul>
+      </li>
+      <li><strong>Deployment scale.</strong> Controlled code-only Flash experiments ran on <code>MiMo-V2.6-Flash</code>'s pre-RL SFT checkpoint; large-scale mixed-task RL applied GAGAR to both <code>MiMo-V2.6-Flash</code> and <code>MiMo-V2.6-Pro</code> during the RL post-training that produced the released <code>MiMo-V2.6</code> family.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Controlled code-only Flash experiments report: improved code-agent performance, reduced trajectory-length growth (the "sprawl" mode is suppressed), and more stable training curves. Specific benchmark scores and per-benchmark deltas are not disclosed at abstract level.</li>
+      <li>Large-scale mixed-task RL results are noted as supporting the "combining test-based verification with groupwise agentic grading" claim across Flash and Pro; specific per-benchmark deltas are again not disclosed at abstract level.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Not enumerated at abstract level; the natural ablation is grader on/off with sum-preserving vs. non-sum-preserving redistribution.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
