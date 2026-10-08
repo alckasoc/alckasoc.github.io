@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Claude Haiku 5.5 &amp; Mistral Large 4 Launches Review &mdash; October 8, 2026 | Auto Lit Review</title>
+<meta name="description" content="36-hour window closing 2026-10-08 06:12 UTC: two Tier 1 launches and a Tier 3 OpenAI math-manuscript release headline the day. Anthropic ships Claude Haiku 5.5 with first-ever Haiku effort controls and $0.10/$0.50 pricing at the 100K-token tier (90% cheaper than Haiku 4.5 under 100K; 50% cheaper above), reporting OSWorld 2.1 72.4%, Terminal-Bench 4.0 39.2%, HLE-with-tools 57.4%, GDPval-AA v2.1 1620 Elo. Mistral AI opens public preview of Mistral Large 4, a 1.05T total / 52B active granular-MoE multimodal model trained from scratch on 3,800 Grace Blackwell GPUs across 160+ languages, with a 1M-token context and weights to follow by end of month at $1.36/$4.18 list ($0.68/$2.09 current sale), scoring DeepSWE 1.1 61.7%, SciCode-Verified 91.8% pass@1, Cybench 93%, and CyberGym-E2E 82%. Three Tier 2 arXiv papers from the Oct-6 submission wave: NVIDIA's NeMo-DCR bit-exactly refits trillion-parameter checkpoints 12-40x faster than full-checkpoint transport (150 s for a 1T relay-tree refit at 3% change); NVIDIA's UNREAL unifies retrieval and long-context in a single frozen backbone with <500K trainable parameters, lifting HotpotQA recall from 49.1% to 73.2% and NoLiMa at 128K from 1.0% to 24.83%; Alibaba Qwen's TRACE uses rollout-side quantization outcomes to guide FP4 QAT rounding for MoE RL, matching BF16 rollout at up to 5.4x rollout speedup. MBZUAI's AdvSim2Real co-evolves curriculum, injection adversary, and a 4B agent in a frozen web world model, lifting completion under an unseen frontier-model adversary 33.6% relative. OpenAI publishes 722 math manuscripts in 372 families from an unnamed unreleased internal frontier model, with Lean formalizations for many, averaging ~3 h ChatGPT-Pro-equivalent thinking per result, including a Riemann zeta zero-free region in Re(s) > 11/12 and the Hodge conjecture for CM abelian varieties." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">October 8, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#anthropic">Anthropic</a>
+          <ul>
+            <li class="toc-h2"><a href="#claude-haiku-5-5">Claude Haiku 5.5: Effort Controls at $0.10/$0.50</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#mistral-ai">Mistral AI</a>
+          <ul>
+            <li class="toc-h2"><a href="#mistral-large-4">Mistral Large 4: 1.05T Granular-MoE Multimodal Open-Weight Preview</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba</a>
+          <ul>
+            <li class="toc-h2"><a href="#trace">TRACE: Rollout-Guided FP4 QAT for MoE RL</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#mbzuai">MBZUAI</a>
+          <ul>
+            <li class="toc-h2"><a href="#advsim2real">AdvSim2Real: Co-Evolving Curriculum &amp; Adversary in a Web World Model</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#nvidia">NVIDIA</a>
+          <ul>
+            <li class="toc-h2"><a href="#nemo-dcr">NeMo-DCR: Bit-Exact Delta-Compressed Refit at Trillion-Parameter Scale</a></li>
+            <li class="toc-h2"><a href="#unreal">UNREAL: Unifying Retrieval and Long-Context with a Single Model</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#openai">OpenAI</a>
+          <ul>
+            <li class="toc-h2"><a href="#openai-math">722 Math Manuscripts from an Unreleased Internal Frontier Model</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; October 8, 2026</div>
+    <h1 class="page-title">Claude Haiku 5.5 &amp; Mistral Large 4 Launches</h1>
+    <div class="page-meta">7 papers &middot; 6 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-10-08 06:12 UTC (steady state, eight days after the 2026-09-30 Long-Horizon Agentic RL review) closes with <strong>two Tier 1 launches</strong>, <strong>three Tier 2 arXiv papers</strong>, and <strong>one notable Tier 3 release</strong>. <strong>Anthropic</strong> ships <a href="https://www.anthropic.com/claude-haiku-5-5"><code>Claude Haiku 5.5</code></a> (model ID <code>claude-haiku-5-5</code>), the first Haiku-class model with adjustable effort controls, at <code>$0.10</code>/<code>$0.50</code> per million input/output tokens under <code>100K</code> context (<code>$0.50</code>/<code>$2.50</code> over <code>100K</code>) &mdash; approximately <code>90%</code> cheaper than <code>Haiku 4.5</code> at the sub-<code>100K</code> tier. <strong>Mistral AI</strong> opens public preview of <a href="https://mistral.ai/news/mistral-large-4"><code>Mistral Large 4</code></a>, a <code>1.05T</code>-total / <code>52B</code>-active granular-MoE multimodal model with a <code>1.6B</code>-parameter vision encoder and a <code>1M</code>-token context, trained from scratch on <code>3,800</code> NVIDIA Grace Blackwell GPUs in European datacenters across <code>160+</code> languages &mdash; open weights promised by end of month at <code>$1.36</code>/<code>$4.18</code> list (<code>$0.68</code>/<code>$2.09</code> current sale) per M input/output tokens. Three Tier 2 arXiv papers cluster around RL training systems and retrieval: <strong>NVIDIA</strong>'s <a href="https://arxiv.org/abs/2610.08430"><em>NeMo-DCR</em></a> achieves bit-exact weight refit on trillion-parameter policies via affine projection, residual conversion, and XOR-mask delta streaming (<code>150</code> seconds for a <code>1T</code>-parameter relay-tree refit at <code>3%</code> change); <strong>NVIDIA</strong>'s <a href="https://arxiv.org/abs/2610.08463"><em>UNREAL</em></a> unifies corpus retrieval and long-context inference in a single frozen backbone with fewer than <code>500K</code> trainable parameters; <strong>Alibaba</strong> Qwen's <a href="https://arxiv.org/abs/2610.07767"><em>TRACE</em></a> couples rollout-side quantization outcomes to FP4 quantization-aware training for MoE RL, with mantissa/scale caching from deeper layers. <strong>MBZUAI</strong>'s <a href="https://arxiv.org/abs/2610.08773"><em>AdvSim2Real</em></a> co-evolves a task curriculum, an injection adversary, and a <code>4B</code>-parameter web agent inside a frozen web world model. Tier 3 is <strong>OpenAI</strong>'s <a href="https://openai.com/index/sharing-ai-progress-in-mathematics"><em>722-manuscript math release</em></a> at <a href="https://github.com/openai/math">github.com/openai/math</a>, carried out by an unnamed unreleased internal frontier model that is "significantly more capable than <code>GPT-6 Astra</code>" per the launch coverage, including a Riemann zeta zero-free region in <code>Re(s) &gt; 11/12</code> and the Hodge conjecture for CM abelian varieties.</p>
+      <h3>Competitiveness</h3>
+      <p>At the small-model tier, <code>Claude Haiku 5.5</code> redraws the price-performance frontier for cost-sensitive agentic work: on <code>OSWorld 2.1</code> (offline subset) it reports <code>72.4%</code> versus <code>GPT-6 Luna</code>'s <code>48.9%</code> and <code>Haiku 4.5</code>'s <code>15.7%</code>, approaching <code>Sonnet 5.5</code>'s <code>83.9%</code>; on <code>Terminal-Bench 4.0</code> it reaches <code>39.2%</code> from <code>Haiku 4.5</code>'s <code>0.0%</code> (<code>GPT-6 Luna</code>: <code>16.4%</code>; <code>Sonnet 5.5</code>: <code>70.6%</code>); <code>Humanity's Last Exam</code> with tools lands at <code>57.4%</code> versus <code>Haiku 4.5</code>'s <code>18.7%</code> and within <code>7</code> points of <code>Sonnet 5.5</code>'s <code>64.5%</code>; <code>GDPval-AA v2.1</code> hits <code>1620</code> Elo versus <code>GPT-6 Luna</code>'s <code>1437</code>. Anthropic claims a <code>75%</code> average cost reduction versus <code>Haiku 4.5</code>, and third-party customers report <code>&gt;30%</code> lower latency (Asana), <code>92.8%</code> on HubSpot's three-run CRM eval, and <code>+11</code> points over Haiku 4.5 at half the latency (Box). On the open-weight side, <code>Mistral Large 4</code>'s self-reported numbers position it at the open-weight frontier rather than against closed-frontier chat leaders: <code>DeepSWE 1.1</code> <code>61.7%</code>, <code>SWE-Atlas-QnA</code> <code>59.4%</code>, <code>AutomationBench</code> <code>59.9%</code>, <code>Coding Agent Index</code> <code>49.8%</code>, <code>Terminal-Bench 4.0</code> <code>28.3%</code>, <code>AA-Briefcase</code> <code>1,393</code> Elo, <code>SciCode-Verified</code> <code>91.8%</code> pass@1 (described as open-weight state-of-the-art), <code>Dense200 bbox</code> <code>42.0%</code> (vs. <code>41%</code> for <code>GPT-6 Astra</code>), <code>Finance Agent v2</code> <code>54.7%</code>, <code>Harvey LAB</code> <code>15.8%</code>. The cyber story is distinctive: <code>Cybench</code> <code>93%</code> (<code>40</code> CTF challenges), <code>CyberGym-E2E</code> <code>82%</code> &mdash; a reproduce-and-patch cyber benchmark where closed frontier models score near-zero, partly from refusal, and Mistral is shipping a reduced-moderation cyber-capability variant to vetted security partners and state authorities. For blind human coding (Surge AI, 1&ndash;5 scale) <code>Large 4</code> scores <code>3.74</code>, second of five, behind <code>Claude Opus 5</code>'s <code>4.22</code>. On the training-systems axis <em>NeMo-DCR</em> reports <code>12&ndash;40&times;</code> speedup over a transport-only full-checkpoint reference across <code>30B&ndash;1T</code>-parameter models (<code>87.5</code> minutes to transfer a full <code>1T</code> checkpoint between two AWS regions vs. <code>150</code> seconds for a <code>1T</code> delta refit at <code>3%</code> change), <em>UNREAL</em> reports top-of-leaderboard retrieval recall (<code>HotpotQA</code> <code>49.1%</code> &rarr; <code>73.2%</code>, <code>2WikiMultiHopQA</code> <code>31.7%</code> &rarr; <code>60.1%</code>, <code>MuSiQue</code> <code>8.8%</code> &rarr; <code>14.4%</code>) and lifts <code>NoLiMa</code> at <code>128K</code> context from <code>1.0%</code> to <code>24.83%</code> at FLOP/TTFT breakeven from roughly <code>32K</code> tokens onward, and <em>TRACE</em> delivers BF16-parity RL at up to <code>5.4&times;</code> rollout speedup across four MoE models. <em>AdvSim2Real</em>'s <code>4B</code> agent rises <code>+33.6%</code> relative on completion under an unseen frontier-model adversary across <code>150</code> web tasks. OpenAI's math release doesn't carry benchmark numbers but is the first time a frontier lab has published hundreds of unformalized or Lean-formalized research-math manuscripts from a model whose weights never shipped.</p>
+      <h3>New frontier releases</h3>
+      <p>Two flagship launches in-window: <strong>Claude Haiku 5.5</strong> from Anthropic on 2026-10-07 (small-model tier, <code>claude-haiku-5-5</code> API ID, available on AWS Bedrock, Google Vertex, and Azure in addition to Anthropic's own API), and <strong>Mistral Large 4</strong> from Mistral AI on 2026-10-06 (<code>mistral-large-4</code> alias <code>mistral-large-4-0</code>, public API/Studio preview with open weights promised by end of October). Two co-timed artifacts are not Tier 1 model launches on their own: <code>GLM-5.3 Fast</code> from Z.ai on 2026-10-07 is an inference-acceleration variant that "keeps all of the original model's capabilities while generating output 1.5 to 2 times faster" (per the LLM Gateway listing), analogous to <code>GPT-6 Astra Ultrafast</code> at DevDay 2026; <code>Gemini Nano Banana 2.1</code> from Google on 2026-10-06 is a minor-version image-model refresh. <code>Gemini 4 Argon</code> was announced <code>2026-09-30</code> and is strictly out of window on publication date. OpenAI's <code>722</code>-manuscript math release is a research artifact, not a model launch (the model that produced it is explicitly unreleased), and is treated as Tier 3 below.</p>
+    </section>
+
+    <!-- BODY -->
+
+    <h1 id="anthropic">Anthropic</h1>
+
+    <h2 id="claude-haiku-5-5"><a href="https://www.anthropic.com/claude-haiku-5-5">Claude Haiku 5.5: Effort Controls at $0.10/$0.50</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch Post</span>
+      <span>anthropic.com</span>
+      <span>2026-10-07</span>
+      <span>Model launch &middot; Small-model tier &middot; Effort controls &middot; Pricing</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Anthropic releases <code>Claude Haiku 5.5</code>, described on the launch page as "the cheapest, fastest, and most capable small model we've ever released." The model is positioned as the volume tier of the <code>Claude 5.5</code> family: a subagent paired with <code>Opus 5.5</code> and <code>Sonnet 5.5</code> for high-throughput tasks (summarization, context compaction, database queries, classification) while leaving complex agentic coding to <code>Sonnet 5.5</code> and <code>Opus 5.5</code>.</li>
+      <li>Availability: <code>claude-haiku-5-5</code> on the Anthropic API, AWS Bedrock, Google Cloud Vertex, and Microsoft Azure, with a migration guide linked from the launch page. Max 5x subscribers receive <code>$100</code> in monthly API credits, Max 20x <code>$200</code>, Team up to <code>$500</code> pooled across users. Python and TypeScript SDKs add beta support for computer use and browser use.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>The launch page does not disclose parameter count, attention variant, mixture-of-experts status, context window, or output limit. The one architectural fact disclosed is tokenizer-level: <em>Haiku 5.5</em> uses "an updated tokenizer, similar to those of <code>Sonnet 5.5</code> and <code>Opus 5.5</code>, which means it uses slightly more tokens per task."</li>
+      <li><strong>Named contribution &mdash; First Haiku-class effort controls.</strong>
+        <ul>
+          <li><em>Problem.</em> Prior Haiku models shipped at a single effort level (effectively "fast"), forcing users who needed higher quality on a hard sub-task to escalate to <code>Sonnet</code> and pay roughly <code>20&times;</code> the per-token price. The two-model split made it awkward to run a cost-sensitive agent that needs rare but hard reasoning turns.</li>
+          <li><em>Mechanism.</em> <code>Haiku 5.5</code> exposes five discrete effort levels (<code>Low</code>, <code>Med</code>, <code>High</code>, <code>Xhigh</code>, <code>Max</code>) that trade additional reasoning compute for intelligence at the same per-token price. The pricing is flat across effort levels; the trade is latency and token count.</li>
+          <li><em>Why it works / why it beats prior.</em> Effort controls at the Haiku tier mean a cost-sensitive agent can keep its routine turns at <code>Low</code> or <code>Med</code> and escalate only the hard turns to <code>Xhigh</code>/<code>Max</code>, avoiding the whole <code>Haiku&harr;Sonnet</code> swap. The design mirrors the effort-controls dial that Anthropic shipped first on <code>Opus 5</code> and extended to <code>Sonnet 5.5</code> at the 2026-09-28 launch; Haiku is the final tier to get it.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li>Not disclosed. The launch page does not describe pre-training data, token budget, or training compute. The tokenizer update implies a non-trivial retraining or at least a vocabulary expansion.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li>Not disclosed in detail. The launch page describes alignment as "large improvements over Haiku 4.5, with far fewer misaligned behaviors and less willingness to cooperate with misuse" and references the system card for the per-category breakdown.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Headline benchmark grid (Anthropic self-reported, pass@1 unless noted):
+        <table>
+          <thead>
+            <tr><th>Benchmark</th><th>Haiku 5.5</th><th>Haiku 4.5</th><th>GPT-6 Luna</th><th>Sonnet 5.5</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>GDPval-AA v2.1 (Elo)</td><td><code>1620</code></td><td><code>735</code></td><td><code>1437</code></td><td><code>1840</code></td></tr>
+            <tr><td>AA-Briefcase v1.1 (Elo)</td><td><code>1578</code></td><td><code>614</code></td><td><code>1336</code></td><td><code>1824</code></td></tr>
+            <tr><td>OSWorld 2.1 (offline subset)</td><td><code>72.4%</code></td><td><code>15.7%</code></td><td><code>48.9%</code></td><td><code>83.9%</code></td></tr>
+            <tr><td>Humanity's Last Exam (no tools)</td><td><code>45.9%</code></td><td><code>10.2%</code></td><td>&mdash;</td><td><code>56.9%</code></td></tr>
+            <tr><td>Humanity's Last Exam (with tools)</td><td><code>57.4%</code></td><td><code>18.7%</code></td><td>&mdash;</td><td><code>64.5%</code></td></tr>
+            <tr><td>Terminal-Bench 4.0</td><td><code>39.2%</code></td><td><code>0.0%</code></td><td><code>16.4%</code></td><td><code>70.6%</code></td></tr>
+            <tr><td>FrontierCode 1.1 (Main)</td><td><code>46.4%</code></td><td>&mdash;</td><td><code>42.4%</code></td><td><code>52.1%</code> (Xhigh)</td></tr>
+            <tr><td>Chartography (no tools)</td><td><code>46.4%</code></td><td><code>6.4%</code></td><td><code>29.1%</code></td><td><code>61.6%</code></td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>Customer-reported numbers (not independently verified):
+        <ul>
+          <li>Asana: <code>&gt;30%</code> lower latency on task completions and up to <code>2.5&times;</code> faster inference per agent turn.</li>
+          <li>HubSpot: <code>92.8%</code> average across three runs on its CRM evaluation suite.</li>
+          <li>AlphaSense: <code>0.84</code> vs. <code>0.76</code> for <code>Haiku 4.5</code> on <code>400</code> queries.</li>
+          <li>Box: <code>+11</code> points above <code>Haiku 4.5</code> at approximately half the latency.</li>
+          <li>Cognition: <code>66.2</code> <code>FrontierCode</code> when used as the sidekick model in <code>Devin Fusion</code>.</li>
+        </ul>
+      </li>
+      <li>Pricing (per million tokens; two tiers at <code>&le;100K</code> context and <code>&gt;100K</code>):
+        <table>
+          <thead>
+            <tr><th></th><th>Haiku 5.5 (&le;100K)</th><th>Haiku 5.5 (&gt;100K)</th><th>Haiku 4.5</th><th>Sonnet 5.5</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Input</td><td><code>$0.10</code></td><td><code>$0.50</code></td><td><code>$1.00</code></td><td><code>$2.00</code></td></tr>
+            <tr><td>Output</td><td><code>$0.50</code></td><td><code>$2.50</code></td><td><code>$5.00</code></td><td><code>$10.00</code></td></tr>
+            <tr><td>Cache reads</td><td><code>$0.01</code></td><td><code>$0.05</code></td><td><code>$0.10</code></td><td><code>$0.10</code></td></tr>
+            <tr><td>Cache writes</td><td><code>$0.125</code></td><td><code>$0.625</code></td><td><code>$1.25</code></td><td><code>$2.50</code></td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>Anthropic reports <code>Haiku 5.5</code> is on average <code>75%</code> less expensive than <code>Haiku 4.5</code>, with the footnote clarifying <code>90%</code> cheaper under <code>100K</code> context and <code>50%</code> cheaper above it. Separately, <code>Sonnet 5.5</code>'s cache-read price drops from <code>$0.20</code> to <code>$0.10</code> per million tokens, which Anthropic says cuts agentic-task cost by approximately <code>20%</code>.</li>
+      <li>Speed: Anthropic calls <code>Haiku 5.5</code> "the fastest model Anthropic has released at each model's standard speed." It is slower than the Opus models in <code>Fast Mode</code>, consistent with the Haiku-serves-volume positioning.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>Alignment: "far fewer misaligned behaviors and less willingness to cooperate with misuse" versus <code>Haiku 4.5</code> &mdash; the launch page quantifies this only as "large improvements" and defers the per-category breakdown to the system card.</li>
+      <li>Cybersecurity: safeguards described as "stricter than <code>Haiku 4.5</code>'s but looser than <code>Sonnet 5.5</code>'s," still blocking penetration testing and similar attacker techniques. Vetted security professionals can apply to the Cyber Verification Program (expanded 2026-10-06) for reduced blocking classifiers.</li>
+      <li>Biology: safeguards match <code>Sonnet 5</code>, <code>Sonnet 5.5</code>, and <code>Opus 5</code>; organizations may apply to the Life Sciences Verification Program.</li>
+      <li>Limitations: the launch page explicitly says <code>Sonnet 5.5</code> and <code>Opus 5.5</code> remain better choices for complex agentic coding &mdash; Haiku 5.5's gains are concentrated in volume classification/compaction/retrieval, not deep code reasoning.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Anthropic API: effective immediately on <code>claude-haiku-5-5</code>.</li>
+      <li>AWS Bedrock, Google Cloud Vertex, Microsoft Azure: available at launch.</li>
+      <li>Claude app (Pro, Max): available at launch.</li>
+      <li>Max subscribers receive monthly API credits: Max 5x <code>$100</code>, Max 20x <code>$200</code>, Team up to <code>$500</code>.</li>
+      <li>SDK: Python/TypeScript SDKs ship beta support for the computer-use and browser-use tool loops on <code>Haiku 5.5</code>.</li>
+    </ul>
+
+    <h1 id="mistral-ai">Mistral AI</h1>
+
+    <h2 id="mistral-large-4"><a href="https://mistral.ai/news/mistral-large-4">Mistral Large 4: 1.05T Granular-MoE Multimodal Open-Weight Preview</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch Post</span>
+      <span>mistral.ai</span>
+      <span>2026-10-06</span>
+      <span>Model launch &middot; Granular MoE &middot; Multimodal &middot; Cybersecurity</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Mistral AI opens public preview of <code>Mistral Large 4</code> (<code>ML4</code>, aliased <code>mistral-large-4-0</code>) on 2026-10-06. The preview runs on <code>console.mistral.ai</code> and <code>docs.mistral.ai</code>; open weights are promised by end of month, with license not yet set. The launch covers one model simultaneously positioned as (i) Mistral's flagship instruct-and-reasoning model, (ii) a cyber-defense-oriented model with reduced moderation available to vetted partners and state authorities, and (iii) the first large-scale LLM trained end-to-end on European-sovereign infrastructure.</li>
+      <li>Training compute: from scratch on <code>3,800</code> NVIDIA Grace Blackwell GPUs across Mistral's European datacenters, with <code>160+</code> languages represented (including all official EU languages). The preview is served on the same European infrastructure.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>Granular Mixture-of-Experts, natively multimodal (text and image input; text output). Per the docs: <code>1.05T</code> total parameters, <code>52B</code> active per token, <code>1.6B</code>-parameter vision encoder. The announcement rounds this to "about <code>1T</code> total and <code>49B</code> active"; the LLM Stats write-up calls out the discrepancy and advises using the docs numbers.</li>
+      <li>Context window: <code>1,000,000</code> tokens. Maximum output not published.</li>
+      <li><strong>Named contribution &mdash; Hybrid instruct-and-reasoning in one checkpoint.</strong>
+        <ul>
+          <li><em>Problem.</em> Prior Mistral families split instruct and reasoning into separate checkpoints (<code>Mistral Large 2</code> instruct and <code>Magistral</code> reasoning), forcing routing at the application layer and doubling serving cost for teams that need both modes.</li>
+          <li><em>Mechanism.</em> <code>ML4</code> is a single checkpoint that supports both modes natively; the launch page says RL training on the reasoning path is "still in progress," which suggests the single-checkpoint design keeps a shared instruct backbone and overlays a reasoning policy via post-training (details deferred to the weight release).</li>
+          <li><em>Why it works / why it beats prior.</em> One checkpoint means a single granular-MoE router handles both work-styles, and expert specialization emerges from the training mixture rather than from the application-layer router. The engineering payoff is that the full <code>1.05T</code> parameter budget is addressable from either mode.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Sovereign-stack training on 3,800 Grace Blackwell GPUs.</strong>
+        <ul>
+          <li><em>Problem.</em> Large-scale LLM training outside the US has been bottlenecked on GPU access and on multi-region deployment; EU teams running training in US-hosted clouds inherit data-residency and export-control exposure.</li>
+          <li><em>Mechanism.</em> The entire pre-training run executes on <code>3,800</code> Grace Blackwell GB200/GB300-class GPUs in Mistral's own European datacenters; the preview is served from the same infrastructure, and a cyber-oriented deployment can be run on private cloud or on-premise.</li>
+          <li><em>Why it works / why it beats prior.</em> It demonstrates that a <code>1.05T</code>-parameter granular MoE can be trained end-to-end on European-sovereign infrastructure at a scale previously only US-hosted. It is also the predicate for the regulated-cyber variant, since that variant cannot be deployed through US-hosted inference endpoints.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li>Training corpus: <code>160+</code> languages, including all official EU languages. Token budget and modality mix are not disclosed; the launch page defers both to the weight-release documentation.</li>
+      <li>Training compute: <code>3,800</code> Grace Blackwell GPUs in European datacenters. Wall-clock duration and compute budget in FLOPs are not disclosed.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li>RL training is described as "still in progress," so scores may change. The post-training methodology (SFT recipe, RL algorithm, judge model) is deferred to the weight release. No distillation strategy is announced for the preview.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Headline benchmark table (Mistral self-reported, unless marked):
+        <table>
+          <thead>
+            <tr><th>Benchmark</th><th>Score</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>DeepSWE 1.1</td><td><code>61.7%</code></td><td>Coding agent</td></tr>
+            <tr><td>SWE-Atlas-QnA</td><td><code>59.4%</code></td><td>Agentic coding</td></tr>
+            <tr><td>Terminal-Bench 4.0</td><td><code>28.3%</code></td><td></td></tr>
+            <tr><td>Coding Agent Index</td><td><code>49.8%</code></td><td></td></tr>
+            <tr><td>Surge AI blind human coding (1&ndash;5)</td><td><code>3.74</code></td><td>Third-party; 2nd of 5, behind <code>Claude Opus 5</code> at <code>4.22</code></td></tr>
+            <tr><td>AutomationBench (657 workflows)</td><td><code>59.9%</code></td><td></td></tr>
+            <tr><td>AA-Briefcase (Elo)</td><td><code>1,393</code></td><td></td></tr>
+            <tr><td>SciCode-Verified pass@1</td><td><code>91.8%</code></td><td>Open-weight SOTA (claimed)</td></tr>
+            <tr><td>Finance Agent v2</td><td><code>54.7%</code></td><td></td></tr>
+            <tr><td>Finch / FinWorkBench</td><td><code>67.4%</code></td><td></td></tr>
+            <tr><td>Harvey LAB</td><td><code>15.8%</code></td><td>"Beats all open-source models"</td></tr>
+            <tr><td>Dense200 (bbox grounding)</td><td><code>42.0%</code></td><td>vs <code>41%</code> for <code>GPT-6 Astra</code></td></tr>
+            <tr><td>ChartQA Pro</td><td><code>63.1%</code></td><td></td></tr>
+            <tr><td>GDP.pdf</td><td><code>18.6%</code></td><td></td></tr>
+            <tr><td>Cybench (40 CTFs)</td><td><code>93%</code></td><td></td></tr>
+            <tr><td>CyberGym-E2E (reproduce-and-patch)</td><td><code>82%</code></td><td>Highest of any model, per AA Cyber Index</td></tr>
+            <tr><td>Lakera B3 attack resistance</td><td><code>93.3%</code></td><td></td></tr>
+            <tr><td>KORA Benchmark (max 2)</td><td><code>1.691</code></td><td>Highest among open-source</td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>Pricing (USD per <code>1M</code> tokens):
+        <table>
+          <thead>
+            <tr><th></th><th>Current sale</th><th>List</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Input</td><td><code>$0.68</code></td><td><code>$1.36</code></td></tr>
+            <tr><td>Cached input</td><td><code>$0.07</code></td><td><code>$0.14</code></td></tr>
+            <tr><td>Output</td><td><code>$2.09</code></td><td><code>$4.18</code></td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>vals.ai third-party results are cited for Finance and Harvey Legal Agent (ML4 "exceeds <code>GPT-6-Astra</code>" on finance and legal; "outperforms all open-source models" on Harvey) but without numeric scores.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Not published in the preview launch. Mistral defers architecture ablations, post-training ablations, and the full benchmark methodology to the weight release.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>Lakera B3 attack resistance <code>93.3%</code>; KORA Benchmark <code>1.691</code>/<code>2</code>, highest measured among open-source models; cyber refusal on JailbreakBench, StrongREJECT, and AgentHarm is "higher than all open-source models compared."</li>
+      <li>The reduced-moderation cyber-defense variant is restricted to vetted partners under the Cyber Verification Program (expanded 2026-10-06), with on-prem/private-cloud deployment allowed for state-authority use cases. The CyberGym-E2E <code>82%</code> and Cybench <code>93%</code> scores partly reflect the cyber variant's reduced refusal baseline &mdash; the LLM Stats write-up notes closed frontier models score near-zero on CyberGym-E2E in part because they refuse to engage.</li>
+      <li>The launch page cautions that benchmark figures should not be used to claim <code>ML4</code> beats closed-frontier models overall; the open-weight-SOTA framing is on <code>SciCode-Verified</code>, cyber benchmarks, and selected open-source leaderboards only.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>Preview: <code>console.mistral.ai</code> (Studio) and <code>docs.mistral.ai</code> (API), <code>mistral-large-4</code> / <code>mistral-large-4-0</code>.</li>
+      <li>Open weights: planned by end of October 2026, license TBD.</li>
+      <li>Multimodal: text + image input, text output; function calling, structured outputs, document QA, and built-in tools supported.</li>
+      <li>Regions: multiple regions worldwide including an EU deployment Mistral operates end-to-end; cyber variant on private cloud or on-premise.</li>
+      <li>Cyber access: Fairwind-style vetting via the Cyber Verification Program for security partners and state authorities.</li>
+    </ul>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="trace"><a href="https://arxiv.org/abs/2610.07767">TRACE: Rollout-Guided Quantization-Aware Training for FP4 Reinforcement Learning of MoE Language Models</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-10-06</span>
+      <span>FP4 RL &middot; MoE &middot; Quantization-aware training</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Xin Wang, Hao Yu, Zhengyang Zhuge, Bochao Mao, Zheng Li, Junda Feng, Yuyan Luo, Yi Zhang, Yizhong Cao, Mi Zhang, Dayiheng Liu, Jianwei Zhang (Alibaba Qwen team per the submitter badge on Hugging Face Daily Papers) release <em>TRACE</em>, an FP4 reinforcement-learning framework for MoE language models. The paper's two targets are: (i) matching BF16-rollout quality on reasoning, coding, and long-horizon RL tasks while running the rollouts at FP4; and (ii) reducing storage and inter-node communication in the FP4 QAT loop by caching mantissa and scale information from deeper layers rather than recomputing them.</li>
+      <li>Positioning: existing FP4 RL methods optimize quantization on the training path and on the rollout path independently. The claim is that this leaves a quantization gap between the two paths that the policy never trains against, so the FP4 rollout quietly drifts from what the FP4-adapted policy expects.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Rollout-guided FP4 quantization-aware training.</strong>
+        <ul>
+          <li><em>Problem.</em> FP4 has a tiny dynamic range per rounding bin, so even small differences in rounding decisions between training and rollout steps compound: the FP4-trained policy "wants" one rounding of the activations, the FP4 rollout engine produces another, and the on-policy gradient estimator receives a biased sample. Prior FP4 RL methods quantize the two paths independently and tolerate that bias.</li>
+          <li><em>Mechanism.</em> TRACE conditions the FP4 rounding decisions used during training on the quantization outcomes observed on the rollout side. Concretely: the training-side quantizer takes as input the rounding bin that the FP4 rollout engine produced for the same activation (per layer, per expert), rather than recomputing from scratch, so the training policy's gradients are evaluated under the same FP4 noise distribution the rollout policy actually saw.</li>
+          <li><em>Why it works / why it beats prior.</em> Prior FP4 QAT work (e.g., post-training quantization for inference) tolerates a small rounding gap because inference is non-interactive. In RL that gap biases the policy gradient. Closing the gap by shipping the rollout-side quantization outcomes back into the training-side quantizer removes that bias term; the paper reports FP4 rollout at parity with BF16 rollout on four MoE models and up to <code>5.4&times;</code> rollout speedup.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Mantissa / scale caching for deeper layers.</strong>
+        <ul>
+          <li><em>Problem.</em> In a granular MoE, the activations at deeper layers have higher sparsity and more stable per-expert distributions than those at shallower layers. Recomputing mantissa and scale metadata for every FP4 rollout step wastes storage and inter-node bandwidth because most of that metadata is unchanged step-to-step.</li>
+          <li><em>Mechanism.</em> TRACE caches a selected subset of mantissa and scale values from deeper MoE layers and reuses them across rollout steps, only recomputing when a drift threshold is crossed.</li>
+          <li><em>Why it works / why it beats prior.</em> At deep MoE layers, the per-expert distribution of pre-quantization activations drifts slowly; the overhead of refreshing their FP4 metadata on every step is nearly pure waste. Caching those values gives most of the storage/communication saving with none of the quality cost. The paper reports storage and communication reductions on top of the quantization-gap closure.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Evaluated across four large-scale MoE language models (not named in the abstract) spanning reasoning, coding, and long-horizon RL tasks.</li>
+      <li>Headline: joint FP4 weight-and-activation plus FP4 KV-cache rollout performs comparably to BF16 rollout at matched RL training schedule.</li>
+      <li>Rollout speedup: up to <code>5.4&times;</code> versus the BF16 rollout baseline, per the abstract.</li>
+      <li>Per-benchmark pass rates, model sizes, and ablation deltas are not in the abstract; those await the arXiv PDF.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Not enumerated in the abstract-level release.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Positioning: the paper describes the four MoE targets only as "large-scale MoE language models." Given the Qwen team affiliation, the natural guess is the <code>Qwen3</code> and <code>Qwen3-Omni</code> families; the paper does not confirm this.</li>
+    </ul>
+
+    <h1 id="mbzuai">MBZUAI</h1>
+
+    <h2 id="advsim2real"><a href="https://arxiv.org/abs/2610.08773">AdvSim2Real: Training Web Agents Against Adaptive Prompt Injection in a Web World Model</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-10-06</span>
+      <span>Prompt injection &middot; Adversarial training &middot; Web world models</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Sarim Hashmi, Mukul Ranjan, Kshitij Mishra, Mikhail Kuznetsov, Praneeth Vepakomma, Nils Lukas (MBZUAI, inferred from the <code>Sarim-MBZUAI</code> code repository) present <em>AdvSim2Real</em>, a framework for training web agents to resist adaptive prompt injection by co-evolving a task curriculum, an injection adversary, and the agent itself inside a frozen web world model.</li>
+      <li>The framing problem: fixed-injection adversarial training generalizes poorly, and keeping the task distribution fixed means tasks lose learning signal once the agent solves them. Both axes need to co-evolve for the resulting robustness to transfer to a real browser.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Co-evolving curriculum, injection adversary, and agent in a frozen web world model.</strong>
+        <ul>
+          <li><em>Problem.</em> Standard adversarial training against prompt injection uses a fixed set of injected instructions on a fixed task distribution. The resulting agent memorizes those injections, but an adaptive attacker who samples new injections at test time breaks it. If the training only augments the injection distribution and holds tasks fixed, tasks drop out of the gradient as soon as the agent solves them.</li>
+          <li><em>Mechanism.</em> AdvSim2Real runs all three populations &mdash; task-curriculum generator, injection adversary, and agent &mdash; inside a frozen web world model (a learned simulator of browser interactions that stays fixed during training). The task curriculum keeps proposing new tasks and specifically targets tasks the current agent solves "about half the time," which is the maximal-gradient regime. The injection adversary is rewarded only when its injection flips a would-be success into a failure. The agent is trained end-to-end against both.</li>
+          <li><em>Why it works / why it beats prior.</em> The frozen world model gives all three populations a reproducible playground, so the three can be optimized against each other without any party controlling the environment. The <code>50%</code>-solve-rate target keeps every training batch at the information-maximum of task difficulty, and the injection adversary's "flip-a-success-into-a-failure" reward focuses on injections that are actually dangerous rather than injections that look sneaky but never land. Prior adversarial-training work either held tasks fixed (so gradient dies) or held the injection distribution fixed (so attacks don't adapt).</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Headline: a <code>4B</code>-parameter agent trained with AdvSim2Real is "both more capable and more robust" than the base agent across <code>150</code> web tasks.</li>
+      <li>Completion rate under an unseen frontier-model injection adversary rises <code>+33.6%</code> relative over the base agent.</li>
+      <li>Robustness transfers from the frozen web world model to a real browser (the paper reports gains "transfer to a real browser"; specific real-browser pass-rate numbers are not in the abstract).</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Not enumerated at abstract level. The three natural ablations &mdash; freeze each of the three populations in turn &mdash; await the PDF.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Code is at a <code>Sarim-MBZUAI</code> GitHub repository (linked from the arXiv page), which is also what satisfies the frontier-lab affiliation signal for this entry pending explicit affiliations in the PDF.</li>
+    </ul>
+
+    <h1 id="nvidia">NVIDIA</h1>
+
+    <h2 id="nemo-dcr"><a href="https://arxiv.org/abs/2610.08430">NeMo-DCR: Bit-Exact Delta-Compressed Refit for Scalable Agentic RL at Trillion-Parameter Scale</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-10-06</span>
+      <span>Agentic RL &middot; Weight synchronization &middot; Trillion-parameter systems</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Songlin Jiang, Zhiyu Li, Terry Kong, Yu Yao, Youngeun Kwon, Bernard Nguyen, Ashwath Aithal, Mario Di Francesco at <strong>NVIDIA</strong> (affiliation inferred from the open-source landing in <a href="https://github.com/NVIDIA/NeMo-RL">NVIDIA NeMo RL pull request #2444</a>) release <em>NeMo-DCR</em>, a framework for synchronizing updated policy weights to agentic-RL rollout clusters at trillion-parameter scale without any quality compromise.</li>
+      <li>The scaling problem the paper targets: in agentic RL, trained weights must land on rollout clusters before the next batch starts; at <code>1T</code> parameters a full checkpoint transfer between two AWS regions takes <code>87.5</code> minutes, which dominates wall-clock. Prior lossy compression methods trade bit-exactness for speed, which is unacceptable when rollout and training must remain in exact sync for the on-policy gradient estimator.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Bit-exact delta-compressed refit via affine projection and residual XOR masks.</strong>
+        <ul>
+          <li><em>Problem.</em> Only about <code>1%</code> of BF16 weight values actually change per RL step, but the sharding and ordering between the training cluster's shards and the rollout cluster's shards don't line up, so a naive diff plus patch produces a non-exact result.</li>
+          <li><em>Mechanism.</em> NeMo-DCR runs in two passes. First, an <em>affine projection</em> converts training-shard changes into the rollout cluster's canonical checkpoint coordinates. Second, a <em>residual conversion</em> handles whatever changes do not map affinely. Both passes emit either a compressible <em>XOR mask</em> (for affine-projected changes) or an <em>overwrite</em> (for residuals); both are applied in place on the receiver and are therefore bit-identical to a dense refit.</li>
+          <li><em>Why it works / why it beats prior.</em> The affine projection step captures the vast majority of changes with tiny XOR masks; the residual conversion handles the tail cheaply via overwrites. Prior refit systems either shipped the full checkpoint (slow but exact) or used lossy compression (fast but not bit-exact and so unusable for on-policy RL). NeMo-DCR gets both endpoints: <code>12&ndash;40&times;</code> speedup over the transport-only reference while remaining bit-identical to the full-checkpoint result.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Retry-safe in-place application with joint commit.</strong>
+        <ul>
+          <li><em>Problem.</em> When one node in a rollout cluster fails midway through writing a delta, the partially-written weights are now in an inconsistent state between policy and baseline, and the next training step is invalid.</li>
+          <li><em>Mechanism.</em> The in-place application is retry-safe: if a write fails, the writer retries from a safe checkpoint. A <em>joint commit</em> step binds the policy to its baseline atomically; neither is visible to the rollout engine until both are fully written.</li>
+          <li><em>Why it works / why it beats prior.</em> On-policy RL requires that policy and baseline stay perfectly aligned, else the advantage estimator is biased by the mismatch between the policy that generated the trajectory and the baseline against which the trajectory is scored. The joint commit guarantees this alignment is never partially broken by a failed write.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Object-storage and relay-tree streaming (no cross-cluster collective).</strong>
+        <ul>
+          <li><em>Problem.</em> A cross-cluster all-reduce or all-gather for a <code>1T</code>-parameter refit is slow and brittle: it requires synchronous participation of every rank in both clusters, and a single stalled rank blocks the entire operation.</li>
+          <li><em>Mechanism.</em> NeMo-DCR streams the compressed delta over either an object-storage drop (write once from the trainer, read many times from the rollouts) or a relay tree (training-cluster root pushes deltas down a BFS tree of relay nodes that fan out to the rollout cluster). Neither path requires a global synchronous collective.</li>
+          <li><em>Why it works / why it beats prior.</em> Removing the cross-cluster collective means a stalled rollout node no longer blocks the trainer; the trainer can proceed with the next step while the stalled rollout node catches up via the object-storage drop or a retry on the relay tree. The paper reports a <code>1T</code> relay-tree refit at <code>3%</code> change in <code>150</code> seconds, versus <code>87.5</code> minutes for a transport-only full-checkpoint reference between the same two AWS regions.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Headline: full <code>1T</code> checkpoint transfer between two AWS regions takes <code>87.5</code> minutes; a <code>1T</code> relay-tree delta refit at <code>3%</code> change takes <code>150</code> seconds.</li>
+      <li>Change rates tested: <code>3%</code> and <code>5%</code> per step (the paper also reports approximately <code>1%</code> of BF16 weight values store changed values per step as the baseline rate).</li>
+      <li>Model-size coverage: <code>30B</code> to <code>1T</code> parameters.</li>
+      <li>Speedup: <code>12&ndash;40&times;</code> over a transport-only full-checkpoint reference.</li>
+      <li>Bit-exactness: the delta refit's result is bit-identical to a full dense refit by construction; the paper's framing is that this is non-negotiable for on-policy RL.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Not fully enumerated at abstract level, but the two obvious ablation axes are visible: delta compression (<code>XOR</code> masks vs. overwrites per class of change) and transport layer (relay tree vs. object storage).</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>License: CC BY 4.0. Code is open-sourced in NVIDIA NeMo RL pull request #2444. The DOI is listed as pending registration.</li>
+      <li>Positioning: this is the first bit-exact delta-refit system published at <code>1T</code>-parameter scale for RL training; prior systems were either at smaller scale (<code>&lt;100B</code>) or lossy. The dense-refit baseline it compares against is a wire-level transport baseline, not a prior-art compression baseline.</li>
+    </ul>
+
+    <h2 id="unreal"><a href="https://arxiv.org/abs/2610.08463">UNREAL: Unifying Retrieval and Long-Context with a Single Model</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv</span>
+      <span>2026-10-06</span>
+      <span>Retrieval &middot; Long context &middot; Frozen-backbone adapters</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Edan Kinderman, Elad Hoffer, Yochai Blau, Brian Chmiel, Ron Banner, Daniel Soudry, Boris Ginsburg (NVIDIA, inferred from Boris Ginsburg's NVIDIA affiliation and the paper's engineering style) propose <em>UNREAL</em>, a single-model framework that unifies corpus retrieval and long-context inference by selecting evidence from a <em>frozen</em> LLM's own internal representations.</li>
+      <li>The split that UNREAL closes: retrieval today uses a dedicated retriever/reranker stack whose embedding geometry is uncoupled from the LLM that eventually reads the retrieved chunks, and long-context inference drowns the LLM in retrieved distractors because the retriever's "relevance" signal doesn't map onto the reader's own attention. UNREAL uses one representation space for both.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Named contribution &mdash; Shared frozen-backbone retrieval and inference.</strong>
+        <ul>
+          <li><em>Problem.</em> A retriever that is trained separately from the reader LLM optimizes a different objective (lexical/semantic relevance) than what the reader actually needs (evidence that reduces its own loss on the downstream task). Switching to the reader's representation space usually requires finetuning the backbone, which is expensive and destroys the reader's existing capability.</li>
+          <li><em>Mechanism.</em> UNREAL encodes chunks and constructs retrieval queries directly from the <em>frozen</em> LLM's internal representations, with fewer than <code>500K</code> trainable parameters added as adapters on top. The backbone is not modified, so its downstream reading capability is preserved. The adapters learn to project the frozen representations into a retrieval-friendly geometry.</li>
+          <li><em>Why it works / why it beats prior.</em> Because retrieval and inference share the frozen backbone's representation, "relevant to the retriever" and "relevant to the reader" are the same signal by construction. Adding fewer than <code>500K</code> trainable parameters is small enough to train on a single-GPU budget and small enough to not perturb the base model's capabilities. The paper reports that this single-model stack beats dedicated retriever-reranker systems on multi-hop retrieval recall.</li>
+        </ul>
+      </li>
+      <li><strong>Named contribution &mdash; Distractor removal for long-context inference.</strong>
+        <ul>
+          <li><em>Problem.</em> Long-context benchmarks (<code>NoLiMa</code>, <code>LV-Eval</code>) show that LLMs degrade sharply when the context contains distractors, even when the correct evidence is within context. The reader's attention smears across the irrelevant chunks and the signal from the correct chunk gets diluted.</li>
+          <li><em>Mechanism.</em> At inference time, UNREAL uses the same retrieval mechanism to pre-filter the long context, removing distractor chunks before the reader generates. Because the retriever runs on the frozen backbone, this pre-filter is extremely cheap and shares all of the reader's prior.</li>
+          <li><em>Why it works / why it beats prior.</em> The reader's downstream loss is dominated by distractor-driven attention smearing; removing distractors moves the reader back to the clean-context regime it already handles well. The paper reports <code>NoLiMa</code> accuracy at <code>128K</code> rising from <code>1.0%</code> to <code>24.83%</code>.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Retrieval, on a <code>3B</code>-token / <code>21M</code>-chunk Wikipedia index. All four UNREAL dense/hybrid backbones reportedly outperform SOTA retriever-reranker systems. Best-model recall:
+        <table>
+          <thead><tr><th>Benchmark</th><th>Prior SOTA</th><th>UNREAL</th></tr></thead>
+          <tbody>
+            <tr><td>HotpotQA</td><td><code>49.1%</code></td><td><code>73.2%</code></td></tr>
+            <tr><td>2WikiMultiHopQA</td><td><code>31.7%</code></td><td><code>60.1%</code></td></tr>
+            <tr><td>MuSiQue</td><td><code>8.8%</code></td><td><code>14.4%</code></td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>Long context (distractor removal before generation):
+        <ul>
+          <li><code>NoLiMa</code> at <code>128K</code>: <code>1.0%</code> &rarr; <code>24.83%</code>.</li>
+          <li><code>LV-Eval</code> F1 at <code>256K</code>: <code>49.97%</code> &rarr; <code>54.66%</code>.</li>
+        </ul>
+      </li>
+      <li>Efficiency: versus full-context inference, UNREAL cuts FLOPs and time-to-first-token (TTFT) from roughly <code>32K</code> tokens of context onward; the FLOP/TTFT gap widens as context length grows.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Not enumerated at abstract level. The implied ablation set is the per-task sweep across dense vs. hybrid UNREAL backbones (four variants reported) and across context-length budgets.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Trainable-parameter budget of <code>&lt;500K</code> is the signature engineering claim: the retrieval capability is added on top of a frozen LLM without touching the backbone, which means UNREAL slots in behind any LLM that preserves its intermediate representations.</li>
+    </ul>
+
+    <h1 id="openai">OpenAI</h1>
+
+    <h2 id="openai-math"><a href="https://openai.com/index/sharing-ai-progress-in-mathematics">Sharing AI Progress in Mathematics: 722 Manuscripts from an Unreleased Internal Frontier Model</a></h2>
+    <div class="paper-meta">
+      <span>Tier 3 &middot; Blog Post + Research Artifact Release</span>
+      <span>openai.com</span>
+      <span>2026-10-06</span>
+      <span>Math reasoning &middot; Lean formalization &middot; Unreleased model</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>OpenAI publishes a research-math release at <a href="https://openai.com/index/sharing-ai-progress-in-mathematics">openai.com/index/sharing-ai-progress-in-mathematics</a> and <a href="https://github.com/openai/math">github.com/openai/math</a>, dated 2026-10-06: <code>722</code> mathematical manuscripts organized into <code>372</code> families, generated by an unnamed <em>unreleased internal frontier model</em>. Many results carry Lean formalizations; many do not, and the README cautions that unformalized results "could have issues."</li>
+      <li>Model identity: not disclosed. External coverage describes it as "an internal frontier model" that is "significantly more capable than <code>GPT-6 Astra</code>." The blog post does not benchmark the model, name it, or share weights; OpenAI says it is "working to responsibly release the model." The 2026-09-29 Advisory Group on Mathematics and Artificial Intelligence (AGMAI) at the Institute for Advanced Study published a set of recommendations the day before, saying labs should stop testing advanced math problems on proprietary models the wider community cannot access &mdash; this release is OpenAI's explicit response.</li>
+      <li>Named reasoning summaries in the README cover <code>10</code> representative families:
+        <ul>
+          <li>007 &mdash; Ordinary two-point correlations of multiplicative functions</li>
+          <li>017 &mdash; The irrationality exponent of &pi;</li>
+          <li>087 &mdash; Symmetric and general Mahler conjectures</li>
+          <li>102 &mdash; Ordinary NP-hardness at the basic semidefinite threshold</li>
+          <li>159 &mdash; Quasipolynomial bounds for arithmetic progressions</li>
+          <li>197 &mdash; Kaplansky's direct-finiteness conjecture in characteristic two</li>
+          <li>221 &mdash; The M&eacute;zard&ndash;Parisi formula for diluted spin glasses</li>
+          <li>271 &mdash; Spontaneous magnetization in the quantum Heisenberg ferromagnet</li>
+          <li>287 &mdash; Isomorphism of free group factors</li>
+          <li>362 &mdash; The three-dimensional relativistic Vlasov&ndash;Maxwell system</li>
+        </ul>
+      </li>
+      <li>Named theorems outside the <code>10</code>-family summary:
+        <ul>
+          <li>A zero-free region for the Riemann zeta function; the included write-up covers <code>Re(s) &gt; 11/12</code>, and OpenAI notes it was human-edited for readability.</li>
+          <li>A proof of the Hodge Conjecture for CM abelian varieties.</li>
+          <li>The release follows the 2026-09-08 OpenAI announcement of a Lean-formalized proof that smooth 3D Navier&ndash;Stokes flow can develop a finite-time singularity (training began 2026-08-28; evaluation started 2026-09-01; the agents reached the result on 2026-09-05). OpenAI does not plan to claim the Millennium Prize.</li>
+        </ul>
+      </li>
+      <li>Methodology: the model was posed approximately <code>4,000</code> problems using a fixed procedure; outputs were aggregated into families and manuscripts under a significance threshold. Average compute per result: approximately <code>3</code> hours of ChatGPT Pro-equivalent thinking. Named exceptions departed from the fixed procedure, notably the <code>Re(s) &gt; 11/12</code> zeta write-up and the Hodge CM-abelian-varieties proof.</li>
+      <li>Governance: OpenAI consulted the Institute for Advanced Study's AGMAI, published a revision/citation protocol in the repository, and will keep adding Lean formalizations and corrections (with earlier versions kept accessible). OpenAI also commits to funding workshops, conferences, and special programs on verifying AI-produced major results.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Why Tier 3 and not Tier 1: the model itself is unreleased &mdash; no weights, no API, no system card, no serving endpoint. The artifact is the mathematical output plus the policy framing. If the model does ship later, that release would become its own Tier 1 entry; this entry documents the research artifact that landed in-window.</li>
+      <li>The release is the first time a frontier lab has published hundreds of research-math manuscripts from a model whose weights never shipped, and the first large-scale demonstration of Lean formalization at research-math scale from a public lab.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
