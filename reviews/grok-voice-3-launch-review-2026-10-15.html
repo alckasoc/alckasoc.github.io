@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Grok Voice 3.0 Launch Review &mdash; October 15, 2026 | Auto Lit Review</title>
+<meta name="description" content="Window closing 2026-10-15 21:45 UTC: one Tier 1 flagship launch missed by the 2026-10-14 review and three Tier 2 frontier-lab papers submitted 2026-10-14. xAI ships Grok Voice 3.0 (grok-voice-3.0 on wss://api.x.ai/v1/realtime, $0.08/min unchanged from v2), topping the Artificial Analysis Speech-to-Speech Index at 86.9 vs 83.2 GPT-Live-1 (Astra, Medium) / 82.6 Gemini 3.8 Live (Extended Thinking, High) / 81.3 Grok Voice 2.0, with Big Bench Audio 98.5%, Full Duplex Bench 97.0%, Speech Agent Arena Elo 1070, and tau-Voice 71.6% (behind GPT-Live-1's 74.5% at claimed 40% lower latency). Tencent ARC Lab's Player-1 trains computer-use models on 6,044 curated gameplay trajectories plus PPO rollouts across Player-1-Gym's 16 synthetic 2D/3D environments and lifts MineDojo-300 success from 12.63% (strongest baseline) to 38.33% with Player-1-9B (+27.8 pp over SFT). ByteDance Seed's Cortex consolidates in-context gains into mergeable LoRA/FFN updates by generating prospective queries and distilling context-conditioned outputs, recovering 88.9% of context-induced gain after 50 sequential factual edits on a 14B backbone while retaining 99.8% of non-target performance across 4B-120B dense and MoE models. Alibaba Tongyi-ConvAI's HICO-Bench + PaCPO shows 36% of highly rated conversations across 13 LLMs fail Verified Success, and PaCPO's paired-credit reward lifts Qwen3-8B's Verified Success from 20.4% to 28.3%." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">October 15, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#xai">xAI</a>
+          <ul>
+            <li class="toc-h2"><a href="#grok-voice-3">Grok Voice 3.0</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba</a>
+          <ul>
+            <li class="toc-h2"><a href="#hico-bench-pacpo">HICO-Bench &amp; PaCPO</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#bytedance">ByteDance</a>
+          <ul>
+            <li class="toc-h2"><a href="#cortex">Cortex</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#tencent">Tencent</a>
+          <ul>
+            <li class="toc-h2"><a href="#player-1">Player-1</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; October 15, 2026</div>
+    <h1 class="page-title">Grok Voice 3.0 Launch</h1>
+    <div class="page-meta">4 entries &middot; 4 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>Window closing <strong>2026-10-15 21:45 UTC</strong> is a quiet 36-hour sweep after the 2026-10-14 Argon &amp; Muse Wonder review. One <strong>Tier 1</strong> flagship launch, missed by that review's cutoff: <strong>xAI</strong>'s <a href="https://x.ai/news/grok-voice-3"><em>Grok Voice 3.0</em></a> on 2026-10-14, served as <code>grok-voice-3.0</code> through <code>wss://api.x.ai/v1/realtime</code>, with the <code>grok-voice-latest</code> alias auto-migrated. Three <strong>Tier 2</strong> frontier-lab arXiv papers all submitted 2026-10-14: <strong>Tencent ARC Lab</strong>'s <a href="https://arxiv.org/abs/2610.20584"><em>Player-1</em></a> post-training recipe for game-playing from synthetic experience, <strong>ByteDance Seed</strong>'s <a href="https://arxiv.org/abs/2610.20399"><em>Cortex</em></a> technical report on consolidating in-context behavior into mergeable parametric updates, and <strong>Alibaba Tongyi-ConvAI</strong>'s <a href="https://arxiv.org/abs/2610.20195"><em>HICO-Bench &amp; PaCPO</em></a> paired-worlds verifiable-outcome setup for social agents. No Tier 1 launches from OpenAI, Anthropic, Google, Meta, Mistral, Microsoft, Nvidia, DeepSeek, Qwen, Moonshot, Z.ai, Baidu, MiniMax, or Xiaomi in-window. No Tier 3 standalone blog posts from frontier labs cleared the publication-date window beyond the 2026-10-14 drops already covered in the previous review.</p>
+      <h3>Competitiveness</h3>
+      <p><code>Grok Voice 3.0</code> is pitched as the first xAI model to top the <strong>Artificial Analysis Speech-to-Speech Index</strong>: <code>86.9</code> for <code>Grok Voice 3.0</code> vs <code>83.2</code> for <code>GPT-Live-1 (Astra, Medium)</code>, <code>82.6</code> for <code>Gemini 3.8 Live (Extended Thinking, High)</code>, and <code>81.3</code> for <code>Grok Voice 2.0</code>; the index is an equal-weight composite over four sub-scores where <code>Grok Voice 3.0</code> leads on three. <strong>Big Bench Audio</strong> (speech reasoning) <code>98.5%</code> (vs <code>Gemini 3.8 Live</code> <code>97.7%</code>, <code>Grok Voice 2.0</code> <code>97.2%</code>, <code>GPT-Live-1</code> <code>90.1%</code>). <strong>Speech Agent Arena Elo</strong> (human preference, blind head-to-head calls) <code>1070</code> (vs <code>GPT-Live-1</code> <code>1048</code>, <code>Grok Voice 2.0</code> <code>1011</code>, <code>Gemini 3.8 Live</code> <code>990</code>). <strong>Task success rate</strong> on blind calls <code>94.8%</code> (vs <code>GPT-Live-1</code> <code>87.4%</code>, <code>Gemini 3.8 Live</code> <code>89.1%</code>, <code>Grok Voice 2.0</code> <code>94.6%</code>). <strong>Full Duplex Bench</strong> (pauses, turn-taking, interruptions) <code>97.0%</code> (vs <code>Grok Voice 2.0</code> <code>95.1%</code>, <code>GPT-Live-1</code> <code>94.9%</code>, <code>Gemini 3.8 Live</code> <code>91.9%</code>). The one sub-score where <code>GPT-Live-1</code> leads is <strong>&tau;-Voice</strong> (simulated support calls with accents, noise, interruptions): <code>Grok Voice 3.0</code> <code>71.6%</code> vs <code>GPT-Live-1</code> <code>74.5%</code>, which xAI calls comparable "at <code>40%</code> lower latency" (unquantified in the launch post). <strong>EVA-Bench</strong> (ServiceNow enterprise voice-agents): <code>Grok Voice 3.0</code> <code>74%</code> accuracy, highest on the leaderboard and best on the combined accuracy &times; customer-experience score, with the ServiceNow team describing it as setting a new Pareto frontier. <strong>Cost per task</strong> on Big Bench Audio (Artificial Analysis, cited by xAI): <code>Grok Voice 3.0</code> <code>$0.025</code> vs <code>GPT-Live-1 (Astra, Medium)</code> <code>$0.030</code> and <code>GPT-Realtime-2.1 (High)</code> <code>$0.055</code>. Latency: time-to-first-audio <code>0.81 s</code> (slower than <code>Grok Voice 2.0</code>'s <code>0.70 s</code>; the launch post advertises "under one second"). Pricing holds at <code>$0.08</code>/min (<code>$4.80</code>/hr), identical to <code>Grok Voice 2.0</code>, plus <code>$0.004</code> per text input, <code>$2.50</code>/1k <code>file_search</code> calls, <code>$5</code>/1k <code>web_search</code> calls. On the Tier 2 side, Tencent's <code>Player-1-9B</code> clears <code>38.33%</code> on <code>MineDojo-300</code> vs <code>12.63%</code> for the strongest baseline; ByteDance's <code>Cortex-Structural</code> recovers <code>88.9%</code> of context-induced gain after <code>50</code> sequential factual edits on a <code>14B</code> model with <code>99.8%</code> non-target retention; and Alibaba's <code>PaCPO</code> lifts <code>Qwen3-8B</code>'s <strong>Verified Success</strong> on <code>HICO-Bench</code> from <code>20.4%</code> to <code>28.3%</code>, with the headline finding that <code>36%</code> of conversations rated highly for goal completion across <code>13</code> LLMs still fail <strong>Verified Success</strong>.</p>
+      <h3>New frontier releases</h3>
+      <p>One flagship voice-agent launch in-window. <strong>Grok Voice 3.0</strong> (2026-10-14) is a speech-to-speech model that handles listen, reason, tool use, and spoken reply as a single model with reasoning effort toggle (<code>high</code> default or <code>none</code>), served through the Voice Agent API at <code>wss://api.x.ai/v1/realtime</code> under model id <code>grok-voice-3.0</code> and the <code>grok-voice-latest</code> alias (auto-migrated with no code changes). Session settings include <code>instructions</code>, <code>reasoning.effort</code>, <code>voice</code>, <code>tools</code>, <code>turn_detection</code>, <code>resumption</code>, transcription <code>keyterms</code>, and pronunciation <code>replace</code>. Tool catalog: <code>file_search</code>, <code>web_search</code>, <code>x_search</code>, <code>mcp</code>, and <code>function</code>. Phone connectivity is bring-your-own carrier trunk over SIP (xAI phone-number provisioning via API is not supported). Twenty language entries in the docs vs the "25+" claim on the landing page. Regions <code>us-east-1</code>, <code>eu-west-1</code>, <code>us-saltlake-2</code>. Session concurrency scales from <code>10</code> (Tier 0) to <code>200</code> (Tier 4) by spend tier. xAI reports production deployment at <strong>Tesla</strong> ("millions of conversations per day", powering in-vehicle Grok Bot and Connectors for calendar/email/order flows) and at <strong>Starlink</strong> (~<code>20,000</code> customer-support calls per day, <code>~70%</code> resolved without a human, roughly one in four sales calls ending in a purchase, single-agent flow across customer verification, hardware troubleshooting, credits, and replacement shipments). No safety or alignment commentary accompanies the launch, which is a departure from the Argon and Muse Wonder release pattern. No Tier 1 launches from OpenAI, Anthropic, Google, Meta, Mistral, Microsoft, Nvidia, or Chinese labs in-window.</p>
+    </section>
+
+    <!-- BODY: Tier 1 first (xAI Grok Voice 3.0), then Tier 2 alphabetical by company (Alibaba Tongyi, ByteDance Seed, Tencent ARC Lab). No Tier 3 in-window. -->
+
+    <h1 id="xai">xAI</h1>
+
+    <h2 id="grok-voice-3"><a href="https://x.ai/news/grok-voice-3">Grok Voice 3.0: The World's Most Intelligent Speech-to-Speech Model</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch Blog + API Docs</span>
+      <span>x.ai/news &middot; xAI</span>
+      <span>2026-10-14</span>
+      <span>Frontier model &middot; Speech-to-speech &middot; Voice agent &middot; Full duplex &middot; Realtime API</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>xAI</strong> released <code>Grok Voice 3.0</code> on 2026-10-14 as the next-generation speech-to-speech model behind the Voice Agent API. The launch post bills it as "the world's most intelligent voice model." The <code>grok-voice-latest</code> alias migrated automatically; existing agents using that alias picked up <code>Grok Voice 3.0</code> with no code changes.</li>
+      <li>Single-model design: one model handles listening, reasoning (configurable effort via <code>reasoning.effort</code>: <code>high</code> default, <code>none</code>, or intermediate), tool use (<code>file_search</code>, <code>web_search</code>, <code>x_search</code>, <code>mcp</code>, <code>function</code>), and spoken reply.</li>
+      <li>Pricing holds at <code>$0.08</code>/min (<code>$4.80</code>/hour) &mdash; <strong>unchanged</strong> from <code>Grok Voice 2.0</code> &mdash; with per-call tool rates of <code>$2.50</code>/1k <code>file_search</code>, <code>$5</code>/1k <code>web_search</code>, and a text-input add-on at <code>$0.004</code> per input.</li>
+      <li>No model architecture, training recipe, parameter count, or safety-and-alignment commentary is disclosed. The release is a product and benchmarks post, with the Artificial Analysis Speech-to-Speech Index numbers front and center.</li>
+    </ul>
+
+    <h3>Architecture &amp; serving</h3>
+    <ul>
+      <li><strong>Model id and endpoint.</strong> Model id <code>grok-voice-3.0</code>; alias <code>grok-voice-latest</code>; endpoint <code>wss://api.x.ai/v1/realtime</code>.</li>
+      <li><strong>Session configuration.</strong> <code>instructions</code>, <code>reasoning.effort</code> (<code>high</code> default or <code>none</code>), <code>voice</code>, <code>tools</code>, <code>turn_detection</code>, <code>resumption</code>, transcription <code>keyterms</code>, and pronunciation <code>replace</code>.</li>
+      <li><strong>Tools.</strong> <code>file_search</code>, <code>web_search</code>, <code>x_search</code>, <code>mcp</code>, and <code>function</code>; MCP is a first-class tool at session level, which lets a single voice agent reach any MCP-exposed backend without a function-call shim.</li>
+      <li><strong>Phone.</strong> SIP through bring-your-own carrier trunk. Provisioning xAI-owned phone numbers via API is not supported, so direct inbound/outbound requires an external carrier.</li>
+      <li><strong>Languages.</strong> <code>20</code> language entries in the docs; <code>25+</code> on the landing page. The eesel.ai product writeup notes accuracy varies across non-headline languages.</li>
+      <li><strong>Regions.</strong> <code>us-east-1</code>, <code>eu-west-1</code>, <code>us-saltlake-2</code>. Starlink's call-center load is multi-region out of the box.</li>
+      <li><strong>Concurrency.</strong> Speech-to-speech session limits by spend tier: Tier 0 <code>10</code>, scaling to Tier 4 <code>200</code>.</li>
+      <li><strong>Parameters, architecture, training data.</strong> Not disclosed. The launch post gives benchmarks and pricing only.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Headline composite.</strong> Artificial Analysis Speech-to-Speech Index (equal-weight composite over Big Bench Audio, Speech Agent Arena Elo, task success rate, &tau;-Voice; dated 2026-10-13).</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Model</th><th>Index</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>Grok Voice 3.0</code></td><td><strong>86.9</strong></td></tr>
+        <tr><td><code>GPT-Live-1 (Astra, Medium)</code></td><td>83.2</td></tr>
+        <tr><td><code>Gemini 3.8 Live (Extended Thinking, High)</code></td><td>82.6</td></tr>
+        <tr><td><code>Grok Voice 2.0</code></td><td>81.3</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Composite sub-scores.</strong></li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Metric</th><th><code>Grok V3</code></th><th><code>Grok V2</code></th><th><code>GPT-Live-1</code></th><th><code>Gemini 3.8 Live</code></th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Big Bench Audio (speech reasoning)</td><td><strong>98.5%</strong></td><td>97.2%</td><td>90.1%</td><td>97.7%</td></tr>
+        <tr><td>Speech Agent Arena Elo (human preference)</td><td><strong>1070</strong></td><td>1011</td><td>1048</td><td>990</td></tr>
+        <tr><td>Task success rate (blind calls)</td><td><strong>94.8%</strong></td><td>94.6%</td><td>87.4%</td><td>89.1%</td></tr>
+        <tr><td>Full Duplex Bench (turn-taking, pauses, interruptions)</td><td><strong>97.0%</strong></td><td>95.1%</td><td>94.9%</td><td>91.9%</td></tr>
+        <tr><td>&tau;-Voice (support calls; accents, noise, interruptions)</td><td>71.6%</td><td>56.5%</td><td><strong>74.5%</strong></td><td>68.6%</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Cost per task.</strong> Big Bench Audio dollars-per-task (Artificial Analysis, cited by xAI): <code>Grok Voice 3.0</code> <code>$0.025</code>; <code>GPT-Live-1 (Astra, Medium)</code> <code>$0.030</code>; <code>GPT-Realtime-2.1 (High)</code> <code>$0.055</code>.</li>
+      <li><strong>EVA-Bench (ServiceNow enterprise voice agents).</strong> <code>Grok Voice 3.0</code> accuracy <code>74%</code>, highest on the published leaderboard, with the best combined accuracy &times; customer-experience score. ServiceNow's Nitin Aggarwal is quoted calling it a new Pareto frontier on EVA-Bench.</li>
+      <li><strong>Latency.</strong> Time-to-first-audio <code>0.81 s</code> (eesel.ai product summary), slower than <code>Grok Voice 2.0</code>'s <code>0.70 s</code>; the launch post frames this as "under one second." xAI's own &tau;-Voice framing compares to <code>GPT-Live-1</code> "at <code>40%</code> lower latency," without disclosing the latency figure that underlies that comparison.</li>
+      <li><strong>Headline-chart caveat.</strong> xAI's landing page shows a <code>#1</code> on &tau;-Voice, but Artificial Analysis's own ranking places <code>Grok Voice 3.0</code> second behind <code>GPT-Live-1 (Astra, Medium)</code>. The underlying numbers (<code>71.6%</code> vs <code>74.5%</code>) agree; only the chart ordering differs.</li>
+    </ul>
+
+    <h3>Named Contributions &amp; Mechanisms</h3>
+    <ul>
+      <li><strong>Single-model listen-reason-tool-speak loop (no cascade).</strong>
+        <ul>
+          <li><em>Problem.</em> Cascaded voice stacks (ASR &rarr; text LLM with tool-use &rarr; TTS) accumulate ASR errors, lose paralinguistic cues (prosody, overlap, backchanneling), and add fixed per-stage latency that cannot be hidden behind streaming because each stage waits on the one upstream. The resulting system cannot start speaking until the text LLM finishes, which is the dominant source of &gt;1&nbsp;s time-to-first-audio in prior art.</li>
+          <li><em>Mechanism.</em> One model consumes raw speech, runs reasoning (with the <code>reasoning.effort</code> dial as a budget knob analogous to extended-thinking modes on text LLMs), calls tools (<code>file_search</code>, <code>web_search</code>, <code>x_search</code>, <code>mcp</code>, <code>function</code>) directly in the voice loop, and emits speech. The <code>turn_detection</code> and <code>resumption</code> session fields expose the full-duplex scheduler to the integrator, so an interruption flips the model from speaking to listening without a round-trip through a separate controller.</li>
+          <li><em>Why it works.</em> Collapsing the pipeline into one model is what makes the <code>Full Duplex Bench 97.0%</code> result possible: interruptions, pauses, and backchannels are modeled at the token level alongside content, not as a separate orchestration layer. It also explains the task-success margin on blind calls (<code>94.8%</code> vs <code>87.4%</code> for <code>GPT-Live-1</code>) &mdash; the model preserves acoustic context across tool calls, so re-grounding after a long <code>web_search</code> does not require re-listening.</li>
+        </ul>
+      </li>
+      <li><strong>Price-flat upgrade with cost-per-task compression.</strong>
+        <ul>
+          <li><em>Problem.</em> A voice-agent price change invalidates every production SLA and routing table that depends on it, and most voice-stack upgrades (<code>Grok Voice 2.0</code> &rarr; <code>Grok Voice 3.0</code>) ship with a price bump that forces integrators to redo cost modeling. Enterprises deploying at Tesla or Starlink scale cannot absorb that renegotiation per upgrade.</li>
+          <li><em>Mechanism.</em> xAI holds minute-pricing flat at <code>$0.08</code>/min and auto-migrates the <code>grok-voice-latest</code> alias. Cost-per-task compression comes from Big Bench Audio accuracy gains at identical minute pricing: at <code>98.5%</code> accuracy, more calls terminate successfully per billable minute than at <code>Grok Voice 2.0</code>'s <code>97.2%</code>. Artificial Analysis's dollars-per-task figure (<code>$0.025</code>) captures this.</li>
+          <li><em>Why it works.</em> A flat-price upgrade means every production deployment picks up the gain without touching contracts. The <code>GPT-Realtime-2.1 (High)</code> comparison at <code>$0.055</code> per Big Bench Audio task (over <code>2&times;</code> more expensive) is specifically pitched at Tesla/Starlink-scale call-center integrators, who are the stated beneficiaries in the launch post.</li>
+        </ul>
+      </li>
+      <li><strong>MCP as a first-class voice-agent tool.</strong>
+        <ul>
+          <li><em>Problem.</em> Voice-agent integrations usually bolt backend connectivity on through generic <code>function</code>-call handlers, which forces every integrator to re-implement authentication, schema negotiation, and streaming for every backend they want to reach. MCP already solves this for text agents but was absent from most Realtime APIs.</li>
+          <li><em>Mechanism.</em> <code>mcp</code> appears as a session-level tool alongside <code>function</code>, <code>file_search</code>, <code>web_search</code>, and <code>x_search</code>. A voice session configured with <code>mcp</code> reaches any MCP-exposed backend without a per-backend <code>function</code> shim, and the Tesla "Connectors" surface (calendar, email, order flows) and Starlink's single-agent flow (verification, troubleshooting, credits, replacement shipment) run on top of this.</li>
+          <li><em>Why it works.</em> First-class MCP support means the voice agent inherits any new MCP-exposed capability without a redeploy. The Starlink metric (one agent handling verification &rarr; troubleshooting &rarr; credit &rarr; replacement in <code>~20,000</code> daily calls, <code>~70%</code> resolved without human handoff) is only tractable if the agent can touch multiple backends inside one session, which is what <code>mcp</code> gives it.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Availability &amp; limitations</h3>
+    <ul>
+      <li>Voice Agent API at <code>$0.08</code>/min (<code>$4.80</code>/hr); regions <code>us-east-1</code>, <code>eu-west-1</code>, <code>us-saltlake-2</code>; session concurrency scales with spend tier (<code>10</code> &rarr; <code>200</code>).</li>
+      <li>No safety brief, system card, or alignment report accompanies the launch; the previous Argon and Muse Wonder releases both shipped with explicit safety docs. &tau;-Voice adversarial-call behavior, Full Duplex interruption handling, prompt-injection ASR, and multilingual harm numbers are not reported.</li>
+      <li>&tau;-Voice remains behind <code>GPT-Live-1 (Astra, Medium)</code>; <code>Grok Voice 3.0</code>'s pitch there is "comparable at <code>40%</code> lower latency," without the latency comparison figure disclosed.</li>
+      <li>Time-to-first-audio regressed vs <code>Grok Voice 2.0</code> (<code>0.81 s</code> vs <code>0.70 s</code>); the launch post frames both as "under one second."</li>
+      <li>xAI does not publish architecture, parameter count, training data mix, or audio-token codec details for <code>Grok Voice 3.0</code>.</li>
+    </ul>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="hico-bench-pacpo"><a href="https://arxiv.org/abs/2610.20195">HICO-Bench &amp; PaCPO: Verifiable Social Interactions in Paired Worlds</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv &middot; Tongyi-ConvAI (Alibaba)</span>
+      <span>2026-10-14</span>
+      <span>Social agents &middot; Benchmarks &middot; RL &middot; Verifiable rewards &middot; Paired-worlds</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>Alibaba Tongyi-ConvAI</strong> (Caixin Kang, Ke Wang, Yuchuan Wu, Xiaoqiang Wang, Ling Li, Bingxue Qiu, Yongbin Li, Yoichi Sato) argues that social-agent evaluation has over-indexed on LLM-judge "goal-completion" scores applied to the conversation surface and under-tested whether the <em>plan</em> the agents actually arrive at would work.</li>
+      <li>The paper has two artifacts: <strong>HICO-Bench</strong>, a paired-worlds benchmark that checks both the feasibility of the agreed plan against each agent's private conditions and the integrity of the conversation that produced it; and <strong>PaCPO</strong> (Paired-Credit Policy Optimization), an RL algorithm that assigns dense per-turn credit by probing tentative plans against the paired worlds.</li>
+      <li>Headline framing: across <code>13</code> LLMs, <code>36%</code> of conversations that score highly on goal completion still fail <strong>Verified Success</strong>. The split-level finding is the paper's contribution to the fluent-but-wrong failure mode in social agents.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>HICO-Bench construction.</strong> <code>180</code> everyday coordination scenarios across three categories (resource allocation, scheduling, authorization). Each scenario splits into two agents each holding private information plus a shared public context. The two agents converse, then <em>independently</em> record their understanding of the agreed plan.</li>
+      <li><strong>Dual check.</strong>
+        <ul>
+          <li><em>Feasibility (programmatic).</em> The two independently recorded plans must <em>match</em> each other and satisfy both agents' private conditions. Checked by executable program against the scenario's constraints, not by an LLM judge.</li>
+          <li><em>Integrity (LLM judge).</em> The conversation must support the recorded plan &mdash; the agents cannot have landed on a correct plan without discussing it, or landed on an incorrect plan while <em>sounding like</em> they discussed a correct one.</li>
+          <li><em>Verified Success.</em> Both checks must pass. This is the headline metric that <code>36%</code> of highly rated conversations fail.</li>
+        </ul>
+      </li>
+      <li><strong>Paired worlds.</strong> Each scenario has two versions with identical public context but one differing private condition, so the correct plan differs between worlds. The paired construction is what lets PaCPO assign tentative-plan credit at turn level: a tentative plan after turn <em>t</em> can be checked against both versions, and only a plan that fits <em>its</em> version earns reward.</li>
+      <li><strong>PaCPO (Paired-Credit Policy Optimization).</strong>
+        <ul>
+          <li><em>Problem.</em> Standard social-agent RL rewards only arrive at conversation end, so the policy update attributes gain to the full trajectory without separating turns that locked in the correct plan from turns that padded.</li>
+          <li><em>Mechanism.</em> After each turn, the agent is prompted for a tentative plan. The tentative plan is checked against <em>both</em> paired-world versions of the scenario. Turns whose tentative plan fits the agent's own version are rewarded; turns whose tentative plan matches the <em>other</em> version are not. Dense per-turn signal is then rolled up into the policy update.</li>
+          <li><em>Why it works.</em> The paired-worlds construction gives the reward a counterfactual anchor that a single-world checker cannot: a plan that happens to work in both versions is uninformative, but a plan that distinguishes correctly between versions is clear evidence the agent used its private information. This matches the paper's framing that effective social interaction is more than fluent output: the signal rewards actually-used private information, not fluency.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Headline cross-model result.</strong> Across <code>13</code> LLMs evaluated on HICO-Bench, <code>36%</code> of conversations rated highly on goal completion fail Verified Success. The gap is the paper's measurement that goal-completion scores are a weak proxy.</li>
+      <li><strong>PaCPO on Qwen3-8B.</strong> Verified Success <code>20.4% &rarr; 28.3%</code> (<code>+7.9</code> pp absolute).</li>
+      <li>Per-model success-rate breakdowns, per-category (resource allocation / scheduling / authorization) splits, and per-check (feasibility vs integrity) ablations are reported in the paper but not in the abstract.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>HICO-Bench is positioned as a drop-in replacement for conversational-social-agent evaluations that score only on fluency and goal-completion; the paired-worlds trick is reusable for any social task where private information is central to the correct plan.</li>
+    </ul>
+
+    <h1 id="bytedance">ByteDance</h1>
+
+    <h2 id="cortex"><a href="https://arxiv.org/abs/2610.20399">Cortex: Consolidating Context into Parametric Memory</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Technical Report</span>
+      <span>arXiv &middot; ByteDance Seed</span>
+      <span>2026-10-14</span>
+      <span>Context compression &middot; LoRA &middot; FFN edits &middot; Sequential updates &middot; Pareto</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>ByteDance Seed</strong> (Jintian Zhang, Feng He, Xinnian Liang, Ziwen Xu, Haoming Xu, Haojing Huang, Shuangzhi Wu, Ningyu Zhang) frames <em>Memory Consolidation</em> as a formal objective: retain the gain a model gets from a specific context after the context is <em>removed</em>, without disturbing the model's other abilities.</li>
+      <li>The paper opens with a five-task-family testbed covering single, batch, and sequential context updates. The contribution is <strong>Cortex</strong>, a method that generates <em>prospective queries</em> to anticipate how a context will be used, then distills context-conditioned behavior into mergeable low-rank or feed-forward-network updates.</li>
+      <li>Reported to sit on the <strong>consolidation / retention Pareto frontier</strong> in most evaluated settings across <code>4B-120B</code> dense and MoE backbones, text-only and multimodal.</li>
+      <li>Key number: after <code>50</code> sequential factual edits on a <code>14B</code> backbone, <strong>Cortex-Structural</strong> recovers <code>88.9%</code> of the context-induced gain while retaining <code>99.8%</code> of the original (non-target) performance &mdash; the kind of two-objective result that is normally traded off against each other in model-editing benchmarks.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Problem framing.</strong> A context <em>C</em> gives a frozen model <em>f</em> a measurable gain on a target task family. The question is whether that gain can be baked into mergeable parameter deltas (LoRA or FFN edits) applied to <em>f</em> such that: (a) the gain holds without <em>C</em> at inference; (b) the model's other abilities are untouched; (c) multiple consolidations stack without catastrophic interference.</li>
+      <li><strong>Prospective-query generation.</strong> Cortex synthesizes queries that <em>anticipate</em> how <em>C</em> would be used downstream &mdash; not a reconstruction of <em>C</em>'s surface tokens, but a distribution over the usage patterns. This is what the method distills against, so the compressed deltas target the <em>uses</em> of <em>C</em>, not <em>C</em> verbatim.</li>
+      <li><strong>Distillation into mergeable updates.</strong> Context-conditioned outputs from <em>f</em>+<em>C</em> on the prospective queries are the supervision signal; the student is a LoRA (<em>Cortex</em>-<em>LoRA</em>) or an FFN-structural edit (<em>Cortex</em>-<em>Structural</em>) applied back to <em>f</em>. Weights of <em>f</em> stay frozen; the deltas are what accumulate across consolidations.</li>
+      <li><strong>Mergeable by construction.</strong> Because consolidations are LoRA or FFN deltas, batch and sequential update settings compose by summation (LoRA) or in-place application (FFN), which is what makes the <code>50</code>-edit sequential result tractable without catastrophic drift on non-target behavior.</li>
+      <li><strong>Testbed.</strong> Five task families covering single, batch, and sequential updates. Dense and MoE backbones from <code>4B</code> to <code>120B</code>, both text-only and multimodal.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Headline sequential-edit result.</strong></li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Setting</th><th>Metric</th><th>Cortex-Structural (14B)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>50 sequential factual edits</td><td>Recovered context gain</td><td><strong>88.9%</strong></td></tr>
+        <tr><td>50 sequential factual edits</td><td>Non-target performance retained</td><td><strong>99.8%</strong></td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Pareto placement.</strong> Across the five task families, Cortex sits on or near the consolidation-vs-retention Pareto frontier for most of the backbones evaluated, which is the paper's main claim beyond the single <code>14B</code> point above.</li>
+      <li>Backbone sweep from <code>4B</code> to <code>120B</code>, dense and MoE, text-only and multimodal; per-model full tables are in the paper but not in the abstract.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Prospective-query generation vs direct distillation on <em>C</em> itself, and <em>Cortex-LoRA</em> vs <em>Cortex-Structural</em> trade-offs, are reported in the paper.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>The framing <em>consolidation after context removal</em> is a sharper target than most prior "context compression" work, which usually keeps the compressed form in context rather than merging into weights. The retention metric is the gate: a method that recovers context gain but destroys non-target performance is not a consolidation, which is why the <code>99.8%</code> non-target retention sits next to the <code>88.9%</code> recovery in the headline.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="player-1"><a href="https://arxiv.org/abs/2610.20584">Player-1: Learning to Play from Synthetic Experience</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv &middot; ARC Lab, Tencent</span>
+      <span>2026-10-14</span>
+      <span>Game agents &middot; Computer-use &middot; Synthetic environments &middot; PPO &middot; Composite actions</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>Tencent ARC Lab</strong> (Mingyu Ouyang, Yiran Wang, Siyuan Hu, Xingyilang Yin, Huiqiang Sun, Guangzhi Wang, Junfu Pu, Cheng Cheng, Honghao Chen, Ying Shan, Mike Zheng Shou, Hwee Tou Ng) argues that game-agent pipelines bottleneck on demonstration data: curated gameplay trajectories cover a narrow slice of dynamic game states, and policies trained purely by imitation fail to generalize.</li>
+      <li><strong>Player-1</strong> is a four-part post-training recipe: an <strong>extended action space</strong> (relative pointer motion, sustained inputs, composite actions on top of the standard computer-use action space); <strong>supervised initialization</strong> on <code>6,044</code> curated gameplay trajectories pairing recorded actions with task instructions and visual reasoning; <strong>Player-1-Gym</strong>, <code>16</code> synthetic 2D/3D environments built around control demands shared across games; and <strong>PPO reinforcement learning</strong> with programmatically verifiable rewards, randomized observations, and randomized control dynamics.</li>
+      <li>Two released models: <strong>Player-1-9B</strong> and <strong>Player-1-35B-A3B</strong> (MoE, <code>3B</code> active).</li>
+      <li>Headline result on <code>MineDojo-300</code>: Player-1-9B <code>38.33%</code> vs <code>12.63%</code> for the strongest evaluated baseline, with <code>+27.8</code> pp over its own SFT policy.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Extended action space.</strong> The default computer-use action space (discrete key/button presses, absolute pointer position) is too coarse for game control. Player-1 adds (i) <em>relative pointer motion</em> (velocity vector rather than target coordinates, so the model can specify "pan slightly right" without recomputing an absolute click target); (ii) <em>sustained inputs</em> (hold-key duration as a first-class parameter rather than a repeated-press stream); and (iii) <em>composite actions</em> (multiple keyboard and mouse inputs issued at the same timestep, so e.g. move-while-looking in a 3D environment is one action instead of two interleaved).</li>
+      <li><strong>Supervised initialization.</strong> <code>6,044</code> curated gameplay trajectories; each sample pairs the recorded action with task instructions and visual reasoning (what the model sees, what the model is trying to do, which action it takes). The SFT policy is the warm-start for PPO rather than the final policy.</li>
+      <li><strong>Player-1-Gym (synthetic environments).</strong> <code>16</code> 2D and 3D synthetic environments explicitly designed around <em>control demands</em> that transfer across games &mdash; precise aim-and-shoot, 3D navigation under occlusion, timed button-press puzzles, and so on. Programmatically verifiable rewards: no reward model, no human judge, no LLM judge.</li>
+      <li><strong>PPO with randomization.</strong> Rollouts across Player-1-Gym with randomized observations (visual perturbations, texture swaps) and randomized control dynamics (input lag, pointer sensitivity). The pairing of randomization dimensions is explicit domain randomization, with the stated goal of transfer to <em>unseen</em> games (MineDojo and ViZDoom were not in Player-1-Gym).</li>
+    </ul>
+
+    <h3>Named Contributions &amp; Mechanisms</h3>
+    <ul>
+      <li><strong>Composite actions as a reusable control primitive.</strong>
+        <ul>
+          <li><em>Problem.</em> Standard computer-use models emit one input per step: keyboard press, mouse click, or scroll. For a game that requires simultaneous movement + aim + fire, one-input-per-step forces the policy to interleave actions across many timesteps, which blows up credit assignment and bounds reaction time by the model's inference latency.</li>
+          <li><em>Mechanism.</em> Composite actions let a single policy step emit a <em>set</em> of keyboard and mouse inputs applied at the same simulation tick. The policy still reasons in text/visual space before emitting, so the composite is a learned skill rather than a hard-coded macro.</li>
+          <li><em>Why it works.</em> The paper reports that composite-action usage <em>rises during RL</em> &mdash; the RL loop discovers that composite inputs are what unlocks the dense-reward tail of each environment. Removing composites from the action space collapses success rate on 3D-navigation and aim-and-shoot environments, which is why the extended action space precedes PPO in the recipe rather than following it.</li>
+        </ul>
+      </li>
+      <li><strong>Player-1-Gym as a transferable training surface.</strong>
+        <ul>
+          <li><em>Problem.</em> Training a game-playing agent on a specific game produces a specialist that does not generalize to other games. Training on human gameplay demonstrations covers only the states a competent human visits, which is a narrow slice of possible game states, especially the failure-adjacent ones.</li>
+          <li><em>Mechanism.</em> Sixteen synthetic environments designed around control-demand classes (precise aim, 3D navigation under occlusion, timed presses, etc.), not around specific games. Each is instrumented with a programmatic reward, so PPO reward signals are not polluted by an LLM judge. Randomized observations and control dynamics are applied per rollout.</li>
+          <li><em>Why it works.</em> Transfer from the synthetic set to real games is the headline evidence: Player-1-9B improves <code>+27.8</code> pp over SFT on <code>MineDojo-300</code> despite Minecraft not being in Player-1-Gym; Player-1-35B-A3B improves <code>+17.7</code> pp. The ablation that broader synthetic coverage improves transfer is the paper's key finding on why generic skill primitives beat game-specific demonstrations at this scale.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>MineDojo-300.</strong></li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Model</th><th>Success rate</th><th>&Delta; over SFT policy</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>Player-1-9B</code></td><td><strong>38.33%</strong></td><td><code>+27.8</code> pp</td></tr>
+        <tr><td><code>Player-1-35B-A3B</code></td><td>&mdash;</td><td><code>+17.7</code> pp</td></tr>
+        <tr><td>Strongest evaluated baseline</td><td>12.63%</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>ViZDoom-10 and GameWorld.</strong> Reported gains over the SFT baseline; headline numbers not in the abstract.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Broader synthetic-environment coverage improves transfer: more Player-1-Gym environments at training time yield larger gains on held-out real games.</li>
+      <li>Composite-action usage rises during RL from the SFT baseline, consistent with the composite being the mechanism that unlocks dense-reward behavior.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Models and the Player-1-Gym environment set are released under TencentARC/Player-1 on GitHub; the <code>Player-1-9B</code> and <code>Player-1-35B-A3B</code> checkpoints are the shipped artifacts.</li>
+      <li>The paper is a direct follow-on to the Tencent ARC Lab game-agent track; it reads as a reusable post-training recipe that can be dropped on top of a computer-use base model rather than a game-specific policy.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
