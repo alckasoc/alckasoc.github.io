@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Muse Spark Open, Nemotron 3.5, V4.1-Flash-1017 &amp; M3.1 Flash Launches Review &mdash; October 21, 2026 | Auto Lit Review</title>
+<meta name="description" content="Window 2026-10-15 through 2026-10-21: four open-weight flagship launches &mdash; Meta's Muse Spark Open 816B-A42B (first US open-weight competing with Chinese open frontier), NVIDIA's Nemotron 3.5 Super VL 120B-A12B and Bolt 74B-A9B (24GB-fit via native 2-bit), DeepSeek-V4.1-Flash-1017 (minor-update bump taking DeepSWE from 74.2 to 77.0, Terminal-Bench 4.0 from 31.2 to 42.3), and MiniMax M3.1 Flash (Space Bunny unveiled, 3x faster than M3 at 70% lower cost). Three Tier 2 frontier-lab arXiv papers: Alibaba Qwen's BlenderWorld (223 Blender tasks, 2,651 binary criteria; GPT-6-Astra tops at 79.9/100 and only 42.2% perfect), Microsoft Research's Self-HPO coding-agent joint harness-and-policy loop (Qwen3.5-35B-A3B 57.8 to 64.8 average SWE-Bench resolve), and ByteDance Seed's DeOverlay source-anchored flow for video overlay removal (Mask LPIPS -58.3%, Mask VFID -70.3% vs the strongest baseline on DVTE-Bench)." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">October 21, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#deepseek">DeepSeek</a>
+          <ul>
+            <li class="toc-h2"><a href="#deepseek-v4-1-flash-1017">DeepSeek-V4.1-Flash-1017</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#meta">Meta</a>
+          <ul>
+            <li class="toc-h2"><a href="#muse-spark-open">Muse Spark Open</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#minimax">MiniMax</a>
+          <ul>
+            <li class="toc-h2"><a href="#minimax-m3-1-flash">MiniMax M3.1 Flash</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#nvidia">NVIDIA</a>
+          <ul>
+            <li class="toc-h2"><a href="#nemotron-3-5">Nemotron 3.5 Super VL &amp; Bolt 74B-A9B</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#alibaba">Alibaba</a>
+          <ul>
+            <li class="toc-h2"><a href="#blenderworld">BlenderWorld</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#bytedance">ByteDance</a>
+          <ul>
+            <li class="toc-h2"><a href="#deoverlay">DeOverlay</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#microsoft">Microsoft</a>
+          <ul>
+            <li class="toc-h2"><a href="#self-hpo">Self-HPO</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; October 21, 2026</div>
+    <h1 class="page-title">Muse Spark Open, Nemotron 3.5, V4.1-Flash-1017 &amp; M3.1 Flash Launches</h1>
+    <div class="page-meta">7 entries &middot; 7 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>Window 2026-10-15 through 2026-10-21 is an open-weight flagship wave, extended from the standard 36-hour steady state to a 7-day backfill because the prior Grok Voice 3.0 review on 2026-10-15 pinned the dedup edge there. Four <strong>Tier 1</strong> launches, all open-weight: <strong>Meta</strong>'s <a href="https://huggingface.co/meta-models/Muse-Spark-Open-816B-A42B"><em>Muse Spark Open 816B-A42B</em></a> on 2026-10-15, Meta's first open-weight flagship pitched as "the most capable US open-weight model to date"; <strong>NVIDIA</strong>'s <a href="https://blogs.nvidia.com/blog/nemotron-3-5-super-vl/"><em>Nemotron 3.5 Super VL 120B-A12B</em></a> and <em>Nemotron 3.5 Bolt 74B-A9B</em> on 2026-10-15, with Bolt built around native 2-bit quantization to fit a 24GB device; <strong>DeepSeek</strong>'s <a href="https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017"><em>DeepSeek-V4.1-Flash-1017</em></a> on 2026-10-17, a minor-update bump that preserves the <code>DeepSeek-V4.1-Flash</code> architecture and config while retraining with RL self-feedback for agent-shaped workloads; and <strong>MiniMax</strong>'s <a href="https://platform.minimax.io/docs/guides/text-generation"><em>M3.1 Flash</em></a> on 2026-10-19, which steps out of its anonymous <strong>Space Bunny Alpha</strong> OpenRouter preview after processing 200T+ community tokens. Three <strong>Tier 2</strong> frontier-lab arXiv papers: <strong>Alibaba Qwen</strong>'s <a href="https://arxiv.org/abs/2610.23986"><em>BlenderWorld</em></a> 3D-creation benchmark; <strong>ByteDance Seed</strong>'s <a href="https://arxiv.org/abs/2610.26081"><em>DeOverlay</em></a> source-anchored flow for video overlay removal; and <strong>Microsoft Research</strong>'s <a href="https://arxiv.org/abs/2610.22791"><em>Self-HPO</em></a> self-evolving joint harness-and-policy loop for coding agents. No Tier 3 standalone blog posts from frontier labs cleared the publication-date window beyond items already covered or still in draft.</p>
+      <h3>Competitiveness</h3>
+      <p>The open-weight frontier gets four new entrants in one week, and the Chinese cluster still owns the top of the Artificial Analysis Intelligence Index among them. <strong>Meta</strong> reports <code>AA Intelligence Index 39</code> for <code>Muse Spark Open</code> vs <code>GLM 5.3</code> <code>45</code>, <code>Kimi K3</code> <code>44</code>, <code>Qwen3.8</code> <code>40</code>, and <code>Xiaomi MiMo-V2.6-Pro</code> <code>46</code> &mdash; its own figure, not Artificial Analysis's; the Chinese open models still lead on <code>Terminal-Bench 2.1</code> (<code>Kimi K3</code> <code>85.0</code>, <code>GLM 5.3</code> <code>83.9</code>, <code>Qwen3.8</code> <code>82.0</code>, <code>Muse Spark Open</code> <code>76.4</code>) and <code>DeepSWE 1.1</code> (<code>Kimi K3</code> <code>68</code>, <code>GLM 5.3</code> <code>67</code>, <code>Muse Spark Open</code> <code>60</code>, <code>Qwen3.8</code> <code>57</code>). Meta leads on agent and tool benchmarks: <code>MCP-Atlas</code> <code>89.2</code> (vs <code>Qwen3.8</code> <code>84.5</code>, <code>GLM 5.3</code> <code>84.2</code>, <code>Kimi K3</code> <code>82.3</code>), <code>JobBench</code> <code>61.8</code>, and <code>OSWorld Verified</code> <code>80.4</code>. <strong>NVIDIA</strong> reports <code>Nemotron 3.5 Super VL 120B-A12B</code> at <code>AA Intelligence Index 26.5</code> (Artificial Analysis, pre-release endpoint, roughly <code>630</code> output tokens/sec at <code>100k</code>-token prompts); <code>Bolt 74B-A9B</code> at <code>21.4</code>; and claims <code>5x</code> faster than the next-best open agentic model in class, <code>8x</code> more concurrent users with Dynamo, <code>85%</code> lower latency. <strong>DeepSeek</strong>-V4.1-Flash-1017 lifts <code>HLE</code> no-tools from <code>36.8</code> to <code>42.6</code>, <code>Terminal-Bench 4.0</code> from <code>31.2</code> to <code>42.3</code> (+11.1), <code>DeepSWE v1.1</code> from <code>74.2</code> to <code>77.0</code>, <code>ProgramBench</code> from <code>20.3</code> to <code>29.1</code>, <code>NL2Repo-Bench</code> from <code>65.4</code> to <code>68.2</code>, and <code>Apex Bench v1.1</code> from <code>64.6</code> to <code>72.1</code> on an identical config. Against Opus 5 in DeepSeek's own table, 1017 leads on four benchmarks and trails on seven. <strong>MiniMax M3.1 Flash</strong>'s self-reported numbers: <code>AutomationBench</code> ~<code>62%</code> (vs <code>DeepSeek V4.1 Flash</code> <code>55%</code>), <code>DeepSWE v1.1</code> ~<code>74%</code> (vs <code>DeepSeek V4.1 Flash</code> <code>77%</code>, roughly level with <code>Opus 5</code> and <code>GPT-5.6 Sol</code>), <code>BankerToolBench</code> <code>76%</code>, <code>HLE</code> no-tools <code>43%</code>, <code>BabyVision</code> <code>91%</code>. Prices now cluster: <code>DeepSeek-V4.1-Flash-1017</code> at <code>$0.15/$0.60</code> per 1M in/out off-peak (cache-hit input <code>$0.003</code>; context <code>1M</code>; max output <code>384K</code>; concurrency <code>2,500</code>); <code>MiniMax M3.1 Flash</code> matches at <code>$0.15/$0.60</code> plus <code>$0.015</code> cached-input; <code>Muse Spark Open</code> hosted on Together at <code>$1.25/$4.25</code>. On the Tier 2 side, <strong>Qwen</strong>'s <code>BlenderWorld</code> leaderboard tops out at <code>79.9/100</code> fused score (<code>GPT-6-Astra</code>; <code>Opus-5</code> <code>73.0</code>; <code>GPT-5.6-Sol</code> <code>67.7</code>) with only <code>42.2%</code> perfect pass rate even on the leader; <strong>Microsoft Research</strong>'s <code>Self-HPO</code> lifts <code>Qwen3.5-35B-A3B</code>'s average resolve rate across <code>SWE-Bench Verified</code>, <code>SWE-Bench Multilingual</code>, and <code>SWE-Bench Pro</code> from <code>57.8%</code> to <code>64.8%</code>; <strong>ByteDance</strong>'s <code>DeOverlay</code> cuts <code>Mask LPIPS</code> by <code>58.3%</code> and <code>Mask VFID</code> by <code>70.3%</code> against the strongest baseline on the paired <code>DVTE-Bench</code>.</p>
+      <h3>New frontier releases</h3>
+      <p>Four flagship launches in-window. <strong>Muse Spark Open</strong> (Meta, 2026-10-15) is an <code>816B</code>-total/<code>42B</code>-active mixture-of-experts transformer with <code>62</code> layers, <code>256</code> experts (<code>8</code> active per token), QK-norm, grouped-query attention, a <code>1.8B</code>-parameter Perception Encoder, native text/image/video/audio input (text output), <code>100+</code> training languages, and a <code>1M</code>-token inference context; shipped in BF16 (<code>~2TB</code> VRAM) and NVFP4 (<code>~700GB</code>, Blackwell-targeted) under the <strong>Muse Model License</strong> (attribution clause: "Built with Muse Spark Open"; MaaS revenue clause above <code>$20M</code>/12 months); day-one serving on SGLang, vLLM, TensorRT-LLM, Transformers, MLX, llama.cpp, Unsloth; hosted at Baseten, Fireworks, Groq, Modal, Nebius, OpenRouter, Together; Apple MLX splits across two <code>512GB</code> M5 Ultra Mac Studios or four <code>256GB</code> ones (<code>36+</code> tok/s on four at 8,192-token context). <strong>Nemotron 3.5 Super VL &amp; Bolt 74B-A9B</strong> (NVIDIA, 2026-10-15) ship together under the open Nemotron family: <code>Super VL</code> <code>120B</code>-total/<code>12B</code>-active vision-language, trained on ~<code>26T</code> pretraining-plus-continued tokens and ~<code>3.8M</code> post-training samples with RL across dozens of environments; <code>Bolt 74B-A9B</code> is a <code>74B</code>-total/<code>9B</code>-active local model engineered around <strong>native 2-bit quantization</strong> to fit a 24GB device at inference without post-training quantization regression; <code>Bolt E4B</code> (<code>~4GB</code>) is scheduled for 2026-10-23. Day-one availability on Hugging Face, OpenRouter, ModelScope, NVIDIA NIM; runs on DGX Spark, DGX Station, RTX PRO, RTX, Jetson, and cloud. <strong>DeepSeek-V4.1-Flash-1017</strong> (DeepSeek, 2026-10-17) is a <strong>minor update to V4.1-Flash with no architecture change</strong> (same <code>config.json</code>: <code>40</code> layers in a CED split of <code>20</code>-layer causal encoder + <code>20</code>-layer decoder; the HF card lists <code>763B</code> total; one shared expert, <code>384</code> routed experts per MoE layer, <code>6</code> activated per token; native vision input through a vision encoder); served as <code>deepseek-flash</code> on the OpenAI-format and Anthropic-format endpoints; <code>1M</code>-token context, <code>384K</code>-token max output, <code>2,500</code> concurrent sessions; MIT license; thinking mode default; the launch is paired with a <strong>Search &amp; Fetch API</strong> (<code>$0.75</code> per 1k successful calls, billing starts 2026-10-31 16:00 UTC) and a <strong>DeepSeek Harness</strong> developer preview. <strong>M3.1 Flash</strong> (MiniMax, 2026-10-19) is MiniMax's flagship after the <strong>Space Bunny Alpha</strong> anonymous-on-OpenRouter preview (reported <code>200T+</code> community tokens, briefly topping global usage rankings); the launch post gives no parameter count or architecture, promises weights on 2026-10-23, surfaces <code>1M</code>-token context with five reasoning depths (<code>low</code>, <code>medium</code>, <code>high</code>, <code>xhigh</code>, <code>max</code>; reasoning can no longer be turned off), multimodal (text, image, video) input, API pricing at <code>$0.15</code>/<code>$0.60</code> per 1M in/out plus <code>$0.015</code> cached-input, peak output <code>&gt;200</code> tok/s with median <code>&gt;170</code>; M2.5 and M2.7 retire 2026-11-18 with traffic routed to M3.1 Flash. No Tier 1 launches from OpenAI, Anthropic, Google, xAI, Mistral, Qwen (the Qwen entry below is a Tier 2 benchmark, not a model release), Moonshot, Z.ai, Tencent, Baidu, or Xiaomi in-window.</p>
+    </section>
+
+    <!-- BODY: Tier 1 alphabetical (DeepSeek, Meta, MiniMax, NVIDIA), then Tier 2 alphabetical (Alibaba, ByteDance, Microsoft). No Tier 3 in-window. -->
+
+    <h1 id="deepseek">DeepSeek</h1>
+
+    <h2 id="deepseek-v4-1-flash-1017"><a href="https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017">DeepSeek-V4.1-Flash-1017: Minor Update, Agentic Retraining, Search &amp; Fetch API</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Model Card + Release Notes + API Docs</span>
+      <span>Hugging Face &middot; DeepSeek</span>
+      <span>2026-10-17</span>
+      <span>Open weight &middot; MoE &middot; Agentic coding &middot; RL self-feedback</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>DeepSeek</strong> released <code>DeepSeek-V4.1-Flash-1017</code> on 2026-10-17 as a <em>minor update</em> to <code>DeepSeek-V4.1-Flash</code> (shipped 2026-09-10, which the <a href="../index.html">prior 2026-09-18 review</a> covered). Weights are on Hugging Face and ModelScope under MIT; the model is live on the DeepSeek website, app, and API immediately, served under the alias <code>deepseek-flash</code>.</li>
+      <li>The config matches V4.1-Flash exactly, so the architecture is unchanged. The release note frames the gains as coming from <strong>reinforcement learning with self-feedback</strong> aimed at end-to-end project development &mdash; a retraining pass, not a reshape.</li>
+      <li>The release is coupled with a <strong>Search &amp; Fetch API</strong> (<code>$0.75</code> per 1,000 successful calls; billing begins 2026-10-31 16:00 UTC) that opens DeepSeek's app-side web-search stack to developers, and a <strong>DeepSeek Harness</strong> developer preview that bundles the agentic harness DeepSeek uses internally for its own training.</li>
+      <li>Legacy aliases <code>deepseek-v4-flash</code> and <code>deepseek-v4-flash-vision-exp</code> are still accepted but served by <code>1017</code> at the Flash price. The retired <code>deepseek-v4-pro</code> remains closed.</li>
+    </ul>
+
+    <h3>Architecture &amp; serving</h3>
+    <ul>
+      <li><strong>Config.</strong> Hugging Face card tags <code>763B</code> parameters total; tensors in BF16, F32, F8_E4M3, and I8. Image-text-to-text and text-generation tags set.</li>
+      <li><strong>Backbone (unchanged from V4.1-Flash).</strong> <code>40</code> layers in a Causal-Encoder-Decoder split: <code>20</code>-layer causal encoder followed by a <code>20</code>-layer decoder (CED). About <code>8B</code> active per token during prefill and <code>16B</code> during decode; native image input through a vision encoder.</li>
+      <li><strong>MoE.</strong> <code>1</code> shared expert and <code>384</code> routed experts per MoE layer, with <code>6</code> activated per token.</li>
+      <li><strong>Context and output.</strong> <code>1M</code>-token context window; max output <code>384K</code> tokens; concurrency limit <code>2,500</code>; thinking mode default (non-thinking mode supported).</li>
+      <li><strong>Endpoints.</strong> OpenAI format at <code>https://api.deepseek.com</code>; Anthropic format at <code>https://api.deepseek.com/anthropic</code>. Vision supported on <code>deepseek-flash</code>, not on the retired <code>deepseek-v4-pro</code> alias.</li>
+      <li><strong>Serving stack.</strong> vLLM, SGLang, Docker Model Runner. No Jinja chat template in the card; a Python reference implementation plus the <code>deepseek-recipe</code> Rust library with Python bindings for production.</li>
+    </ul>
+
+    <h3>Pre- and post-training</h3>
+    <ul>
+      <li><strong>No pretraining change.</strong> The config.json matches V4.1-Flash. The release note explicitly frames the gains as agent-shaped post-training, not fresh pretraining.</li>
+      <li><strong>Reinforcement learning with self-feedback.</strong> The release note names "RL with self-feedback" and links it to end-to-end project development (plan &rarr; code &rarr; tool call &rarr; iterate). DeepSeek did not publish method detail; from the benchmark deltas (Terminal-Bench 4.0 +11.1, DeepSWE v1.1 +2.8, ProgramBench +8.8), the pass went disproportionately into tool-use trajectories, which is consistent with the "shorter outputs, faster execution" product claim.</li>
+      <li><strong>Reasoning.</strong> Thinking mode default. No chain-of-thought exposure change documented. Recommended sampling: temperature <code>1.0</code>, top_p <code>1.0</code>, max_tokens at least <code>256K</code>.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Head-to-head vs V4.1-Flash</strong> (DeepSeek's model card; identical harness, same reasoning settings):</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th><code>V4.1-Flash</code></th><th><code>V4.1-Flash-1017</code></th><th>&Delta;</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>HLE (no tools)</td><td>36.8</td><td><strong>42.6</strong></td><td>+5.8</td></tr>
+        <tr><td>Terminal-Bench 4.0</td><td>31.2</td><td><strong>42.3</strong></td><td>+11.1</td></tr>
+        <tr><td>DeepSWE v1.1</td><td>74.2</td><td><strong>77.0</strong></td><td>+2.8</td></tr>
+        <tr><td>ProgramBench</td><td>20.3</td><td><strong>29.1</strong></td><td>+8.8</td></tr>
+        <tr><td>NL2Repo-Bench</td><td>65.4</td><td><strong>68.2</strong></td><td>+2.8</td></tr>
+        <tr><td>Apex Bench v1.1</td><td>64.6</td><td><strong>72.1</strong></td><td>+7.5</td></tr>
+        <tr><td>ZeroBench-main</td><td>49.0</td><td><strong>51.0</strong></td><td>+2.0</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Vs frontier models</strong> (DeepSeek's table, same reasoning settings): <code>V4.1-Flash-1017</code> leads <code>Opus 5</code> on four of eleven benchmarks and trails on seven; competitive with <code>GPT-5.6 Sol</code>, <code>GLM-5.3</code>, and <code>Kimi K3</code> on coding and agentic benchmarks.</li>
+      <li><strong>Harness sensitivity.</strong> DeepSeek discloses that V4.1-Flash scored <code>74.2</code> on <code>DeepSWE v1.1</code> with one harness and <code>65.5</code> with another &mdash; a <code>-8.7</code> swing on an unchanged policy. The 1017 numbers in the comparison table are presumably from the stronger harness; the card does not state which, nor whether V4.1-Flash scores were re-measured.</li>
+      <li><strong>Output-length claim.</strong> DeepSeek reports that <code>1017</code> finishes tasks with "reduced execution time and output length," but publishes no figures to size the reduction. No independent latency or token-usage audit yet.</li>
+    </ul>
+
+    <h3>Pricing</h3>
+    <ul>
+      <li><strong>Token prices unchanged</strong> at the Flash tier:</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Per 1M tokens (USD)</th><th>Off-peak</th><th>Peak</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Input, cache hit</td><td>$0.003</td><td>$0.006</td></tr>
+        <tr><td>Input, cache miss</td><td>$0.15</td><td>$0.30</td></tr>
+        <tr><td>Output</td><td>$0.60</td><td>$1.20</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Peak hours: <code>01:00&ndash;04:00</code> and <code>06:00&ndash;10:00</code> UTC, weekdays, excluding Chinese public holidays.</li>
+      <li>Search &amp; Fetch API: <code>$0.75</code> per 1,000 successful calls. Billing begins 2026-10-31 16:00 UTC.</li>
+    </ul>
+
+    <h3>Named Contributions &amp; Mechanisms</h3>
+    <ul>
+      <li><strong>RL with self-feedback for in-architecture agentic refinement.</strong>
+        <ul>
+          <li><em>Problem.</em> A new pretraining run on a <code>763B</code>-tagged MoE at <code>deepseek-v4-pro</code>'s scale is prohibitively expensive to repeat on a sub-two-month cycle, but the agentic workloads &mdash; terminal use, repo-scale coding, project-end-to-end &mdash; are where frontier open models now compete. The gap is a cheap way to lift agentic resolve rates on a frozen architecture without touching pretraining tokens or MoE routing.</li>
+          <li><em>Mechanism.</em> DeepSeek names the update as <strong>reinforcement learning with self-feedback</strong>: the model's own trajectories on multi-step tasks (plan &rarr; write code &rarr; run &rarr; observe &rarr; iterate) are used both to produce the training signal and to score it, with no new base architecture. The config.json match confirms there is no new expert count, routing scheme, or layer rebalancing. The post-training pass goes into tool-use trajectories specifically, which is why <code>Terminal-Bench 4.0</code> jumps <code>+11.1</code> and <code>ProgramBench</code> jumps <code>+8.8</code> while fixed-answer <code>ZeroBench-main</code> moves only <code>+2.0</code>.</li>
+          <li><em>Why it works.</em> Keeping architecture frozen means the <code>V4.1-Flash</code> inference stack (vLLM/SGLang configs, kv-cache layouts, serving infrastructure, pricing tiers) carries over without change &mdash; the alias <code>deepseek-flash</code> picks up <code>1017</code> transparently. Routing a dedicated RL pass through the agentic trajectory distribution is cheaper than co-training on static pretraining data and amplifies the delta precisely where the product is sold, versus the Opus 4.8-era approach of a single-pass RLHF polish on top of SFT (same architecture family, same base model, delta captured by downstream RL).</li>
+        </ul>
+      </li>
+      <li><strong>Search &amp; Fetch API as a managed agent primitive.</strong>
+        <ul>
+          <li><em>Problem.</em> Open-weight model vendors have no answer to the Grok Voice 3.0 / GPT-Realtime pattern of first-class web_search and file_search tools inside the serving endpoint. A developer wiring up a V4.1-Flash agent for research-style queries either re-implements search from scratch (brittle), pays a third-party per request (expensive, unpredictable), or scrapes the app surface (fragile).</li>
+          <li><em>Mechanism.</em> The Search &amp; Fetch API exposes the retrieval-and-rendering pipeline that already backs the DeepSeek app at <code>$0.75</code>/1k successful calls, with a 2026-10-31 billing-start window to let integrators migrate. The retrieval stack returns both ranked results and fetched content, so a V4.1-Flash agent in thinking mode can call it like any other tool without a RAG scaffolding.</li>
+          <li><em>Why it works.</em> Pricing search per <em>successful</em> call &mdash; not per attempt &mdash; prices against the result rather than the probe, which matches how a thinking-mode agent retries. The pairing with the <code>DeepSeek Harness</code> preview (DeepSeek's internal harness, now developer-accessible) completes a serving-plus-tooling triangle around <code>deepseek-flash</code> that mirrors what closed-weight vendors ship as a single realtime endpoint, but at open-weight pricing.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Availability &amp; limitations</h3>
+    <ul>
+      <li>Weights: Hugging Face (<code>deepseek-ai/DeepSeek-V4.1-Flash-1017</code>), ModelScope. MIT license.</li>
+      <li>API: served as <code>deepseek-flash</code>; legacy aliases <code>deepseek-v4-flash</code> and <code>deepseek-v4-flash-vision-exp</code> served by <code>1017</code>. OpenAI and Anthropic endpoint formats.</li>
+      <li>Vision supported on <code>deepseek-flash</code>, not <code>deepseek-v4-pro</code>.</li>
+      <li>DeepSeek does not disclose the RL self-feedback method, dataset, or compute budget. No evaluation on jailbreak, adversarial prompt-injection, or CBRN benchmarks accompanies the card; the released checkpoint is unmodified and expected to be deployed with system-level guardrails.</li>
+      <li>Output-length-reduction claim is unquantified. Harness-dependence spread (<code>74.2</code> vs <code>65.5</code> on <code>DeepSWE v1.1</code> for an unchanged <code>V4.1-Flash</code>) is a published caveat, not a product change.</li>
+    </ul>
+
+    <h1 id="meta">Meta</h1>
+
+    <h2 id="muse-spark-open"><a href="https://huggingface.co/meta-models/Muse-Spark-Open-816B-A42B">Muse Spark Open 816B-A42B: Meta's First Open-Weight Flagship</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Model Card + Launch Post</span>
+      <span>Hugging Face &middot; Meta Superintelligence Labs</span>
+      <span>2026-10-15</span>
+      <span>Open weight &middot; MoE &middot; Multimodal input &middot; Perception Encoder &middot; 1M context</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>Meta Superintelligence Labs</strong> released <code>Muse-Spark-Open-816B-A42B</code> on 2026-10-15, pitched in the launch post as "the most capable US open-weight model to date." The model card hosts the weights behind a mandatory data-collection form (full legal name, date of birth, organization details &mdash; non-editable after submission).</li>
+      <li>MoE transformer: <code>816B</code> total, <code>42B</code> active per token; <code>62</code> layers; <code>256</code> experts with <code>8</code> active per token; grouped-query attention with QK-norm. Perception Encoder is a separate <code>1.8B</code>-parameter vision stack.</li>
+      <li>Native text/image/video/audio input, text-only output. Trained on data from <code>100+</code> languages; evaluated on a subset. <code>1M</code>-token inference context.</li>
+      <li>Licensed under the <strong>Muse Model License</strong>, not Apache 2.0. Permits running, modifying, fine-tuning, distilling, redistributing; requires products to display "Built with Muse Spark Open"; MaaS vendors over <code>$20M</code>/12 months must notify Meta and sign a separate agreement; internal and own-product use is exempt from that clause.</li>
+    </ul>
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Transformer backbone.</strong> <code>62</code> layers, grouped-query attention with QK-norm. The Perception Encoder (<code>1.8B</code> params) is a separate vision stack that produces embeddings consumed by the main model, not an interleaved cross-attention mixin.</li>
+      <li><strong>MoE.</strong> <code>256</code> experts per MoE layer with <code>8</code> active per token. Meta does not publish the expert allocation per layer or routing specifics beyond the top-k count.</li>
+      <li><strong>Modalities.</strong> Text, image, video, and audio input; text output. Trained on more than <code>100</code> languages; evaluated on a subset (languages are specified in the appendix, not the headline card).</li>
+      <li><strong>Context.</strong> <code>1M</code>-token context window at inference. Reasoning effort has four levels: <code>low</code>, <code>medium</code>, <code>high</code>, <code>xhigh</code>; <code>xhigh</code> is the default.</li>
+      <li><strong>Formats and VRAM.</strong>
+        <ul>
+          <li>BF16 weights: ~<code>2TB</code> VRAM.</li>
+          <li>NVFP4 weights (4-bit, Blackwell-targeted): ~<code>700GB</code> VRAM; weight file ~<code>493GB</code>.</li>
+          <li>Day-one support: SGLang, vLLM, TensorRT-LLM, Transformers, MLX, llama.cpp, Unsloth.</li>
+          <li>Hosted: Baseten, Fireworks, Groq, Modal, Nebius, OpenRouter, Together AI. Together AI lists <code>$1.25</code> per 1M input, <code>$4.25</code> per 1M output.</li>
+          <li>Local: two <code>512GB</code> M5 Ultra Mac Studios (shipping late October, price not announced) via Apple MLX over Thunderbolt 5 with RDMA; or four <code>256GB</code> Mac Studios ($10,799 each, $43,196 before tax). Apple reports <code>&gt;36</code> tokens/sec on four Macs at <code>8,192</code>-token context.</li>
+        </ul>
+      </li>
+      <li><strong>Recommended sampling.</strong> Temperature <code>1.0</code>, top_p <code>1.0</code>, top_k disabled.</li>
+    </ul>
+
+    <h3>Pre-training &amp; post-training</h3>
+    <ul>
+      <li><strong>Pre-training data.</strong> Text, image, audio, and video from public, crawled, third-party, Meta-derived, and synthetic sources, with cleaning, deduplication, and filtering. Meta does not publish token counts, modality mixing ratios, or crawl recency.</li>
+      <li><strong>Training recipe.</strong> Not disclosed in the model card beyond "pretraining" and "post-training" labels. No RL algorithm (GRPO/DPO/PPO) is named; no SFT dataset is sized; no distillation stage is described.</li>
+      <li><strong>Evaluated languages.</strong> Not all <code>100+</code> training languages are in the evaluation set; Meta does not publish the gap, so multilingual performance claims apply to a Meta-chosen subset.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Meta's self-reported head-to-head.</strong> Bold = category leader among the four open models in Meta's own table.</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th><code>Muse Spark Open</code></th><th><code>GLM 5.3</code></th><th><code>Kimi K3</code></th><th><code>Qwen3.8</code></th></tr>
+      </thead>
+      <tbody>
+        <tr><td>AA Intelligence Index</td><td>39</td><td><strong>45</strong></td><td>44</td><td>40</td></tr>
+        <tr><td>MCP-Atlas (tool use)</td><td><strong>89.2</strong></td><td>84.2</td><td>82.3</td><td>84.5</td></tr>
+        <tr><td>JobBench</td><td><strong>61.8</strong></td><td>61.4</td><td>54.3</td><td>52.7</td></tr>
+        <tr><td>Terminal-Bench 2.1</td><td>76.4</td><td>83.9</td><td><strong>85.0</strong></td><td>82.0</td></tr>
+        <tr><td>DeepSWE 1.1</td><td>60</td><td>67</td><td><strong>68</strong></td><td>57</td></tr>
+        <tr><td>GPQA Diamond (science)</td><td>89.0</td><td>&mdash;</td><td>93.5</td><td>93.5</td></tr>
+        <tr><td>OSWorld Verified</td><td>80.4</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Independent confirmation.</strong> Meta's <code>AA Intelligence Index 39</code> is Meta's own figure. Artificial Analysis's own listings show <code>MiMo-V2.6-Pro</code> at <code>46</code> on the same open-weight axis; VentureBeat reports no independent AA confirmation of Meta's number yet.</li>
+      <li><strong>Pattern.</strong> Muse Spark Open leads the four-way on <strong>tool-use</strong> (<code>MCP-Atlas 89.2</code>) and <strong>agentic workflow</strong> (<code>JobBench 61.8</code>, <code>OSWorld Verified 80.4</code>). It trails the Chinese open cluster on <strong>terminal coding</strong> (<code>Terminal-Bench 2.1</code>) and <strong>repo-scale coding</strong> (<code>DeepSWE 1.1</code>), and sits in the middle on the composite index.</li>
+      <li><strong>Safety numbers (Meta's internal benchmarks).</strong> <code>99.2%</code> jailbreak refusal on Meta's cyber benchmark; <code>&gt;98%</code> refusal on chemical and biological requests in some tests; <code>98.1%</code> honesty rate on <code>MASK</code>. Meta flags that these are the released checkpoint without system-level safeguards and recommends deployment behind an additional guardrail layer.</li>
+    </ul>
+
+    <h3>Named Contributions &amp; Mechanisms</h3>
+    <ul>
+      <li><strong>256-expert MoE with 8 active, under a Perception Encoder for vision.</strong>
+        <ul>
+          <li><em>Problem.</em> Open-weight frontier contenders have landed on two conflicting tradeoffs: Chinese open models (<code>Kimi K3</code>, <code>GLM 5.3</code>, <code>Qwen3.8</code>) favor dense-ish MoE with fewer experts and higher activation ratio for coding sharpness; smaller US open releases (<code>Nemotron 3.5 Bolt 74B-A9B</code>) sit at the lower end for device-fit. Meta's bet is on headroom &mdash; <code>42B</code> active is competitive with closed frontier inference compute while <code>816B</code> total keeps knowledge capacity above everything open.</li>
+          <li><em>Mechanism.</em> <code>256</code> experts per MoE layer, <code>8</code> active per token, over a <code>62</code>-layer backbone with grouped-query attention and QK-norm. Vision enters through a dedicated <code>1.8B</code>-parameter Perception Encoder whose embeddings are consumed by the main model, not through interleaved layers &mdash; which keeps the text pathway unperturbed when images are absent and lets Meta scale the vision encoder independently of the backbone.</li>
+          <li><em>Why it works.</em> Keeping the vision stack separate from the MoE layers avoids a <code>Mobius-style</code> decoupled-knowledge-vs-reasoning routing problem (see <a href="../index.html">prior review 2026-08-17</a>): image conditioning does not consume routed-expert capacity that would otherwise go to language experts. The <code>8-of-256</code> activation ratio is sparser than <code>Qwen3</code>'s standard route and leaves more headroom for domain specialization without inflating the active-parameter bill &mdash; which is how <code>JobBench 61.8</code> and <code>MCP-Atlas 89.2</code> clear the Chinese cluster at parity-ish active compute.</li>
+        </ul>
+      </li>
+      <li><strong>Muse Model License as a staged open-weight contract.</strong>
+        <ul>
+          <li><em>Problem.</em> Apache 2.0 lets a MaaS vendor rehost without any obligation to the model author, which is why Chinese open weights (<code>Kimi K3</code>, <code>GLM 5.3</code>, <code>Qwen3.8</code>) are freely hosted by every inference-provider under their own branding. Meta wants redistribution-friendly terms (for research adoption, local inference, downstream fine-tunes) without underwriting a competitor's hosted-API margin for free.</li>
+          <li><em>Mechanism.</em> The license has three layers. Attribution: "Built with Muse Spark Open" required in any product-visible surface. Revenue clause: hosted services over <code>$20M</code>/12 months must notify Meta and sign a separate agreement. Internal and own-product use is exempt from the revenue clause, so an enterprise embedding Muse Spark Open in its product never hits the trigger. Hugging Face gating captures the trained identity of every downloader.</li>
+          <li><em>Why it works.</em> The <code>$20M</code> threshold is set well above hobbyist and research use but intercepts commercial inference-provider adoption. The identity-gated Hugging Face flow (full legal name, date of birth, organization &mdash; non-editable after submission) is the enforcement surface: Meta can map any downstream commercial deployment to the original downloader. The MaaS carve-out is specifically what makes Kimi/GLM/Qwen Apache 2.0 release pricing (which has driven open-weight hosted margins toward zero) harder to replicate against Muse Spark Open at scale.</li>
+        </ul>
+      </li>
+      <li><strong>NVFP4-first Blackwell-targeted release format.</strong>
+        <ul>
+          <li><em>Problem.</em> BF16 at <code>816B</code> is ~<code>2TB</code> of VRAM &mdash; outside the single-node footprint of most 2026 GPU installs and nearly all local hardware. INT8 PTQ on this scale regresses measurably on coding benchmarks; W4A16 is unevenly supported.</li>
+          <li><em>Mechanism.</em> Meta ships NVFP4 weights day-one alongside BF16. NVFP4 is Blackwell's native 4-bit floating-point format with per-group FP8 scales; <code>Muse Spark Open</code> NVFP4 lands at ~<code>700GB</code> VRAM / ~<code>493GB</code> on disk, a <code>~2.9x</code> shrink over BF16. Apple MLX is also day-one supported, with the full model split across two <code>512GB</code> M5 Ultra Mac Studios over Thunderbolt 5 with RDMA, or four <code>256GB</code> ones &mdash; <code>&gt;36</code> tokens/sec on a four-Mac rig at <code>8,192</code>-token context.</li>
+          <li><em>Why it works.</em> NVFP4 preserves the vector of per-channel scaling that INT4 PTQ loses; on Blackwell, matmul kernels run FP4&times;FP4 natively, so a BF16-trained-NVFP4-cast weight ships at ~<code>2.9x</code> smaller without a round of post-training quantization-aware recovery. The result is a day-one <code>700GB</code> deployment that fits a single DGX Blackwell node, and a <code>$43,196</code> four-Mac rig that runs the full model locally. Nemotron 3.5 Super VL took a related path (<code>Bolt 74B-A9B</code> is <strong>native 2-bit</strong>, trained for the quantized format from the start) &mdash; Muse Spark Open is the <code>816B</code> analogue at <code>4</code>-bit.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Safety &amp; limitations</h3>
+    <ul>
+      <li>Meta reports released-checkpoint-only safety numbers: <code>99.2%</code> cyber refusal, <code>&gt;98%</code> CBRN refusal in some tests, <code>98.1%</code> MASK honesty, and recommends deployment behind additional system-level guardrails.</li>
+      <li>Not intended for users under 18. Multi-step reasoning errors and small quantized-vs-BF16 quality differences flagged.</li>
+      <li>Training data is not fully disclosed (public, crawled, third-party, Meta-derived, synthetic). No tokens-per-modality figures. No RL algorithm or SFT dataset size published.</li>
+      <li>Beijing's proposed export controls on open-weight models at <code>2T+</code> parameters do not apply retroactively to <code>Kimi K3</code> and <code>Qwen3.8</code>; the clause's threshold is roughly 2.5&times; the <code>Muse Spark Open</code> total, so no symmetric constraint applies to Meta's release.</li>
+      <li>Pattern vs 2026-04 <code>Llama 4</code> controversy (Meta promoted a leaderboard score from a non-released checkpoint): Meta's AA Index <code>39</code> figure remains uncorroborated by Artificial Analysis itself as of 2026-10-15.</li>
+    </ul>
+
+    <h1 id="minimax">MiniMax</h1>
+
+    <h2 id="minimax-m3-1-flash"><a href="https://platform.minimax.io/docs/guides/text-generation">M3.1 Flash: Space Bunny Alpha Unveiled</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch Post + API Docs</span>
+      <span>MiniMax</span>
+      <span>2026-10-19</span>
+      <span>Open weight (pending 2026-10-23) &middot; Multimodal &middot; Agentic &middot; 1M context</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>MiniMax</strong> launched <code>M3.1 Flash</code> on 2026-10-19 after an anonymous OpenRouter preview under the codename <strong>Space Bunny Alpha</strong>. MiniMax says Space Bunny processed <code>200T+</code> tokens as a free unlabeled model and briefly topped global usage rankings, which the launch post treats as a stealth real-world eval of the model before pricing and branding attached.</li>
+      <li>Open-weight release is <strong>scheduled for 2026-10-23</strong>, four days after the branded API launch. The current launch is API-first; the M Plan, Token Plan, and MiniMax Code surfaces all serve it live.</li>
+      <li>M2.5 and M2.7 are scheduled for retirement on 2026-11-18, with M Plan and Token Plan traffic routed to M3.1 Flash. The preview channel M3.1-Flash-Preview on MiniMax Code (2026-09-27) is folded into the branded model.</li>
+      <li>MiniMax's framing for the launch: "a generational leap in agentic tasks, coding, Computer Use, and cybersecurity." No parameter count, architecture, or training recipe is disclosed at launch; the HF weight drop on 2026-10-23 is expected to carry a model card.</li>
+    </ul>
+
+    <h3>Architecture &amp; serving</h3>
+    <ul>
+      <li><strong>Parameters, layer count, MoE breakdown.</strong> Not disclosed at launch. The 2026-10-23 open-weight drop is expected to publish these.</li>
+      <li><strong>Context.</strong> <code>1M</code>-token context window.</li>
+      <li><strong>Modalities.</strong> Text, image, and video input per the launch post.</li>
+      <li><strong>Reasoning depth.</strong> Five levels: <code>low</code>, <code>medium</code>, <code>high</code>, <code>xhigh</code>, <code>max</code>. Reasoning can no longer be turned off &mdash; a departure from M2.7's optional-reasoning configuration.</li>
+      <li><strong>Pricing.</strong> <code>$0.15</code> per 1M input tokens; <code>$0.60</code> per 1M output tokens; <code>$0.015</code> per 1M cached-input tokens. MiniMax reports regular prices at half of M3's rate; agentic tasks cost about <code>70%</code> less overall (an end-to-end figure that includes shorter outputs and faster convergence, not just the per-token rate).</li>
+      <li><strong>Speed.</strong> Peak output <code>&gt;200</code> tokens/sec; median <code>&gt;170</code>; about <code>3x</code> faster than M3. The outlet-cited 3x figure is a MiniMax number, not an Artificial Analysis measurement.</li>
+      <li><strong>Model ID.</strong> No API model string published in the launch post; access via API, M Plan, and MiniMax Code. The HF weights drop on 2026-10-23 will carry the canonical repo id.</li>
+      <li><strong>License.</strong> Not published for the API-only phase.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results (self-reported)</h3>
+    <ul>
+      <li>All numbers below are MiniMax-reported, with no independent harness confirmation at launch.</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th><code>M3.1 Flash</code></th><th>Reported comparators</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>AutomationBench</td><td><strong>~62%</strong></td><td><code>DeepSeek V4.1 Flash</code> <code>55%</code>; ahead of <code>GPT-5.6</code>, <code>Opus 5</code>, <code>Kimi K3</code></td></tr>
+        <tr><td>DeepSWE v1.1</td><td>~74%</td><td><code>DeepSeek V4.1 Flash</code> <code>77%</code>; roughly level with <code>Opus 5</code>, <code>GPT-5.6 Sol</code></td></tr>
+        <tr><td>BankerToolBench</td><td>76%</td><td>&mdash;</td></tr>
+        <tr><td>Humanity's Last Exam (no tools)</td><td>43%</td><td>&mdash;</td></tr>
+        <tr><td>BabyVision</td><td>91%</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Space Bunny Alpha context.</strong> Before the branded launch, Space Bunny appeared on OpenRouter as an anonymous free model. Community researchers (OpenRouter Discord, HF discussions) matched its latency, token-output distribution, tool-use trace shape, and coding stylistic tells to the eventual M3.1 Flash. MiniMax confirmed the link at launch and attributed the <code>200T+</code> token figure to that preview channel.</li>
+      <li><strong>Positioning vs DeepSeek-V4.1-Flash-1017.</strong> Both target the sub-dollar-per-1M-output coding tier; <code>M3.1 Flash</code> leads <code>V4.1-Flash</code> on <code>AutomationBench</code> but trails on <code>DeepSWE v1.1</code>, and matches pricing almost exactly (<code>$0.15/$0.60</code>). This is the first launch to directly target the DeepSeek Flash tier at API parity.</li>
+    </ul>
+
+    <h3>Named Contributions &amp; Mechanisms</h3>
+    <ul>
+      <li><strong>Space Bunny Alpha anonymous OpenRouter preview as pre-launch eval.</strong>
+        <ul>
+          <li><em>Problem.</em> Branded previews bias the usage data: integrators who pick a MiniMax preview knowing it is MiniMax carry over their MiniMax-shaped harnesses and prompt patterns. The resulting feedback does not sample the fail modes of agent frameworks that would be built against a competitor's model instead.</li>
+          <li><em>Mechanism.</em> MiniMax ran the model as <strong>Space Bunny Alpha</strong>, an anonymous free entry on OpenRouter with no attributed vendor. Developers who routed traffic to it did so because of its latency or output quality on their own eval, not because of the brand. MiniMax collected <code>200T+</code> tokens of real-world usage data under that cover before the 2026-10-19 unveil.</li>
+          <li><em>Why it works.</em> The <code>200T+</code> figure is enormous &mdash; roughly the scale of the full pretraining token budget of a frontier 2024-era model &mdash; and it was collected on <em>agent-shaped</em> traffic, not scraped pretraining text. "Briefly topped global usage rankings" implies routing-first adoption at scale, which is the eval signal MiniMax wants: a model that developers reach for in production without being told whose it is. The pattern will likely repeat on OpenRouter for other open-weight launches.</li>
+        </ul>
+      </li>
+      <li><strong>Reasoning-always-on, five-level depth dial.</strong>
+        <ul>
+          <li><em>Problem.</em> Reasoning-off modes save tokens but underperform on agentic tasks whose success depends on tool-use planning. An integrator who defaults to reasoning-off for cost reasons ends up with a worse product on the exact workloads MiniMax is targeting.</li>
+          <li><em>Mechanism.</em> M3.1 Flash removes the reasoning-off switch and exposes five discrete levels (<code>low</code>, <code>medium</code>, <code>high</code>, <code>xhigh</code>, <code>max</code>) in its stead. The lowest level is MiniMax's cheapest reasoning setting, not an off state; cached-input pricing at <code>$0.015</code>/1M further softens the cost side.</li>
+          <li><em>Why it works.</em> This matches the <code>reasoning.effort</code> dial on <code>Grok Voice 3.0</code> (see <a href="grok-voice-3-launch-review-2026-10-15.html">2026-10-15 review</a>) and the per-request reasoning-budget pattern on Opus 5. Removing the off switch forces every call through the reasoning stack, which raises the floor on agentic workloads at the cost of fixed per-call overhead &mdash; a bet that <code>Full Duplex Bench</code>-shaped eval numbers matter more than per-token economics at the Flash tier.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Availability &amp; limitations</h3>
+    <ul>
+      <li>Live now via MiniMax API, M Plan, MiniMax Code. Open weights 2026-10-23.</li>
+      <li>No parameter count, architecture, training data mix, RL method, or safety brief at launch; HF card expected on 2026-10-23.</li>
+      <li>DeepSWE v1.1 trails DeepSeek-V4.1-Flash-1017 by about <code>3</code> points. BabyVision at <code>91%</code> is unbenchmarked independently.</li>
+      <li>Reasoning cannot be fully disabled; integrators migrating from M2.5/M2.7 reasoning-off defaults will see per-call latency rise even at the <code>low</code> setting.</li>
+      <li>M2.5 and M2.7 retire 2026-11-18. Token Plan and M Plan traffic auto-migrates.</li>
+    </ul>
+
+    <h1 id="nvidia">NVIDIA</h1>
+
+    <h2 id="nemotron-3-5"><a href="https://blogs.nvidia.com/blog/nemotron-3-5-super-vl/">Nemotron 3.5 Super VL 120B-A12B &amp; Bolt 74B-A9B</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch Post + Model Cards</span>
+      <span>blogs.nvidia.com &middot; NVIDIA Research</span>
+      <span>2026-10-15</span>
+      <span>Open weight &middot; VLM &middot; Agentic workflows &middot; Native 2-bit quantization</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>NVIDIA Research</strong> released <code>Nemotron 3.5 Super VL 120B-A12B</code> and <code>Nemotron 3.5 Bolt 74B-A9B</code> on 2026-10-15 as additions to the open Nemotron 3.5 family. <code>Bolt E4B</code> (~<code>4GB</code>, device-tier) is scheduled for 2026-10-23.</li>
+      <li><strong>Super VL</strong>: vision-language model for always-on agents handling text, images, charts, web pages, and documents at high volume. <code>120B</code> total / <code>12B</code> active (Artificial Analysis-measured). NVIDIA frames it as "frontier-level intelligence in its class" and claims parity with its largest reasoning model on multimodal agentic tasks at roughly one-fifth the parameter count.</li>
+      <li><strong>Bolt 74B-A9B</strong>: compact local model (research, coding, multi-step tasks). <code>74B</code> total / <code>9B</code> active, engineered around <strong>native 2-bit quantization</strong> to fit <code>24GB</code> device memory at inference without a post-training quantization regression pass.</li>
+      <li>Day-one availability: Hugging Face (including NVFP4 variants of Super VL), OpenRouter, ModelScope, and NVIDIA NIM. Hardware coverage: DGX Spark, DGX Station, RTX PRO, RTX, Jetson, data center, cloud. Open weights, open datasets, open training recipes; customization through NVIDIA NeMo.</li>
+    </ul>
+    <figure>
+      <img src="https://blogs.nvidia.com/wp-content/uploads/2026/10/FIRST-agentic-ai-nemotron-3.5-super-vl-blog-1920x1080-5783765.jpeg" alt="Agentic AI positioning for Nemotron 3.5 Super VL (NVIDIA 2026-10-15 launch)" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure N1 (NVIDIA launch post). Agentic positioning: <code>Super VL</code> is NVIDIA's always-on multimodal workhorse for text/image/chart/web/document agents, scaled for high-volume workflows.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Super VL.</strong>
+        <ul>
+          <li><code>120B</code> total parameters, <code>12B</code> active per token (Artificial Analysis measurement). NVIDIA does not publish the full MoE expert count, routing scheme, or layer configuration in the launch post; the technical blog is cited for architecture detail.</li>
+          <li>Vision stack handles OCR, tables, charts, structured documents, web pages, PDFs natively; outputs insights and structured responses.</li>
+          <li>Weights available in NVFP4 for Blackwell-class hardware, in addition to the default format.</li>
+        </ul>
+      </li>
+      <li><strong>Bolt 74B-A9B.</strong>
+        <ul>
+          <li><code>74B</code> total / <code>9B</code> active. Fits <code>24GB</code> memory via <strong>native 2-bit quantization</strong> &mdash; the model is trained with 2-bit weight representations in the forward pass, not quantized post-hoc.</li>
+          <li>Intended for local systems; day-one serving on DGX Spark, DGX Station, RTX, RTX PRO, Jetson.</li>
+          <li>Multimodality not confirmed in the launch post; positioning is "research, coding, multi-step tasks."</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Pre-training &amp; post-training (Super VL)</h3>
+    <ul>
+      <li><strong>Pre-training tokens.</strong> ~<code>26T</code> across pretraining and continued pretraining. NVIDIA does not break out modality split.</li>
+      <li><strong>Post-training samples.</strong> ~<code>3.8M</code> samples. Reinforcement learning across "dozens of environments." Specific environments and RL algorithm (GRPO/PPO/DPO) are not named.</li>
+      <li><strong>Hyperparameters, SFT recipe.</strong> Not disclosed; the launch cites open training recipes on NVIDIA NeMo. Expert allocation per layer, routing policy, and auxiliary losses are left to the technical blog.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Artificial Analysis Intelligence Index</strong> (pre-release endpoint, published 2026-10-15):</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Model</th><th>AA Intelligence Index</th><th>Output tokens/sec at 100k prompt</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>Nemotron 3.5 Super VL 120B-A12B</code></td><td><strong>26.5</strong></td><td><strong>~630</strong></td></tr>
+        <tr><td><code>Nemotron 3.5 Bolt 74B-A9B</code></td><td>21.4</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>NVIDIA-reported product claims.</strong> <code>5x</code> faster than the next-best open agentic model in its class; <code>8x</code> more concurrent users with NVIDIA Dynamo; <code>85%</code> lower latency.</li>
+      <li><strong>Independent review.</strong> The Neuron tested <code>Bolt 74B-A9B</code> locally on a Surface Laptop Ultra at <code>~65.5</code> tokens/sec &mdash; a device-class figure for the 2-bit quantized local inference. This is a third-party number, not NVIDIA's.</li>
+      <li><strong>Caveats.</strong> AA Index numbers come from a pre-release endpoint. The <code>26.5</code> figure trails the Chinese open frontier (<code>GLM 5.3</code> <code>45</code>, <code>Kimi K3</code> <code>44</code>) &mdash; Super VL is pitched by capability-per-active-parameter and by throughput rather than by composite leaderboard rank.</li>
+    </ul>
+    <figure>
+      <img src="https://blogs.nvidia.com/wp-content/uploads/2026/10/THIRD-Intelligence-Index-Output-Latest-960x449.jpeg" alt="Artificial Analysis Index vs output tokens/sec for Nemotron 3.5 Super VL" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure N2 (NVIDIA via Artificial Analysis, 2026-10-15). Intelligence index vs output throughput: <code>Super VL</code> at ~<code>630</code> output tok/s with 100k-token prompts, measured on a pre-release endpoint.</figcaption>
+    </figure>
+    <figure>
+      <img src="https://blogs.nvidia.com/wp-content/uploads/2026/10/GDPVal_TPS_v3.png" alt="GDPVal tokens-per-second comparison for Nemotron 3.5 Super VL" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure N3 (NVIDIA, 2026-10-15). GDPVal throughput: <code>Super VL</code> is positioned as the always-on agent workhorse per-GPU.</figcaption>
+    </figure>
+
+    <h3>Named Contributions &amp; Mechanisms</h3>
+    <ul>
+      <li><strong>Native 2-bit quantization for Bolt 74B-A9B.</strong>
+        <ul>
+          <li><em>Problem.</em> <code>24GB</code> of VRAM is the device-class ceiling for RTX 4090, 5090, and Jetson Thor-class accelerators that NVIDIA wants to serve as "always-on local agents." A <code>74B</code> model in BF16 is ~<code>150GB</code> and does not fit; INT4 post-training quantization reaches ~<code>40GB</code> but regresses on coding and multi-step tasks by several points, which erases the agent-usability argument.</li>
+          <li><em>Mechanism.</em> Rather than post-training-quantizing a BF16 Nemotron, NVIDIA trains Bolt with <strong>native 2-bit weight representations</strong> in the forward pass. The gradient-side math stays in a higher precision, but weights are quantized to 2 bits during training, so the loss function already includes the quantization step. The resulting weights fit <code>24GB</code> device memory without a round of QLoRA-style recovery fine-tuning.</li>
+          <li><em>Why it works.</em> This is QAT taken to its logical endpoint: training against the quantization operator rather than correcting for it afterward. The ~<code>65.5</code> tok/s on a Surface Laptop Ultra (per The Neuron's independent review) implies the weights ship at <code>&lt;20GB</code>, leaving KV-cache headroom for multi-turn agent context. The Muse Spark Open NVFP4 release is the <code>4</code>-bit analogue at <code>816B</code> &mdash; Bolt pushes a step further by owning the quantization during training, which is why it fits <code>24GB</code> at <code>74B</code> instead of <code>42B</code>.</li>
+        </ul>
+      </li>
+      <li><strong>12B-active vision-language workhorse for high-volume agents.</strong>
+        <ul>
+          <li><em>Problem.</em> Enterprises deploying always-on visual agents (document extraction, OCR-plus-reasoning, dashboard reading at scale) run into the same per-user compute wall: a frontier-class VLM at <code>400B+</code> total parameters requires a reserved multi-GPU inference node per concurrent user, which is uneconomical at the volumes NVIDIA cites (<code>8x</code> users with Dynamo).</li>
+          <li><em>Mechanism.</em> <code>Super VL</code> keeps active parameters at <code>12B</code> but keeps total parameters at <code>120B</code>, so the inference compute scales with the active count while the knowledge capacity scales with the total. NVIDIA Dynamo supplies the serving-side batcher: expert-parallel execution across the active path and KV-cache sharing across concurrent sessions. The <code>5x</code> faster claim is relative to the next-best open agentic model at matched throughput conditions; the <code>8x</code> user and <code>85%</code> latency figures are Dynamo-specific.</li>
+          <li><em>Why it works.</em> Pairing a sparse MoE active footprint with aggressive Dynamo batching is a serving-side bet rather than a modeling bet: the <code>26.5</code> AA Index at <code>12B</code> active is below the Chinese frontier (<code>45</code> for <code>GLM 5.3</code> at tens of billions active), but the <code>630</code> output tok/s at <code>100k</code> prompts is competitive with closed vendors' flash tiers. NVIDIA's pitch is that for OCR-grade document agent workloads, the AA Index gap matters less than per-GPU user concurrency.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Availability &amp; limitations</h3>
+    <ul>
+      <li>Hugging Face (NVFP4 variants for Super VL), OpenRouter, ModelScope, NVIDIA NIM (production microservices refreshed every two weeks).</li>
+      <li>Hardware: DGX Spark, DGX Station, RTX PRO, RTX, Jetson, data center, cloud.</li>
+      <li>Customization via NVIDIA NeMo; open datasets and training recipes.</li>
+      <li>NVIDIA did not publish full architecture (MoE expert count, routing scheme, exact layer config), modality split in pretraining tokens, specific RL algorithm, or safety numbers in the launch post &mdash; the technical blog is the stated reference.</li>
+      <li>Bolt E4B (~<code>4GB</code>, phone-class) scheduled 2026-10-23; not covered here.</li>
+    </ul>
+
+    <h1 id="alibaba">Alibaba</h1>
+
+    <h2 id="blenderworld"><a href="https://arxiv.org/abs/2610.23986">BlenderWorld: Benchmarking Visual Agents for 3D Creation from Real-World References</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv &middot; Qwen (Alibaba) + Zhejiang Univ. + CUHK + Fudan + NTU</span>
+      <span>2026-10-19 (arXiv)</span>
+      <span>3D creation &middot; Benchmark &middot; Visual agents &middot; Blender &middot; Multimodal</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>Alibaba Qwen</strong>, with collaborators at Zhejiang University, CUHK, Fudan, and NTU Singapore, published <code>BlenderWorld</code> on arXiv as 2610.23986 (Hugging Face Daily, 2026-10-20). The benchmark evaluates multimodal LLMs on realistic 3D creation tasks in Blender using photo, video, or specification-file references &mdash; a shift from text-only prompts.</li>
+      <li>Headline finding: even the leading model (<code>GPT-6-Astra</code>) fully satisfies every fine-grained requirement on just <code>42.2%</code> of tasks and reaches a fused score of <code>79.9/100</code>; <code>Opus-5</code> comes next at <code>73.0</code> and <code>GPT-5.6-Sol</code> at <code>67.7</code>.</li>
+      <li>Framework/evaluation code is on GitHub at <code>QwenLM/BlenderWorld</code> under MIT; dataset on Hugging Face at <code>Qwen/BlenderWorld</code>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Benchmark construction.</strong> <code>223</code> tasks across <code>9</code> categories and <code>22</code> subcategories (products, architecture, natural environments, characters, animation, scientific visualization, vehicles, simulation, scenes). Input mix: <code>130</code> image-plus-text tasks, <code>15</code> video-plus-text tasks, <code>78</code> text-only tasks, <code>59</code> with specification files (dimensions, materials, camera settings).</li>
+      <li><strong>Criteria.</strong> <code>2,651</code> binary acceptance criteria extracted by multimodal models and verified by at least two independent judges, then frozen as weighted (<code>3/2/1</code>) checks (<code>6&ndash;22</code> per task). The generating agent cannot see the criteria.</li>
+      <li><strong>Submission format.</strong> Agents must deliver an editable Blender project saved as <code>model-output/final.blend</code>, not a rendered image. The <code>.blend</code> files are the primary artifact scored.</li>
+      <li><strong>Evaluation harness.</strong> <code>bw prepare</code> builds per-task workspaces; agents produce <code>.blend</code> files; <code>bw pack-submission</code> bundles outputs; <code>bw evaluate</code> renders and scores. Rendering: <code>8</code> adaptive camera views, Cycles backend at <code>1024&times;1024</code> with <code>64</code> samples. Environment pinned at Blender 4.2.10, Python 3.10+, Codex CLI 0.147.0, Claude Code 2.1.220.</li>
+      <li><strong>Dual-track review.</strong>
+        <ul>
+          <li><em>Visual (VLM judge).</em> Judges the 8-view renders and video for appearance, layout, and motion (<code>13</code> rubric aspects: geometry, spatial layout, materials, functionality, etc.).</li>
+          <li><em>Structural (agent judge).</em> Inspects the <code>.blend</code> file's internal structure and properties with tools, which catches exact-dimension requirements and other spec-level checks that renders cannot show.</li>
+          <li><em>Fused score.</em> <code>Overall = 0.5 &times; Rubric + 0.5 &times; Dimension</code>, with a Perfect-pass rate reported separately. Submissions without a <code>.blend</code> project score 0 but stay in the denominator.</li>
+          <li>Public harness runs Cycles on CPU with no score cap; the paper setup used GPU. Published scores from the paper and locally obtained scores may differ.</li>
+        </ul>
+      </li>
+    </ul>
+    <figure>
+      <img src="https://blenderworld.github.io/assets/evaluation.webp" alt="BlenderWorld evaluation pipeline: agents produce .blend, 8 adaptive views rendered with Cycles, dual VLM + agent judges score against 2,651 binary criteria" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure B1 (from the paper, hosted at blenderworld.github.io). Evaluation pipeline: agent produces <code>.blend</code> &rarr; 8 adaptive views rendered with Cycles 1024&times;1024 at 64 samples &rarr; VLM judge scores renders + agent judge inspects <code>.blend</code> internals &rarr; <code>0.5&times;Rubric + 0.5&times;Dimension</code>.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>13 systems evaluated.</strong> The paper's leaderboard tops out at:</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Model</th><th>Fused score (0&ndash;100)</th><th>Perfect-pass</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>GPT-6-Astra</code></td><td><strong>79.9</strong></td><td><strong>42.2%</strong></td></tr>
+        <tr><td><code>Opus-5</code></td><td>73.0</td><td>&mdash;</td></tr>
+        <tr><td><code>GPT-5.6-Sol</code></td><td>67.7</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Multimodal advantage.</strong> <code>+8.6</code> points for <code>GPT-6-Astra</code> over <code>Opus-5</code> on image and video inputs, which separates the strong-vision-stack models from the text-heavy ones on this benchmark more sharply than any aggregate index does.</li>
+      <li><strong>Failure modes.</strong> Current models parse broad instructions reasonably but struggle with fine-grained 3D spatial coherence and accurate structural reproduction from reference. The <code>42.2%</code> perfect-pass ceiling is the paper's headline finding against prompt-only benchmarks that saturate.</li>
+      <li><strong>Independent reproduction.</strong> The public evaluator differs from the paper setup (CPU Cycles vs GPU; no score cap); community reruns of specific submissions may land within a point or two of the paper number.</li>
+    </ul>
+
+    <h3>Named Contributions &amp; Mechanisms</h3>
+    <ul>
+      <li><strong>Editable-artifact scoring: .blend file is the submission, not a render.</strong>
+        <ul>
+          <li><em>Problem.</em> Image-generation benchmarks score a rendered picture, which lets an agent "paper over" bad geometry with surface shading or clever camera framing. For 3D creation that is downstream work (animation, simulation, VFX), the editable project is what matters: dimensions, materials, modifier stacks, rig topology. A render-only benchmark does not test any of that.</li>
+          <li><em>Mechanism.</em> BlenderWorld requires the submission to be an editable <code>.blend</code> file saved to <code>model-output/final.blend</code>. The structural judge opens the project in Blender and inspects its internals with tools (<code>bpy.data</code>-level queries over objects, materials, armatures, modifiers), separately from the VLM judge that scores rendered views. A model that produces a visually plausible scene but hides geometry in a child collection fails the structural half.</li>
+          <li><em>Why it works.</em> Splitting <code>Rubric</code> and <code>Dimension</code> at <code>0.5/0.5</code> prevents either half from dominating; a model that can shade well but cannot assemble a dimensioned asset is capped at <code>50</code>. The dual-track design maps onto the actual downstream workflow of a 3D artist &mdash; the <code>.blend</code> file is handed off, not the final render &mdash; which is what makes <code>42.2%</code> perfect-pass a stricter ceiling than the <code>13</code>-rubric visual score alone would deliver.</li>
+        </ul>
+      </li>
+      <li><strong>Reference-anchored tasks across text, image, video, and spec inputs.</strong>
+        <ul>
+          <li><em>Problem.</em> Text-only prompting for 3D creation lets the agent fall back on scene-level priors (a "chair" is any chair). Benchmarks built on open-text prompts have a ceiling set by how specific the prompter is willing to be, which lets strong-text models hit high scores without really doing 3D creation.</li>
+          <li><em>Mechanism.</em> <code>130</code> image, <code>15</code> video, <code>59</code> spec-file tasks anchor the required output to a specific target: a photographed room, a filmed object in motion, or a specification file listing exact dimensions, materials, and camera settings. The criteria extraction (<code>2,651</code> binary rubrics) is run on the <em>reference</em>, not the prompt, so an agent that reproduces the generic concept but misses a reference-specific feature fails the corresponding criteria.</li>
+          <li><em>Why it works.</em> The <code>+8.6</code>-point multimodal gap for <code>GPT-6-Astra</code> over <code>Opus-5</code> on image/video inputs is exactly this effect: strong-vision models can anchor to the reference and reproduce specific details, while weaker-vision ones default to a generic rendering. Pairing this with the <code>.blend</code> editable-artifact requirement makes it the strictest 3D-creation benchmark that current frontier models have been scored on, with headroom to <code>100</code> on both halves.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The arXiv page highlights per-input-modality breakdowns and category-level scores; the paper PDF carries the full tables. Public access via the HF dataset repository is required for finer-grained comparisons.</li>
+      <li>Judge agreement tables are referenced on the project page but not rendered without JavaScript at the time of this review.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Dataset: <code>Qwen/BlenderWorld</code> on Hugging Face (gated).</li>
+      <li>Code: <code>github.com/QwenLM/BlenderWorld</code>, MIT.</li>
+      <li>Project page: <code>blenderworld.github.io</code>.</li>
+    </ul>
+
+    <h1 id="bytedance">ByteDance</h1>
+
+    <h2 id="deoverlay"><a href="https://arxiv.org/abs/2610.26081">DeOverlay: A Benchmark and Source-Anchored Flow for Video Overlay Removal</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv &middot; ByteDance Seed</span>
+      <span>2026-10-19 (arXiv; HF Daily 2026-10-20)</span>
+      <span>Video &middot; Flow matching &middot; Overlay removal &middot; Benchmark</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>ByteDance Seed</strong> (Deshui Miao, Yuhang Ma, Shaoyong Jia, Wenzhao Gao, Yue Zhang, Shaohui Jiao, Xin Li) released <code>DeOverlay</code> on arXiv as 2610.26081 on 2026-10-19 (Hugging Face Daily, 2026-10-20). The paper has two deliverables: a <strong>DeOverlay model</strong> (source-anchored flow matching for video overlay removal) and <strong>DVTE-Bench</strong>, a paired-video benchmark of <code>1,631</code> clips and <code>136,090</code> frames across <code>8</code> text-overlay categories.</li>
+      <li>Core framing: temporal-propagation and source-conditioned-generation methods either leave residual overlays or distort scene structure when source information is hidden. The paper's bet is on anchoring the generative process to the overlaid source latent while running flow-matching along learned source-to-clean paths, which allows successive corrections from intermediate states.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>DeOverlay model.</strong>
+        <ul>
+          <li>Source-anchored flow: the model starts from the <em>source (overlaid) latent</em> and iteratively refines toward a clean latent along a learned flow path. The source guidance is fixed throughout, not re-sampled per step.</li>
+          <li>Region-weighted flow matching: a shared velocity network trained on paired source-to-clean paths, with weighting concentrated on the masked regions. Successive corrections are issued from intermediate flow states, not only from the full source.</li>
+          <li>Visibility-normalized temporal aggregation: local source cues are gathered by excluding masked positions and averaging the visible observations over time, so the flow receives a cleaner estimate of what the scene looks like under the overlay.</li>
+          <li>Additive conditioning: global source context and edit-region embeddings are added to the latent without lengthening the video-token sequence, which keeps the compute envelope on par with ordinary video diffusion.</li>
+        </ul>
+      </li>
+      <li><strong>DVTE-Bench construction.</strong>
+        <ul>
+          <li><code>1,631</code> paired clips (overlaid / clean), <code>136,090</code> frames, <code>8</code> text-overlay categories, <code>91.1</code> minutes of video, every clip with audio. <code>1,085</code> portrait (<code>66.5%</code>) / <code>546</code> landscape (<code>33.5%</code>). <code>11</code> language labels.</li>
+          <li>OCR-screened clean targets: <code>569</code> candidate pairs were rejected by the target-side OCR audit to prevent clean videos from containing residual text that would contaminate scoring.</li>
+          <li>Frame-aligned pixel masks per clip, with common evaluation protocol.</li>
+          <li>Metrics: <code>Mask PSNR</code>, <code>SSIM</code>, <code>LPIPS</code>, <code>DISTS</code>, <code>VFID</code>, <code>TWE</code>, <code>TC</code>, flow statistics.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>DeOverlay outperforms four baselines on all five reconstruction and perceptual metrics</strong> that the arXiv page highlights.</li>
+      <li><strong>vs the strongest baseline:</strong> <code>Mask LPIPS</code> <code>-58.3%</code>, <code>Mask VFID</code> <code>-70.3%</code>.</li>
+      <li>Qualitative results demonstrated on graphic logos and stickers, not just text subtitles.</li>
+      <li>Full per-method per-metric table is in the paper and in <code>data/results.csv</code> on the project site; it was not loaded in the HTML surface rendered without JavaScript.</li>
+    </ul>
+
+    <h3>Named Contributions &amp; Mechanisms</h3>
+    <ul>
+      <li><strong>Source-anchored flow with region-weighted matching.</strong>
+        <ul>
+          <li><em>Problem.</em> Prior overlay-removal methods pick one of two bad options. Temporal-propagation methods (frame-to-frame inpainting) leave residual overlay in frames with motion or occlusion, because the propagation smears the overlay signal rather than suppressing it. Source-conditioned generative methods (ControlNet-style conditioning on an overlay-free guide) distort scene structure when the overlay occludes a key feature, because the generator has no counterfactual to work from.</li>
+          <li><em>Mechanism.</em> The DeOverlay flow <em>starts</em> from the overlaid-source latent, not from pure noise. Flow matching trains a shared velocity network on paired source-to-clean paths, with region weighting that concentrates loss on the overlay region. At inference, the model issues iterative corrections from intermediate flow states, so each step refines against the running estimate rather than against pure noise or against the fixed source.</li>
+          <li><em>Why it works.</em> Anchoring the flow at the source latent means every refinement step is coherent with the unmasked region, which is where temporal-propagation methods lose structure. Region weighting concentrates capacity where it is needed; successive corrections from intermediate states amortize the heavy lifting across the flow path rather than concentrating it at a single denoising step. The <code>Mask LPIPS -58.3%</code> and <code>Mask VFID -70.3%</code> deltas against the strongest baseline on DVTE-Bench are consistent with that mechanism: the perceptual metrics on the masked regions are precisely where the paper's weighting concentrates capacity.</li>
+        </ul>
+      </li>
+      <li><strong>Visibility-normalized temporal aggregation.</strong>
+        <ul>
+          <li><em>Problem.</em> Averaging frames to get a cleaner source estimate biases the result toward frames where the overlay happens to cover more pixels &mdash; those frames contribute masked (and so garbage) signal to the average, which the generator then has to walk back.</li>
+          <li><em>Mechanism.</em> Visibility normalization: for each pixel location, the aggregation averages only the frames where that location is <em>not</em> masked, normalizing by the visible-frame count. Masked positions are excluded from both the sum and the normalizer.</li>
+          <li><em>Why it works.</em> This gives the flow a time-aggregated estimate of the scene whose variance is lowest where the overlay happens to move around the most &mdash; which is where propagation-only methods fail hardest. The additive-conditioning design keeps the token sequence length unchanged, so the compute cost of the aggregation is a preprocessing step rather than a per-step overhead inside the transformer.</li>
+        </ul>
+      </li>
+      <li><strong>DVTE-Bench with OCR-screened clean targets.</strong>
+        <ul>
+          <li><em>Problem.</em> A "clean" video that still contains residual text (watermarks on the clean copy, non-overlay text in-scene) contaminates reconstruction metrics: the model is penalized or rewarded for text that was never the removal target.</li>
+          <li><em>Mechanism.</em> Candidate (overlaid / clean) pairs are run through OCR on the clean side, and any clean target with detected text is rejected. <code>569</code> candidates were rejected by this audit to produce the final <code>1,631</code>-clip set.</li>
+          <li><em>Why it works.</em> This makes <code>Mask LPIPS</code> and <code>Mask VFID</code> comparable across methods: the ground truth in the masked region is guaranteed free of distracting text content, which is otherwise a confound that favors methods with permissive text-generation priors.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Full ablations on region weighting, visibility normalization, and additive conditioning are referenced in the paper; the specific numbers were not available in the HTML surface rendered without JavaScript for this review.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Project page: <code>yahooo-m.github.io/DVTE-Bench/</code>. The benchmark, evaluation code, and test outputs are flagged for release; the dataset manifests and results CSV are already live.</li>
+    </ul>
+
+    <h1 id="microsoft">Microsoft</h1>
+
+    <h2 id="self-hpo"><a href="https://arxiv.org/abs/2610.22791">Self-Evolving Coding Agents via Harness-Policy Optimization (Self-HPO)</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv &middot; Microsoft Research</span>
+      <span>2026-10-16 (arXiv)</span>
+      <span>Coding agents &middot; RL &middot; Harness &middot; Self-improvement</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>Microsoft Research</strong> (Zhepei Wei, Wenlin Yao, Baolin Peng, Danqing Wang, Qianhui Wu, Hao Cheng, Yu Meng, Jianfeng Gao) released <code>Self-HPO</code> on arXiv as 2610.22791 on 2026-10-16.</li>
+      <li>Core claim: coding agent performance depends on both the <strong>policy model</strong> and the <strong>harness</strong> (scaffolding that mediates its interaction with the environment); optimizing either alone leaves gain on the table, because a harness tuned for one checkpoint may miss the failures of an updated policy. Self-HPO alternates harness and policy optimization in a single loop.</li>
+      <li>Headline numbers: <code>Qwen3.5-35B-A3B</code>'s average resolve rate across <code>SWE-Bench Verified</code>, <code>SWE-Bench Multilingual</code>, and <code>SWE-Bench Pro</code> rises from <code>57.8%</code> to <code>64.8%</code>, with gains preserved on out-of-distribution settings. Using <code>Opus 4.8</code> as the harness proposer adds a further boost.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Self-HPO loop.</strong> Alternates two steps per round:
+        <ul>
+          <li><em>H-step (harness).</em> The current policy analyzes its own failure traces and <em>proposes</em> new harness candidates &mdash; the model is its own harness proposer. Candidates are then selected via a validation-set probe.</li>
+          <li><em>P-step (policy).</em> The policy is updated with reinforcement learning under the selected harness. Hard tasks surfaced during training become the search set for the <em>next</em> round's harness proposal, so the harness search remains aimed at the current policy's live failure modes.</li>
+        </ul>
+      </li>
+      <li><strong>Benchmarks.</strong> <code>SWE-Bench Verified</code>, <code>SWE-Bench Multilingual</code>, <code>SWE-Bench Pro</code> &mdash; three variants spanning English single-language, multilingual code, and higher-difficulty tasks.</li>
+      <li><strong>Policy backbone.</strong> <code>Qwen3.5-35B-A3B</code> (<code>35B</code> total, <code>3B</code> active). The paper also reports the stronger-proposer condition using <code>Opus 4.8</code> as the harness-proposer only (the policy is still the Qwen backbone).</li>
+      <li><strong>Base agent comparison.</strong> Harness-only and policy-only baselines are the paper's control conditions; the joint gain is reported against the sum of their individual gains.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <table>
+      <thead>
+        <tr><th>Setting</th><th>Qwen3.5-35B-A3B avg resolve</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Base agent</td><td>57.8%</td></tr>
+        <tr><td>Self-HPO (self-proposer)</td><td><strong>64.8%</strong> (+7.0 pp)</td></tr>
+        <tr><td>Self-HPO (Opus 4.8 proposer)</td><td>Further boost (number not in the arXiv abstract)</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Out-of-distribution gain preserved.</strong> The paper reports gains carry over to OOD settings beyond the training task distribution.</li>
+      <li><strong>Compositionality.</strong> Each optimized component (harness, policy) keeps its gain when paired with the base counterpart; the <em>joint</em> gain exceeds the sum of the individual gains.</li>
+      <li><strong>Pass@k frontier shift.</strong> Both <code>Pass@1</code> (reliability) and <code>Pass@k</code> (capability frontier) improve over the base agent, so the policy update is not only pruning the sampling distribution to a few lucky trajectories.</li>
+    </ul>
+
+    <h3>Named Contributions &amp; Mechanisms</h3>
+    <ul>
+      <li><strong>Policy as its own harness proposer, alternated with on-policy RL.</strong>
+        <ul>
+          <li><em>Problem.</em> Coding-agent papers split into two camps. One optimizes the policy (SFT + RL on code-task rollouts); the other optimizes the harness (prompt-and-tool-wiring search, often with a separate "proposer" model). Both leave a residual gap because the two components interact: a harness tuned to a weaker policy over-scaffolds the stronger one; a policy trained under a weaker harness learns to compensate for scaffolding it no longer needs. Running both searches in parallel ignores this coupling.</li>
+          <li><em>Mechanism.</em> Self-HPO runs <em>sequentially</em>: the current policy proposes harness candidates by analyzing its own failures (H-step), the best candidate is selected, and then the policy is updated with RL under that selected harness (P-step). Hard tasks surfaced during the RL rollout become the search set for the next H-step. The policy proposes the harness that targets its own current failure modes, and the subsequent RL pass then specializes under exactly that harness.</li>
+          <li><em>Why it works.</em> This closes the Google <code>Harness&sup2;</code> loop (<a href="https://arxiv.org/abs/2610.14224">arXiv:2610.14224</a>, 2026-10-09) one step further: <code>Harness&sup2;</code> keeps the policy weights frozen and iterates only the harness; Self-HPO co-updates both. The co-update means each H-step probes a <em>different</em> policy than the previous round, so the harness search never over-fits to a stale checkpoint. The <code>Qwen3.5-35B-A3B</code> jump of <code>+7.0 pp</code> on average across three SWE-Bench variants, with OOD transfer and compositional gain exceeding the sum of parts, is the paper's load-bearing evidence that the coupling is real.</li>
+        </ul>
+      </li>
+      <li><strong>Hard-task recycling across rounds.</strong>
+        <ul>
+          <li><em>Problem.</em> Harness search needs a search set that reflects the current policy's failure distribution; a fixed held-out set over-represents the problems the policy already solves after a few P-steps.</li>
+          <li><em>Mechanism.</em> Hard tasks found during the P-step's RL rollouts are collected and become the H-step search set for the next round. The search set thus tracks the policy's failure modes as they shift.</li>
+          <li><em>Why it works.</em> Without this recycling, a late-round harness search picks over problems the policy already handles, and the H-step gain shrinks to noise. With it, each round's harness update is aimed at the problems the policy actually still gets wrong. The compositional result &mdash; joint gain beats sum of parts &mdash; is also the signature of this effect: the harness-only and policy-only baselines never see each other's hard-task residues.</li>
+        </ul>
+      </li>
+      <li><strong>Stronger-proposer condition using Opus 4.8.</strong>
+        <ul>
+          <li><em>Problem.</em> The self-proposer condition is capped by the policy's own ability to diagnose its failures and suggest harness changes &mdash; a weaker policy is a weaker proposer. For a frontier-scale policy that is nearly as good as any available model, that is fine; for a mid-scale open policy, it is not.</li>
+          <li><em>Mechanism.</em> The H-step proposer is swapped for <code>Opus 4.8</code> while the policy backbone remains the open Qwen model. The RL (P-step) update is unchanged; only the harness-proposal LLM differs.</li>
+          <li><em>Why it works.</em> This decouples the two capability axes: the policy carries the per-token inference cost at serving time, while the proposer only runs during the training loop. A frontier proposer can see failure patterns the policy itself cannot articulate, which widens the harness search in ways that then transfer to the (cheaper) policy via the P-step. The additional boost over the self-proposer condition is unquantified in the arXiv abstract.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Harness-only vs policy-only vs joint ablations are the paper's primary ablation grid; the joint gain exceeds the sum of individual gains.</li>
+      <li>OOD transfer: gains preserved on out-of-distribution settings (specific OOD split not named in the abstract).</li>
+      <li>Compositional transfer: each optimized component retains its gain when paired with the <em>unoptimized</em> counterpart, which is the paper's argument against claims that the gain lives entirely in cross-component overfitting.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Author overlap with 2026-10-19 ByteDance DeOverlay paper (none; Microsoft Research author list is disjoint).</li>
+      <li>Positioning vs 2026-09 Alibaba Mobius decoupled-knowledge-and-reasoning (<a href="../index.html">prior 2026-08-17 review</a>): Self-HPO is a joint-optimization pattern that assumes a monolithic policy; Mobius was a decomposition of the policy itself. The two are complementary and could be stacked.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
