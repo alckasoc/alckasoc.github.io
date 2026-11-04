@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tencent Hunyuan Hy4 Launch Review &mdash; November 4, 2026 | Auto Lit Review</title>
+<meta name="description" content="Window 2026-11-03 through 2026-11-04 is anchored by Tencent's Hunyuan Hy4 full launch on 2026-11-04, lifting the August Hy4-preview architecture (770B/49B MoE, 78 layers, 256+1 experts, Gated DSA + IndexCache + iHC, 1M context) into a vision-and-computer-use flagship through pre- and post-training rebuilt around Blender/CAD/UE/Unity/Godot and defense-only cyber data. Reported deltas over the preview: finance expert eval 3.04 (vs DeepSeek-V4.1-Flash-1017 2.97, Kimi K3.1 Pro 2.68, GLM-5.3 2.68), GameDev +19.1%, GameLogic +9.8%, hallucination 15.76% to 5.45%, guessing 23.1% to 5.6%, Hy-BioExperimentBench 30.4/100, WorkBuddy office eval 83.18 avg / 96.15% pass. Pricing $0.834/$2.501/$0.042 per M in/out/cache, 50% off through 2026-12-31. Weights 'soon'; preview weights already on Hugging Face Apache 2.0. One Tier 2 companion: Ant Group's SWE-Trail (arXiv 2611.02074, Ziming Li et al., inclusionAI) replaces advice-in-context trajectory collection with offline-compiled per-state comparisons that restore two isolated workspaces and keep only the better-supported suffix, lifting Ling-3.0-flash-base-124B over SeedBank by 2.33 on SWE-bench Multilingual and 1.60 on SWE-Pro (and 3.11 / 2.42 on Qwen3-14B-Base) with history never entering the agent's context." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">November 4, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#tencent">Tencent</a>
+          <ul>
+            <li class="toc-h2"><a href="#hy4">Hunyuan Hy4: Vision &amp; Computer-Use Full Launch</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#ant-group">Ant Group</a>
+          <ul>
+            <li class="toc-h2"><a href="#swe-trail">SWE-Trail: History-Guided Trajectory Collection for Coding Agents</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; November 4, 2026</div>
+    <h1 class="page-title">Hunyuan Hy4 Launch</h1>
+    <div class="page-meta">2 entries &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window ending 2026-11-04 22:28 UTC (steady state, long gap since the 2026-10-21 review) is anchored by one Tier 1 launch and one Tier 2 companion. <strong>Tencent</strong> ships <a href="https://hy.tencent.ai/research/hy4"><em>Hunyuan Hy4</em></a> full release on 2026-11-04, the production-grade successor to the August <code>Hy4-preview</code> that keeps the preview's <code>770B</code>-total / <code>49B</code>-active MoE backbone (<code>78</code> layers, <code>256</code> routed + <code>1</code> shared expert, top-<code>8</code>, Gated DeepSeek Sparse Attention with IndexCache, <code>4</code>-stream iHC residual, <code>1M</code>-token context) and rebuilds pre- and post-training around a native vision stack and a Computer-Use skill covering command line plus GUI, with targeted Blender / CAD / UE / Unity / Godot data for the GameDev and 3D axes. Full-release eval improvements over the preview: <strong>Finance</strong> expert blind eval (<code>213</code> experts, <code>579</code> tasks) <code>3.04</code> vs <code>DeepSeek-V4.1-Flash-1017</code> <code>2.97</code>, <code>Kimi K3.1 Pro</code> <code>2.68</code>, <code>GLM-5.3</code> <code>2.68</code>; <strong>GameDev</strong> <code>+19.1%</code>, <strong>GameLogic</strong> <code>+9.8%</code>; <strong>hallucination rate</strong> <code>15.76% &rarr; 5.45%</code>; <strong>guessing-error rate</strong> <code>23.1% &rarr; 5.6%</code>; <strong>Hy-BioExperimentBench</strong> <code>30.4/100</code>; <strong>WorkBuddy</strong> office eval <code>83.18</code> average, <code>96.15%</code> pass rate, first in <code>9/12</code> domestic scenarios. Pricing stays flat with the preview at <code>$0.834</code>/<code>$2.501</code>/<code>$0.042</code> per million input/output/cache tokens, <code>50%</code> off through 2026-12-31 on Tencent Cloud TokenHub; WorkBuddy and CodeBuddy usage free 2026-11-04 to 2026-11-15; weights and full system card "coming soon." <strong>Ant Group</strong>'s <a href="https://arxiv.org/abs/2611.02074"><em>SWE-Trail</em></a> (<code>Ziming Li</code>, Ant Group / UConn, with the <code>inclusionAI</code> code lineage behind <code>Ling-3.0-flash-base-124B</code>) is the Tier 2 companion: an offline-compiled, history-guided trajectory collector that uses earlier attempts on an issue to pick <em>where</em> extra collection effort lands, while keeping that history entirely out of the agent's own context. The two-stage pipeline freezes an acquisition record per issue (detector <code>D_i</code>, comparison objective <code>u_i(d)</code>, temperature schedule <code>&lambda;_i</code>), then at run time restores two isolated workspaces from a single checkpoint when <code>D_i</code> matches, executes short alternative suffixes, and keeps only the better-supported branch. On <code>Ling-3.0-flash-base-124B</code>, SWE-Trail-H5 lifts <code>SWE-bench Multilingual</code> from <code>63.33 &rarr; 65.67</code> (+<code>2.33</code>) and <code>SWE-Pro</code> from <code>41.22 &rarr; 42.82</code> (+<code>1.60</code>) over the SeedBank baseline, with H5 on <code>Qwen3-14B-Base</code> at +<code>3.11</code> / +<code>2.42</code>. Six method variants, two base models, three training seeds, and an explicit train-test mismatch argument for why advice-in-context collection (SWE-Exp) actively hurts (<code>-1.33</code> / <code>-2.78</code>).</p>
+      <h3>Competitiveness</h3>
+      <p>Hy4 enters a crowded open-weight frontier dominated by the <strong>Chinese open cluster</strong> that has been shipping on roughly a two-month cadence since Q3. The <code>770B</code>-total / <code>49B</code>-active profile sits above <code>Kimi K3.1 Pro</code>'s <code>620B</code> / <code>24B</code> and <code>GLM-5.3</code>'s <code>615B</code> / <code>35B</code>, under <code>Meta Muse Spark Open</code>'s <code>816B</code> / <code>42B</code> and <code>DeepSeek-V4.1-Flash</code>'s <code>763B</code> / <code>40B-equivalent CED</code>. Gated DSA + IndexCache gives Hy4 a decoder-time cost profile closer to <code>DeepSeek-V4</code>'s sparse-attention line than to Muse Spark Open's dense-GQA line. Without published <code>SWE-Bench</code>, <code>HLE</code>, <code>Terminal-Bench</code>, <code>MMLU-Pro</code>, or <code>LiveCodeBench</code> numbers for the full release (Tencent's own eval axes are finance, GameDev, and the custom <code>WorkBuddy</code> office suite), the model's position against <code>DeepSeek-V4.1-Flash-1017</code>, <code>Kimi K3.1 Pro</code>, and <code>GLM-5.3</code> on the standard agentic coding leaderboards cannot be read yet. On Tencent's internal finance eval the <code>3.04</code> vs <code>2.97</code> / <code>2.68</code> / <code>2.68</code> spread is a one-point lead over DeepSeek on a vendor-reported suite with no independent replication. The computer-use axis &mdash; command line plus GUI, with a unified action space &mdash; is the first open-weight response to <code>Claude Sonnet 5.5</code>'s and <code>Gemini 4 Argon</code>'s closed computer-use performance, but no <code>OSWorld</code> or <code>Terminal-Bench</code> or <code>MCP-Atlas</code> numbers are published alongside the launch. Vision is reported added "for the first time" over the preview; neither the encoder (size, image resolution, video frame rate) nor vision-benchmark numbers are disclosed. On the research side, <strong>SWE-Trail</strong>'s headline finding is subtle: collection volume does not predict student-model gain. <code>H0</code> (no history) produces <code>329</code> resolved trajectories versus SeedBank's <code>292</code>, yet lifts SWE-bench Multilingual by only +<code>0.11</code> points; <code>H5</code>'s <code>345</code> resolved trajectories yield +<code>2.33</code>. The gain comes from which state the alternative is drawn at and whether the alternative actually improves local progress &mdash; not from more resolved trajectories or more training tokens (<code>H10</code> adds 12.9% more tokens for +<code>0.22</code> / +<code>0.14</code>, a clear diminishing return). The <code>Ling-3.0-flash-base-124B</code> and <code>Qwen3-14B-Base</code> both improve, suggesting the method isn't tied to the Ant Group model family.</p>
+      <h3>New frontier releases</h3>
+      <p>One flagship in-window: <strong>Tencent Hunyuan Hy4</strong> on 2026-11-04, the full release moving from the August Hy4-preview to a vision-and-computer-use production model. No other frontier-lab Tier 1 model weights or launch blog posts qualified for inclusion: <code>DeepSeek-V4.1-Flash-1017</code> shipped 2026-10-17 (covered 2026-10-21), <code>Meta Muse Spark Open 816B</code> shipped 2026-10-15 (covered 2026-10-21), <code>MiniMax M3.1 Flash</code> shipped 2026-10-19 (covered 2026-10-21), <code>NVIDIA Nemotron 3.5 Super VL / Bolt</code> shipped 2026-10-15 (covered 2026-10-21), <code>Moonshot Kimi K3.1 Pro</code> shipped 2026-10-24 (dedup against prior Kimi reviews), <code>Mistral Le Chonk</code> (<code>Mistral Large 4 OSS</code>) shipped 2026-10-29. Hy4's preview architecture had not been reviewed previously, so the architecture section below is authoritative for the preview-plus-full-release pair as published.</p>
+    </section>
+
+    <!-- BODY -->
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="hy4"><a href="https://hy.tencent.ai/research/hy4">Hunyuan Hy4: Vision &amp; Computer-Use Full Launch</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 &middot; Launch Post + Model Card</span>
+      <span>hy.tencent.ai / Hugging Face (tencent/Hy4-preview config, preview weights)</span>
+      <span>2026-11-04 (full), 2026-08-28 (preview)</span>
+      <span>Open-weight &middot; MoE &middot; Gated DSA &middot; Vision &middot; Computer Use &middot; 1M context</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>Tencent Hunyuan</strong> promotes <code>Hy4-preview</code> (2026-08-28) to a <strong>full Hy4 release</strong> on 2026-11-04. The full release is the preview's architecture frozen as-is, lifted through a substantially larger pre-training run and a rebuilt post-training stack. Tencent's own framing: "the biggest thing to change in Hy4 is what it has been shown and asked to do, not the shape of the model."</li>
+      <li><strong>Backbone from the preview config.json:</strong> MoE transformer with <code>78</code> layers (layer 1 dense FFN, layers 2&ndash;78 MoE), hidden <code>6144</code>, <code>64</code> attention heads, <code>8</code> KV heads under grouped-query, <code>256</code> routed experts + <code>1</code> shared, top-<code>8</code> routed plus shared per token, MoE intermediate <code>2048</code>, dense FFN intermediate <code>18432</code>, vocab <code>120,832</code>, context <code>1,048,576</code>, bf16. MTP speculative head: <code>1</code> layer, <code>10B</code> total / <code>0.7B</code> active.</li>
+      <li><strong>First open-weight frontier model to combine vision input and a first-class Computer-Use skill in one release.</strong> Both are new over the preview, which was text-only.</li>
+      <li>Preview is Apache 2.0 on Hugging Face (<code>tencent/Hy4-preview</code>, <code>tencent/Hy4-preview-FP8</code>) and ModelScope / GitCode / CNB. Full-release weights listed as "coming soon," with the system card and <code>finetune/</code> recipes staged behind the same repo.</li>
+      <li><strong>Positioning:</strong> Tencent names <code>DeepSeek-V4.1-Flash-1017</code>, <code>Kimi K3.1 Pro</code>, <code>GLM-5.3</code> as the comparison set on its finance expert eval, and <code>Hy3</code> (<code>295B</code> / <code>21B</code>, <code>256K</code> context, 2026-02) as the internal predecessor &mdash; a <code>2.6&times;</code> active-param bump and a <code>4&times;</code> context bump in roughly nine months.</li>
+    </ul>
+    <figure>
+      <img src="assets/tencent-hy4-launch/hy4-logo.png" alt="Hy4 logo" loading="lazy" style="max-width:220px" />
+      <figcaption>The Hy4 wordmark on the Hugging Face preview repo and the GitHub release landing. Source: <a href="https://raw.githubusercontent.com/Tencent-Hunyuan/Hy4-preview/main/assets/logo-en.png">Tencent-Hunyuan/Hy4-preview</a>.</figcaption>
+    </figure>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>MoE backbone (unchanged from preview).</strong> <code>770B</code> total parameters, <code>49B</code> active per token excluding MTP (<code>~780B</code> / <code>49.7B</code> when MTP is counted). Granular top-8 routing from <code>256</code> routed experts plus one always-on shared expert; this is close to <code>DeepSeek-V4</code>'s and <code>GLM-5</code>'s routing density, but routing weights are disjoint from either.</li>
+      <li><strong>Gated DeepSeek Sparse Attention (Gated DSA).</strong> Low-rank MLA-style query / KV compression (<code>q_lora_rank</code> <code>2048</code>, <code>kv_lora_rank</code> <code>512</code>, <code>qk_nope_head_dim</code> <code>192</code>, <code>qk_rope_head_dim</code> <code>64</code>, <code>v_head_dim</code> <code>256</code>) plus a lightweight indexer with <code>32</code> indexer heads, <code>128</code>-dim indexer, and <code>index_topk</code> <code>2048</code>. The config.json flags <code>use_mla: true</code>, <code>use_dsa: true</code>, <code>gated_mla: true</code>, <code>learnable_sink: true</code>.</li>
+      <li><strong>IndexCache.</strong> The sparse selection produced by the indexer at each layer is cached and <em>reused</em> by downstream layers rather than recomputed, moving the indexer off the per-layer critical path. The preview repo cites arXiv <code>2603.12201</code> as the IndexCache reference.</li>
+      <li><strong>Identity Hyper-Connections (iHC).</strong> The residual stream is widened from a single path to <code>4</code> parallel streams (<code>hc_mult=4</code>); <code>enable_ihc</code> is set in config.json. Each stream carries its own hidden representation between blocks, and layer operations route across the four streams rather than collapsing them. This is an inter-layer information-flow widening, not an attention-head change.</li>
+      <li><strong>MTP (multi-token prediction) head.</strong> <code>1</code> native layer at <code>10B</code> total / <code>0.7B</code> active. Serving config exposes it directly: vLLM <code>--speculative-config '{"num_speculative_tokens":3,"method":"mtp"}'</code>, SGLang <code>NEXTN</code> with <code>3</code> steps, top-k <code>1</code>, <code>4</code> draft tokens.</li>
+      <li><strong>Context.</strong> <code>max_position_embeddings</code> <code>1,048,576</code>, <code>rope_theta</code> <code>10,000,000</code>. The full release reports no change to context length over the preview.</li>
+      <li><strong>Vision stack (new in full release).</strong> Tencent's launch post says Hy4 "introduces visual understanding for the first time"; the encoder architecture (ViT vs patch-projection, encoder parameter count, patch size, image/video max resolution), training data mix, and vision-only benchmarks are not disclosed in the Nov 4 launch materials. Vision support is confined to the full release; the preview's <code>tencent/Hy4-preview</code> and <code>tencent/Hy4-preview-FP8</code> checkpoints remain text-only.</li>
+      <li><strong>Reasoning control.</strong> <code>reasoning_effort</code> defaults to <code>"high"</code>; <code>"no_think"</code> disables it. Recommended sampling: temperature <code>0.9</code>, top_p <code>1.0</code>.</li>
+    </ul>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li><strong>Scale.</strong> Tencent's launch post describes a "substantially larger" pre-training run than the preview; no token count, optimizer, learning-rate schedule, batch size, or compute figure is disclosed.</li>
+      <li><strong>Domain-targeted data.</strong> Tencent names four non-text modalities / domain sources specifically rebuilt for Hy4 full: (1) Blender (<code>.blend</code> file authoring and procedural modeling scripts), (2) CAD, (3) three mainstream game engines (Unreal Engine, Unity, Godot), (4) <strong>defense-only cyber content</strong> &mdash; PoC generation, vulnerability remediation patches, defensive triage write-ups &mdash; with offensive content explicitly excluded.</li>
+      <li><strong>Safety audits.</strong> Xuanwu Lab and Keen Lab audits reported "no significant offensive cyber uplift" relative to the preview after the pre-training rebuild.</li>
+      <li><strong>Vision data.</strong> Modalities (image / video / document OCR) and data sizes are not disclosed. Tencent's launch mentions "unified multi-modal input" in the full-release blog but does not quantify the image or video corpus.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li>Tencent's launch post describes a "rebuilt post-training stack" without naming a specific RL algorithm (no <code>GRPO</code> / <code>DPO</code> / <code>GSPO</code> / <code>PPO</code> appears in the Nov 4 materials). The preview README notes internal experts contributed task specifications to the post-training data (Tencent engineers, game developers, finance analysts, and security experts) &mdash; this contributor roster expands for the full release.</li>
+      <li><strong>Computer-Use skill (new).</strong> Tencent frames Computer Use as unifying command line and GUI in one action space; demonstrations include BookingAgent and EmailAgent scenarios. No action-space specification (number of distinct actions, click granularity, sub-step credit assignment), no training dataset size, no OSWorld / AndroidWorld / WebArena number is published alongside the launch.</li>
+      <li><strong>Known regression over Hy3-era behavior.</strong> The preview README names two failure modes that Tencent acknowledges as still-present defaults in the full release: "spending longer than necessary reasoning through complex tasks" and "a tendency to over-verify its own work." Tencent recommends <code>reasoning_effort="no_think"</code> for tasks that do not benefit from extended thinking.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Finance expert blind eval</strong> (full-release headline). <code>213</code> external finance experts rate four frontier open models across <code>579</code> real-world tasks on a <code>0&ndash;4</code> scale:</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Model</th><th>Mean score (/4)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>Hy4</code> (full release)</td><td><strong>3.04</strong></td></tr>
+        <tr><td><code>DeepSeek-V4.1-Flash-1017</code></td><td>2.97</td></tr>
+        <tr><td><code>Kimi K3.1 Pro</code></td><td>2.68</td></tr>
+        <tr><td><code>GLM-5.3</code></td><td>2.68</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Hallucination and guessing rates.</strong> On Tencent's internal financial-fact subset, hallucination rate drops from <code>15.76%</code> on the preview to <code>5.45%</code> on the full release; guessing-error rate drops from <code>23.1%</code> to <code>5.6%</code>. A second source (ChainCatcher's coverage of the Nov 4 announcement) reports slightly different figures (<code>12.95% &rarr; 7.2%</code>) &mdash; the split suggests one measurement is on the unified eval and one on a smaller rated sub-sample; Tencent has not clarified which.</li>
+      <li><strong>GameDev benchmark.</strong> Full release lifts GameDev by <code>+19.1%</code> and GameLogic by <code>+9.8%</code> over the preview.</li>
+      <li><strong>Hy-BioExperimentBench.</strong> <code>30.4/100</code>, a bio-experiment reasoning score introduced with Hy4; no comparison model is published alongside the launch.</li>
+      <li><strong>WorkBuddy office eval.</strong> Average score <code>83.18</code>, pass rate <code>96.15%</code>, first-place finish in <code>9</code> of <code>12</code> domestic scenarios. WorkBuddy is Tencent's internal office-automation eval and is bundled free for two weeks with the launch (2026-11-04 to 2026-11-15).</li>
+      <li><strong>Preview benchmark table (reference, from the preview README's <code>assets/benchmark.jpg</code>).</strong> Numbers below are the preview's own tables. Full-release numbers on these axes are not published at launch.</li>
+    </ul>
+    <figure>
+      <img src="assets/tencent-hy4-launch/hy4-benchmark.jpg" alt="Hy4 preview benchmark table (main)" loading="lazy" />
+      <figcaption>Figure 1 (from Hy4-preview README). Hy4 preview headline benchmarks vs other open-weight frontier models; this grid is the preview's published eval and is not updated by the full-release launch materials. Source: <a href="https://raw.githubusercontent.com/Tencent-Hunyuan/Hy4-preview/main/assets/benchmark.jpg">Tencent-Hunyuan/Hy4-preview</a>.</figcaption>
+    </figure>
+    <ul>
+      <li><strong>Blind eval against Chinese open frontier</strong> (preview README, <code>163</code> experts, <code>203</code> engineering tasks): Hy4 preview <code>2.99/4</code>; <code>GLM-5.3</code> <code>2.92</code> (Hy4 wins <code>46.8%</code>, ties <code>12.8%</code>, loses <code>40.4%</code>); <code>Kimi K3</code> <code>2.94</code> (Hy4 <code>51.2%</code> / <code>7.9%</code> / <code>40.9%</code>).</li>
+      <li><strong>Preview appendix.</strong> The preview README's <code>benchmark-appendix.jpg</code> publishes per-category numbers against Hy3; Tencent reports Hy3 <code>&rarr;</code> Hy4 preview jumps of <code>+14.6</code> points on Terminal-Bench 2.1, <code>+36.3</code> on DeepSWE, <code>+26.9</code> on SWE-Marathon, <code>+17.9</code> on Toolathlon-Verified, <code>+35.5</code> on MathArena Apex 2025, and <code>+27.9</code> on BrokenArXiv. Third-party reporting of the appendix numbers conflicts on Terminal-Bench 2.1 (<code>55.1%</code> vs <code>85.4%</code>) and GPQA Diamond (<code>89.8%</code> vs <code>92.3%</code>); Tencent has not clarified the conflict. The values below the fold are reproduced as presented; readers should prefer the appendix image to any single secondary table.</li>
+    </ul>
+    <figure>
+      <img src="assets/tencent-hy4-launch/hy4-benchmark-appendix.jpg" alt="Hy4 preview benchmark appendix" loading="lazy" />
+      <figcaption>Figure 2 (from Hy4-preview README). Per-category preview appendix covering Terminal-Bench 2.1, DeepSWE, SWE-Marathon, SWE-bench Pro, SWE-bench Multilingual, MCP-Atlas, Toolathlon-Verified, GPQA Diamond, MathArena Apex 2025, BrokenArXiv. Source: <a href="https://raw.githubusercontent.com/Tencent-Hunyuan/Hy4-preview/main/assets/benchmark-appendix.jpg">Tencent-Hunyuan/Hy4-preview</a>.</figcaption>
+    </figure>
+
+    <h3>Named Contributions &amp; Mechanisms</h3>
+    <ul>
+      <li><strong>Gated DeepSeek Sparse Attention (Gated DSA).</strong>
+        <ul>
+          <li><em>Problem.</em> A <code>1M</code>-token context under dense softmax attention produces a KV cache whose size and per-layer read cost dominate decoder latency; prior sparse-attention variants (block sparse, sliding-window, Mamba-style linear) trade retrieval sharpness for cost, which hurts frontier coding and tool-use benchmarks where the model must resolve references anywhere in the context.</li>
+          <li><em>Mechanism.</em> Inside every attention layer Hy4 computes two projections: an MLA-style compressed query/key path (q-LoRA rank <code>2048</code>, kv-LoRA rank <code>512</code>) that carries the sharp retrieval signal at compressed rank, and a lightweight indexer (<code>32</code> heads, <code>128</code>-dim) that scores all positions and picks the top <code>2048</code> keys. Softmax attention is then computed only on those <code>2048</code> keys; the rest of the context is dropped for that layer. The "Gated" in Gated DSA refers to a learnable gate that scales the sparse attention output against a learned residual sink (<code>learnable_sink: true</code>), so the layer can fall back to a predictable sink when the top-<code>2048</code> selection is inconclusive.</li>
+          <li><em>Why.</em> Keeping MLA's compressed-rank KV cache preserves the retrieval sharpness that full-rank MHA gives on long context, while the indexer collapses the per-layer attention cost to <code>O(2048 d)</code> rather than <code>O(n d)</code>. Compared to <code>DeepSeek-V3</code>'s MLA (which paid full-rank attention over the chosen rank's KV cache) and <code>GLM-5</code>'s linear-plus-sparse hybrid (which lost retrieval sharpness at the block boundaries), Gated DSA keeps softmax retrieval active per layer and lets every layer re-select its own sparse set &mdash; which is where IndexCache below picks up.</li>
+        </ul>
+      </li>
+      <li><strong>IndexCache.</strong>
+        <ul>
+          <li><em>Problem.</em> Per-layer selection in DSA runs the indexer <code>78</code> times (once per layer) over the full <code>1M</code>-token context at decode time, which turns the indexer itself into a cost center. On short contexts the indexer is cheap; on <code>1M</code> tokens it is not.</li>
+          <li><em>Mechanism.</em> After an indexer layer fires, its top-<code>2048</code> selection is written into a shared cache. Downstream layers reuse the cached selection instead of recomputing the indexer from scratch, concurrently with their own attention over the already-selected keys. The cache is invalidated on new generation steps (not on every layer), so the indexer runs only on prefill plus a small number of refresh points during long decodes.</li>
+          <li><em>Why.</em> This decouples the indexer's wall-clock cost from the layer depth and pushes it toward <code>O(1)</code> amortized per decoded token on long context. The config.json's <code>index_n_heads=32</code> and <code>index_head_dim=128</code> are sized so that even the cold indexer pass is cheap; the warm path through IndexCache is essentially free. It is the piece that makes a <code>1M</code>-token context economically viable for a <code>49B</code>-active model served at <code>$0.834</code>/M input.</li>
+        </ul>
+      </li>
+      <li><strong>Identity Hyper-Connections (iHC) with <code>hc_mult=4</code>.</strong>
+        <ul>
+          <li><em>Problem.</em> A single residual stream across <code>78</code> layers limits how much orthogonal information can flow from early layers to late ones; later layers must either overwrite earlier residuals or compress them, and both are documented failure modes on very deep MoE stacks.</li>
+          <li><em>Mechanism.</em> The residual is widened from one stream to <code>4</code> parallel streams, each carrying its own hidden representation between blocks. Attention and FFN operations project across the four streams (not head-wise, not layer-wise). Early layers can write to one stream and late layers to another; identity connections preserve the uncompressed signal path along each stream between blocks.</li>
+          <li><em>Why.</em> Compared to <code>Hy3</code>'s single residual (reviewed indirectly in the 2026-02 Hy3 release) this gives <code>Hy4</code> a roughly <code>4&times;</code> wider inter-layer information channel at the cost of <code>4&times;</code> residual memory, which matters for a <code>78</code>-layer stack but barely registers against the <code>1M</code>-token KV cache budget. It is why Hy4 can carry out long chain-of-thought + computer-use + vision together without a visible interference regime: each capability's representations can occupy a different residual stream.</li>
+        </ul>
+      </li>
+      <li><strong>Native MTP speculative head.</strong>
+        <ul>
+          <li><em>Problem.</em> Open-weight model serving at <code>49B</code> active is still memory-bandwidth-bound on decode; a text-generation request at frontier quality sees no benefit from the big MoE backbone if token-by-token decode is serial.</li>
+          <li><em>Mechanism.</em> A dedicated <code>10B</code>-total / <code>0.7B</code>-active MTP layer at the output head proposes the next <code>3</code> tokens in a single forward pass. The main model verifies the proposal and accepts a longest-matching prefix. vLLM exposes this as <code>method="mtp"</code>, <code>num_speculative_tokens=3</code>; SGLang exposes it as <code>NEXTN</code>, <code>3</code> steps, top-k <code>1</code>, <code>4</code> draft tokens. The MTP head is co-trained with the main model, so its proposals are high-acceptance on in-distribution text (not a separate draft model).</li>
+          <li><em>Why.</em> This is the same trick <code>DeepSeek-V3/V4</code> use, but Hy4's MTP layer is sized larger than DeepSeek's (<code>10B</code> total vs <code>~1B</code> for most speculative drafts) and uses the same tokenizer and attention mechanism as the main model, giving higher acceptance rates on long code and tool-call sequences. The acceptance rate is not published; Tencent reports "near-linear decode speedup" but no concrete tokens/second figure.</li>
+        </ul>
+      </li>
+      <li><strong>Computer-Use skill (full release).</strong>
+        <ul>
+          <li><em>Problem.</em> Open-weight models have had no first-party answer to <code>Claude Sonnet 5.5</code>'s and <code>Gemini 4 Argon</code>'s closed computer-use benchmarks; third parties who wire open models to screen-capture pipelines ship brittle agents whose action spaces drift between desktop OS and web browser.</li>
+          <li><em>Mechanism.</em> Tencent combines command-line and GUI actions into a single action space the model is trained on end-to-end, rather than two separate output heads. The model's output at every step is either a command-line call (bash-like, routed to a sandboxed shell) or a GUI action (click, type, scroll, hotkey &mdash; coordinates issued in screen-relative units). A single training objective covers both, with <code>BookingAgent</code> and <code>EmailAgent</code> as the first published target scenarios. Action-space cardinality, training-corpus size, and sub-step credit assignment are not published.</li>
+          <li><em>Why.</em> Keeping command-line and GUI in one action space means the same post-training pass transfers between terminal workflows (where the model knows how to type <code>git</code>) and desktop apps (where it must click). A two-head approach would require either two post-training stages or a hard-coded router between them, both of which Tencent avoids.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Pricing &amp; Availability</h3>
+    <ul>
+      <li><strong>API pricing</strong> (per million tokens, USD):</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Rate</th><th>Input</th><th>Output</th><th>Cached input</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>List</td><td><code>$0.834</code></td><td><code>$2.501</code></td><td><code>$0.042</code></td></tr>
+        <tr><td>50% off (through 2026-12-31)</td><td><code>$0.417</code></td><td><code>$1.251</code></td><td><code>$0.021</code></td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>CNY equivalent (ChainCatcher): <code>6</code> / <code>18</code> / <code>0.3</code> yuan per million input / output / cached tokens.</li>
+      <li><strong>Free usage.</strong> Tencent WorkBuddy and CodeBuddy (desktop and IDE agents built on Hy4) are free for all users 2026-11-04 to 2026-11-15.</li>
+      <li><strong>Served at.</strong> Tencent Cloud TokenHub, OpenRouter (list <code>$0.834</code> / <code>$2.501</code> &mdash; 50% off not applied on OpenRouter at launch). Full-release serving stack: vLLM <code>vllm/vllm-openai:hy4</code> and SGLang <code>lmsysorg/sglang:hy4</code>, both with TP=<code>8</code> recipes; the preview recipes carry over since the backbone is unchanged.</li>
+      <li><strong>Weights.</strong> Preview weights already open-source under Apache 2.0 (<code>tencent/Hy4-preview</code>, <code>tencent/Hy4-preview-FP8</code>, ModelScope, GitCode, CNB). Full-release weights and the vision stack listed as "coming soon"; no exact date and no license statement yet. OpenRouter's "Model weights" link currently resolves to the preview HF card, not to a separate full-release repo.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li><strong>Cyber training policy.</strong> Pre-training cyber data is defense-only: PoC generation, remediation patches, defensive triage. Offensive content excluded. Xuanwu Lab and Keen Lab independent audits report no significant offensive uplift over the preview.</li>
+      <li><strong>Vision safety.</strong> No vision-specific safety numbers are published alongside the launch; no OCR-based prompt injection or image-based jailbreak numbers.</li>
+      <li><strong>Known behavioral failure modes</strong> (carried over from the preview, acknowledged in Tencent's documentation): over-long reasoning on complex tasks and over-verification of own answers. Mitigation: ship with <code>reasoning_effort="no_think"</code> where extended thinking does not help.</li>
+      <li><strong>Vendor-reported benchmarks only.</strong> All full-release numbers in this entry are from Tencent's own eval axes; no third-party replication of the <code>3.04</code> finance score, the <code>83.18</code> WorkBuddy average, or the <code>30.4/100</code> Hy-BioExperimentBench exists at launch. Standard open-leaderboard axes (SWE-Bench, HLE, Terminal-Bench, MMLU-Pro, LiveCodeBench, OSWorld, MCP-Atlas) are not published for the full release.</li>
+      <li><strong>System card.</strong> Not yet published for the full release.</li>
+    </ul>
+
+    <h1 id="ant-group">Ant Group</h1>
+
+    <h2 id="swe-trail"><a href="https://arxiv.org/abs/2611.02074">SWE-Trail: History-Guided Trajectory Collection for Coding Agent Training</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv &middot; Ant Group (inclusionAI) + UConn</span>
+      <span>2026-11-01</span>
+      <span>Agentic coding &middot; Trajectory collection &middot; SFT data curation &middot; SWE-bench</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>Ziming Li (Ant Group + UConn), Lu Yu, Jiatan Huang, et al.</strong> publish SWE-Trail as the trajectory-collection stage of Ant Group's <code>Ling-3.0</code> coding-agent training pipeline (<code>Ling-3.0-flash-base-124B</code> is the primary target student; <code>Qwen3-14B-Base</code> is the secondary verification).</li>
+      <li>The paper's central claim is that <strong>where</strong> alternative trajectories are sampled from matters more than <strong>how many</strong> resolved trajectories you get. On a controlled 300-issue SWE-rebench V2 collection with five trajectories each, SWE-Trail-H5 lifts <code>SWE-bench Multilingual</code> by <code>+2.33</code> and <code>SWE-Pro</code> by <code>+1.60</code> over the SeedBank baseline; SWE-Trail-H0 (same algorithm, no history input) lifts by only <code>+0.11</code> / <code>+0.73</code>, even though it produces <em>more</em> resolved trajectories than SeedBank.</li>
+      <li>SWE-Trail is also an explicit critique of <em>advice-in-context</em> methods like <strong>SWE-Exp</strong>, which show prior attempts to the agent at collection time: the student then learns actions it took under advice it won't have at test time, and the paper measures a <code>-1.33</code> / <code>-2.78</code> regression under this paradigm.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Setup.</strong> <code>300</code> SWE-rebench V2 issues. For each issue, <code>5</code> independent trajectories are collected per method, giving <code>1,500</code> trajectories per method. Collection agent: <code>GLM-5.1</code> with the <code>OpenHands</code> scaffold. Student: full-parameter SFT on <code>128</code> H800 GPUs, <code>3</code> training seeds per condition.</li>
+      <li><strong>Offline compiler stage.</strong> For each issue the method reads a history <code>H_i</code> (either <code>H0</code> = empty history, <code>H5</code> = five prior attempts from SeedBank, or <code>H10</code> = ten), runs bounded read-only repository checks (no reference patch), and freezes an <em>acquisition record</em> <code>R_i = (D_i, u_i, &lambda;_i)</code>: a detector <code>D_i</code> over actions and observations (not step numbers), a per-state comparison objective <code>u_i(d)</code>, and a temperature schedule <code>&lambda;_i</code>. Detector states without sufficient support are discarded before collection runs.</li>
+      <li><strong>Online collection stage.</strong> The agent runs on the issue as normal. When <code>D_i</code> matches an in-progress state, the agent samples <code>k</code> candidate next actions from its ordinary context: the first candidate uses the agent's default temperature; the remaining <code>k-1</code> use the compiled <code>&lambda;_i</code> schedule. Equivalent proposals are grouped; at most one executable alternative to the default is kept. Two isolated workspaces are then restored from the same checkpoint and each runs a short horizon, producing two executed suffixes. At most one such comparison is allowed per trajectory.</li>
+      <li><strong>Selector.</strong> The two suffixes are shown to the selector (an LLM judge) in shuffled order. The alternative replaces the default only when the evidence under <code>u_i(d)</code> is "clear"; otherwise the default suffix is kept.</li>
+      <li><strong>Training-record assembly.</strong> Only the selected route is written out, unrewritten. The unselected suffix and all collector-internal events (detector matches, candidate rankings, counterfactual rollouts) are stripped, so the final training record is one continuous agent trajectory &mdash; history never enters the agent's context at train time or test time. This is the design point that distinguishes SWE-Trail from SWE-Exp.</li>
+      <li><strong>Data flow volumes.</strong> <code>H0</code> yields <code>329</code> resolved trajectories at <code>&ge;1.845B</code> training tokens; <code>H5</code> yields <code>345</code> at <code>1.914B</code>; <code>H10</code> yields <code>341</code> at <code>2.160B</code>.</li>
+    </ul>
+    <figure>
+      <img src="https://arxiv.org/html/2611.02074v1/swe_trail_mainfig_v4.png" alt="SWE-Trail two-stage pipeline" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). Offline stage freezes <code>R_i = (D_i, u_i, &lambda;_i)</code> from history; online stage matches the detector, forks two workspaces from a single checkpoint, runs short alternative suffixes, and keeps only the better-supported branch. History never enters the agent's own context. Source: <a href="https://arxiv.org/html/2611.02074v1">arxiv.org/html/2611.02074v1</a>.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Table 1 (Ling-3.0-flash-base-124B student, mean over three training runs, &Delta; vs SeedBank in parentheses):</strong></li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Condition</th><th>SWE-bench Multilingual</th><th>SWE-Pro</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>SeedBank (baseline)</td><td>63.33</td><td>41.22</td></tr>
+        <tr><td>SWE-Gym</td><td>64.00 (<code>+0.67</code>)</td><td>40.86 (<code>&minus;0.36</code>)</td></tr>
+        <tr><td>SWE-TRACE</td><td>64.44 (<code>+1.11</code>)</td><td>40.77 (<code>&minus;0.46</code>)</td></tr>
+        <tr><td>SWE-Lego</td><td>64.56 (<code>+1.22</code>)</td><td>41.63 (<code>+0.41</code>)</td></tr>
+        <tr><td>SWE-Exp (advice in context)</td><td>62.00 (<code>&minus;1.33</code>)</td><td>38.44 (<code>&minus;2.78</code>)</td></tr>
+        <tr><td><strong>SWE-Trail-H0</strong></td><td>63.44 (<code>+0.11</code>)</td><td><strong>41.95 (<code>+0.73</code>)</strong></td></tr>
+        <tr><td><strong>SWE-Trail-H5</strong></td><td><strong>65.67 (<code>+2.33</code>)</strong></td><td><strong>42.82 (<code>+1.60</code>)</strong></td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Secondary base model (Qwen3-14B-Base).</strong> H5 lifts Multilingual by <code>+3.11</code> and Pro by <code>+2.42</code> over SeedBank &mdash; a larger relative gain than on the <code>124B</code> Ling base, suggesting the method is more useful at smaller student scales where collection-quality variance dominates.</li>
+      <li><strong>Significance.</strong> Each H5 training run beats every SeedBank training run (3 vs 3), one-sided exact permutation <code>p = 0.05</code> &mdash; the floor for a 3-vs-3 comparison, so the test is minimally powered. Task-paired bootstrap intervals for the H5-vs-H0 gap include zero (<code>[-0.2, 4.6]</code> on Multilingual and <code>[-0.8, 2.5]</code> on Pro), so SWE-Trail's advantage over its own no-history ablation is suggestive but not strictly significant at three seeds.</li>
+      <li><strong>Collection volume does not predict gain.</strong> H0 produces <code>329</code> resolved trajectories (vs SeedBank's <code>292</code>) yet gains only <code>+0.11</code> on Multilingual. H5's <code>345</code> resolved trajectories gain <code>+2.33</code>. H10's <code>341</code> resolved trajectories at <code>+12.9%</code> more training tokens gain only <code>+0.22</code> / <code>+0.14</code> over H5. This is the paper's central empirical claim.</li>
+      <li><strong>Advice-in-context regresses.</strong> SWE-Exp's <code>-1.33</code> / <code>-2.78</code> regression under identical collection scale is the paper's cleanest evidence that showing history to the collecting agent, rather than compiling it into offline detectors, produces a train-test mismatch.</li>
+    </ul>
+
+    <h3>Named Contribution &amp; Mechanism</h3>
+    <ul>
+      <li><strong>SWE-Trail (two-stage offline-then-online collector with detector-gated counterfactual branching).</strong>
+        <ul>
+          <li><em>Problem.</em> Sampling <code>k</code> independent trajectories per issue produces redundancy at the roots and diversity only at the tails. Expected solved issues on SWE-rebench V2 rise from <code>58.4</code> at <code>k=1</code> by only <code>+13.1</code> (<code>k=2</code>), <code>+8.0</code> (<code>k=3</code>), <code>+5.1</code> (<code>k=4</code>), <code>+3.4</code> (<code>k=5</code>). Patch-target coverage per attempt is already <code>73.2&ndash;90.0%</code>, so additional roots mostly re-discover known fixes. Existing fixes are advice-in-context (SWE-Exp, which regresses), post-hoc rewriting (SWE-Lego, SWE-TRACE), or scale-only (SWE-Gym). None of those move the training signal to <em>where</em> the trajectory's branching matters.</li>
+          <li><em>Mechanism.</em> The compiler reads history <em>once</em>, offline, and freezes an acquisition record <code>R_i = (D_i, u_i, &lambda;_i)</code> for each issue: a detector <code>D_i</code> over actions and observations (not step indices, so it transfers between agents), a per-state comparison objective <code>u_i(d)</code> that scores how "better-supported" an alternative is at each eligible state, and a temperature schedule <code>&lambda;_i</code> that controls the alternative-sampling spread. At collection time the agent runs normally; when <code>D_i</code> matches, the compiler forks two isolated workspaces from one checkpoint, executes a short horizon under the default suffix and under one alternative, and the selector keeps the alternative only when <code>u_i</code> says the evidence is clear. Only the chosen route is written to the training record; history and the unchosen suffix are stripped.</li>
+          <li><em>Why.</em> Decoupling collection-time branching from the agent's own context closes the train-test mismatch that SWE-Exp introduces (student doesn't see history at test time, so it must not be trained to need it). Restoring two workspaces from one checkpoint keeps the counterfactual honest &mdash; both suffixes run from identical state, so the selector's comparison is on execution outcomes rather than on sampled tokens. Doing the comparison <em>at detector-matched states</em> instead of at random positions means collection effort goes into decisions whose outcome the paper has evidence actually matters (ablation: random-state comparisons lose <code>-1.44</code> / <code>-1.28</code> vs H5; random-retention at those states loses <code>-0.89</code> / <code>-1.19</code>). The paper's own numbers show the gain does not come from more resolved trajectories or more training tokens: H0 produces 12.7% more resolved trajectories than SeedBank, and gains <code>+0.11</code>. The gain comes from the branching mechanism.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Random detection</strong> (comparisons at random eligible states, no detector): <code>64.22</code> / <code>41.54</code> &mdash; H5 loses <code>-1.44</code> / <code>-1.28</code> without the detector.</li>
+      <li><strong>Random retention</strong> (random executed route kept at the right states, selector disabled): <code>64.78</code> / <code>41.63</code> &mdash; H5 loses <code>-0.89</code> / <code>-1.19</code> without the selector.</li>
+      <li><strong>H10 vs H5.</strong> <code>+0.22</code> / <code>+0.14</code> for <code>+12.9%</code> more training tokens &mdash; sharp diminishing returns past five history attempts.</li>
+      <li><strong>Top-5 selection variants.</strong> Top-5-of-10 selection: <code>64.11</code> / <code>41.86</code>. Top-5-hybrid (mixing on-method and best-overall): <code>66.22</code> / <code>43.14</code>.</li>
+      <li><strong>Advice retention.</strong> Removing advice from the final training record improves SWE-Pro and slightly lowers Multilingual (direction only; appendix numbers not transcribed in the fetched HTML).</li>
+    </ul>
+
+    <h3>Limitations</h3>
+    <ul>
+      <li><strong>Three seeds.</strong> The exact one-sided permutation <code>p = 0.05</code> is the floor achievable with three vs three runs, so the test is minimally powered. H5-vs-H0 task-paired bootstrap intervals include zero.</li>
+      <li><strong>Scale.</strong> Only <code>300</code> SWE-rebench V2 issues at <code>5</code> trajectories each; the paper does not run the full collection at order-of-magnitude larger scale, so whether the gain holds past <code>1500</code> trajectories is untested.</li>
+      <li><strong>No <code>SWE-bench Verified</code> or <code>DeepSWE</code> numbers in the fetched text</strong>, so the comparison to the canonical English-only suite and to the current open-weight SWE SOTA (<code>DeepSeek-V4.1-Flash-1017</code> <code>77.0</code>, <code>Meta Muse Spark Open</code> ~<code>68</code>) is not in the paper.</li>
+      <li><strong>Collection agent is GLM-5.1</strong>, not a frontier model. The paper does not test whether SWE-Trail's gain holds when the collection agent itself is stronger (plausibly the collector's default suffix becomes harder to beat).</li>
+      <li><strong>License.</strong> Paper CC BY 4.0. No code or data release statement in the fetched sections; the HF <code>inclusionAI/Ling-3.0-flash-base</code> card is cited as the base model.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
