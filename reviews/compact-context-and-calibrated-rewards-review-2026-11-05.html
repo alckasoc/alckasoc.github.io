@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Compact Context and Calibrated Rewards Review &mdash; November 5, 2026 | Auto Lit Review</title>
+<meta name="description" content="Window 2026-11-04 11:13 UTC through 2026-11-05 23:13 UTC produces no Tier 1 flagship launch; three Tier 2 frontier-lab arXiv papers converge on the same theme of narrowing what the model is paid to produce. NVIDIA's technical report 'You don't need long context' (Belcak et al., 2611.05306, 31 pp.) shows that frequent End-of-Conversation Compaction and Single-Action Compaction keep long-horizon and long-input accuracy on Claude Opus 4.5 and GPT 5.6 Sol while cutting serve cost by 2.2-54.6x, and outlines Semantic State Space Models (SSSMs) as the harness-free endpoint. Tencent WeChat AI's LoCo (Yuan et al., 2611.04814) replaces trajectory-level reasoning compression with step-level overthink detection on causal next-token confidence percentiles, DPO on state-conditioned shortest-verified-continuation pairs; math-only training cuts DeepSeek-R1-Distill-Qwen-7B completion length 41.7-45.4% on math and 23.4-36.3% on code without accuracy loss. Tencent Hunyuan's EmoReward (Zheng et al., 2611.06518) adds Reflective Reward Gating and a RewardMemory pass over heterogeneous primitives to stabilize GRPO for emotional-video generation on HunyuanVideo 1.5 without updating reward models. Shared thread: constrain the policy or the reward to the local decision, not the whole trajectory." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9680;</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">November 5, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#nvidia">NVIDIA</a>
+          <ul>
+            <li class="toc-h2"><a href="#you-dont-need-long-context">You don't need long context</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#tencent">Tencent</a>
+          <ul>
+            <li class="toc-h2"><a href="#loco">LoCo: local preference learning for reasoning compression</a></li>
+            <li class="toc-h2"><a href="#emoreward">EmoReward: self-evolving reward calibration</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review &middot; November 5, 2026</div>
+    <h1 class="page-title">Compact Context and Calibrated Rewards</h1>
+    <div class="page-meta">3 papers &middot; 2 labs &middot; auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>The 36-hour window closing <code>2026-11-05 23:13 UTC</code> opens quiet on flagship launches: no Tier 1 model release, no <em>X Technical Report</em> flagship, no system-card drop from a frontier lab. What the window does produce is a tight run of three Tier 2 arXiv papers from two frontier labs that happen to share a single argument &mdash; the model should be scored or optimized against a <em>local</em> state, not a trajectory. <strong>NVIDIA</strong>'s <em>You don't need long context</em> (<code>2611.05306</code>, 31-page technical report) measures what frequent <strong>End-of-Conversation Compaction (EoCC)</strong> and the stricter <strong>Single-Action Compaction (SAC)</strong> do to <code>Claude Opus 4.5</code> and <code>GPT 5.6 Sol</code> across <code>22</code> long-horizon and long-input configurations, finds accuracy within a few points of the uncompressed baseline (and sometimes well above), and names the policy target it implies: <strong>Semantic State Space Models (SSSMs)</strong>. <strong>Tencent WeChat AI</strong>'s <em>LoCo</em> (<code>2611.04814</code>) picks the same boundary at the reasoning-trace level, swapping global trajectory DPO for <em>step-level</em> overthink detection on the model's own next-token confidence percentiles, with DPO fitted on same-prefix shortest-verified continuations. <strong>Tencent Hunyuan</strong>'s <em>EmoReward</em> (<code>2611.06518</code>) moves the same idea onto the reward side: a Reflective Reward Gating step zeros out reward primitives that do not apply to the current rollout before fusion, and a between-run RewardMemory pass recalibrates fusion weights without re-training the reward models.</p>
+      <h3>Competitiveness</h3>
+      <p>No new model appears on any live leaderboard in the window. SOTA stays where the prior reviews left it: <code>Claude Opus 5.5</code> and <code>GPT-6 Sol</code> lead <code>SWE-bench Verified</code> near <code>84&ndash;85%</code>; <code>Kimi K3.1 Pro</code>, <code>DeepSeek-V4.1-Flash-1017</code>, <code>GLM-5.3</code>, <code>Hy4</code> hold the open-weight frontier on terminal and SWE axes; <code>Gemini 4 Argon</code> and <code>Grok Voice 3.0</code> hold multimodal and real-time speech. NVIDIA's compaction results are measured against today's frontier closed models (<code>Opus 4.5</code> baseline <code>70.0</code> on <code>SWE-bench Verified</code>, lifted to <code>74.8</code> under <code>24K/18K</code> EoCC; <code>GPT 5.6 Sol</code> <code>84.4</code> to <code>88.8</code> under <code>48K/36K</code>) and against five open models tested locally on an <code>NVIDIA DGX Spark</code> (<code>Qwen 3.6 27B</code>, <code>Qwen 3 Coder Next</code>, <code>Gemma 4 31B</code>, <code>Step 3.7 Flash 198B-A11B</code>, <code>MiniMax M2.7 230B-A10B</code>). Reported serve-cost disparity at <code>256K</code> vs <code>16K</code> context on frontier open-weight models: <code>3.6&times;</code> on <code>GLM 5.2</code>, <code>5.6&times;</code> on <code>Kimi K2.6</code>, <code>7.0&times;</code> on <code>Qwen 3 Coder Next</code>. LoCo's efficiency reference is <code>DeepSeek-R1-Distill-Qwen-7B</code>, with baselines <code>DAST</code>, <code>TokenSqueeze</code>; LoCo matches or beats accuracy at <code>-41.7%</code> to <code>-45.4%</code> tokens on math and <code>-23.4%</code> to <code>-36.3%</code> on code without training on code at all. EmoReward's reference generator is <code>HunyuanVideo 1.5</code> under SAGE-GRPO; the paper reports comparative gains but publishes no numeric table at the HF abstract level.</p>
+      <h3>New frontier releases</h3>
+      <p>No new models or weights released in the window. Preview weights that remained open after the <code>2026-11-04</code> review: <code>tencent/Hy4-preview</code> (Apache 2.0) still the only full-release-adjacent asset. Companion repos opened with the day's papers: <code>MuyaoYuan/LoCo</code> (code and model &ldquo;to be released&rdquo;) and <code>Tencent-Hunyuan/EmoReward</code> (code &ldquo;to be released&rdquo;, project page at <code>emoreward-project.github.io</code>). NVIDIA names the technical report's hosting labs as <strong>nv-dler</strong> and <strong>Project Moonshot: Local Frontier Intelligence</strong> (<code>research.nvidia.com/labs/lpr/lfi/</code>); no companion weights or harness code are released alongside the paper.</p>
+    </section>
+
+    <h1 id="nvidia">NVIDIA</h1>
+
+    <h2 id="you-dont-need-long-context"><a href="https://arxiv.org/abs/2611.05306">You don't need long context</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Technical Report (31 pp., 8 figures)</span>
+      <span>arXiv:2611.05306 (cs.AI)</span>
+      <span>2026-11-03 submitted</span>
+      <span>Compaction &middot; Long-horizon agents &middot; Semantic state &middot; Serving efficiency</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>Peter Belcak, Saurav Muralidharan, Jindong Jiang, Yonggan Fu, Wonmin Byeon, Hanrong Ye, Ryan Angilly, Ali Taghibakhshi, Shih-Yang Liu, Siru Ouyang, Greg Heinrich, Pavlo Molchanov</strong> (<strong>NVIDIA</strong>, nv-dler / <em>Project Moonshot: Local Frontier Intelligence</em>, <code>research.nvidia.com/labs/lpr/lfi/</code>).</li>
+      <li>The report's one-line thesis (verbatim, abstract): <em>&ldquo;Later tokens are costlier to generate than earlier tokens. On frontier open weight models, the disparity in cost may rise to as much as 7x. Through frequent compaction, we show across a broad range of long-horizon and long-input tasks that frontier language models sacrifice little to no task accuracy when maintaining short contexts.&rdquo;</em></li>
+      <li><strong>Four research questions</strong> structure the report: RQ0 &mdash; <em>are long contexts necessary at all?</em>; RQ1 &mdash; long-horizon tasks without long contexts; RQ2 &mdash; long-input tasks without long contexts; RQ3 &mdash; can long-horizon tasks be completed with at most one action per context? RQ3 is the strongest reduction, because it eliminates in-context trajectory memory entirely.</li>
+      <li>Two minimal ReAct harnesses: <code>mini-swe-agent</code> (one Bash action per step, for SWE / Terminal workloads) and <code>mini-agent</code> (generalized, for non-SWE benchmarks). Neither tracks a vector memory or a scratchpad across turns; compaction and file-system reads are the only mechanisms for long-range state.</li>
+      <li><strong>Rejected alternatives</strong> made explicit in the report: Full-History Accumulation (baseline), Mamba-style neural state-space models (compared conceptually under Section 5.1), vector-memory / scratchpad harnesses (not studied).</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Compaction primitives.</strong> The harness owns three settings that control <em>when</em> a conversation ends: a total context limit (hard ceiling), a compaction threshold (when a compaction request fires), and a compaction scope. The report fixes the scope to &ldquo;entire history since last compaction&rdquo; and sweeps the (limit, threshold) pair across <code>48K/36K</code>, <code>32K/24K</code>, <code>24K/18K</code>, <code>16K/12K</code>.</li>
+      <li><strong>End-of-Conversation Compaction (EoCC).</strong> The model is run normally until the conversational context crosses the compaction threshold, then is asked once to <em>&ldquo;produce a bounded, task-relevant compaction of its state.&rdquo;</em> The compaction is appended to the task prompt in a fresh conversation (same system prompt) and the agent resumes. This is the paper's default long-horizon mode.</li>
+      <li><strong>Single-Action Compaction (SAC).</strong> Each conversation performs <em>exactly one</em> environment action, observes its result, updates the semantic state, and is discarded. The next conversation starts cold with the task plus the updated state. SAC is restricted to <code>mini-swe-agent</code> because non-SWE benchmarks need multi-step within-turn tool use.</li>
+      <li><strong>Selective input reading.</strong> Long inputs are stored as named files (<code>input01.txt</code> onwards) and read incrementally through standard Bash (<code>sed</code>, <code>awk</code>, <code>head</code>, <code>wc</code>). The report argues this <em>&ldquo;reduces a long-input workload to a long-horizon workload,&rdquo;</em> which EoCC then collapses.</li>
+      <li><strong>Serving cost measurement.</strong> Two latency/throughput regimes: cloud API (closed-weight), and local serving on a single <code>NVIDIA DGX Spark</code> (<code>128GB</code> unified memory, <code>~109GB</code> usable, NVFP4 / Q4_K_M / IQ3_XXS weights). Cloud ratios are reported as per-generated-token cost at window <code>256K</code> vs <code>16K</code>. Local figures are tokens-per-second against generated-token index.</li>
+      <li><strong>Benchmarks.</strong> Long-horizon: <code>SWE-bench Verified</code> (500), <code>SWE-bench Multilingual</code> (300), <code>Terminal-Bench 2.1</code> (89), <code>FRAMES</code> (824), <code>&tau;2-bench</code> (184 golden). Long-input: <code>BFCLv3</code> (200 long-context episodes), <code>LongBench v2</code> (503), <code>LOONG</code> (1,600), <code>AA-LCR</code> (100), <code>Needle in a Haystack</code> (125-instance grid at <code>16K&ndash;500K</code>), <code>RULER</code> (13 tasks at <code>256K</code> and <code>500K</code>), <code>Counting-Stars</code> (192), <code>BABILong</code> (550 at <code>64K&ndash;11M</code>).</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li><strong>Serve-cost disparity by context window.</strong> At <code>256K</code> vs <code>16K</code> on frontier open-weight models, per-generated-token cost rises by <code>3.6&times;</code> on <code>GLM 5.2</code>, <code>5.6&times;</code> on <code>Kimi K2.6</code>, and <code>7.0&times;</code> on <code>Qwen 3 Coder Next</code>. Appendix B reports <code>16K</code>/<code>256K</code> cost ratios of <code>0.2772</code>, <code>0.1777</code>, <code>0.1439</code> for the three models; rounded mean <code>r = 0.20</code>.</li>
+      <li><strong>Local decode latency.</strong> On DGX Spark, <em>&ldquo;for several models, later tokens take approximately 2x longer to generate than earlier tokens&rdquo;</em> (Figure 2 caption, verbatim).</li>
+      <li><strong>Long-horizon (RQ1), closed-weight headline.</strong> Relative accuracy under EoCC spans <code>-3.7</code> to <code>+5.6</code> for <code>Claude Opus 4.5</code> and <code>-3.3</code> to <code>+4.4</code> for <code>GPT 5.6 Sol</code> across the 22 (benchmark, setting) cells. At most <code>5/22</code> configurations lose more than <code>2</code> points for either model.</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th>Model</th><th>Baseline</th><th>Best EoCC setting</th><th>Best EoCC</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>SWE-bench Verified</code></td><td><code>Opus 4.5</code></td><td>70.0</td><td><code>24K/18K</code></td><td><strong>74.8</strong></td></tr>
+        <tr><td><code>SWE-bench Verified</code></td><td><code>GPT 5.6 Sol</code></td><td>84.4</td><td><code>48K/36K</code></td><td><strong>88.8</strong></td></tr>
+        <tr><td><code>SWE-bench Multilingual</code></td><td><code>Opus 4.5</code></td><td>66.3</td><td>n/a</td><td>68.0</td></tr>
+        <tr><td><code>SWE-bench Multilingual</code></td><td><code>GPT 5.6 Sol</code></td><td>79.3</td><td>n/a</td><td>80.0</td></tr>
+        <tr><td><code>Terminal-Bench 2.1</code></td><td><code>Opus 4.5</code></td><td>47.2</td><td><code>32K/24K</code></td><td><strong>52.8</strong></td></tr>
+        <tr><td><code>Terminal-Bench 2.1</code></td><td><code>GPT 5.6 Sol</code></td><td>87.6</td><td>n/a</td><td>88.8</td></tr>
+        <tr><td><code>FRAMES</code></td><td><code>Opus 4.5</code></td><td>81.0</td><td>&mdash;</td><td>79.7 (worst)</td></tr>
+        <tr><td><code>FRAMES</code></td><td><code>GPT 5.6 Sol</code></td><td>90.2</td><td>&mdash;</td><td>88.7 (worst)</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><strong>Cost savings under EoCC</strong> (closed-weight headline). <code>Opus 4.5</code>: <code>2.2&times; &ndash; 8.8&times;</code> lower serve cost at best-setting EoCC vs baseline; <code>GPT 5.6 Sol</code>: <code>2.4&times; &ndash; 5.0&times;</code>. Savings are driven by the window moving off the <code>7&times;</code> long-context tariff onto a near-baseline rate.</li>
+      <li><strong>Long-input (RQ2) headline.</strong> Selective reading with EoCC fallback produces relative-accuracy gains of <code>-0.4</code> to <code>+40.0</code> points for <code>Opus 4.5</code> and <code>+1.0</code> to <code>+30.9</code> points for <code>GPT 5.6 Sol</code>. Cost savings: <code>6.5&times; &ndash; 54.6&times;</code> (<code>Opus 4.5</code>) and <code>4.4&times; &ndash; 233.3&times;</code> (<code>GPT 5.6 Sol</code>). <em>The median number of compactions is near zero</em>: most long-input cases are resolved by the selective-reading phase before any EoCC fires.</li>
+      <li><strong>RQ3: one action per context.</strong> On <code>mini-swe-agent</code> with SAC, <code>Opus 4.5</code> keeps most of the EoCC gain (<code>SWE-bench Verified</code> baseline <code>70.0</code>, EoCC-best <code>74.8</code>, <strong>SAC <code>70.2</code></strong>; <code>Terminal-Bench 2.1</code> baseline <code>47.2</code>, EoCC-best <code>52.8</code>, <strong>SAC <code>51.8</code></strong>). <code>GPT 5.6 Sol</code> degrades more under SAC than under EoCC (<code>SWE-bench Verified</code> <code>84.4 &rarr; 88.8 (EoCC) &rarr; 82.4 (SAC)</code>; <code>Terminal-Bench 2.1</code> <code>87.6 &rarr; 88.8 &rarr; 84.3</code>). The peak live-context under SAC is <code>15&ndash;37K</code> vs <code>130&ndash;200K</code> for baselines.</li>
+    </ul>
+    <figure>
+      <img src="https://arxiv.org/html/2611.05306v1/figures/benchmark_figure_absolute.png" alt="DGX Spark local-serving decode latency, throughput, and memory across five open-weight models" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). Local decode latency, throughput, and memory on a single NVIDIA DGX Spark across <code>Qwen 3.6 27B</code>, <code>Qwen 3 Coder Next</code>, <code>Gemma 4 31B</code>, <code>Step 3.7 Flash 198B-A11B</code>, and <code>MiniMax M2.7 230B-A10B</code>. Figure caption text: <em>&ldquo;for several models, later tokens take approximately 2x longer to generate than earlier tokens.&rdquo;</em> Source: <a href="https://arxiv.org/html/2611.05306v1/figures/benchmark_figure_absolute.png">arxiv.org/html/2611.05306v1</a>.</figcaption>
+    </figure>
+
+    <h3>Named contributions &amp; mechanisms</h3>
+    <ul>
+      <li><strong>End-of-Conversation Compaction (EoCC).</strong>
+        <ul>
+          <li><em>Problem.</em> Long-horizon agents accumulate turn history that pushes the context window into the per-token cost tariff region (up to <code>7&times;</code> at <code>256K</code> vs <code>16K</code>) while adding little to the model's ability to pick the next action. Full-history accumulation pays the <code>7&times;</code> tariff from turn 5 onwards on frontier open models.</li>
+          <li><em>Mechanism.</em> The harness monitors the conversational-context length each turn. When it crosses a configured threshold, one additional model call is issued whose only job is to produce a bounded compaction of the conversation state (plan, next intent, pointers to artifacts, task restatement). The next turn starts a <em>new</em> conversation seeded with the original task plus that compaction string; the old conversation is discarded. The (limit, threshold) pair fully specifies behavior; the model does the compaction with its own policy, no external summarizer.</li>
+          <li><em>Why.</em> Dropping conversation history at a known boundary is cheaper than retrieval or paging: no retrieval index, no learned memory module, and the model's own output format carries over as the compaction schema. Compared to conversational scratchpad patterns, EoCC never grows a hidden sidecar state; the compaction <em>is</em> the state. Compared to Mamba-style neural state, the state is text, so it survives model swap, inspection, and manual repair.</li>
+        </ul>
+      </li>
+      <li><strong>Single-Action Compaction (SAC).</strong>
+        <ul>
+          <li><em>Problem.</em> EoCC still spends most of the conversation inside a &ldquo;long&rdquo; context before tripping the threshold. If the only state worth keeping fits in a few KB of text, a budget that permits one call per action is an upper bound on how short the context can get; anything less requires state outside the conversation.</li>
+          <li><em>Mechanism.</em> One action per conversation, one observation, one state update. The agent emits an action, the environment returns its observation, and the agent is immediately asked to rewrite the semantic state; the conversation ends. The next conversation starts cold with the task plus the rewritten state. Live context stays in the <code>15&ndash;37K</code> band for all tested tasks.</li>
+          <li><em>Why.</em> SAC is the operational equivalent of a state-space model with a visible state. The paper presents it as the baseline for <strong>RQ3</strong>: if SAC holds, then full-history accumulation is doing something not strictly necessary for the task. Results on <code>Opus 4.5</code> are within <code>1&ndash;2</code> points of EoCC-best; <code>GPT 5.6 Sol</code>'s degradation under SAC is the one case where the reduction loses measurable ground.</li>
+        </ul>
+      </li>
+      <li><strong>Semantic State Space Models (SSSMs).</strong>
+        <ul>
+          <li><em>Problem.</em> SAC demonstrates that short, textual semantic state preserves most of the trajectory signal, but it uses a harness to enforce the state boundary. A model post-trained explicitly for this style of inference could skip the harness, but no public model is.</li>
+          <li><em>Mechanism.</em> An SSSM is a model post-trained to read a natural-language state description, reason internally, take an action, register the outcome, and rewrite the state for the next inference instance. The paper names this concept and sketches its training setup but does not post-train or release such a model. Compared to neural SSMs (Mamba, Hyena), the state is a text artifact rather than a vector, so it can be read, edited, versioned, and used as a checkpoint between model versions.</li>
+          <li><em>Why.</em> The report frames SSSMs as what the harness-level results suggest: if accuracy survives SAC, then there is <em>&ldquo;no reason why SSSMs could not match the performance of full-history-accumulating models,&rdquo;</em> and the serve cost drops by the cost ratios above. It is a proposal, not a measurement; the paper's own experiments stop at the harness level.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Compaction scope.</strong> Appendix A compares full-trace compaction against since-last-compaction compaction; the paper reports that keeping the task restatement, the current intent / next steps, and execution-artifact pointers &mdash; and dropping the narrative trace &mdash; produces the strongest compactions. Verbatim: <em>&ldquo;the best compactions are not those that faithfully capture the gist of the agentic trace.&rdquo;</em></li>
+      <li><strong>(Limit, threshold) sweep.</strong> Best settings differ by benchmark: <code>SWE-bench Verified</code> best at <code>24K/18K</code> (<code>Opus</code>) and <code>48K/36K</code> (<code>GPT 5.6 Sol</code>); <code>Terminal-Bench 2.1</code> best at <code>32K/24K</code> (<code>Opus</code>). <code>16K/12K</code> wins on no benchmark; it is the most aggressive setting and degrades consistently.</li>
+      <li><strong>Harness floor.</strong> Changing from <code>mini-swe-agent</code> to <code>mini-agent</code> on long-input benchmarks does not change the qualitative RQ2 story; the selective-reading step drives the result.</li>
+      <li><strong>Open-weight results</strong> are in Appendix D and extend the headline to the five locally-served open models above; the appendix-level numbers are not in the main-text tables and the Section 3 / Section 4 narrative refers to them only by direction, not value.</li>
+    </ul>
+
+    <h3>Safety &amp; limitations</h3>
+    <ul>
+      <li><strong>Lossy compaction.</strong> Compaction drops information; repeated compaction can drop critical state. The paper gives a &ldquo;coin-toss&rdquo; adversarial example that is <em>&ldquo;guaranteed to eventually fail&rdquo;</em> under any fixed-budget compaction and proposes a record-keeping harness with selective-reading tools as the mitigation.</li>
+      <li><strong>Repeated work.</strong> Compaction can increase total spend by forcing the model to re-derive facts in later conversations that the baseline kept in-context; the headline savings figures account for this.</li>
+      <li><strong>Vendor-reported only.</strong> No third-party replication of the closed-weight numbers yet; cloud benchmarks run through API calls at <code>2026-10</code> list prices. Open-weight local serve numbers are tied to the specific DGX Spark configuration.</li>
+      <li><strong>SSSMs are a proposal.</strong> No weights, no post-training recipe, no eval of an actual SSSM against EoCC or SAC. The report treats Section 5.1 as a design sketch, not a result.</li>
+    </ul>
+
+    <h1 id="tencent">Tencent</h1>
+
+    <h2 id="loco"><a href="https://arxiv.org/abs/2611.04814">LoCo: Local Preference Learning for Reasoning Compression</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv:2611.04814 (cs.AI)</span>
+      <span>2026-11-03 submitted</span>
+      <span>Reasoning compression &middot; Step-level DPO &middot; Overthink detection</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>Muyao Yuan, Liyan Xu<sup>&dagger;</sup>, Weizhan Zhang<sup>*</sup>, Muyan Jiao, Jiangnan Li, Jinchao Zhang, Jie Zhou<sup>*</sup></strong> (MOEKLINNS, School of Computer Science and Technology, Xi'an Jiaotong University, and <strong>WeChat AI, Tencent Inc.</strong>; project lead Liyan Xu, corresponding Weizhan Zhang and Jie Zhou).</li>
+      <li>The paper's position is that trajectory-level reasoning compression (<code>Kimi k1.5 Long2Short</code>, <code>O1-Pruner</code>, <code>CoT-Valve</code>, <code>TokenSkip</code>, <code>Step-DPO</code>) all optimize the same objective over the whole chain-of-thought and therefore cannot decide, at any specific step, whether more reasoning helps. LoCo is reframed around that step-local decision.</li>
+      <li>Code and model to be released at <code>github.com/MuyaoYuan/LoCo</code>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>State representation.</strong> A chain-of-thought is split into paragraph-delimited steps <code>s_i</code>. The reasoning state at step <code>i</code> is <code>P_i = prompt(q) &Vert; s_0 &Vert; &hellip; &Vert; s_i</code> (Eq. 1). The state is causal: <code>P_i</code> is observable at step <code>i</code> and nothing after.</li>
+      <li><strong>Overthink detection (step-level, from the model's own distribution).</strong>
+        <ul>
+          <li>Step confidence <code>c_i</code> is the mean of the top-1 next-token probabilities <code>p<sub>&tau;</sub><sup>max</sup></code> over the tokens of step <code>s_i</code> (Eqs. 2&ndash;4).</li>
+          <li>Step volatility <code>v_i = (c_i &minus; c_{i-1})<sup>2</sup> / 4</code> (Eq. 5): the normalized squared jump in confidence from one step to the next, computed over the minimal window of two.</li>
+          <li>Overthink flag <code>O = { i : c_i &le; q<sub>25</sub>(c) &and; v_i &ge; q<sub>75</sub>(v) }</code> (Eq. 6): simultaneously low-confidence and high-volatility steps. Percentiles <code>q<sub>25</sub></code>, <code>q<sub>75</sub></code> are calibrated once on the model's own traces, not online.</li>
+        </ul>
+      </li>
+      <li><strong>Judge re-check.</strong> A stronger judge (<code>Qwen3-30B</code>) labels each candidate step as <code>overthink</code>, <code>normal</code>, or <code>final</code> (Eqs. 7&ndash;8). Only <code>overthink</code>-labeled candidates are kept; <code>final</code> labels are excluded so the compressor does not cut answer-restating steps.</li>
+      <li><strong>Verified continuations (same prefix, shorter suffix).</strong> From each surviving state <code>P_i</code>, sample <code>k = 8</code> continuations. Keep only continuations that are <em>symbolically correct</em> by <code>math_verify</code> on the final answer, and among those keep the shortest (Eqs. 9&ndash;11). The point is retained only if the shortest-verified continuation is strictly shorter than the original.</li>
+      <li><strong>Pair selection.</strong> Each surviving <code>(P_i, y<sup>+</sup>, y<sup>-</sup>)</code> triple must have savings <code>&ge; &delta; = 300</code> tokens, prompt <code>&le; 6k</code>, continuations <code>&le; 12k</code>. Retain at most <code>K = 3</code> pairs per question, choosing the largest-saving ones (Eq. 12).</li>
+      <li><strong>Training.</strong> Standard DPO on <code>(P_i, y<sup>+</sup>, y<sup>-</sup>)</code> with the same prefix for both branches; log-likelihoods summed over response tokens. Base is <code>DeepSeek-R1-Distill-Qwen-7B</code>, LoRA rank <code>256</code>, <code>&alpha; = 512</code>, dropout <code>0.05</code> on <code>q / k / v / o</code>, <code>&beta; = 0.1</code>, lr <code>1e-5</code>, two epochs, four H20 GPUs.</li>
+      <li><strong>Training data domain.</strong> Math-only, generated from the model's own traces. Code is evaluated out-of-distribution.</li>
+    </ul>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li>Decoding: <code>8</code> samples per problem at temperature <code>0.6</code>, top-p <code>0.95</code>, max output <code>32,768</code>. Length is measured per generated completion.</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th>System</th><th>Accuracy</th><th>Mean tokens</th><th>&Delta;acc</th><th>&Delta;len</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>AIME24</code></td><td>Base (<code>R1-Distill-Qwen-7B</code>)</td><td>50.83</td><td>13,493</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td><code>AIME24</code></td><td>TokenSqueeze</td><td>48.75</td><td>10,457</td><td>&minus;2.08</td><td>&minus;22.5%</td></tr>
+        <tr><td><code>AIME24</code></td><td><strong>LoCo</strong></td><td><strong>54.17</strong></td><td><strong>7,364</strong></td><td><strong>+3.34</strong></td><td><strong>&minus;45.4%</strong></td></tr>
+        <tr><td><code>AIME25</code></td><td>Base</td><td>37.92</td><td>15,134</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td><code>AIME25</code></td><td>TokenSqueeze</td><td>35.83</td><td>&mdash;</td><td>&minus;2.09</td><td>&mdash;</td></tr>
+        <tr><td><code>AIME25</code></td><td><strong>LoCo</strong></td><td><strong>40.42</strong></td><td><strong>8,291</strong></td><td><strong>+2.50</strong></td><td><strong>&minus;45.2%</strong></td></tr>
+        <tr><td><code>MATH-500</code></td><td>Base</td><td>91.88&plusmn;1.20</td><td>4,015</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td><code>MATH-500</code></td><td>DAST</td><td>91.38</td><td>3,720</td><td>&minus;0.50</td><td>&minus;7.3%</td></tr>
+        <tr><td><code>MATH-500</code></td><td>TokenSqueeze</td><td>91.18</td><td>2,442</td><td>&minus;0.70</td><td>&minus;39.2%</td></tr>
+        <tr><td><code>MBPP</code> (OOD)</td><td>Base</td><td>84.05</td><td>3,403</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td><code>MBPP</code> (OOD)</td><td><strong>LoCo</strong></td><td><strong>84.05</strong></td><td><strong>2,167</strong></td><td><strong>&plusmn;0.00</strong></td><td><strong>&minus;36.3%</strong></td></tr>
+        <tr><td><code>LiveCodeBench</code> (OOD)</td><td>Base</td><td>18.48</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td><code>LiveCodeBench</code> (OOD)</td><td>TokenSqueeze</td><td>19.09</td><td>&mdash;</td><td>+0.61</td><td>&mdash;</td></tr>
+        <tr><td><code>LiveCodeBench</code> (OOD)</td><td><strong>LoCo</strong></td><td><strong>20.61</strong></td><td><strong>11,413</strong></td><td><strong>+2.13</strong></td><td><strong>&minus;23.4%</strong></td></tr>
+        <tr><td><code>CodeContests</code> (OOD, AUC)</td><td>Base</td><td>13.87 AUC</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td><code>CodeContests</code> (OOD, AUC)</td><td>TokenSqueeze</td><td>15.54 AUC</td><td>&mdash;</td><td>+1.67</td><td>&mdash;</td></tr>
+        <tr><td><code>CodeContests</code> (OOD, AUC)</td><td><strong>LoCo</strong></td><td><strong>16.78 AUC</strong></td><td>&mdash;</td><td><strong>+2.91</strong></td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Headline (abstract): completion length reduced <code>-41.7%</code> to <code>-45.4%</code> on five math benchmarks and <code>-23.4%</code> to <code>-36.3%</code> on three code benchmarks, with matched or improved accuracy and best AUC on all three code benchmarks.</li>
+      <li>LoCo produces the best accuracy&ndash;efficiency AUC on <code>AIME24</code> (<code>46.82</code>, <code>+6.49</code> over base), <code>AIME25</code> (<code>34.55</code>), <code>MBPP</code> (<code>79.95</code>, <code>+1.53</code>), <code>LiveCodeBench</code>, and <code>CodeContests</code>.</li>
+      <li>Code is never seen in training; the transfer is attributed to <em>length-preference reshaping</em> rather than task knowledge.</li>
+    </ul>
+
+    <h3>Named contribution &amp; mechanism</h3>
+    <ul>
+      <li><strong>LoCo (local preference learning for reasoning compression).</strong>
+        <ul>
+          <li><em>Problem.</em> Trajectory-level compression methods (TokenSkip, CoT-Valve, Long2Short, O1-Pruner) condition only on the whole chain-of-thought and the final answer, so the model learns to prefer shorter trajectories overall rather than to decide step-by-step whether more reasoning is still useful. Step-DPO is step-level but requires externally labeled step preferences, which are expensive and tend to select on the writer's rather than the solver's view of &ldquo;overthinking&rdquo;.</li>
+          <li><em>Mechanism.</em> LoCo builds state-conditioned preference pairs with the same prefix <code>P_i</code> but different continuations. The chosen continuation is the shortest symbolically correct sample the model itself generated from <code>P_i</code>; the rejected continuation is the model's own original rest-of-trajectory. DPO over these pairs with <code>&beta; = 0.1</code> moves the policy toward the shorter branch <em>at that specific state</em>, with the prefix frozen. The overthink states are picked by the intersection of the model's own low confidence (low <code>c_i</code>) and high confidence jump (high <code>v_i</code>), then re-checked by a stronger judge; both filters are needed to avoid cutting answer steps or inflection points.</li>
+          <li><em>Why.</em> The same-prefix constraint is what makes this a step-local decision: because <code>y<sup>+</sup></code> and <code>y<sup>-</sup></code> share <code>P_i</code>, the DPO gradient cannot push the model to be shorter in general; it can only push toward the shorter branch <em>given this prefix</em>. Compared to TokenSqueeze (trajectory-level, <code>-22.5%</code> tokens on <code>AIME24</code> with <code>-2.08</code> accuracy), LoCo (<code>-45.4%</code> with <code>+3.34</code> accuracy) halves tokens and still gains accuracy. The transfer to code with math-only training is the direct consequence: the policy is learning a length-vs-progress decision rule, not a math fact.</li>
+        </ul>
+      </li>
+    </ul>
+    <figure>
+      <img src="https://arxiv.org/html/2611.04814v1/LoCo_overview.png" alt="LoCo pipeline: overthink detection, verified shortest continuation, same-prefix DPO" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the paper). LoCo pipeline: step-level overthink detection on causal confidence percentiles, same-prefix shortest-verified continuation sampling, and DPO on state-conditioned <code>(P_i, y<sup>+</sup>, y<sup>-</sup>)</code>. Source: <a href="https://arxiv.org/html/2611.04814v1/LoCo_overview.png">arxiv.org/html/2611.04814v1</a>.</figcaption>
+    </figure>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Global vs local pairs.</strong> A Global variant uses trajectory-level pairs (not state-conditioned); token savings collapse to <code>5.2%&ndash;15.8%</code> while keeping comparable accuracy. The local, same-prefix constraint is the piece that produces the <code>-45%</code> savings.</li>
+      <li><strong>External teacher continuations.</strong> Replacing self-generated chosen continuations with <code>GPT-5.4</code> continuations (<em>GPT-5.4 Cont.</em>) yields <code>AIME24 52.92</code>, <code>AIME25 39.58</code> &mdash; close to self-generated but slightly worse, consistent with distributional mismatch.</li>
+      <li><strong>Random vs model-selected cut positions.</strong> RandCut (random step chosen) lands at <code>AIME24 48.33</code> (<code>-2.50</code> vs base). UniCut (uniform-interval cuts) lands at <code>48.75</code> (<code>-2.08</code>). The detector's mean relative cut position is <code>0.57</code>, versus <code>0.47</code> (RandCut) and <code>0.50</code> (UniCut); the detector is biased toward the second half of the trajectory, where overthinking is more common.</li>
+    </ul>
+
+    <h3>Limitations</h3>
+    <ul>
+      <li><strong>Base model scope.</strong> All results are on <code>DeepSeek-R1-Distill-Qwen-7B</code>. No experiments on larger reasoning models (<code>DeepSeek-R1</code>-full, <code>Kimi K3</code>-reasoner, <code>GLM-5.3</code>).</li>
+      <li><strong>Math-only training.</strong> Code transfer is strong empirically, but the paper does not test mixed-domain training (math + code), reasoning-domain transfer (math &rarr; theorem-proving, ScienceQA), or the symmetric case (code-only training &rarr; math).</li>
+      <li><strong>Verifier dependency.</strong> The pipeline needs a symbolic verifier (<code>math_verify</code>) on the final answer to pick shortest-correct continuations. Domains without such verifiers (open-ended writing, multi-turn dialogue) are out of scope.</li>
+      <li><strong>Judge cost.</strong> The <code>Qwen3-30B</code> re-check is a non-trivial per-example cost during data construction, though it runs offline and once per training set.</li>
+    </ul>
+
+    <h2 id="emoreward"><a href="https://arxiv.org/abs/2611.06518">EmoReward: Self-Evolving Reward Calibration for Emotional Video Generation RL</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 &middot; Research Paper</span>
+      <span>arXiv:2611.06518 (cs.CV)</span>
+      <span>2026-11-04 submitted</span>
+      <span>Video RL &middot; Reward hacking &middot; GRPO &middot; HunyuanVideo</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li><strong>Mingzhe Zheng, Yue Wu, Jing Tan, Chang Zou, Dengyang Jiang, Zeyue Tian, Xuanhua He, Ryan Xu, Yunyang Ge, Sihui Ji, Yunlong Lin, Kaihang Pan, Hongru Yan, Sixiang Chen, Dianyi Wang, Julian Zhang, Weijie Kong, Changlin Li, Lanqing Guo, Zhao Zhong, Qifeng Chen, Harry Yang</strong> (<strong>Tencent Hunyuan</strong>, per HF organization badge).</li>
+      <li>Companion artifacts: project page <a href="https://emoreward-project.github.io/">emoreward-project.github.io</a>, code repo <a href="https://github.com/Tencent-Hunyuan/EmoReward">github.com/Tencent-Hunyuan/EmoReward</a> (code <em>to be released</em>).</li>
+      <li>Target domain: <em>emotional</em> video generation from text, where no symbolic verifier exists for the correctness of a facial micro-expression, a body-motion cue, or a color-grading choice. Base generator is <code>HunyuanVideo 1.5</code>; transfer experiments on <code>SD 3.5</code> and <code>FLUX</code>.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Problem framing.</strong> GRPO works on verifiable domains (code, math) because an outcome signal is cheap and deterministic. Emotional video has no such verifier: candidate reward primitives (facial-expression classifier, body-motion scorer, text-alignment model, color-mood classifier, aesthetic scorer) are heterogeneous, noisy, and &mdash; crucially &mdash; <em>context-dependent</em>: a facial-expression classifier is only informative when a face is clearly visible, a body-motion scorer is uninformative in a close-up shot, and a color-mood signal is weak in a monochrome scene. Flat weighted-sum fusion amplifies whichever primitive scores highly on a given rollout, inviting reward hacking.</li>
+      <li><strong>Pipeline shape.</strong> Three stages: (1) a <em>plan</em> stage expands the emotion in the prompt into a short list of grounding cues (e.g., &ldquo;grief, averted gaze, slow head tilt, muted blue tone&rdquo;) that the evaluation primitives are asked to look for; (2) an <em>act</em> stage generates <code>G</code> rollouts under GRPO; (3) each rollout is scored by every primitive, then gated and fused.</li>
+      <li><strong>Reflective Reward Gating (instance-level).</strong> Four gates are applied before fusion: <em>phase gate</em> (only primitives relevant to the current training phase fire), <em>face-confidence gate</em> (face-related primitives are zeroed when face detection confidence is below threshold), <em>conflict gate</em> (primitives with contradictory signals on the same frame are zeroed pairwise), and <em>subtlety gate</em> (primitives firing on micro-cues that fall below a magnitude threshold are suppressed to avoid noise amplification). After gating, remaining primitive weights are renormalized so the active set sums to one.</li>
+      <li><strong>RewardMemory (between-run calibration).</strong> After each training run finishes, a RewardMemory pass estimates each primitive's reliability by comparing its predicted score against rollout <em>outcomes within each emotional regime</em> (per-emotion reliability, not per-prompt). It then sets bounded multipliers that recalibrate fusion weights for the next run. The reward models themselves are <em>not</em> updated &mdash; only their fusion weights per emotional regime. The point is to let the fusion forget primitives that the data showed to be unreliable for &ldquo;grief&rdquo; but keep them for &ldquo;surprise&rdquo;.</li>
+    </ul>
+
+    <figure>
+      <img src="https://cdn-uploads.huggingface.co/production/uploads/62f0c4abe2999b231e5a893c/jvFWixkX-iElqgA5N0F2B.png" alt="EmoReward motivation: emotional video rewards must be gated by context and recalibrated between runs" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from the HF submission). Motivation diagram for EmoReward &mdash; heterogeneous reward primitives (face, motion, text, color) require instance-level gating and between-run recalibration for stable GRPO on emotional video generation. Source: <a href="https://cdn-uploads.huggingface.co/production/uploads/62f0c4abe2999b231e5a893c/jvFWixkX-iElqgA5N0F2B.png">huggingface.co/papers/2611.06518</a>.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; results</h3>
+    <ul>
+      <li><strong>Base generator.</strong> <code>HunyuanVideo 1.5</code>. The paper reports gains across multiple RL algorithms (DPO, SAGE-GRPO, and vanilla GRPO) when the fusion layer is swapped to EmoReward; magnitudes are not published in the HF abstract.</li>
+      <li><strong>Head-to-head.</strong> Compared to other agentic-reward methods under <code>SAGE-GRPO</code>, EmoReward reports superior emotional-fidelity scores while maintaining visual-quality and text-alignment primitives; the table is in the full paper, not the HF abstract.</li>
+      <li><strong>Transfer experiments.</strong> The abstract reports transfer to <code>SD 3.5</code> and <code>FLUX</code>, which indicates the gating + memory layer is backbone-agnostic. Details of which primitives transfer and which do not are in the full paper.</li>
+      <li><strong>Reported gaps.</strong> No numeric table reproduced on HF; no comparison against <code>Sora 2</code>, <code>Veo 4</code>, or other closed-weight video generators; no sanity-check metrics against the base <code>HunyuanVideo 1.5</code> without any reward on emotional axes.</li>
+    </ul>
+
+    <h3>Named contributions &amp; mechanisms</h3>
+    <ul>
+      <li><strong>Reflective Reward Gating (instance-level).</strong>
+        <ul>
+          <li><em>Problem.</em> Weighted-sum reward fusion assigns a non-zero weight to every primitive on every rollout. Primitives that are uninformative on a given rollout (face classifier on a scene with no face) inject high-variance noise that GRPO will optimize against, producing drift toward backgrounds that spuriously trigger the primitive &mdash; a classic reward-hacking failure mode.</li>
+          <li><em>Mechanism.</em> Four gates evaluate each primitive per rollout before fusion: phase, face-confidence, conflict, subtlety. Each gate's output is <code>0</code> or <code>1</code>. Primitives whose gate product is <code>0</code> are dropped from the active set; the remaining weights are L1-renormalized. The fused reward is the weighted sum over the renormalized active set. The gates are conditioned on the rollout's own evidence (face-detection confidence, primitive-pair agreement), not on the ground-truth, so the gating is purely reactive and does not leak oracle information.</li>
+          <li><em>Why.</em> Dropping an uninformative primitive from the active set is stronger than down-weighting it, because down-weighting still lets GRPO exploit a non-zero gradient from that primitive to drive drift; a zero gate removes the gradient entirely. Compared to SAGE-GRPO's agentic self-critique (which answers &ldquo;how good is this rollout?&rdquo;), gating answers &ldquo;which signals should I trust on this rollout?&rdquo; before fusion, which the paper claims is where the reward hacking actually enters.</li>
+        </ul>
+      </li>
+      <li><strong>RewardMemory (between-run, per-regime).</strong>
+        <ul>
+          <li><em>Problem.</em> Instance-level gating decides which primitives to trust on <em>a single rollout</em>; it does not update how much to trust a primitive <em>on &ldquo;grief&rdquo; across all rollouts</em>. If the facial-expression classifier systematically misreads grief-coded faces as neutral, no rollout-local gate catches that pattern.</li>
+          <li><em>Mechanism.</em> After a run, RewardMemory groups rollouts by emotional regime, computes a per-primitive reliability score inside each regime (agreement between primitive score and composite outcome), and sets a bounded multiplier (clipped to a safe range) to recalibrate fusion weights for the next run. The underlying reward models are frozen; only the fusion weights per regime are updated. The multiplier's bound prevents a single run from collapsing a primitive to zero or amplifying it to drive the whole fusion.</li>
+          <li><em>Why.</em> This is the slow loop paired with Reflective Reward Gating's fast loop. The fast loop removes irrelevant primitives on a rollout; the slow loop downweights primitives that are reliably misleading on a given emotion. The combination means the system does not need to re-train the primitives themselves, which is the expensive and unstable step: fusion weights per regime are the only things that change, and they change at a schedule the training operator controls.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li><strong>Reported, not numerically detailed in the abstract.</strong> The abstract commits to ablations of gating (which gate contributes most) and RewardMemory (effect of the between-run pass alone). Specifics (per-gate contribution, multiplier bounds) are in the full paper.</li>
+      <li><strong>Backbone transfer.</strong> SD 3.5 and FLUX experiments test whether the gating + memory layer is a drop-in for non-HunyuanVideo generators; the abstract reports positive transfer but no comparative deltas.</li>
+    </ul>
+
+    <h3>Limitations</h3>
+    <ul>
+      <li><strong>No public numeric table at launch.</strong> The HF abstract reports directional gains against SAGE-GRPO and transfer to SD 3.5 / FLUX, but no per-benchmark or per-emotion numbers are visible at the abstract level; verification requires the full PDF or the code release.</li>
+      <li><strong>Reward models unchanged.</strong> EmoReward recalibrates fusion weights, not reward models. If a primitive is <em>systematically</em> wrong on a regime, bounded-multiplier recalibration only limits its contribution; it cannot fix the primitive. The paper accepts this as a design choice (cheap, stable), not a failure.</li>
+      <li><strong>Emotion taxonomy not public.</strong> The regime set used to partition RewardMemory is not published alongside the HF submission; the gates (phase, face-confidence, conflict, subtlety) are described by name but not by threshold values.</li>
+      <li><strong>No comparison to closed-weight generators.</strong> No head-to-head against <code>Sora 2</code>, <code>Veo 4</code>, or other proprietary video generators; the in-paper comparison set is other open methods under the HunyuanVideo-1.5 backbone.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
