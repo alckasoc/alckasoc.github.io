@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inkling 2 Small Launch Review — November 8, 2026 | Auto Lit Review</title>
+<meta name="description" content="Thinking Machines Lab releases Inkling 2 Small (594B / 17B-active MoE); plus NVIDIA VFlash, Google Muir linear attention, ByteDance Seed SAE-MoE interpretability, and Anthropic agent-memory notes." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">2026-11-08</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#thinking-machines-lab">Thinking Machines Lab</a>
+          <ul>
+            <li class="toc-h2"><a href="#inkling-2-small">Inkling 2 Small</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#bytedance-seed">ByteDance Seed</a>
+          <ul>
+            <li class="toc-h2"><a href="#sae-interprets-moe">SAE Interprets MoE</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#google">Google</a>
+          <ul>
+            <li class="toc-h2"><a href="#muir">Muir</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#nvidia">NVIDIA</a>
+          <ul>
+            <li class="toc-h2"><a href="#vflash">VFlash</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#anthropic">Anthropic</a>
+          <ul>
+            <li class="toc-h2"><a href="#components-of-agent-memory">The Components of Agent Memory</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review · November 8, 2026</div>
+    <h1 class="page-title">Inkling 2 Small Launch</h1>
+    <div class="page-meta">5 entries · 5 labs · auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>Thinking Machines Lab shipped <strong>Inkling 2 Small</strong>, a 594B-parameter / 17B-active MoE trained natively in <code>NVFP4</code> through a single joint reasoning-plus-agent RL run. The rest of the window is methodology: NVIDIA's <strong>VFlash</strong> decodes visual plans in one pass instead of coordinate-by-coordinate, Google's <strong>Muir</strong> replaces the full-rank gates of Gated DeltaNet-2 with a sensitivity-allocated low-rank projection and a matched-filter readout, and ByteDance Seed shows that sparse autoencoders trained on an MoE layer's output decompose cleanly over experts. Anthropic published engineering notes on a four-tier agent memory stack with offline "dreaming" consolidation.</p>
+      <h3>Competitiveness</h3>
+      <p>Inkling 2 Small enters the ring at <strong>Artificial Analysis Intelligence Index 31</strong>, below current closed-source frontier (<code>Claude Opus 5.5</code>, <code>GPT-6</code>, <code>Gemini 4 Argon</code> all sit higher on the AA v5.0 leaderboard) but framed by the lab as competitive on coding and agentic work: <strong>SWE-Bench Pro v2 (Hard) 86.3%</strong>, <strong>SWE-Bench Verified 82.2%</strong>, <strong>Terminal Bench 2.1 85.1%</strong> (Pi harness), <strong>BrowseComp 90.2%</strong>. Reasoning scores are lower — <strong>HLE-Diamond 28.7%</strong>, <strong>FrontierCode v2.0 25.4%</strong>, <strong>GDPVal-AA 1630</strong>. For open-weight peers, the relevant comparison is <code>DeepSeek-V4.1-Flash</code>, <code>GLM-5.2</code>, <code>Qwen3.8-Max</code>, and <code>Kimi K3.1</code>, which already sit near or above this coding tier; Inkling's distinguishing move is training-recipe transparency through Tinker rather than raw benchmark lead.</p>
+      <h3>New frontier releases</h3>
+      <p><strong>Thinking Machines Lab — Inkling 2 Small</strong> (Nov 5, 2026): 594B total / 17B active parameter MoE with 1M-token context and native vision input, served through Tinker with weights promised the following week under Apache 2.0 after safety testing.</p>
+    </section>
+
+    <!-- =============== TIER 1 =============== -->
+
+    <h1 id="thinking-machines-lab">Thinking Machines Lab</h1>
+
+    <h2 id="inkling-2-small"><a href="https://thinkingmachines.ai/news/inkling-2-small/">Inkling 2 Small</a></h2>
+    <div class="paper-meta">
+      <span>Tier 1 · Launch Post + Model Card</span>
+      <span>thinkingmachines.ai</span>
+      <span>2026-11-05</span>
+      <span>Flagship launch · MoE · Agentic RL · NVFP4 training</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Thinking Machines Lab's first flagship model, positioned as a coding- and agent-leaning general model. <code>Inkling 2 Small</code> is a 594B-parameter Mixture-of-Experts with 17B active parameters, 48 decoder-only transformer layers, and a vision encoder; text and image input, text output.</li>
+      <li>Served via <a href="https://tinker.thinkingmachines.ai/">Tinker</a> for both inference and fine-tuning. The news post states that full weights will come "next week" under Apache 2.0 after safety testing; the live model card currently lists the license as "Tinker Terms of Use," so <strong>weights are closed at launch</strong>.</li>
+      <li>Companion artifact: a <a href="https://thinkingmachines.ai/model-card/inkling-2-small/">model card</a> with benchmark tables and an architecture section. There is no accompanying arXiv technical report; the recipe details are distributed between the news post, the model card, and a promised NVFP4-training follow-up.</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>MoE backbone.</strong> 48-layer decoder-only transformer. 384 experts per MoE block with <strong>top-8 routing</strong> per token; 17B of 594B parameters active on any given forward pass (≈2.9% activation ratio).</li>
+      <li><strong>Attention.</strong> Hybrid local/global attention — the model card describes the standard sliding-window + full-attention interleave used in the current generation of long-context MoEs. Supports up to <strong>1,048,576 tokens</strong> of context.</li>
+      <li><strong>Vision encoder.</strong> 292M-parameter encoder derived from a <code>Perception Encoder</code>-style ViT, operating on 20×20-pixel patches with 2×2 patch pooling before projection into the LM embedding space. Text + image input; no audio or video modalities.</li>
+      <li><strong>Numerics.</strong> Weights are stored and trained in <strong>MXFP8</strong> for most layers and <strong>NVFP4</strong> (the 4-bit floating-point format introduced with Blackwell) for selected matmuls. The post claims this is the first large model trained natively in NVFP4; a separate recipe post is promised. Inference also exposes an NVFP4 path.</li>
+    </ul>
+
+    <h3>Pre-training</h3>
+    <ul>
+      <li>Four staged pretraining horizons (H1–H4):
+        <ul>
+          <li>H1 — <strong>8.4T tokens</strong> at the base context length.</li>
+          <li>H2 — <strong>3.8T tokens</strong> at <strong>512K context</strong>, extending the model into long-context regime.</li>
+          <li>H3 — <strong>~320B tokens</strong> of reasoning and agent trajectories at the full <strong>1M context</strong>.</li>
+          <li>H4 — <strong>~34B tokens</strong> of agent trajectories, used as a bridge into post-training.</li>
+        </ul>
+      </li>
+      <li>The post notes that H3/H4 trajectories were drawn from the lab's agent harness so that long-context pretraining distribution already matched the deployment distribution — rather than following a post-hoc context-extension recipe applied to a short-context base.</li>
+    </ul>
+
+    <h3>Post-training</h3>
+    <ul>
+      <li><strong>Problem.</strong> Running separate reasoning-style RL and agentic/tool-use RL typically produces two specialized checkpoints that regress on each other's axis and require a merge or interleave schedule that is itself a hyperparameter forest.</li>
+      <li><strong>Mechanism — single joint RL run.</strong> One continuous RL training run of <strong>1,075 optimization steps over 9 days on 2,048 GPUs</strong> (&gt;4×10²³ FLOPs) jointly trains against reasoning rewards <em>and</em> agent/tool-use rewards. Rollouts are drawn from a single rollout fleet feeding a single policy. The post names this as the main novelty of the recipe: no separate "reasoning model then agent model" phases, no interleaving schedule.</li>
+      <li><strong>Why it works.</strong> The ablation claim is that separate runs create goal interference during whichever run runs second; a joint run with per-trajectory reward attribution routes gradient updates cleanly by rollout type. No specific head-to-head numbers are shared in the news post; the follow-up recipe post is promised.</li>
+      <li><strong>Trajectory-level grader.</strong> Instead of only a terminal reward on whether a code task passes, Inkling's RL loop uses a <em>process grader</em> that scores how the model approached the task — intermediate decision points, tool choices, backtracking behavior. This is a per-trajectory reward shaper, not a value head; the news post does not disclose the grader model.</li>
+      <li><strong>Alignment stack.</strong> Three ingredients: (1) <em>misbehavior-filtered midtraining</em> — a data-level pass that removes misalignment-adjacent completions before SFT; (2) a <em>general alignment reward</em> mixed into the RL run; (3) <em>on-policy self-distillation from a conduct-spec teacher</em> — the policy is distilled against its own rollouts filtered by a teacher that encodes Thinking Machines' conduct spec.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <p>Headline numbers from the news post and model card. Model card numbers (second column) use the lab's internal harness; news-post numbers use the Artificial Analysis v5 harness.</p>
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th>Inkling 2 Small</th><th>Harness</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Artificial Analysis Intelligence Index</td><td>31 (card: 30.6)</td><td>AA v5.0</td></tr>
+        <tr><td>SWE-Bench Verified</td><td>82.2%</td><td>Model card</td></tr>
+        <tr><td>SWE-Bench Pro (Full)</td><td>97.7%</td><td>Model card</td></tr>
+        <tr><td>SWE-Bench Pro v2 (Hard)</td><td>86.3%</td><td>AA v5.0</td></tr>
+        <tr><td>DeepSWE v1.1</td><td>72.1%</td><td>AA v5.0</td></tr>
+        <tr><td>Vibe Code Bench v1.1</td><td>81.6%</td><td>AA v5.0</td></tr>
+        <tr><td>FrontierCode v2.0</td><td>25.4%</td><td>AA v5.0</td></tr>
+        <tr><td>Terminal Bench 2.1 (Pi harness)</td><td>85.1%</td><td>Model card</td></tr>
+        <tr><td>Terminal Bench Science</td><td>5.7%</td><td>AA v5.0</td></tr>
+        <tr><td>BrowseComp</td><td>90.2%</td><td>Model card</td></tr>
+        <tr><td>HLE-Diamond</td><td>28.7%</td><td>AA v5.0</td></tr>
+        <tr><td>GDP.pdf</td><td>25.2%</td><td>AA v5.0</td></tr>
+        <tr><td>GDPVal-AA (Elo)</td><td>1630</td><td>AA v5.0</td></tr>
+        <tr><td>AA-Briefcase (Elo)</td><td>1527</td><td>AA v5.0</td></tr>
+        <tr><td>PMPP-Hard AUC</td><td>494.27</td><td>AA v5.0</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>The story in the number mix: <strong>coding and agent/tool-use are the strongest axes</strong> (SWE-Bench, Terminal Bench, BrowseComp), while <strong>deep reasoning (HLE-Diamond 28.7%, Terminal Bench Science 5.7%) lags</strong>. The post frames this as consistent with the joint-RL recipe weighting code and agent rollouts heavily relative to synthetic reasoning problems.</li>
+      <li>Vision benchmarks are not reported in the news post or the model card tables fetched here.</li>
+      <li><strong>Head-to-head context</strong>: AA Intelligence Index 31 places Inkling 2 Small below current closed-source frontier (<code>Claude Opus 5.5</code>, <code>GPT-6 Sol</code>, <code>Gemini 4 Argon</code>) and roughly at parity with recent open-weight frontier (<code>DeepSeek-V4.1-Flash-1017</code>, <code>GLM-5.2</code>, <code>Qwen3.8-Max</code>) depending on task slice.</li>
+    </ul>
+
+    <h3>Safety &amp; Limitations</h3>
+    <ul>
+      <li>News post acknowledges that Inkling 2 Small "still trails" leading closed models on alignment-eval axes and notes weaker general chat quality relative to coding and agent axes; no specific alignment-eval numbers are disclosed in the fetched text.</li>
+      <li>Weights are not released at launch; Apache 2.0 release is contingent on completion of safety testing and promised for the following week (date not confirmed as of Nov 8, 2026).</li>
+      <li>No content-safety taxonomy, red-team methodology, or system-card artifact is linked from the news post. The lab signals that a technical report with the full recipe is forthcoming.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li><strong>Inference and fine-tuning via Tinker</strong>, Thinking Machines' managed training platform. Fine-tuning exposes LoRA and full-parameter paths through the same API used for the lab's smaller research releases.</li>
+      <li>No pricing disclosed in the news post. The AA Intelligence Index entry lists a price point that will populate when weights or an inference endpoint settle.</li>
+      <li>Model identifier: <code>inkling-2-small</code> on Tinker; versioned under Tinker Terms of Use until the Apache 2.0 weight drop.</li>
+    </ul>
+
+    <!-- =============== TIER 2 =============== -->
+
+    <h1 id="bytedance-seed">ByteDance Seed</h1>
+
+    <h2 id="sae-interprets-moe"><a href="https://arxiv.org/abs/2611.08089">SAE Interprets MoE: Sparse AutoEncoders Reveal That MoE Experts Exhibit Human-Interpretable Fine-Grained Specialization</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv:2611.08089</span>
+      <span>2026-11-05</span>
+      <span>Interpretability · MoE · Sparse autoencoders</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Anyuan Zhuo, Shaohua Zhang, Yuan Lin, Pinyan Lu (ByteDance Seed, inferred from the <a href="https://github.com/Bytedance-Seed/SAE-Interprets-MoE">Bytedance-Seed GitHub org</a> hosting the code and SAEs).</li>
+      <li>The paper reframes MoE expert analysis away from "how often is each expert selected on domain-labeled corpora" and towards "how much does each expert actually contribute to the latent features the layer encodes." The vehicle is a sparse autoencoder trained on the layer's output.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Problem.</strong> Classical MoE specialization studies count the gating weight each expert receives on a domain-labeled corpus. This conflates <em>routing</em> (the gate's decision) with <em>contribution</em> (the expert's effect on the layer output), requires a predetermined domain taxonomy, and gives coarse labels ("math," "code") rather than the sub-concept features the layer actually computes.</li>
+      <li><strong>Mechanism.</strong> Let the MoE layer output on token <em>t</em> be <code>y_t = Σᵢ g_i(t) · E_i(t)</code>, the router-weighted sum of expert outputs. Train an SAE over <code>y_t</code>: a latent's pre-activation is an affine function <code>W·y_t + b</code>, which pushes linearly through the sum, so each latent's pre-activation <strong>decomposes exactly into per-expert contributions</strong> <code>Σᵢ g_i(t) · (W·E_i(t))</code>. Aggregating absolute contribution over a corpus gives each expert a <strong>dominant set</strong> of latents it is the primary driver of.</li>
+      <li><strong>Why it works / why it beats prior.</strong> Where gating-based analyses conflate "chose this expert" with "this expert mattered to the output," the decomposition isolates actual output contribution. The affine property of the SAE encoder is what makes the decomposition exact — a nonlinear probe would break this clean decomposition. The resulting unit of specialization is a latent feature, not a hand-chosen domain, so the taxonomy comes from the SAE dictionary rather than from the analyst.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Model studied.</strong> <code>Qwen3-30B-A3B</code> at layers 4, 30, and 46 — one early, one mid, one late. The abstract reports per-expert contribution concentration is materially sharper than the gating distribution: most latents have one or two <em>dominant</em> experts rather than diffuse participation across the active-k set.</li>
+      <li><strong>Overlap structure.</strong> Dominant-set overlap between pairs of experts is not uniform — it concentrates on a small number of expert pairs, consistent with the experts organizing into functional clusters rather than independent specialists.</li>
+      <li><strong>Auto-interpretation.</strong> The paper runs a prompted LLM over each expert's dominant-latent activations and surfaces sub-domain splits the usual coarse analyses miss: separate experts for Java vs. front-end web code, and for geometry vs. arithmetic/polynomials.</li>
+      <li>Headline-number tables are not disclosed in the abstract; the detailed per-layer and per-expert statistics are in the body (not yet fetched here).</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Open-sources code and the trained SAEs at <code>github.com/Bytedance-Seed/SAE-Interprets-MoE</code>, which makes this one of the first public SAE suites trained on a frontier open-weight MoE.</li>
+      <li>Scope limit: the analysis is per-layer, static per corpus; it does not yet characterize how expert specialization evolves through training or across fine-tuning.</li>
+    </ul>
+
+    <h1 id="google">Google</h1>
+
+    <h2 id="muir"><a href="https://arxiv.org/abs/2611.08376">Muir: Linear Attention with Sensitivity-Allocated Gating and Matched-Filter Readout</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv:2611.08376</span>
+      <span>2026-11-05</span>
+      <span>Architectures · Linear attention · Long context</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Tushaar Gangavarapu (UT Austin), Gil Tabak, Clemens JS Schaefer (<code>cjsschaefer@google.com</code>, corresponding author). A three-author linear-attention architecture paper framed as a diagnostic-plus-redesign of <code>Gated DeltaNet-2</code> (GDN-2).</li>
+      <li>Two moves: replace GDN-2's dense full-rank gates with a <strong>sensitivity-allocated low-rank projection</strong>, and replace unweighted state readout with a <strong>matched-filter readout gate</strong>. Saved parameters go to a wider FFN.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Problem.</strong> GDN-2's state recurrence <code>S_t = (I − k_tᵀ(b_t⊙k_t)) · Diag(α_t) · S_{t−1} + k_tᵀ(w_t⊙v_t)</code> uses dense full-rank erase gate <em>b</em> ∈ (0,2) and write gate <em>w</em>, which together consume <strong>2d²</strong> of the per-layer parameter budget (≈12d² total) — compressing the FFN by &gt;25%. At inference, slow-decaying state rows accumulate large norm and dominate unweighted readout. Chunkwise kernels also fail at wide matmul sizes because cumulative-decay division under/overflows.</li>
+      <li><strong>Mechanism — sensitivity-allocated gating.</strong> The paper proves (Prop. 3.1) that layer output sensitivity to the erase gate is strictly lower than to the write gate; erase can therefore be low-rank without harming the forward pass. All gates are fused into one low-rank projection with ranks apportioned by per-gate sensitivity — erase gets fewer, write gets more. The erase logit decomposes as a low-rank term plus a per-channel bias.</li>
+      <li><strong>Mechanism — matched-filter readout.</strong> Queries are reweighted per state row before readout, combining a static channel profile with a dynamic per-token gain. The optimal gain scales as <code>λ_j^(ℓ/2)</code> for a retrieval lag <em>ℓ</em> and decay <em>λ_j</em>, matching the state row's expected decay. This equalizes state rows and lowers the erasure needed to prevent cross-row interference.</li>
+      <li><strong>Mechanism — boundary-pivoted chunk kernel.</strong> Splits relative decays without division, eliminates the full-chunk 3D decay tensor, and solves within-chunk triangular systems with block matmul. Stays numerically stable at the large chunk sizes that wide-matrix accelerators (TPU, H100 with tensor cores) prefer.</li>
+      <li><strong>Why it works.</strong> Writes affect every channel; erasure is active only where keys are active, so an erase gate has lower output sensitivity and can be cheap. Reallocating the saved parameters into FFN width is where most of the perplexity gain comes from, with the matched-filter readout giving a separate bump on extractive-recall tasks.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>Scale sweep.</strong> 166M → 1.34B parameters. Across all scales: <strong>perplexity 1.8–2.0% lower than GDN-2 and 2.5–3.6% lower than Transformer</strong>; commonsense zero-shot accuracy up by <strong>up to 1.9 points</strong>.</li>
+      <li><strong>Long context.</strong> At 1.34B parameters, trained at 4K context, Muir extrapolates to <strong>10M-token streams without perplexity drift</strong>. Passkey retrieval holds <strong>near 100% up to 1M tokens</strong>.</li>
+      <li><strong>Training efficiency.</strong> Reaches GDN-2's 100B-token validation loss <strong>1.2× faster</strong>; trains <strong>2.7× faster than Transformer at 32K</strong> context length and <strong>1.64× faster than Transformer at 16K</strong>. Throughput at inference matches GDN-2.</li>
+      <li><strong>NLL deltas (Fig. 1).</strong> Muir is 18.0–20.4 millinats better than GDN-2 and 25.0–36.2 millinats better than Transformer in validation NLL across scales.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Fig. 1 attribution: the low-rank gating + FFN expansion ablation drives most of the perplexity delta over GDN-2; matched-filter readout drives the extractive-recall delta specifically.</li>
+      <li>Rank-allocation ablation (Section 5.3 of the paper, referenced in the abstract): sensitivity-allocated ranks beat uniform-rank splits at matched parameter budget.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Limitations are not stated explicitly in the fetched portion of the paper; the 10M-token extrapolation is reported without a corresponding compute cost, and training-cost claims are at matched token counts rather than matched wall-clock on the same hardware.</li>
+    </ul>
+
+    <h1 id="nvidia">NVIDIA</h1>
+
+    <h2 id="vflash"><a href="https://arxiv.org/abs/2611.08449">VFlash: Fast, Accurate Visual Planning via Flash Primitive Decoding</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv:2611.08449</span>
+      <span>2026-11-05</span>
+      <span>Robotics · VLM decoding · Speculative decoding · World action models</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Yu-Cheng Chou, Shihao Wang, Jin Huang, et al. (NVIDIA; co-authors include <code>Johan Bjorck</code>, <code>Linxi "Jim" Fan</code>, <code>Jan Kautz</code>, <code>Zhiding Yu</code>, and <code>Sifei Liu</code> — all NVIDIA-affiliated). 18 authors total.</li>
+      <li>Target problem: autoregressive VLMs generate visual plans (bounding boxes, point trajectories, 3D motion tracks) coordinate-by-coordinate, so richer plans cost proportionally more sequential forward passes. VFlash collapses each <em>primitive</em>'s coordinates into one draft pass.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Problem.</strong> Writing a bounding box as "<code>&lt;box&gt; u1 v1 u2 v2 &lt;/&gt;</code>" is four sequential decoding steps for coordinates alone. A 32-point trajectory is 64 steps (2D) or 96 steps (3D). Plans that a robot or driving policy consumes are therefore bottlenecked on the per-token loop, not on compute. Classical speculative decoding (DFlash-style) accepts a draft only where its tokens exactly match the target's greedy continuation (Eq. 2 in the paper) — token-level agreement does not measure <em>spatial</em> accuracy, so a near-miss draft that would still be a correct plan is rejected.</li>
+      <li><strong>Mechanism — Flash Primitive Decoding (FPD).</strong>
+        <ul>
+          <li>Base model: Qwen3-4B language backbone + a native-resolution MoonViT vision encoder + an MLP connector. Coordinates are encoded as 1,001 special tokens (image coordinates normalized to [0, 1000]).</li>
+          <li>Each primitive has a <strong>fixed layout</strong> determined by type and tool-call length (Table 1 of the paper): boxes have a 4-coordinate slot, 2D trajectories have <em>P</em> paired slots, 3D trajectories have an interleaved 2D+3D block.</li>
+          <li>A five-layer <strong>non-causal block drafter</strong> runs over frozen target-model features. On a primitive-start token, the drafter predicts <em>all B(s)−1</em> downstream coordinate positions of that primitive <strong>in a single forward pass</strong> (Eq. 3). Supervision is a uniform-weighted cross-entropy against annotated coordinates — <em>not</em> against the target model's continuation (Eq. 4), which is what unblocks learning spatially-correct but token-divergent plans.</li>
+          <li>At inference: 16-position DFlash blocks run until a primitive-start token is accepted; the FPD drafter then produces the whole primitive block. Per-position logit constraints enforce the primitive's layout. Boxes get an extra guard: a LocateAnything-based spatial-confidence check; failed boxes fall back to constrained AR decoding, so accuracy never drops below the AR baseline.</li>
+          <li>Cost model (Eq. 6): <code>L_dir = (t_par + t_target) / B(s)</code>. Sequential passes per primitive are constant in the primitive's size.</li>
+        </ul>
+      </li>
+      <li><strong>Why it works.</strong> Once primitive type and length are fixed, each coordinate position has a known role, so joint prediction is well-posed even without autoregressive factorization. The spatial-loss supervision means the drafter can beat its AR target on spatial error, not only tie it.</li>
+    </ul>
+    <figure>
+      <img src="https://arxiv.org/html/2611.08449v1/pipeline.v1.png" alt="VFlash flash primitive decoding pipeline diagram" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper, hotlinked from arXiv). Flash Primitive Decoding pipeline: a non-causal block drafter predicts a primitive's full coordinate layout in one pass over frozen target features.</figcaption>
+    </figure>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li><strong>2D trajectories (Table 2 of the paper), VFlash vs AR at matched 4B target:</strong>
+        <ul>
+          <li>ShareRobot-Bench: Hausdorff Distance <strong>0.162 vs 0.175</strong>, RMSE <strong>0.133 vs 0.142</strong>.</li>
+          <li>VABench-V: HD <strong>0.116 vs 0.125</strong>, RMSE <strong>0.089 vs 0.093</strong>.</li>
+          <li>The paper reports VABench spatial error drops <strong>~40%</strong> vs the best prior comparison, LoHo-Manip.</li>
+        </ul>
+      </li>
+      <li><strong>Bounding boxes (Table 3), F1 mean | BPS:</strong>
+        <ul>
+          <li>COCO: AR 48.68 at 3.15 BPS → VFlash with AR fallback 47.79 at <strong>8.76 BPS</strong>.</li>
+          <li>Dense200: AR 60.10 at 6.73 BPS → VFlash with AR fallback 61.78 at <strong>17.46 BPS</strong>.</li>
+          <li>Direct (no fallback) on Dense200: 39.09 F1 at 22.66 BPS — the fallback is what preserves precision at high density.</li>
+        </ul>
+      </li>
+      <li><strong>3D trajectories (Table 4):</strong> AgiBot 3D-only success rate SR@5 improves from <strong>0.503 (AR) to 0.731 (VFlash)</strong>. Abstract reports <strong>~25× faster 3D point motion forecasting</strong>, flagged as a preliminary single-rollout measurement.</li>
+      <li><strong>Downstream — world action model.</strong> Using VFlash plans in a MolmoSpaces-trained world action model lifts <strong>average success from 62.6% → 70.2%</strong> across four task suites.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>Fallback vs direct boxes (Table 3): Dense200 mean F1 <strong>61.78 vs 39.09</strong> — direct-only is fast but loses high-IoU precision; fallback recovers it at only a modest throughput cost.</li>
+      <li>Joint 2D+3D vs 3D-only training: AR's 3D ADE is 15–51% worse when forced to generate joint outputs; VFlash degrades much less.</li>
+      <li>Wrist-camera training: VFlash ADE drops 3–12% when wrist-camera frames are added to the training mix.</li>
+      <li>MolmoSpaces downstream: AR-generated plans reach 61.0 vs VFlash 70.2; swapping plan input for raw image context costs 6.5 points; 3D-only plans (no 2D) sit at 69.3.</li>
+    </ul>
+
+    <h3>Other</h3>
+    <ul>
+      <li>Limitations: box precision drops at IoU 0.95; the 25× figure for 3D point forecasting is called "preliminary" and comes from single-rollout measurements. Multi-primitive generation (drafting several primitives in one block) is named as future work.</li>
+    </ul>
+
+    <!-- =============== TIER 3 =============== -->
+
+    <h1 id="anthropic">Anthropic</h1>
+
+    <h2 id="components-of-agent-memory"><a href="https://www.anthropic.com/research/components-of-agent-memory">The Components of Agent Memory</a></h2>
+    <div class="paper-meta">
+      <span>Tier 3 · Engineering Blog Post</span>
+      <span>anthropic.com</span>
+      <span>2026-11-06</span>
+      <span>Agent memory · Dreaming · Wikis · Claude Code</span>
+    </div>
+
+    <ul>
+      <li>Author: Lance Martin (Anthropic Engineering). Post summarizes empirical results across <code>CL-Bench 1.0</code>, Pokémon Red runs, an internal ~350,000-file ~420M-token wiki corpus, Harvey LAB merger questions, and a contract-terms wiki.</li>
+      <li><strong>Memory architecture — four tiers.</strong> (1) <em>Transcripts</em>, a searchable event log of past sessions; (2) <em>memory notes</em> Claude writes during work; (3) <em>memory representations</em> (wikis, contract pages) compiled from notes; (4) <em>injected context</em> loaded into every session — <code>MEMORY.md</code> in Claude Code is the prototype (first 200 lines or 25 KB). Salience judgment (what to write down) is a cross-cutting ingredient, not a fifth tier.</li>
+      <li><strong>"Dreaming" consolidation — mechanism.</strong> Offline passes over transcripts and notes that: (a) correct errors in existing notes, (b) merge duplicates, (c) build wikis from scratch, (d) promote items to injected context. The post does not disclose the trigger, cadence, or prompt; it says dreaming "requires compute" and is run as a background job. The fix pattern is adversarial self-review: Claude reads its own earlier notes and emits corrections.</li>
+      <li><strong>Problem being solved.</strong> Fixed save-rules ("record only failures," "write everything") hurt stronger models — Opus 5 loses 0.234 on CL-Bench when told to record only failures. Letting Claude judge salience itself, with offline dreaming to repair drift, outperforms rule-based memory stacks.</li>
+      <li><strong>CL-Bench 1.0 database task</strong>, mean reward, stateless → memory:
+        <ul>
+          <li>Opus 5.5: 0.655 → <strong>0.838</strong></li>
+          <li>Sonnet 5.5: 0.644 → <strong>0.833</strong></li>
+          <li>Opus 5: 0.564 → <strong>0.828</strong></li>
+          <li>Opus 4.7: 0.383 → 0.700</li>
+          <li>Sonnet 5: 0.306 → 0.610</li>
+          <li>Sonnet 4.6: 0.330 → 0.364 (0.641 with refined prompting)</li>
+        </ul>
+      </li>
+      <li><strong>Pokémon Red case study.</strong> Sonnet 3.7 wrote 413 memory files and earned 1 badge. Fable 5 wrote ≈10 files and earned 4 badges. More memory ≠ better memory. A corrected-by-dreaming Mt. Moon note let the agent reach Cerulean at action 1,935; the uncorrected note never escaped the mountain.</li>
+      <li><strong>Wiki on 350K-file / 420M-token internal corpus</strong>, 25 questions, 128 dreaming sessions: wiki-only <strong>13% → 48%</strong>; wiki+search <strong>54% → 61%</strong> vs 53% for search-only.</li>
+      <li><strong>Harvey LAB merger questions (24 items):</strong> wiki 87% vs. search 73%. Another LAB task showed "no clear gain" and one wiki grew to 1.77× the corpus size — compression inversion is a live failure mode.</li>
+      <li><strong>Contract-terms wiki:</strong> going from one shared table to one page per contract lifted coverage from <strong>41/57 facts (72%) to 57/57 facts (100%)</strong>. The structural representation matters as much as the content.</li>
+      <li>Open questions named in the post: when to write memory during a run, how to keep a wiki current as the underlying corpus shifts, and whether salience judgment should be a learned per-token signal rather than a prompt-level discipline.</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
