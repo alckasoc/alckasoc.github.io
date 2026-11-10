@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Compression, Caching, and Distillation Review — November 9, 2026 | Auto Lit Review</title>
+<meta name="description" content="Two NVIDIA Research papers on hardware-guided compression and CPU-side reasoning caches, StepFun's P²-MOPD for multi-teacher distillation, and Anthropic's first end-to-end PCB-design study with Claude Fable 5.2." />
+<link rel="stylesheet" href="../styles/main.css" />
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+
+<div class="layout">
+  <aside class="toc">
+    <a href="../index.html" class="toc-brand">Auto Lit Review</a>
+    <div class="toc-brand-sub">Nov 9, 2026</div>
+    <nav>
+      <ul>
+        <li><a href="#tldr" class="toc-h1">TL;DR</a></li>
+        <li class="toc-h1"><a href="#nvidia">NVIDIA Research</a>
+          <ul>
+            <li class="toc-h2"><a href="#autocompress">AutoCompress</a></li>
+            <li class="toc-h2"><a href="#cpu-arc">CPU-ARC</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#stepfun">StepFun</a>
+          <ul>
+            <li class="toc-h2"><a href="#p2-mopd">P²-MOPD</a></li>
+          </ul>
+        </li>
+        <li class="toc-h1"><a href="#anthropic">Anthropic</a>
+          <ul>
+            <li class="toc-h2"><a href="#claude-electronics">Claude on PCB Design</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Review · November 9, 2026</div>
+    <h1 class="page-title">Compression, Caching, and Multi-Teacher Distillation</h1>
+    <div class="page-meta">4 entries · 3 labs · auto-generated</div>
+
+    <section id="tldr" class="tldr">
+      <h2>TL;DR</h2>
+      <h3>Focus</h3>
+      <p>No new flagship model landed in the window. The day's substantive output is three efficiency-focused research papers — two from NVIDIA Research and one from StepFun — paired with an Anthropic engineering case study on hardware design. <strong>AutoCompress</strong> is a differentiable architecture search that targets serving-engine latency, throughput, and memory instead of parameter count, and compresses <code>Nemotron 3.5 Super</code> from 120B to 74B for single-B200 BF16 serving at 128K context. <strong>CPU-ARC</strong> distills frontier-LLM reasoning traces into Python programs built from <em>semantic functions</em> that run on CPU with a small target model; it claims <strong>16–291×</strong> cheaper invocation than the source model. <strong>P²-MOPD</strong> treats a multi-teacher student's weights as a trainable linear combination of frozen expert task vectors, closing MOPD's final average recovery in half the training steps and lifting a 1.7B student to <strong>94.7%</strong> average recovery versus 80.9% for MOPD. <strong>Claude Fable 5.2</strong> designs three working consumer electronics boards end-to-end with minimal prompting — the single new capability demonstration from a frontier lab in this window.</p>
+      <h3>Competitiveness</h3>
+      <p>The compression track is now a direct contest over serving economics rather than FLOPs. NVIDIA's Nemotron family is being pushed into the single-GPU deployment envelope that <code>Qwen3.5-397B</code>, <code>DeepSeek-V4.1-Flash</code>, and <code>GLM-5</code> occupy at the open-weights frontier; <code>Claude Opus 5.5</code>, <code>GPT-6.1 Sol</code>, and <code>Gemini 4 Argon</code> continue to lead the closed leaderboard on <code>SWE-Bench</code>, <code>LiveCodeBench</code>, and <code>Humanity's Last Exam</code>, but all three are substantially more expensive to serve than the newly compressed Nemotron variant. CPU-ARC takes the pressure off the API entirely for repeated reasoning, if its 16–291× invocation-cost claim survives independent replication. On the design-automation axis, Anthropic's <strong>Diode PCB Gym</strong> reports Claude Fable 5.2 at 69% versus Fable 5 at 25%, and <strong>BenchCAD 2.1</strong> at 83.5% — roughly double Fable 5.1 — which positions Claude as the current leader among frontier models on real-world circuit layout.</p>
+      <h3>New frontier releases</h3>
+      <p>None in the window. Prior days' launches <code>Inkling 2 Small</code> (2026-11-08) and <code>Gemini Omni 1.2 Flash</code> (2026-11-05) remain the most recent flagships; the next Tier 1 is still ahead.</p>
+    </section>
+
+    <h1 id="nvidia">NVIDIA Research</h1>
+
+    <h2 id="autocompress"><a href="https://arxiv.org/abs/2611.08290">AutoCompress: Automated Hardware-Guided Model Compression</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv (2611.08290)</span>
+      <span>Submitted 2026-11-05 · featured on HF Daily 2026-11-09</span>
+      <span>Model compression · Differentiable architecture search · Serving-engine cost models</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Standard LLM pruning workflows target parameter count. The authors argue parameter count is a weak proxy for the quantities a production team actually optimizes — tokens per second at a given batch size, time-to-first-token at a given context length, and peak memory on the specific accelerator — because those depend jointly on architecture, workload, hardware, and the serving engine's kernels.</li>
+      <li>AutoCompress replaces parameter-count minimization with a differentiable architecture search whose objective is a serving-engine cost model validated against end-to-end measurements. The search jointly chooses global shape and per-layer heterogeneity, producing architectures that are not uniform width-and-depth reductions of the parent.</li>
+      <li>Authors: Sheldon Liang, Ali Taghibakhshi, Saurav Muralidharan, Sharath Turuvekere Sreenivas, Ashwath Aithal, Pavlo Molchanov, Nima Tajbakhsh. The affiliation block was not readable on the served HTML, but the authors and the compressed artifact (<code>Nemotron 3.5 Super</code>) place the work at NVIDIA Research.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Problem.</strong> Parameter count does not predict latency, throughput, or memory. A smaller model with the wrong attention head count or MLP shape can land on a slower kernel path than a larger one that fits the serving engine's fused code paths.</li>
+      <li><strong>Mechanism.</strong> AutoCompress parameterizes a search over per-layer widths, head counts, and MLP intermediate sizes as a differentiable architecture. For every candidate architecture it queries a hardware cost model that predicts latency, throughput, and memory under the target serving engine. The cost models themselves are calibrated against end-to-end measurements on the real accelerator, so the search optimizes a signal that is grounded in what the kernel actually does rather than a FLOPs or parameter-count proxy. The authors evaluate three deployment regimes — long-context local coding, batched datacenter serving, and latency-sensitive in-game interaction — which have different cost surfaces and therefore pull the architecture in different directions.</li>
+      <li><strong>Why it works / why it beats prior.</strong> Minitron and other parameter-count-driven pruners can over-prune the dimensions that drive serving-engine throughput (MLP width, head alignment with tensor-parallel splits) while leaving dimensions the hardware tolerates cheaply untouched. Putting latency/throughput/memory directly in the objective trades parameter count for serving speed where that trade is favorable on the specific accelerator, and against it otherwise.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Headline flagship result: <code>Nemotron 3.5 Super</code> is compressed from <strong>120B</strong> to <strong>74B</strong> parameters for single-B200 BF16 serving at <strong>128K</strong> context, retaining <strong>95%</strong> of its mean benchmark score across the eight-benchmark evaluation suite.</li>
+      <li>Against Minitron at matched target budgets, AutoCompress raises average accuracy over eight benchmarks by <strong>+6.57</strong> points on RTX 5070, <strong>+2.35</strong> points on RTX 5080, and <strong>+0.57</strong> points on H100. The gap widens as the accelerator gets smaller — the consumer-class RTX 5070 target is where parameter-count-driven pruning leaves the most slack on the table.</li>
+      <li>Per-benchmark tables, the B200 vs Minitron comparison, and the ablations breaking out the contribution of each hardware-cost term were not retrievable from the rate-limited HTML at the time of this review; they should be read from the paper directly.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>arXiv 2611.08290, CC BY 4.0. No code release is noted in the abstract. The compressed Nemotron 3.5 Super checkpoint is referenced but its distribution channel is not stated on the abstract page.</li>
+    </ul>
+
+    <h2 id="cpu-arc"><a href="https://arxiv.org/abs/2611.09891">CPU-ARC: Agentic Reasoning Caching for on-CPU Reasoning Reuse</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv (2611.09891)</span>
+      <span>Submitted 2026-11-06 · featured on HF Daily 2026-11-09</span>
+      <span>Agentic caching · CPU inference · Reasoning reuse · Small language models</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>CPU-ARC proposes <em>agentic reasoning caching</em>: converting a frontier LLM's reasoning transcript on one instance into a Python program that solves the whole equirational class of problems it stands for. The program runs on CPU with a small target model for elementary NLP primitives only, and the expensive source model is never called at inference time.</li>
+      <li>The paper slots this between the two existing styles of system-level caching: <em>monolithic</em> caches (e.g. prefix/KV caches that key on exact input) that break under paraphrase and reparameterization, and <em>modular</em> caches (retrieval + reuse) that are robust but cannot guarantee correctness and are expensive to maintain. CPU-ARC is presented as a hybrid: robust to perturbation like modular caches, inspectable and correctable like monolithic ones, and cheap to invoke because the heavy model is factored out.</li>
+      <li>Authors: Peter Belcak, Greg Heinrich, Saurav Muralidharan, Shizhe Diao, Pavlo Molchanov. The header on the HTML links to <code>nv-dler.github.io</code> ("Lab") and <code>research.nvidia.com/labs/lpr/lfi/</code> ("Project Moonshot: Local Frontier Intelligence"), consistent with NVIDIA Research. The paper is 28 pages with 9 figures and 11 tables.</li>
+    </ul>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Problem.</strong> LLM agents replay the same reasoning across calls. Prefix/KV caches only help when the input repeats verbatim, so a paraphrase or a change in a numerical parameter re-triggers a full reasoning pass at full cost. Retrieval-based modular caches patch the robustness problem but surface a correctness problem in its place: the retrieved solution may be wrong, and inspecting or editing a retrieved solution-vector is awkward.</li>
+      <li><strong>Mechanism.</strong> CPU-ARC separates four roles: source model <code>S</code> (the expensive frontier LLM whose reasoning is cached), builder <code>B</code> (the model that analyzes <code>S</code>'s transcripts and emits cache programs), target model <code>T</code> (a small LM that runs caches at inference), and judges <code>J</code>. An agentic reasoning cache is a set of <em>semantic functions</em> — Python callables with signature <code>f: Context → dict[str, Any]</code> whose inputs, outputs, and callees are referenced by natural-language description, not fixed names. The runtime exposes seven primitives: <code>load</code>/<code>do</code>/<code>narrate</code> for control flow and memory, <code>lm</code>/<code>extract</code> for calling the small target model on elementary NLP subtasks, <code>convert</code>/<code>smart_convert</code> for type coercion (with a validated <code>ast.literal_eval()</code> fallback), and <code>invoke_tool</code> for external tools. Memory is a stack of CPU-backed vector-store layers that <code>load()</code> searches top-down; each <code>do()</code> pushes an isolated layer so the callee's local variables cannot leak. Construction has five phases: input–output isolation, decomposition, parameter recognition, planning, and implementation. At invocation time the gated caller tries the cache first and falls back to the source LLM on a miss or error.</li>
+      <li><strong>Why it works / why it beats prior.</strong> Two observations carry the design. <em>O1:</em> for a solvable problem the search for a solution can be decoupled from its execution — the frontier model does the search once, the small model does the execution forever. <em>O2:</em> the reasoning for one instance typically applies to a class of equirational instances (the MATH-500 example in the paper notes that the divisor-count reasoning for 196 is identical in shape to the reasoning for 144, differing only in the prime factorization). Because each cache entry is Python with semantically-named dependencies, swapping in an improved subroutine does not force its callers to change as long as the new description entails the old one — the paper calls this <em>semantic discovery</em>.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>The authors report <strong>16–291×</strong> cheaper invocation than the source LLM across a range of mathematical and scientific benchmarks (abstract claim). Section 1 states the build cost of a cache entry is <strong>12–84×</strong> the cost of the original source-model reasoning, so a cache pays back after ≈1 invocation at the low end and after tens of invocations at the high end.</li>
+      <li>MATH-500 and SciBench appear as worked examples (ideal gas law with volume substitution in Appendix A). The full benchmark grid, base-model identity, and the breakdown of the 16–291× range were not retrievable from the served HTML at the time of this review.</li>
+      <li>The paper claims the cache is robust to parametric perturbation (rephrasing a prompt or substituting a parameter does not degrade performance), explainable and correctable by inspection (because entries are Python, not latent vectors), and continually trainable.</li>
+    </ul>
+
+    <h3>Availability</h3>
+    <ul>
+      <li>arXiv 2611.09891. The project page <code>research.nvidia.com/labs/lpr/lfi/</code> is referenced as "Project Moonshot: Local Frontier Intelligence." No open-source cache corpus is announced in the abstract.</li>
+    </ul>
+
+    <h1 id="stepfun">StepFun</h1>
+
+    <h2 id="p2-mopd"><a href="https://arxiv.org/abs/2611.03953">P²-MOPD: Accelerating Multi-Teacher On-Policy Distillation via Parameter Priors</a></h2>
+    <div class="paper-meta">
+      <span>Tier 2 · Research Paper</span>
+      <span>arXiv (2611.03953)</span>
+      <span>Submitted 2026-11-02 · featured on HF Daily 2026-11-09</span>
+      <span>Multi-teacher distillation · Task arithmetic · Parameter priors · RL</span>
+    </div>
+
+    <h3>Overview</h3>
+    <ul>
+      <li>Multi-teacher on-policy distillation (MOPD) fine-tunes one student on its own rollouts against several domain-specific experts. Task arithmetic (TA) merges expert weights training-free. P²-MOPD unifies them: the student's weights are a trainable linear combination of frozen expert task vectors plus a trainable base, optimized jointly against the MOPD objective. Experts act as a <em>parameter prior</em> that constrains the student without confining it to the task-vector span.</li>
+      <li>Affiliations: StepFun (Jiacheng Lu, Rui Sun, Beidi Luan, Jing Li, Daxin Jiang, Zuo Bai; Sinuo Wang jointly with Adelaide), with co-authors at Adelaide University (AIML), Shanghai Jiao Tong University, Singapore University of Technology and Design, and MBZUAI. Correspondence: Qi Wu (Adelaide) and Zuo Bai (StepFun). Four domains in the experiments: medicine, law, finance, and instruction following.</li>
+    </ul>
+
+    <figure>
+      <img src="https://arxiv.org/html/2611.03953v1/P2-MOPD.png" alt="P²-MOPD method overview" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from the paper). P²-MOPD overview — the student is a trainable linear combination of frozen expert task vectors plus a trainable base, optimized against the MOPD objective.</figcaption>
+    </figure>
+
+    <h3>Methodology</h3>
+    <ul>
+      <li><strong>Problem.</strong> Running MOPD from a base checkpoint is expensive, recovers domains unevenly (worst-domain recovery can sit below 50%), and leaves a large slack that task-vector merging does not close — a uniform TA merge with <code>λ_k = 1/K</code> recovers less than half the gap between the base model and the teachers.</li>
+      <li><strong>Mechanism.</strong> For every linear projection <code>m</code> in each decoder layer (attention <code>q/k/v/o</code>; MLP <code>gate/up/down</code>), parameterize <code>W_m(B, α) = B_m + Σ_k α_{k,m} τ_{k,m}</code>, with task vectors <code>τ_{k,m} = W^(k)_m − W^(0)_m</code> frozen and both <code>B_m</code> (full trainable tensors) and <code>α</code> (scalars) trainable. Initialization pins the model exactly at the TA merge: <code>B_m = W^(0)_m</code> and <code>α_{k,m} = λ_k = 1/K</code>. The coefficient gradient falls out of the chain rule as the inner product <code>∂L/∂α_{k,m} = ⟨G_m, τ_{k,m}⟩</code> and reuses the same backward pass as the weight gradient. Both channels get their own AdamW optimizer and separate gradient clipping (Algorithm 1); the weight channel has weight decay off. Three granularity options tie coefficients at module (<code>K · |M|</code> scalars; the main setting), layer (<code>K</code> per decoder layer), or model (<code>K</code> total) level. The MOPD reward is top-k support-restricted reverse-KL on candidate tokens: <code>r_i(v) = −w_i(v)[log p(v) − log q(v)]</code> with <code>w_i(v) = p(v) / Σ_{u ∈ V_i} p(u)</code>.</li>
+      <li><strong>Why it works / why it beats prior.</strong> Pure coefficient learning (learning <code>α</code> alone, keeping <code>B</code> frozen at the base) stays inside the task-vector span and falls far short; pure MOPD leaves the expert directions unused. P²-MOPD lets the student travel <em>along</em> the task-vector directions where that is efficient and <em>off</em> them where it isn't — the authors report P²-MOPD moves roughly an order of magnitude farther along the lagging domain's task vector than uniform TA does. Over the closest prior (<strong>IM-MOPD</strong>, Kim et al. 2026), which merges task vectors at fixed training points by an external validation rule, P²-MOPD learns the mixing coefficients from the distillation gradient instead — merging and training are one optimization, not a two-step heuristic.</li>
+    </ul>
+
+    <h3>Evaluation &amp; Results</h3>
+    <ul>
+      <li>Student scales: <code>Qwen3-1.7B</code> and <code>Qwen3-4B</code>. Averaged over three seeds. The 1.7B model reaches <strong>94.7%</strong> average recovery at the end of training versus <strong>80.9%</strong> for MOPD on the same initialization — a 13.8-point gap driven largely by closing the worst-domain tail.</li>
+      <li>Worst-domain recovery rises from "below 50%" to "nearly 90%" by end of training.</li>
+      <li>P²-MOPD surpasses MOPD's <em>final</em> average recovery after approximately half the training steps.</li>
+      <li>Per-domain tables for 1.7B and 4B across medicine / law / finance / instruction following, together with the ablation suite (inside vs beyond the task-vector span, coefficient granularity, initialization choice, learned-coefficients-only variants), appear in Sections 4 and 5 and should be read from the paper directly; they were not retrievable from the served HTML at the time of this review.</li>
+    </ul>
+
+    <h3>Ablations</h3>
+    <ul>
+      <li>The ablation set named in Section 3 breaks into four studies: (i) inside the task-vector span (learn <code>α</code> only) versus beyond it (learn <code>B</code> and <code>α</code> jointly), (ii) coefficient granularity at module / layer / model levels, (iii) initialization at the TA merge versus at the base, and (iv) training schedules that freeze <code>α</code> after a warm-up versus train it throughout. Numerical results for each were not retrievable; the method section tags module-granularity as the configuration that carries the headline numbers.</li>
+    </ul>
+
+    <h1 id="anthropic">Anthropic</h1>
+
+    <h2 id="claude-electronics"><a href="https://www.anthropic.com/research/claude-electronics-design">Testing Claude on real-world electronics design</a></h2>
+    <div class="paper-meta">
+      <span>Tier 3 · Engineering Blog</span>
+      <span>Anthropic Research</span>
+      <span>2026-11-09</span>
+      <span>Agentic design · PCB · CAD · Capability demonstration</span>
+    </div>
+
+    <ul>
+      <li>Anthropic and Diode Computers put <code>Claude Fable 5.2</code> through end-to-end hardware design on three consumer devices: a USB-C speakerphone, a voice-assistant hub, and a battery-powered handheld pet. Diode built the prototypes directly from Claude's output files. All three "worked without any fixes to their circuitry" and are "still in good working order" after weeks of use. The prototypes have no electrical validation, antenna tuning, thermal testing, or regulatory certification, and were not designed for mass production.</li>
+      <li><strong>Diode PCB Gym</strong> (internal benchmark for component placement and re-routing): Claude Fable 5.2 scored <strong>69%</strong> versus <strong>25%</strong> for Fable 5. <strong>BenchCAD 2.1</strong> (public, rebuilds 3D parts and boards from drawings): Claude Fable 5.2 scored <strong>83.5%</strong>, "nearly double" Fable 5.1. A PCB Gym scatter plot pitches score against total API cost for recent frontier models.</li>
+      <li>Geometric routing: Fable 5.2 routes high-speed, high-current, and noise-sensitive connections first. On the hub it routed USB and Ethernet differential pairs with per-pair length matching and tuning zigzags, and arranged the power supply for efficiency. Earlier generations misplaced supporting parts and misoriented connectors.</li>
+      <li>Revision behavior: on the four-layer speakerphone, Claude reassigned signals to different pins on two chips so that touch-control tracks stayed on one layer, and later swapped interchangeable pins and re-laid a corner of the board rather than adding layer jumps. On the hub it reported the copper was "getting too tangled to trace visually," deleted and rerouted connections "dozens of times," and continued until the layout worked.</li>
+      <li>Software: Claude read datasheets to predict behavior (asked whether the pet works without a battery, it read the charger datasheet and predicted USB power would work but the charging light would flicker, because the charger keeps charging a small capacitor in the battery's place). When KiCad's single-track router was too slow for the hub's long tracks from a 100-pin connector, Claude "within about half an hour" wrote its own grid-search router that lays each long track "in roughly a second."</li>
+      <li>Physical and electrical constraint handling: the speakerphone could not be lowered straight into its enclosure because the mute switch hit the back wall — Claude found it fits if tilted <strong>25 degrees</strong> during installation, tested the geometry in 3D, and added it to the assembly instructions. On the hub, Claude calculated that a <strong>25 mm</strong> microphone port would resonate near <strong>3.4 kHz</strong>; a wedge-shaped enclosure shortened the ports to about <strong>10 mm</strong>, moving the resonance to about <strong>8.9 kHz</strong>. The speakerphone firmware dims its LED ring as audio gets louder to stay under the board's designed current limit.</li>
+      <li>Manufacturing: Claude ran DFM and sourcing checks itself. For the hub, DFM flagged <strong>six</strong> solder-mask slivers as too thin, which Claude widened without moving parts. It ignored a ground-to-ground connection flagged as an error, reasoning that it was deliberate and would not affect performance. Diode made all three boards from Claude's files with no back-and-forth adjustments.</li>
+      <li>Prompts were short directives such as "clean up the schematic" and "continue"; direct prompting was the exception, not the rule. Anthropic notes a commercial relationship with Diode and work on PCB design together since 2025.</li>
+    </ul>
+
+    <figure>
+      <img src="https://www-cdn.anthropic.com/images/4zrzovbb/website/1a999b9164b6d23ac7b94c2dcdf4c9230e26e940-1920x1280.png" alt="Three devices designed by Claude Fable 5.2" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 1 (from Anthropic). The three devices Claude Fable 5.2 designed end-to-end: battery-powered handheld pet, voice-assistant hub, and USB speakerphone.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://www-cdn.anthropic.com/images/4zrzovbb/website/702c38e9c4a83120ea3734aab60726e39a69be23-1600x1040.png" alt="Diode PCB Gym score vs total API cost" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 2 (from Anthropic). Diode PCB Gym score plotted against total API cost for recent frontier models — Claude Fable 5.2 at 69% vs Fable 5 at 25%.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://www-cdn.anthropic.com/images/4zrzovbb/website/65c50455d3f6a57f0846ec407425f346ab0e1f68-1920x949.png" alt="Hub microphone routing before and after" loading="lazy" referrerpolicy="no-referrer" />
+      <figcaption>Figure 3 (from Anthropic). Hub microphone routing — before and after Claude moved the power track so the ground ring is clear.</figcaption>
+    </figure>
+
+  </main>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>
